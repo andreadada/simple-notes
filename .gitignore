@@ -1,0 +1,32 @@
+# Environment and credentials
+.env
+.env.*
+!.env.example
+*.jks
+*.keystore
+*.p12
+*.pem
+google-services.json
+GoogleService-Info.plist
+**/local.properties
+**/key.properties
+
+# Dart/Flutter
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.packages
+.pub-cache/
+build/
+coverage/
+**/android/.gradle/
+**/windows/flutter/ephemeral/
+
+# Java / IDE / OS
+.gradle/
+**/target/
+**/.idea/
+*.iml
+.vscode/
+.DS_Store
+Thumbs.db

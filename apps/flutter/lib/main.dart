@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'data/local_store.dart';
+import 'auth/cloud_auth.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -111,6 +112,7 @@ class _NotesHomeState extends ConsumerState<NotesHome> {
   @override
   Widget build(BuildContext context) {
     final data = ref.watch(localStoreProvider);
+    final cloud = ref.watch(cloudAuthProvider);
     final desktop = MediaQuery.sizeOf(context).width >= 850;
     final list = visibleTasks(data.tasks);
     Widget navigation() => Column(
@@ -136,9 +138,42 @@ class _NotesHomeState extends ConsumerState<NotesHome> {
                 ),
               ),
             const Spacer(),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(12, 8, 12, 2),
+              child: OutlinedButton.icon(
+                onPressed: cloud.busy ? null : () async {
+                  if (!CloudConfig.enabled) {
+                    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                      content: Text('Imposta API_BASE_URL e gli ID OAuth con --dart-define.'),
+                    ));
+                    return;
+                  }
+                  if (cloud.authenticated) {
+                    await ref.read(cloudAuthProvider.notifier).logout();
+                  } else {
+                    await ref.read(cloudAuthProvider.notifier).loginGoogle();
+                  }
+                },
+                icon: Icon(cloud.authenticated ? Icons.logout : Icons.account_circle_outlined),
+                label: Text(cloud.busy ? 'Connessione...' :
+                    cloud.authenticated ? 'Esci da Google' : 'Accedi con Google'),
+              ),
+            ),
+            if (cloud.authenticated)
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: Text(cloud.displayName ?? 'Account collegato',
+                  style: const TextStyle(color: Colors.greenAccent, fontSize: 12)),
+              ),
+            if (cloud.error != null)
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: Text(cloud.error!, maxLines: 3,
+                  style: const TextStyle(color: Colors.redAccent, fontSize: 12)),
+              ),
             const Padding(
               padding: EdgeInsets.all(16),
-              child: Text('Solo locale · Sync non ancora disponibile',
+              child: Text('Attività ancora locali · Sync in sviluppo',
                 style: TextStyle(color: Colors.grey, fontSize: 12)),
             ),
           ],

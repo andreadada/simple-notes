@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.oauth2.core.*;
@@ -43,6 +44,7 @@ public class SecurityConfig {
     }
 
     @Bean
+    @Primary
     @Qualifier("jwtDecoder")
     JwtDecoder jwtDecoder(SecretKey appSigningKey, @Value("${app.jwt.issuer}") String issuer) {
         NimbusJwtDecoder decoder = NimbusJwtDecoder.withSecretKey(appSigningKey).macAlgorithm(MacAlgorithm.HS256).build();

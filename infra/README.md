@@ -1,17 +1,37 @@
-# Infrastruttura — Coolify (P0 WIP)
+# Backend — Coolify
 
-## Sviluppo locale
-1. Copia `.env.example` in `.env` e genera credenziali sicure (PostgreSQL, chiave JWT).
-2. In Google Cloud Console crea un client **Desktop**, un client **Android** (package+SHA) e un **Web OAuth client** usato da Android.
-3. Inserisci `GOOGLE_CLIENT_IDS` (ID dei token accettati), `GOOGLE_DESKTOP_CLIENT_ID`, `GOOGLE_DESKTOP_CLIENT_SECRET` (solo server), `APP_JWT_SECRET_BASE64` nel file locale non tracciato.
-4. Da root: `docker compose --env-file .env -f infra/compose.yaml up --build`.
-5. Health check: `http://127.0.0.1:8080/actuator/health`; le API sono protette con Bearer JWT.
+## Coolify (scelta consigliata)
+- Repository: `andreadada/simple-notes`, branch `main`.
+- Build Pack: **Docker Compose**.
+- **Base Directory:** `/`
+- **Docker Compose Location:** `/docker-compose.yml` (file nella radice).
+- Services: `api` e `db`. Dominio HTTPS SOLO sul servizio `api`, porta interna **8080**.
+- **Non attivare Raw Compose**. Non pubblicare le porte di PostgreSQL.
 
-## Coolify — da validare
-- Importa `andreadada/simple-notes` e il Compose `infra/compose.yaml`.
-- Imposta ogni segreto in Coolify; non pubblicare PostgreSQL.
-- Il Compose punta a `127.0.0.1:8080` per uso locale: adatta la rete/proxy Coolify HTTPS prima del deploy.
-- Abilita backup PostgreSQL **fuori dal VPS**, retention e prova di ripristino.
-- Proteggi endpoint auth (rate limiting/abuse detection), verifica login Windows/Android su dispositivi reali e controlla segreti e logging.
+Variabili da impostare come secret su Coolify:
+- `POSTGRES_DB=simplenotes`
+- `POSTGRES_USER=simplenotes`
+- `POSTGRES_PASSWORD` (password casuale forte)
+- `GOOGLE_CLIENT_IDS` (OAuth Web e Desktop, separati da virgola)
+- `GOOGLE_DESKTOP_CLIENT_ID`, `GOOGLE_DESKTOP_CLIENT_SECRET` (solo server)
+- `APP_JWT_SECRET_BASE64` (eseguire `openssl rand -base64 32`)
 
-**NON ancora deployato su Coolify.** I refresh token sono ora implementati, ma rate limiting e procedure di release non sono completati.
+Coolify deve leggere il file Compose e generare i campi per le variabili. **Imposta i segreti prima di deploy.** Una volta configurato il dominio usa `/actuator/health` per verificare l'API.
+
+## Locale
+Il vecchio `infra/compose.yaml` resta disponibile per sviluppo locale, con bind su 127.0.0.1. Il Compose di Coolify è `docker-compose.yml` nella root.
+In locale:
+```sh
+cp .env.example .env
+# Modifica .env con password, chiave JWT e OAuth ID reali.
+docker compose --env-file .env -f infra/compose.yaml up --build
+```
+
+## Da completare prima della produzione
+- Rate limiting e protezione anti-abuso sugli endpoint di autenticazione.
+- Test OAuth Windows/Android con client reali e firma Android coerente.
+- Test sync fra due dispositivi e risoluzione dei conflitti.
+- Backup PostgreSQL fuori dal VPS e prova effettiva di ripristino.
+- Configurazione dominio DNS e TLS HTTPS.
+
+**Nota:** la pipeline GitHub valida la sintassi Compose, non equivale a un deployment Coolify verificato. Non è stato effettuato alcun deployment in produzione.

@@ -1,0 +1,25 @@
+name: Compose validation
+on:
+  push:
+    paths:
+      - docker-compose.yml
+      - .github/workflows/compose-ci.yml
+  pull_request:
+    paths:
+      - docker-compose.yml
+      - .github/workflows/compose-ci.yml
+  workflow_dispatch:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate Coolify Compose with example variables
+        env:
+          POSTGRES_PASSWORD: ci-placeholder-only
+          GOOGLE_CLIENT_IDS: ci-placeholder.apps.googleusercontent.com
+          APP_JWT_SECRET_BASE64: ci-placeholder-only
+        run: docker compose -f docker-compose.yml config --quiet

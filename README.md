@@ -10,6 +10,6 @@ App Windows 11 + Android per **task, note e produttività**, ispirata all'organi
 - [design.md](design.md) — specifiche UI/UX e tutte le funzionalità previste
 - [docs/api.md](docs/api.md) · [docs/sync.md](docs/sync.md) — API e sincronizzazione
 - [apps/flutter/README.md](apps/flutter/README.md) — build Windows/Android e OAuth
-- [infra/README.md](infra/README.md) — avvio backend e Coolify
+- [infra/README.md](infra/README.md) — avvio backend e Coolify (`/docker-compose.yml`)
 
 **Build di sviluppo:** GitHub → Actions → Flutter CI → Artifacts.

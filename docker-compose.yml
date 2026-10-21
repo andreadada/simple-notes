@@ -1,0 +1,40 @@
+# Coolify: Base Directory / ; Docker Compose Location /docker-compose.yml
+# Only "api" is routed publicly via Coolify HTTPS; PostgreSQL is private.
+services:
+  db:
+    image: postgres:17-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-simplenotes}
+      POSTGRES_USER: ${POSTGRES_USER:-simplenotes}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  api:
+    build:
+      context: ./services/api
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/${POSTGRES_DB:-simplenotes}
+      SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER:-simplenotes}
+      SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD:?}
+      GOOGLE_CLIENT_IDS: ${GOOGLE_CLIENT_IDS:?}
+      GOOGLE_DESKTOP_CLIENT_ID: ${GOOGLE_DESKTOP_CLIENT_ID:-}
+      GOOGLE_DESKTOP_CLIENT_SECRET: ${GOOGLE_DESKTOP_CLIENT_SECRET:-}
+      APP_JWT_SECRET_BASE64: ${APP_JWT_SECRET_BASE64:?}
+    depends_on:
+      db:
+        condition: service_healthy
+    expose:
+      - "8080"
+
+volumes:
+  postgres_data:

@@ -1,5 +1,8 @@
 # Coolify: Base Directory / ; Docker Compose Location /docker-compose.yml
 # Only "api" is routed publicly via Coolify HTTPS; PostgreSQL is private.
+# Credentials are runtime-only. docker compose build must not require them,
+# because Coolify interpolates this file with build-time.env before containers start.
+# No fallback credentials: empty values deliberately fail at service startup.
 services:
   db:
     image: postgres:17-alpine
@@ -7,7 +10,7 @@ services:
     environment:
       POSTGRES_DB: ${POSTGRES_DB:-simplenotes}
       POSTGRES_USER: ${POSTGRES_USER:-simplenotes}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-}
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
@@ -25,11 +28,11 @@ services:
       SPRING_PROFILES_ACTIVE: prod
       SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/${POSTGRES_DB:-simplenotes}
       SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER:-simplenotes}
-      SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD:?}
-      GOOGLE_CLIENT_IDS: ${GOOGLE_CLIENT_IDS:?}
+      SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD:-}
+      GOOGLE_CLIENT_IDS: ${GOOGLE_CLIENT_IDS:-}
       GOOGLE_DESKTOP_CLIENT_ID: ${GOOGLE_DESKTOP_CLIENT_ID:-}
       GOOGLE_DESKTOP_CLIENT_SECRET: ${GOOGLE_DESKTOP_CLIENT_SECRET:-}
-      APP_JWT_SECRET_BASE64: ${APP_JWT_SECRET_BASE64:?}
+      APP_JWT_SECRET_BASE64: ${APP_JWT_SECRET_BASE64:-}
     depends_on:
       db:
         condition: service_healthy

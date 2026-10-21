@@ -26,7 +26,8 @@ public class SecurityConfig {
             .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/actuator/health", "/actuator/health/**", "/api/v1/auth/google",
-                    "/api/v1/auth/refresh", "/api/v1/auth/logout").permitAll()
+                    "/api/v1/auth/refresh", "/api/v1/auth/logout",
+                    "/api/v1/auth/desktop/exchange").permitAll()
                 .anyRequest().authenticated())
             .oauth2ResourceServer(oauth -> oauth.jwt(jwt -> {}))
             .build();

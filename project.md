@@ -25,6 +25,14 @@
 - [ ] NON segnare [x] senza implementazione, test e verifica effettuati.
 - [ ] NON effettuare deploy in produzione senza health check, backup e configurazione sicura.
 
+## P0 — Incrementi verificati (GitHub Actions)
+- [x] API Spring Boot compilata; test unitari passati (commit `6ad2df9`).
+- [x] Auth Google **server-side** e CRUD task limitati all'utente; test PostgreSQL Testcontainers passati (`e18ae67`).
+- [x] UI Flutter dark adattiva: task/note locali; analyze + widget test passati (`3481644`).
+- [x] Build Windows Release riuscita (`3481644`).
+- [ ] APK Android: pipeline configurata; build e artefatto da verificare (`4bd2e13`).
+- [ ] Login Google lato client, rinnovo/revoca sessioni, Drift, sync, reminder, deploy Coolify: **non completati**.
+
 ## P0 — Fondamenta e MVP
 - [x] Inizializzare il repository e la documentazione.
 - [ ] Bootstrap Flutter Android/Windows; Riverpod, routing, Drift.
@@ -73,3 +81,7 @@ Esempio: `2026-10-21 14:20 CEST | commit abc1234 | Aggiunto modulo promemoria e 
 - 2026-10-21 14:18 CEST | commit 5cadacf | Inizializzazione README; pianificazione P0–P3.
 - 2026-10-21 14:20 CEST | commit 549e139e | Creato project.md con roadmap e checklist. 
 - 2026-10-21 14:20 CEST | commit 9e73dd13 | Scaffold API, database, Docker Compose, documentazione Flutter e architettura.
+- 2026-10-21 14:30 CEST | commit 6ad2df9 | Autenticazione Google server-side, Task API e test unitari.
+- 2026-10-21 14:33 CEST | commit 3481644 | UI Flutter locale, note/task e CI Windows.
+- 2026-10-21 14:36 CEST | commit e18ae67 | Test di integrazione API con PostgreSQL; fix JWT decoder.
+- 2026-10-21 14:39 CEST | commit 4bd2e13 | CI build Android/APK e artefatti Windows, istruzioni deploy.

@@ -17,6 +17,10 @@ class LocalStore extends Notifier<LocalData> {
   @override
   LocalData build() => ref.read(initialDataProvider);
 
+  Future<void> reload() async {
+    state = await ref.read(databaseProvider).snapshot();
+  }
+
   Future<void> addTask(String title, {DateTime? dueAt}) async {
     final trimmed = title.trim();
     if (trimmed.isEmpty) return;

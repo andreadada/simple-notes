@@ -4,6 +4,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'data/local_store.dart';
 import 'data/app_database.dart';
 import 'auth/cloud_auth.dart';
+import 'sync/cloud_sync.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -120,6 +121,7 @@ class _NotesHomeState extends ConsumerState<NotesHome> {
   Widget build(BuildContext context) {
     final data = ref.watch(localStoreProvider);
     final cloud = ref.watch(cloudAuthProvider);
+    final sync = ref.watch(cloudSyncProvider);
     final desktop = MediaQuery.sizeOf(context).width >= 850;
     final list = visibleTasks(data.tasks);
     Widget navigation() => Column(
@@ -168,6 +170,23 @@ class _NotesHomeState extends ConsumerState<NotesHome> {
             ),
             if (cloud.authenticated)
               Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                child: OutlinedButton.icon(
+                  onPressed: sync.running ? null :
+                      () => ref.read(cloudSyncProvider.notifier).synchronize(),
+                  icon: const Icon(Icons.sync),
+                  label: Text(sync.running ? 'Sincronizzo...' : 'Sincronizza ora'),
+                ),
+              ),
+            if (sync.message != null)
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: Text(sync.message!, maxLines: 4,
+                  style: TextStyle(fontSize: 12,
+                    color: sync.conflict ? Colors.orangeAccent : Colors.grey)),
+              ),
+            if (cloud.authenticated)
+              Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 child: Text(cloud.displayName ?? 'Account collegato',
                   style: const TextStyle(color: Colors.greenAccent, fontSize: 12)),
@@ -180,7 +199,7 @@ class _NotesHomeState extends ConsumerState<NotesHome> {
               ),
             const Padding(
               padding: EdgeInsets.all(16),
-              child: Text('Attività ancora locali · Sync in sviluppo',
+              child: Text('Offline-first · Sync manuale P0',
                 style: TextStyle(color: Colors.grey, fontSize: 12)),
             ),
           ],

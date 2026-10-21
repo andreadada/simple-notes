@@ -26,6 +26,7 @@ class CloudSession {
   final String? displayName;
   final String? userId;
   final String? error;
+  final DateTime? accessExpiresAt;
 
   const CloudSession({
     this.busy = false,
@@ -33,6 +34,7 @@ class CloudSession {
     this.displayName,
     this.userId,
     this.error,
+    this.accessExpiresAt,
   });
   bool get authenticated => accessToken != null;
 }
@@ -160,9 +162,26 @@ class CloudAuth extends StateNotifier<CloudSession> {
     await _storage.write(key: _refreshKey, value: refresh);
     state = CloudSession(
       accessToken: access,
+      accessExpiresAt: DateTime.now().add(Duration(seconds: json['expiresInSeconds'] as int)),
       userId: json['userId'] as String?,
       displayName: json['displayName'] as String?,
     );
+  }
+
+  Future<String> validAccessToken() async {
+    final current = state;
+    if (current.accessToken != null &&
+        current.accessExpiresAt != null &&
+        current.accessExpiresAt!.isAfter(DateTime.now().add(const Duration(seconds: 30)))) {
+      return current.accessToken!;
+    }
+    final refresh = await _storage.read(key: _refreshKey);
+    if (refresh == null || refresh.isEmpty) {
+      throw StateError('Sessione scaduta. Accedi nuovamente.');
+    }
+    final reply = await _exchange('/auth/refresh', {'refreshToken': refresh});
+    await _setSession(reply);
+    return state.accessToken!;
   }
 
   Future<void> logout() async {

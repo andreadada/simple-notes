@@ -46,12 +46,27 @@ class PendingMutations extends Table {
   Set<Column<Object>> get primaryKey => {operationId};
 }
 
-@DriftDatabase(tables: [TaskEntries, NoteEntries, PendingMutations])
+class SyncSettings extends Table {
+  TextColumn get key => text()();
+  TextColumn get value => text()();
+  @override
+  Set<Column<Object>> get primaryKey => {key};
+}
+
+@DriftDatabase(tables: [TaskEntries, NoteEntries, PendingMutations, SyncSettings])
 class AppDatabase extends _$AppDatabase {
   AppDatabase([QueryExecutor? executor]) : super(executor ?? _openDatabase());
 
   @override
-  int get schemaVersion => 1;
+  int get schemaVersion => 2;
+
+  @override
+  MigrationStrategy get migration => MigrationStrategy(
+    onCreate: (m) => m.createAll(),
+    onUpgrade: (m, from, to) async {
+      if (from < 2) await m.createTable(syncSettings);
+    },
+  );
 
   static QueryExecutor _openDatabase() => LazyDatabase(() async {
     final directory = await getApplicationSupportDirectory();
@@ -117,6 +132,101 @@ class AppDatabase extends _$AppDatabase {
       createdAt: DateTime.now(),
     ));
   }
+
+  Future<List<PendingMutation>> pendingOperations() async =>
+      (select(pendingMutations)
+        ..orderBy([(p) => OrderingTerm.asc(p.createdAt)])).get();
+
+  Future<int?> remoteVersionFor(String type, String id) async {
+    if (type == 'task') {
+      final row = await (select(taskEntries)..where((t) => t.id.equals(id)))
+          .getSingleOrNull();
+      return row?.remoteVersion;
+    }
+    final row = await (select(noteEntries)..where((n) => n.id.equals(id)))
+        .getSingleOrNull();
+    return row?.remoteVersion;
+  }
+
+  Future<void> acknowledge(PendingMutation op, int version) => transaction(() async {
+    if (op.entityType == 'task') {
+      await (update(taskEntries)..where((t) => t.id.equals(op.entityId)))
+          .write(TaskEntriesCompanion(remoteVersion: Value(version)));
+    } else {
+      await (update(noteEntries)..where((n) => n.id.equals(op.entityId)))
+          .write(NoteEntriesCompanion(remoteVersion: Value(version)));
+    }
+    await (delete(pendingMutations)..where((p) => p.operationId.equals(op.operationId))).go();
+  });
+
+  Future<String?> setting(String keyName) async {
+    final row = await (select(syncSettings)..where((s) => s.key.equals(keyName)))
+        .getSingleOrNull();
+    return row?.value;
+  }
+
+  Future<void> putSetting(String name, String data) =>
+      into(syncSettings).insertOnConflictUpdate(
+        SyncSettingsCompanion.insert(key: name, value: data));
+
+  Future<void> bindOwner(String ownerId) async {
+    final existing = await setting('boundOwnerId');
+    if (existing != null && existing != ownerId) {
+      throw StateError('Questo archivio locale è già legato a un altro account Google. '
+          'Per sicurezza, non verrà sincronizzato con il nuovo account.');
+    }
+    if (existing == null) await putSetting('boundOwnerId', ownerId);
+  }
+
+  // Pull remote state only if there are no unsent edits on the same entity.
+  // Skipped remote changes remain accessible on the server, and their
+  // local mutations will hit a version conflict rather than overwrite them.
+  Future<void> applyRemote({
+    required String type,
+    required String entityId,
+    required Map<String, dynamic> payload,
+    required bool deleted,
+    required int version,
+  }) => transaction(() async {
+    final pending = await (select(pendingMutations)
+        ..where((p) => p.entityId.equals(entityId))).get();
+    if (pending.isNotEmpty) return;
+    if (type == 'task') {
+      if (deleted) {
+        await (update(taskEntries)..where((t) => t.id.equals(entityId)))
+            .write(TaskEntriesCompanion(
+              deletedAt: Value(DateTime.now()), remoteVersion: Value(version)));
+        return;
+      }
+      final raw = payload['dueAt'] as String?;
+      final created = DateTime.tryParse(payload['createdAt'] as String? ?? '');
+      await into(taskEntries).insertOnConflictUpdate(TaskEntriesCompanion.insert(
+        id: entityId,
+        title: payload['title'] as String,
+        dueAt: Value(raw == null || raw.isEmpty ? null : DateTime.tryParse(raw)?.toLocal()),
+        completed: Value(payload['completed'] as bool? ?? false),
+        createdAt: created ?? DateTime.now(),
+        deletedAt: const Value(null),
+        remoteVersion: Value(version),
+      ));
+    } else if (type == 'note') {
+      if (deleted) {
+        await (update(noteEntries)..where((n) => n.id.equals(entityId)))
+            .write(NoteEntriesCompanion(
+              deletedAt: Value(DateTime.now()), remoteVersion: Value(version)));
+        return;
+      }
+      final created = DateTime.tryParse(payload['createdAt'] as String? ?? '');
+      await into(noteEntries).insertOnConflictUpdate(NoteEntriesCompanion.insert(
+        id: entityId,
+        title: payload['title'] as String,
+        body: payload['body'] as String? ?? '',
+        createdAt: created ?? DateTime.now(),
+        deletedAt: const Value(null),
+        remoteVersion: Value(version),
+      ));
+    }
+  });
 
   Future<int> pendingCount() async {
     final entries = await select(pendingMutations).get();

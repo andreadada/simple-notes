@@ -17,9 +17,23 @@ jobs:
       contents: read
     steps:
       - uses: actions/checkout@v4
-      - name: Validate Coolify Compose with example variables
+      - name: Validate build Compose without runtime secrets
+        run: |
+          # Coolify uses a build-time.env with no runtime-only credentials.
+          env -u POSTGRES_PASSWORD -u GOOGLE_CLIENT_IDS -u APP_JWT_SECRET_BASE64 \
+            docker compose -f docker-compose.yml config --quiet
+      - name: Validate runtime secrets are mapped to both containers
         env:
           POSTGRES_PASSWORD: ci-placeholder-only
           GOOGLE_CLIENT_IDS: ci-placeholder.apps.googleusercontent.com
-          APP_JWT_SECRET_BASE64: ci-placeholder-only
-        run: docker compose -f docker-compose.yml config --quiet
+          APP_JWT_SECRET_BASE64: ci-placeholder-base64
+        run: |
+          docker compose -f docker-compose.yml config --format json | python3 -c '
+          import json,sys
+          cfg=json.load(sys.stdin)["services"]
+          assert cfg["db"]["environment"]["POSTGRES_PASSWORD"] == "ci-placeholder-only"
+          assert cfg["api"]["environment"]["SPRING_DATASOURCE_PASSWORD"] == "ci-placeholder-only"
+          assert cfg["api"]["environment"]["APP_JWT_SECRET_BASE64"] == "ci-placeholder-base64"
+          assert cfg["api"]["environment"]["GOOGLE_CLIENT_IDS"] == "ci-placeholder.apps.googleusercontent.com"
+          print("Runtime credential mapping validated (values not displayed)")
+          '

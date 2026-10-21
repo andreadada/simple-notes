@@ -1,15 +1,17 @@
-# Simple Notes client — Flutter
+# Simple Notes — Flutter client (P0 local prototype)
 
-Target: Windows 11 + Android. L'app Flutter **non è ancora generata**.
-
-Bootstrap da eseguire da questa directory con Flutter SDK installato:
+Flutter source exists in `lib/` and a widget test in `test/`. Because platform-generated scaffolds are not yet committed, initialize Android/Windows templates before building:
 
 ```bash
+cd apps/flutter
 flutter create --platforms=android,windows --project-name simple_notes .
-flutter pub add flutter_riverpod go_router drift sqlite3_flutter_libs path_provider path
-flutter pub add --dev drift_dev build_runner
+flutter pub get
 flutter analyze
 flutter test
+flutter run -d windows
+# or flutter run -d <android-device-id>
 ```
 
-Da realizzare: design system responsive, autenticazione Google (flussi separati Windows/Android), SQLite locale e sync engine. **Non** salvare token in chiaro e non aggiungere credenziali reali al Git.
+**Working scope:** dark adaptive UI, local tasks and simple notes persisted using SharedPreferences. **Not yet implemented:** Google login UI, sync with backend, Drift database, reminders, signed installers, generated platform projects. SharedPreferences is TEMPORARY; data must be migrated to Drift before production.
+
+To configure Google login later you will need registered Android and Windows Google OAuth clients. Do not commit credential files.

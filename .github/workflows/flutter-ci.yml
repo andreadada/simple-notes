@@ -1,0 +1,49 @@
+name: Flutter CI
+on:
+  push:
+    paths:
+      - 'apps/flutter/**'
+      - '.github/workflows/flutter-ci.yml'
+  pull_request:
+    paths:
+      - 'apps/flutter/**'
+      - '.github/workflows/flutter-ci.yml'
+  workflow_dispatch:
+jobs:
+  analyze-test:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+      - name: Generate Android and Windows scaffold
+        working-directory: apps/flutter
+        run: flutter create --platforms=android,windows --project-name simple_notes .
+      - name: Fetch dependencies
+        working-directory: apps/flutter
+        run: flutter pub get
+      - name: Static analysis
+        working-directory: apps/flutter
+        run: flutter analyze
+      - name: Widget tests
+        working-directory: apps/flutter
+        run: flutter test
+  windows-build:
+    runs-on: windows-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+      - name: Generate Windows scaffold
+        working-directory: apps/flutter
+        run: flutter create --platforms=windows --project-name simple_notes .
+      - name: Build Windows executable
+        working-directory: apps/flutter
+        run: flutter build windows --release

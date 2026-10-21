@@ -1,12 +1,23 @@
 # Simple Notes
 
-App di produttività offline-first per **Windows 11** e **Android**, con backend self-hosted su **Coolify**.
+Self-hosted task and note manager for **Windows 11** and **Android**.
 
-**Stato:** P0 — bootstrap tecnico. Il software è in fase iniziale e non è ancora una release utilizzabile.
+**P0 IN CORSO — NOT PRODUCTION READY**
 
-- **Roadmap e regole di implementazione:** [`project.md`](./project.md)
-- **Client:** [`apps/flutter`](./apps/flutter)
-- **API:** [`services/api`](./services/api)
-- **Infrastruttura:** [`infra`](./infra)
+- [Roadmap, checklist, do/don't rules and Edit Timespan](project.md)
+- [Flutter client](apps/flutter/README.md) — local prototype, no sync yet
+- [Backend API](docs/api.md) — Google ID-token exchange and owner-scoped tasks
+- [Architecture](docs/architecture.md)
+- [Coolify infrastructure](infra/README.md)
 
-Stack previsto: Flutter, Riverpod, Drift/SQLite, Spring Boot, PostgreSQL, OAuth Google. Nessuna credenziale deve essere committata.
+## Start locally
+
+Backend: copy `.env.example` to `.env`, set strong credentials and Google client IDs, then use:
+
+```bash
+docker compose --env-file .env -f infra/compose.yaml up --build
+```
+
+Flutter: follow [apps/flutter/README.md](apps/flutter/README.md).
+
+Security: never commit secrets. The backend API is preliminary (no refresh/revocation or rate limits); do not expose publicly yet.

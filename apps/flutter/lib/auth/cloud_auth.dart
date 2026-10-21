@@ -58,10 +58,16 @@ class CloudAuth extends StateNotifier<CloudSession> {
       if (refresh == null || refresh.isEmpty) return;
       final reply = await _exchange('/auth/refresh', {'refreshToken': refresh});
       await _setSession(reply);
+    } on AuthHttpException catch (e) {
+      if (e.status == 401 || e.status == 403) {
+        await _storage.delete(key: _refreshKey);
+        state = const CloudSession(error: 'Sessione scaduta: accedi di nuovo.');
+      } else {
+        state = const CloudSession(error: 'Server non disponibile. Dati locali conservati.');
+      }
     } catch (_) {
-      // An expired/revoked session should never block local app use.
-      await _storage.delete(key: _refreshKey);
-      state = const CloudSession();
+      // Network outages must NOT erase the refresh token or the local dataset.
+      state = const CloudSession(error: 'Offline: riprova il login cloud più tardi.');
     }
   }
 
@@ -151,7 +157,7 @@ class CloudAuth extends StateNotifier<CloudSession> {
       body: jsonEncode(payload),
     ).timeout(const Duration(seconds: 15));
     if (response.statusCode < 200 || response.statusCode >= 300) {
-      throw StateError('Server HTTP ${response.statusCode}');
+      throw AuthHttpException(response.statusCode);
     }
     return jsonDecode(response.body) as Map<String, dynamic>;
   }
@@ -203,4 +209,11 @@ class CloudAuth extends StateNotifier<CloudSession> {
     _http.close();
     super.dispose();
   }
+}
+
+class AuthHttpException implements Exception {
+  final int status;
+  const AuthHttpException(this.status);
+  @override
+  String toString() => 'HTTP $status';
 }

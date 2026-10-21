@@ -19,7 +19,21 @@ public class TaskService {
 
     @Transactional
     public TaskEntity create(UUID ownerId, String title, String description, Instant dueAt) {
-        return repository.save(new TaskEntity(ownerId, title, description, dueAt));
+        return repository.saveAndFlush(new TaskEntity(ownerId, title, description, dueAt));
+    }
+
+    @Transactional
+    public TaskEntity update(UUID ownerId, UUID taskId, long expectedVersion,
+            String title, String description, Instant dueAt, boolean completed) {
+        TaskEntity task = owned(ownerId, taskId);
+        if (task.version != expectedVersion)
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Version conflict");
+        task.title = title;
+        task.description = description;
+        task.dueAt = dueAt;
+        task.completedAt = completed ? (task.completedAt == null ? Instant.now() : task.completedAt) : null;
+        task.updatedAt = Instant.now();
+        return repository.saveAndFlush(task);
     }
 
     @Transactional
@@ -27,14 +41,14 @@ public class TaskService {
         TaskEntity task = owned(ownerId, taskId);
         task.completedAt = completed ? Instant.now() : null;
         task.updatedAt = Instant.now();
-        return repository.save(task);
+        return repository.saveAndFlush(task);
     }
 
     @Transactional
     public void delete(UUID ownerId, UUID taskId) {
         TaskEntity task = owned(ownerId, taskId);
         task.deletedAt = task.updatedAt = Instant.now();
-        repository.save(task);
+        repository.saveAndFlush(task);
     }
 
     private TaskEntity owned(UUID ownerId, UUID taskId) {

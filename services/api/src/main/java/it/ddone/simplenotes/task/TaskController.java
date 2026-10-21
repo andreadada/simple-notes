@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.*;
 public class TaskController {
     public record CreateTask(@NotBlank @Size(max = 1024) String title, String description, Instant dueAt) {}
     public record CompletionRequest(boolean completed) {}
+    public record UpdateTask(@NotNull @Min(0) Long version,
+        @NotBlank @Size(max = 1024) String title, String description, Instant dueAt, boolean completed) {}
     public record TaskView(UUID id, String title, String description, Instant dueAt, Instant completedAt, long version) {
         static TaskView from(TaskEntity t) {
             return new TaskView(t.id, t.title, t.description, t.dueAt, t.completedAt, t.version);
@@ -27,18 +29,20 @@ public class TaskController {
     public List<TaskView> list(@AuthenticationPrincipal Jwt jwt) {
         return tasks.all(owner(jwt)).stream().map(TaskView::from).toList();
     }
-
     @PostMapping
     public ResponseEntity<TaskView> create(@AuthenticationPrincipal Jwt jwt, @Valid @RequestBody CreateTask request) {
         return ResponseEntity.status(HttpStatus.CREATED)
             .body(TaskView.from(tasks.create(owner(jwt), request.title(), request.description(), request.dueAt())));
     }
-
+    @PutMapping("/{id}")
+    public TaskView update(@AuthenticationPrincipal Jwt jwt, @PathVariable UUID id, @Valid @RequestBody UpdateTask request) {
+        return TaskView.from(tasks.update(owner(jwt), id, request.version(),
+            request.title(), request.description(), request.dueAt(), request.completed()));
+    }
     @PatchMapping("/{id}/completion")
     public TaskView complete(@AuthenticationPrincipal Jwt jwt, @PathVariable UUID id, @RequestBody CompletionRequest request) {
         return TaskView.from(tasks.setCompleted(owner(jwt), id, request.completed()));
     }
-
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@AuthenticationPrincipal Jwt jwt, @PathVariable UUID id) {

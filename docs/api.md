@@ -1,14 +1,28 @@
-# API v1 — preliminary
+# Simple Notes API v1
 
-**Auth:** `POST /api/v1/auth/google` body `{"idToken":"<Google ID token>"}` -> app Bearer JWT (15-minute TTL).
-Google public JWKS validates ID-token signature, `iss`, `aud`, expiry. Only configured `GOOGLE_CLIENT_IDS` are accepted. Android must use native Google login; Windows must use system browser with OAuth PKCE.
+Base URL: `/api/v1`. JSON/HTTPS. Routes private richiedono `Authorization: Bearer <accessToken>`.
 
-**Tasks** (required header `Authorization: Bearer <app JWT>`):
-- `GET /api/v1/tasks` — user-owned tasks only.
-- `POST /api/v1/tasks` — `{"title":"...", "description":null, "dueAt":null}`.
-- `PATCH /api/v1/tasks/{uuid}/completion` — `{"completed":true}`.
-- `DELETE /api/v1/tasks/{uuid}` — soft-delete (204).
+## Auth
+- `POST /auth/google`: `{"idToken":"<Google ID token>"}` → `{"accessToken","refreshToken","expiresInSeconds","userId","displayName"}`.
+- `POST /auth/refresh`: `{"refreshToken":"..."}` → stessa risposta, con **rotazione** del refresh token.
+- `POST /auth/logout`: `{"refreshToken":"..."}` → HTTP 204, revoca la sessione.
+- ID token Google verificato per `iss`, `aud`, firma e scadenza; sessioni per account e refresh token salvato *hashato*.
+- Restano da fare: rate limit, device identity, audit, logout all devices, flow OAuth completo nei client.
 
-**Current limitations:** No refresh/session revocation, lists/notes endpoints, task edit endpoint, offline delta-sync or device notifications. DO NOT deploy publicly before TLS, rate limiting, auth flow verification and tests.
+## Tasks
+- `GET /tasks` → task attivi del solo utente.
+- `POST /tasks` → `{"title":"...","description":null,"dueAt":null}` (201).
+- `PUT /tasks/{id}` → `{"version":0,"title":"...","description":null,"dueAt":null,"completed":false}`.
+- `PATCH /tasks/{id}/completion` → `{"completed":true}`.
+- `DELETE /tasks/{id}` → 204 (tombstone logica).
+- Versione obsoleta su PUT → 409. PATCH legacy ancora privo di version guard: non usare per offline sync.
 
-**Health:** `GET /actuator/health` (database + application).
+## Notes
+- `GET /notes` → note dell'utente.
+- `POST /notes` → `{"title":"...","body":"..."}`.
+- `PUT /notes/{id}` → `{"version":0,"title":"...","body":"..."}`.
+- `DELETE /notes/{id}?version=0` → 204.
+- Versione obsoleta → 409. L'API usa owner verificato sul server, non dal payload.
+
+## Stato
+API REST con ownership e concorrenza **parziale**. Delta sync, UUID scelti dal client, idempotency key, refresh session scadute e GDPR delete da implementare prima di produzione.

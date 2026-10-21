@@ -32,6 +32,26 @@ class LocalStore extends Notifier<LocalData> {
     state = LocalData(tasks: [...state.tasks, task], notes: state.notes);
   }
 
+  Future<void> editTask(String id, {required String title, DateTime? dueAt}) async {
+    final trimmed = title.trim();
+    if (trimmed.isEmpty) return;
+    for (final task in state.tasks) {
+      if (task.id == id) {
+        final changed = task.copyWith(
+          title: trimmed,
+          dueAt: dueAt,
+          changeDueAt: true,
+        );
+        await ref.read(databaseProvider).upsertTask(changed);
+        state = LocalData(
+          tasks: [for (final t in state.tasks) if (t.id == id) changed else t],
+          notes: state.notes,
+        );
+        return;
+      }
+    }
+  }
+
   Future<void> toggleTask(String id) async {
     for (final task in state.tasks) {
       if (task.id == id) {

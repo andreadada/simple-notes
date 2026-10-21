@@ -78,6 +78,7 @@ class NotesHome extends ConsumerStatefulWidget {
 class _NotesHomeState extends ConsumerState<NotesHome> {
   Section section = Section.inbox;
   String? selectedId;
+  String searchQuery = '';
   final newTask = TextEditingController();
   DateTime? dueAt;
 
@@ -123,7 +124,9 @@ class _NotesHomeState extends ConsumerState<NotesHome> {
     final cloud = ref.watch(cloudAuthProvider);
     final sync = ref.watch(cloudSyncProvider);
     final desktop = MediaQuery.sizeOf(context).width >= 850;
-    final list = visibleTasks(data.tasks);
+    final list = visibleTasks(data.tasks)
+        .where((task) => task.title.toLowerCase().contains(searchQuery.trim().toLowerCase()))
+        .toList();
     Widget navigation() => Column(
           children: [
             const Padding(
@@ -221,6 +224,18 @@ class _NotesHomeState extends ConsumerState<NotesHome> {
             ),
           if (section != Section.notes)
             Padding(
+              padding: const EdgeInsets.fromLTRB(16, 0, 16, 4),
+              child: TextField(
+                key: const Key('task-search'),
+                decoration: const InputDecoration(
+                  hintText: 'Cerca attività...',
+                  prefixIcon: Icon(Icons.search),
+                ),
+                onChanged: (value) => setState(() => searchQuery = value),
+              ),
+            ),
+          if (section != Section.notes)
+            Padding(
               padding: const EdgeInsets.fromLTRB(16, 8, 16, 12),
               child: Row(children: [
                 Expanded(child: TextField(
@@ -306,6 +321,11 @@ class _NotesHomeState extends ConsumerState<NotesHome> {
           const SizedBox(height: 12),
           Text(task.dueAt == null ? 'Nessuna scadenza' : 'Scadenza: ${task.dueAt!.toLocal()}'),
           const Spacer(),
+          OutlinedButton.icon(
+            onPressed: () => showTaskEditor(task),
+            icon: const Icon(Icons.edit_outlined),
+            label: const Text('Modifica'),
+          ),
           TextButton.icon(
             onPressed: () {
               ref.read(localStoreProvider.notifier).deleteTask(task.id);
@@ -321,6 +341,69 @@ class _NotesHomeState extends ConsumerState<NotesHome> {
         context: context, isScrollControlled: true,
         builder: (ctx) => SizedBox(height: 300, child: taskDetails(task)),
       );
+
+  void showTaskEditor(LocalTask task) {
+    final controller = TextEditingController(text: task.title);
+    DateTime? selectedDue = task.dueAt;
+    showDialog<void>(
+      context: context,
+      builder: (dialogContext) => StatefulBuilder(
+        builder: (dialogContext, updateDialog) => AlertDialog(
+          title: const Text('Modifica attività'),
+          content: SizedBox(width: 420, child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                key: const Key('edit-task-title'),
+                controller: controller,
+                decoration: const InputDecoration(labelText: 'Titolo'),
+              ),
+              const SizedBox(height: 12),
+              Row(children: [
+                Expanded(child: Text(selectedDue == null
+                    ? 'Nessuna scadenza'
+                    : 'Scadenza: ${selectedDue!.day}/${selectedDue!.month}/${selectedDue!.year}')),
+                IconButton(
+                  tooltip: 'Scegli data',
+                  icon: const Icon(Icons.event_outlined),
+                  onPressed: () async {
+                    final picked = await showDatePicker(
+                      context: dialogContext,
+                      initialDate: selectedDue ?? DateTime.now(),
+                      firstDate: DateTime(2020), lastDate: DateTime(2100),
+                    );
+                    if (picked != null && dialogContext.mounted) {
+                      updateDialog(() => selectedDue = picked);
+                    }
+                  },
+                ),
+                IconButton(
+                  tooltip: 'Rimuovi data',
+                  icon: const Icon(Icons.event_busy),
+                  onPressed: () => updateDialog(() => selectedDue = null),
+                ),
+              ]),
+            ],
+          )),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(dialogContext),
+              child: const Text('Annulla'),
+            ),
+            FilledButton(
+              onPressed: () async {
+                await ref.read(localStoreProvider.notifier).editTask(
+                  task.id, title: controller.text, dueAt: selectedDue,
+                );
+                if (dialogContext.mounted) Navigator.pop(dialogContext);
+              },
+              child: const Text('Salva'),
+            ),
+          ],
+        ),
+      ),
+    ).whenComplete(controller.dispose);
+  }
 
   void showNoteEditor(LocalNote note) {
     final title = TextEditingController(text: note.title);

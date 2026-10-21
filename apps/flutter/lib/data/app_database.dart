@@ -93,12 +93,16 @@ class AppDatabase extends _$AppDatabase {
   }
 
   Future<void> upsertTask(LocalTask task) => transaction(() async {
+    final previous = await (select(taskEntries)..where((t) => t.id.equals(task.id)))
+        .getSingleOrNull();
     await into(taskEntries).insertOnConflictUpdate(TaskEntriesCompanion.insert(
       id: task.id,
       title: task.title,
       dueAt: Value(task.dueAt),
       completed: Value(task.completed),
       createdAt: task.createdAt,
+      remoteVersion: Value(previous?.remoteVersion),
+      deletedAt: const Value(null),
     ));
     await _enqueue('task', task.id, 'upsert', jsonEncode(task.toJson()));
   });
@@ -110,8 +114,12 @@ class AppDatabase extends _$AppDatabase {
   });
 
   Future<void> upsertNote(LocalNote note) => transaction(() async {
+    final previous = await (select(noteEntries)..where((n) => n.id.equals(note.id)))
+        .getSingleOrNull();
     await into(noteEntries).insertOnConflictUpdate(NoteEntriesCompanion.insert(
       id: note.id, title: note.title, body: note.body, createdAt: note.createdAt,
+      remoteVersion: Value(previous?.remoteVersion),
+      deletedAt: const Value(null),
     ));
     await _enqueue('note', note.id, 'upsert', jsonEncode(note.toJson()));
   });

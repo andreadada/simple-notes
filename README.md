@@ -1,17 +1,15 @@
 # Simple Notes
 
-App di **task, note e produttività** per **Windows 11 e Android**, con interfaccia originale ispirata all'organizzazione di TickTick.
+App Windows 11 + Android per **task, note e produttività**, ispirata all'organizzazione di TickTick, con interfaccia originale.
 
-- **Client:** Flutter, offline-first
-- **Backend:** Spring Boot + PostgreSQL, self-hosted su Coolify
-- **Account:** Google Login; sincronizzazione PC ↔ telefono
-- **Stato:** P0 in sviluppo. Non ancora adatta alla produzione.
+**Stack:** Flutter · Drift/SQLite · Spring Boot · PostgreSQL · Docker/Coolify.
 
-**Documentazione**
-- [project.md](project.md) — roadmap P0–P3, checklist, cosa fare/non fare e storico commit
-- [design.md](design.md) — UX/UI, funzionalità, modelli e scelte tecniche
-- [docs/api.md](docs/api.md) — API
-- [infra/README.md](infra/README.md) — avvio locale e Coolify
-- [apps/flutter/README.md](apps/flutter/README.md) — build client
+**Stato:** P0 in corso. Task/note locali, login Google nel codice e sync manuale sperimentale. Non è pronta per uso produttivo o deploy pubblico.
 
-Le CI producono APK Android e build Windows nella pagina **GitHub Actions → Flutter CI → Artifacts**. Login, sincronizzazione e notifiche saranno rilasciati solo dopo i rispettivi test.
+- [project.md](project.md) — fasi P0–P3, checklist, regole e `Edit Timespan`
+- [design.md](design.md) — specifiche UI/UX e tutte le funzionalità previste
+- [docs/api.md](docs/api.md) · [docs/sync.md](docs/sync.md) — API e sincronizzazione
+- [apps/flutter/README.md](apps/flutter/README.md) — build Windows/Android e OAuth
+- [infra/README.md](infra/README.md) — avvio backend e Coolify
+
+**Build di sviluppo:** GitHub → Actions → Flutter CI → Artifacts.

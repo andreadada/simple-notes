@@ -53,8 +53,8 @@ User(id, googleSub, email), Device(id, userId, lastSeen), Session(id, deviceId, 
 2. Quando online/autenticato, invio batch con `operationId`, entityId, expectedVersion, payload; retry idempotente.
 3. Server valida ownership, atomizza write+change log, incrementa revisione e restituisce ack.
 4. Pull delta tramite cursor per utente; applica update nel DB locale senza cancellare outbox ancora pendenti.
-5. Se `expectedVersion` non coincide, restituisce conflitto 409 + stato server: salvare entrambe le versioni e chiedere scelta per note, oppure policy campo-per-campo documentata per task.
-6. Refresh all'avvio, ritorno online e segnale WebSocket. No polling aggressivo.
+5. Se `expectedVersion` non coincide, restituisce 409 e blocca l'upload senza perdere la coda. Target: ottenere stato server, conservarne due versioni e offrire una UI di scelta.
+6. Attualmente sync manuale; target: retry su ritorno online, refresh all'avvio, invalidazione WebSocket. No polling aggressivo.
 7. Logout cancella credenziali, interrompe sync e isola dataset dell'account. Il cambio account non mescola dati.
 
 **Non fare:** last-write-wins silenzioso, shared_preferences per dataset finale, delete senza tombstone, sync basata sui soli orologi client.
@@ -62,7 +62,7 @@ User(id, googleSub, email), Device(id, userId, lastSeen), Session(id, deviceId, 
 ## 7. Login e sicurezza
 - Android: Google Identity, verifica ID token lato API.
 - Windows: system browser + authorization code + PKCE (loopback per installed apps), non webview embedded.
-- Backend: valida JWKS, issuer, audience, expiry; identifica con `sub` e non email. App JWT breve + refresh token ruotato, revocabile, per dispositivo (da implementare).
+- Backend: valida JWKS, issuer, audience, expiry; identifica con `sub` e non email. App JWT breve + refresh token ruotato/revocabile (implementato sul server); gestione completa dispositivo/recovery ancora da verificare.
 - Segreti in Coolify e storage OS sicuro; TLS obbligatorio, rate-limit auth, auditing errori non sensibili, backup cifrati e test restore.
 - Nessuna chiave privata, token, keystore o credenziale reale committata.
 
@@ -82,7 +82,7 @@ Qualsiasi feature con sola UI o solo endpoint **non** è completata.
 - Rischio: OAuth desktop/Android richiede OAuth client ID configurati dall'utente in Google Cloud Console.
 - Rischio: sincronizzazione e conflitti; P0 priorità prima dei moduli visuali.
 - Rischio: packaging/notifiche Windows; verificare MSIX/installer firmato in test reali.
-- Rischio: SQLite e migrazione dai prototipi SharedPreferences; preservare i dati già inseriti.
+- Drift/SQLite con import legacy presente e testato in CI; serve prova in upgrade reale e test conflitti multi-device.
 - Rischio: scheduling Android e risparmio batteria; test su hardware, non solo emulatori.
 - Deploy produzione NON previsto finché sicurezza e backup non risultano verificati.
 

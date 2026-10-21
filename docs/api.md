@@ -1,28 +1,30 @@
 # Simple Notes API v1
 
-Base URL: `/api/v1`. JSON/HTTPS. Routes private richiedono `Authorization: Bearer <accessToken>`.
+Base URL `/api/v1`. Per endpoint privati: header `Authorization: Bearer <accessToken>`.
 
 ## Auth
-- `POST /auth/google`: `{"idToken":"<Google ID token>"}` → `{"accessToken","refreshToken","expiresInSeconds","userId","displayName"}`.
-- `POST /auth/refresh`: `{"refreshToken":"..."}` → stessa risposta, con **rotazione** del refresh token.
-- `POST /auth/logout`: `{"refreshToken":"..."}` → HTTP 204, revoca la sessione.
-- ID token Google verificato per `iss`, `aud`, firma e scadenza; sessioni per account e refresh token salvato *hashato*.
-- Restano da fare: rate limit, device identity, audit, logout all devices, flow OAuth completo nei client.
+- `POST /auth/google`: `{"idToken":"..."}` → `{accessToken,refreshToken,expiresInSeconds,userId,displayName}`.
+- `POST /auth/desktop/exchange`: `{"code":"...","codeVerifier":"...","redirectUri":"http://127.0.0.1:PORT/oauth/callback"}`.
+- `POST /auth/refresh`: `{"refreshToken":"..."}` → sessione aggiornata (refresh token ruotato).
+- `POST /auth/logout`: `{"refreshToken":"..."}` → 204, revoca.
+- Google ID token convalidato server-side; secret Desktop solo in variabili backend. Auth rate limiting da completare.
 
 ## Tasks
-- `GET /tasks` → task attivi del solo utente.
-- `POST /tasks` → `{"title":"...","description":null,"dueAt":null}` (201).
-- `PUT /tasks/{id}` → `{"version":0,"title":"...","description":null,"dueAt":null,"completed":false}`.
-- `PATCH /tasks/{id}/completion` → `{"completed":true}`.
-- `DELETE /tasks/{id}` → 204 (tombstone logica).
-- Versione obsoleta su PUT → 409. PATCH legacy ancora privo di version guard: non usare per offline sync.
+- `GET /tasks` — task dell'utente.
+- `POST /tasks` — `{title,description,dueAt}`.
+- `PUT /tasks/{id}` — `{version,title,description,dueAt,completed}` (409 se obsoleto).
+- `PATCH /tasks/{id}/completion` — `{completed}` (legacy senza controllo versione).
+- `DELETE /tasks/{id}` — soft delete.
 
 ## Notes
-- `GET /notes` → note dell'utente.
-- `POST /notes` → `{"title":"...","body":"..."}`.
-- `PUT /notes/{id}` → `{"version":0,"title":"...","body":"..."}`.
-- `DELETE /notes/{id}?version=0` → 204.
-- Versione obsoleta → 409. L'API usa owner verificato sul server, non dal payload.
+- `GET /notes` — note dell'utente.
+- `POST /notes` — `{title,body}`.
+- `PUT /notes/{id}` — `{version,title,body}`.
+- `DELETE /notes/{id}?version=N` — soft delete.
 
-## Stato
-API REST con ownership e concorrenza **parziale**. Delta sync, UUID scelti dal client, idempotency key, refresh session scadute e GDPR delete da implementare prima di produzione.
+## Synchronization
+- `POST /sync/apply` — write idempotente con `operationId`, `entityId`, `entityType`, `action`, `expectedVersion`, `payload`.
+- `GET /sync/changes?cursor=N&limit=100` — delta per utente; cursor monotono.
+- Contratto ed esempi: [sync.md](sync.md).
+
+**Nota:** i vecchi endpoint REST non alimentano ancora il change log: per dati multi-device usare esclusivamente `/sync/apply`. Mancano rate limiting, UI di conflitto, resilienza E2E e verifica deploy.

@@ -21,3 +21,9 @@ management:
       show-details: never
 server:
   port: 8080
+app:
+  google:
+    client-ids: ${GOOGLE_CLIENT_IDS:}
+  jwt:
+    issuer: simple-notes-api
+    secret-base64: ${APP_JWT_SECRET_BASE64:}

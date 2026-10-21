@@ -23,6 +23,8 @@ services:
       SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/${POSTGRES_DB:?required}
       SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER:?required}
       SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD:?required}
+      GOOGLE_CLIENT_IDS: ${GOOGLE_CLIENT_IDS:?required}
+      APP_JWT_SECRET_BASE64: ${APP_JWT_SECRET_BASE64:?required}
     depends_on:
       db:
         condition: service_healthy

@@ -23,7 +23,7 @@ class TaskServiceTest {
     void createdTaskIsOwnedByAuthenticatedUser() {
         UUID owner = UUID.randomUUID();
         TaskEntity expected = new TaskEntity(owner, "Write docs", null, null);
-        when(repo.save(any(TaskEntity.class))).thenAnswer(call -> call.getArgument(0));
+        when(repo.saveAndFlush(any(TaskEntity.class))).thenAnswer(call -> call.getArgument(0));
         TaskEntity result = service.create(owner, "Write docs", null, null);
         assertEquals(owner, result.ownerId);
         assertEquals("Write docs", result.title);
@@ -37,7 +37,7 @@ class TaskServiceTest {
         when(repo.findByIdAndOwnerIdAndDeletedAtIsNull(taskId, owner)).thenReturn(Optional.of(existing));
         service.delete(owner, taskId);
         assertNotNull(existing.deletedAt);
-        verify(repo).save(existing);
+        verify(repo).saveAndFlush(existing);
         verify(repo, never()).delete(any(TaskEntity.class));
     }
 }

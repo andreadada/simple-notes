@@ -43,7 +43,8 @@
 - [x] Bootstrap Flutter Android/Windows + Riverpod + Drift/SQLite e CI.
 - [ ] Routing/deep link, UX mobile definitiva e test accessibilità.
 - [x] Backend Spring Boot Java 21, PostgreSQL, Flyway, API health (test CI).
-- [ ] Docker Compose e prova di deploy sicuro su Coolify.
+- [x] Compose in root `docker-compose.yml` validato con `docker compose config --quiet` (CI run `39634311667`).
+- [ ] Prova di deploy sicuro su Coolify e verifica HTTPS/health (non eseguita).
 - [ ] Login Google reale Android/Windows + sessioni sicure verificate su device.
 - [x] Struttura iniziale utenti, task, note, versioni, tombstone, refresh sessions.
 - [ ] Liste, tag, sottotask, filtri, scadenze/ricorrenze avanzate e reminder.
@@ -107,3 +108,4 @@ Esempio: `2026-10-21 14:20 CEST | commit abc1234 | Aggiunto modulo promemoria e 
 - 2026-10-21 15:20 CEST | commit e5c5c319 | Allineati README, design, API, architettura e checklist.
 - 2026-10-21 15:21 CEST | commit 921ee40e | Consentito il callback OAuth desktop pre-login.
 - 2026-10-21 15:23 CEST | commit e15017ad | Ricerca/modifica attività e permesso Internet Android.
+- 2026-10-21 18:23 CEST | commit 0fa64e08 | Nuovo Compose root per Coolify, porta API privata, lint Compose CI riuscito.

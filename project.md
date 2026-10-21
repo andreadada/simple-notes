@@ -69,6 +69,7 @@
 
 ## Edit Timespan
 Formato: `AAAA-MM-GG HH:mm TZ | commit <sha> | commento sintetico` (data/ora del commit locale al progetto; hash verificato).
-Esempio: `2026-10-21 14:20 CEST | commit abc1234 | Bootstrap documentazione e struttura P0`
+Esempio: `2026-10-21 14:20 CEST | commit abc1234 | Aggiunto modulo promemoria e test`
 - 2026-10-21 14:18 CEST | commit 5cadacf | Inizializzazione README; pianificazione P0–P3.
-- 2026-10-21 14:20 CEST | commit pending | Creazione project.md, scaffold iniziale e infrastruttura (sostituire con hash effettivo).
+- 2026-10-21 14:20 CEST | commit 549e139e | Creato project.md con roadmap e checklist. 
+- 2026-10-21 14:20 CEST | commit 9e73dd13 | Scaffold API, database, Docker Compose, documentazione Flutter e architettura.

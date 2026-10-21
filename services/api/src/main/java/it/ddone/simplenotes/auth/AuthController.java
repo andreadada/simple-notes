@@ -9,14 +9,25 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/v1/auth")
 public class AuthController {
     private final AuthService auth;
-    public AuthController(AuthService auth) { this.auth = auth; }
+    private final DesktopOAuthService desktop;
+    public AuthController(AuthService auth, DesktopOAuthService desktop) {
+        this.auth = auth;
+        this.desktop = desktop;
+    }
 
     public record GoogleLoginRequest(@NotBlank String idToken) {}
     public record RefreshRequest(@NotBlank String refreshToken) {}
+    public record DesktopCodeRequest(@NotBlank String code, @NotBlank String codeVerifier,
+        @NotBlank String redirectUri) {}
 
     @PostMapping("/google")
-    public ResponseEntity<AuthService.AuthResponse> googleLogin(@Valid @RequestBody GoogleLoginRequest body) {
-        return ResponseEntity.ok(auth.signIn(body.idToken()));
+    public AuthService.AuthResponse googleLogin(@Valid @RequestBody GoogleLoginRequest body) {
+        return auth.signIn(body.idToken());
+    }
+
+    @PostMapping("/desktop/exchange")
+    public AuthService.AuthResponse desktopLogin(@Valid @RequestBody DesktopCodeRequest body) {
+        return desktop.exchange(body.code(), body.codeVerifier(), body.redirectUri());
     }
 
     @PostMapping("/refresh")

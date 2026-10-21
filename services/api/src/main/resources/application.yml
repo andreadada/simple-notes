@@ -24,6 +24,8 @@ server:
 app:
   google:
     client-ids: ${GOOGLE_CLIENT_IDS:}
+    desktop-client-id: ${GOOGLE_DESKTOP_CLIENT_ID:}
+    desktop-client-secret: ${GOOGLE_DESKTOP_CLIENT_SECRET:}
   jwt:
     issuer: simple-notes-api
     secret-base64: ${APP_JWT_SECRET_BASE64:}

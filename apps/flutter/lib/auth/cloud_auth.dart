@@ -131,7 +131,7 @@ class CloudAuth extends StateNotifier<CloudSession> {
           : '<h3>Accesso non valido. Torna a Simple Notes.</h3>');
       await request.response.close();
       if (!ok) throw StateError('Stato OAuth non valido o accesso annullato');
-      return _exchange('/auth/desktop/exchange', {
+      return await _exchange('/auth/desktop/exchange', {
         'code': code,
         'codeVerifier': verifier,
         'redirectUri': redirect,

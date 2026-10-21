@@ -29,9 +29,10 @@
 - [x] API Spring Boot compilata; test unitari passati (commit `6ad2df9`).
 - [x] Auth Google **server-side** e CRUD task limitati all'utente; test PostgreSQL Testcontainers passati (`e18ae67`).
 - [x] UI Flutter dark adattiva: task/note locali; analyze + widget test passati (`3481644`).
-- [x] Build Windows Release riuscita (`3481644`).
-- [ ] APK Android: pipeline configurata; build e artefatto da verificare (`4bd2e13`).
+- [x] Build Windows Release + artefatto CI riusciti (`3481644`, run `39601338296`).
+- [x] Build APK Android debug e artefatto CI riusciti (`4bd2e13`, run `39601338296`).
 - [ ] Login Google lato client, rinnovo/revoca sessioni, Drift, sync, reminder, deploy Coolify: **non completati**.
+- Artefatti APK/Windows: GitHub Actions run `39601338296` (retention 7 giorni); non sono release stabili.
 
 ## P0 — Fondamenta e MVP
 - [x] Inizializzare il repository e la documentazione.
@@ -85,3 +86,4 @@ Esempio: `2026-10-21 14:20 CEST | commit abc1234 | Aggiunto modulo promemoria e 
 - 2026-10-21 14:33 CEST | commit 3481644 | UI Flutter locale, note/task e CI Windows.
 - 2026-10-21 14:36 CEST | commit e18ae67 | Test di integrazione API con PostgreSQL; fix JWT decoder.
 - 2026-10-21 14:39 CEST | commit 4bd2e13 | CI build Android/APK e artefatti Windows, istruzioni deploy.
+- 2026-10-21 14:40 CEST | commit 5e970ea | Stato P0, checklist e registro modifiche aggiornati.

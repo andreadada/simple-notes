@@ -26,6 +26,9 @@ jobs:
       - name: Fetch dependencies
         working-directory: apps/flutter
         run: flutter pub get
+      - name: Generate Drift database
+        working-directory: apps/flutter
+        run: dart run build_runner build --delete-conflicting-outputs
       - name: Static analysis
         working-directory: apps/flutter
         run: flutter analyze
@@ -49,6 +52,9 @@ jobs:
       - name: Generate Android scaffold
         working-directory: apps/flutter
         run: flutter create --platforms=android --project-name simple_notes .
+      - name: Generate Drift database
+        working-directory: apps/flutter
+        run: dart run build_runner build --delete-conflicting-outputs
       - name: Build debug APK
         working-directory: apps/flutter
         run: flutter build apk --debug
@@ -70,6 +76,9 @@ jobs:
       - name: Generate Windows scaffold
         working-directory: apps/flutter
         run: flutter create --platforms=windows --project-name simple_notes .
+      - name: Generate Drift database
+        working-directory: apps/flutter
+        run: dart run build_runner build --delete-conflicting-outputs
       - name: Build Windows executable
         working-directory: apps/flutter
         run: flutter build windows --release

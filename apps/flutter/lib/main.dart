@@ -2,13 +2,20 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'data/local_store.dart';
+import 'data/app_database.dart';
 import 'auth/cloud_auth.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   final preferences = await SharedPreferences.getInstance();
+  final database = AppDatabase();
+  await database.migrateLegacy(preferences);
+  final snapshot = await database.snapshot();
   runApp(ProviderScope(
-    overrides: [preferencesProvider.overrideWithValue(preferences)],
+    overrides: [
+      databaseProvider.overrideWithValue(database),
+      initialDataProvider.overrideWithValue(snapshot),
+    ],
     child: const SimpleNotesApp(),
   ));
 }

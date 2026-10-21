@@ -40,4 +40,25 @@ void main() {
     expect(await db.pendingCount(), 1);
     await db.close();
   });
+  test('Preserves remote version and blocks switching cloud accounts', () async {
+    final db = AppDatabase(NativeDatabase.memory());
+    final task = LocalTask(
+      id: 'example-task',
+      title: 'Bozza',
+      dueAt: null,
+      completed: false,
+      createdAt: DateTime.utc(2026, 10, 21),
+    );
+    await db.upsertTask(task);
+    final pending = await db.pendingOperations();
+    await db.acknowledge(pending.single, 0);
+    expect(await db.remoteVersionFor('task', task.id), 0);
+    await db.upsertTask(task.copyWith(title: 'Aggiornata'));
+    expect(await db.remoteVersionFor('task', task.id), 0);
+    await db.bindOwner('google-user-A');
+    await db.bindOwner('google-user-A');
+    await expectLater(db.bindOwner('google-user-B'), throwsStateError);
+    await db.close();
+  });
+
 }

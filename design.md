@@ -1,0 +1,92 @@
+# Simple Notes — Design & Product Specification
+
+> Specifica funzionale/tecnica sintetica. **Non significa che tutto sia implementato.** Stato reale in [project.md](project.md).
+
+## 1. Obiettivo e principi
+- Un'unica app Windows 11 + Android per task, note, calendario, abitudini e produttività; backend Coolify.
+- **Offline-first:** le modifiche devono essere disponibili subito e sopravvivere al riavvio, anche senza rete.
+- **Fast UI:** un tap per completare; nuovi task tramite input rapido; navigazione e ricerca via tastiera.
+- **Privacy:** dati sotto il controllo dell'utente; OAuth Google per identificazione, non per memorizzare le note.
+- UI originale. I riferimenti TickTick sono funzionali: non riprodurre codice, marchi, icone o screenshot.
+- Italiano come lingua iniziale; stringhe localizzabili, supporto inglese successivo.
+
+## 2. Information architecture
+**Sidebar desktop:** Oggi, Prossimi 7 giorni, Inbox, Tutto, Completati, Cestino; cartelle/liste; Tag; Filtri. Moduli: Calendario, Eisenhower, Pomodoro, Abitudini, Countdown e Note.
+**Mobile:** drawer + navigazione inferiore per Attività, Calendario, Note, Altro. FAB per inserimento rapido.
+**Pannelli desktop:** navigazione 240 px (collassabile), lista fluida, dettaglio 320–420 px (ridimensionabile); niente scroll orizzontale nei form.
+**Dettaglio attività:** titolo, priorità, date+timezone, ricorrenza, reminder, descrizione, subtasks, checklist, allegati, tags, lista, storico.
+**Sticky note:** finestra Windows separata, always-on-top opzionale, chiusura non elimina i dati.
+
+## 3. Visual design
+| Token | Dark (base) | Light (target) |
+|---|---|---|
+| Surface | #181818 | #FFFFFF |
+| Sidebar | #202020 | #F6F7F9 |
+| Raised surface | #252525 | #FFFFFF |
+| Accent | #547AFF | #476BE8 |
+| Text primary | #F5F5F5 | #17191E |
+| Text secondary | #A0A0A0 | #667085 |
+| Error / destructive | #EF5350 | #D92D20 |
+| Success | #2BD39B | #159D72 |
+| Border | #343434 | #E5E7EB |
+
+- Scale spacing: 4/8/12/16/24/32 px; radius input 10–12, panels 12–16.
+- Font di sistema, tipografia con gerarchie nette; testo minimo consigliato 12–13 sp.
+- Animazioni 120–220 ms con rispetto di reduced motion.
+- Focus visibile, testo leggibile, semantica e touch targets almeno 44–48 dp.
+- Stati sempre previsti: vuoto, caricamento, offline, conflitto, errore, successo.
+
+## 4. Funzionalità
+**P0 — MVP:** login Google, account/sessioni, task, liste, note, tags, sottotask, scadenze, ricorrenze, reminder, ricerca, SQLite locale, push/pull incrementale, conflitti, Android/Windows.
+**P1 — Produttività:** calendario giorno/settimana/mese, Eisenhower, Kanban, Pomodoro, stopwatch, habit, streak, countdown, sticky notes, shortcuts, tray.
+**P2 — Estensioni:** timeline, ICS, Google/Outlook Calendar (consenso separato), liste condivise, ruoli, allegati S3, widget, analisi, export/import, temi.
+**P3 — Smart:** parsing lingua italiana, voce, suggerimenti/riassunti AI *opt-in*.
+
+## 5. Modello dati
+User(id, googleSub, email), Device(id, userId, lastSeen), Session(id, deviceId, expires), List(id, ownerId, title, order), Task(id, ownerId, listId, title, description, dueAt, timezone, priority, completedAt, version, deletedAt), TaskOccurrence(ruleId, occurrenceDate, state), Note(id, ownerId, title, body, version, deletedAt), Tag(id,...), Reminder(id, taskId, fireAt), Habit(id, schedule, streak), FocusSession(...).
+- ID UUID client-generated; tempi UTC sul server e *timezone* IANA dove ricorrente.
+- `updated_at` server-side e `version` gestita in transazione; non fare affidamento solo sul timestamp del device.
+- Tombstone e change log per sync; nessuna hard-delete immediata di contenuti sincronizzati.
+
+## 6. Sincronizzazione (design target)
+1. Write locale in SQLite + inserimento operazione in **outbox transazionale**.
+2. Quando online/autenticato, invio batch con `operationId`, entityId, expectedVersion, payload; retry idempotente.
+3. Server valida ownership, atomizza write+change log, incrementa revisione e restituisce ack.
+4. Pull delta tramite cursor per utente; applica update nel DB locale senza cancellare outbox ancora pendenti.
+5. Se `expectedVersion` non coincide, restituisce conflitto 409 + stato server: salvare entrambe le versioni e chiedere scelta per note, oppure policy campo-per-campo documentata per task.
+6. Refresh all'avvio, ritorno online e segnale WebSocket. No polling aggressivo.
+7. Logout cancella credenziali, interrompe sync e isola dataset dell'account. Il cambio account non mescola dati.
+
+**Non fare:** last-write-wins silenzioso, shared_preferences per dataset finale, delete senza tombstone, sync basata sui soli orologi client.
+
+## 7. Login e sicurezza
+- Android: Google Identity, verifica ID token lato API.
+- Windows: system browser + authorization code + PKCE (loopback per installed apps), non webview embedded.
+- Backend: valida JWKS, issuer, audience, expiry; identifica con `sub` e non email. App JWT breve + refresh token ruotato, revocabile, per dispositivo (da implementare).
+- Segreti in Coolify e storage OS sicuro; TLS obbligatorio, rate-limit auth, auditing errori non sensibili, backup cifrati e test restore.
+- Nessuna chiave privata, token, keystore o credenziale reale committata.
+
+## 8. Promemoria e calendari
+- Android: notifiche locali prenotate + FCM per invalidazione/sync; gestione POST_NOTIFICATIONS, reboot e restrizioni exact alarms.
+- Windows: notification center, processo in tray opzionale; impossibile notificare a PC spento.
+- Reminder idempotenti per occurrence e device; snooze persistito, timezone e DST.
+- Calendario esterno: prima read-only ICS; API Google/Outlook solo in P2 con permessi minimi.
+
+## 9. Deliverable per fase e criteri
+P0 supera solo se: login end-to-end su due sistemi, offline+retry, conflitti, reminder, build, restore DB, due dispositivi con stesso account, test integrazione.
+P1/P2/P3 possono essere sbloccati a moduli indipendenti dopo P0 robusto.
+Qualsiasi feature con sola UI o solo endpoint **non** è completata.
+
+## 10. Decisioni & rischi aperti
+- Decisione: monolite modulare Spring Boot e Flutter unico; nessun Redis/Kafka senza misurazione.
+- Rischio: OAuth desktop/Android richiede OAuth client ID configurati dall'utente in Google Cloud Console.
+- Rischio: sincronizzazione e conflitti; P0 priorità prima dei moduli visuali.
+- Rischio: packaging/notifiche Windows; verificare MSIX/installer firmato in test reali.
+- Rischio: SQLite e migrazione dai prototipi SharedPreferences; preservare i dati già inseriti.
+- Rischio: scheduling Android e risparmio batteria; test su hardware, non solo emulatori.
+- Deploy produzione NON previsto finché sicurezza e backup non risultano verificati.
+
+## 11. Riferimenti interni
+- Roadmap e log: [project.md](project.md)
+- Architettura: [docs/architecture.md](docs/architecture.md)
+- Contratto API: [docs/api.md](docs/api.md)

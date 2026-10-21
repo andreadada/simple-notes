@@ -1,23 +1,17 @@
 # Simple Notes
 
-Self-hosted task and note manager for **Windows 11** and **Android**.
+App di **task, note e produttività** per **Windows 11 e Android**, con interfaccia originale ispirata all'organizzazione di TickTick.
 
-**P0 IN CORSO — NOT PRODUCTION READY**
+- **Client:** Flutter, offline-first
+- **Backend:** Spring Boot + PostgreSQL, self-hosted su Coolify
+- **Account:** Google Login; sincronizzazione PC ↔ telefono
+- **Stato:** P0 in sviluppo. Non ancora adatta alla produzione.
 
-- [Roadmap, checklist, do/don't rules and Edit Timespan](project.md)
-- [Flutter client](apps/flutter/README.md) — local prototype, no sync yet
-- [Backend API](docs/api.md) — Google ID-token exchange and owner-scoped tasks
-- [Architecture](docs/architecture.md)
-- [Coolify infrastructure](infra/README.md)
+**Documentazione**
+- [project.md](project.md) — roadmap P0–P3, checklist, cosa fare/non fare e storico commit
+- [design.md](design.md) — UX/UI, funzionalità, modelli e scelte tecniche
+- [docs/api.md](docs/api.md) — API
+- [infra/README.md](infra/README.md) — avvio locale e Coolify
+- [apps/flutter/README.md](apps/flutter/README.md) — build client
 
-## Start locally
-
-Backend: copy `.env.example` to `.env`, set strong credentials and Google client IDs, then use:
-
-```bash
-docker compose --env-file .env -f infra/compose.yaml up --build
-```
-
-Flutter: follow [apps/flutter/README.md](apps/flutter/README.md).
-
-Security: never commit secrets. The backend API is preliminary (no refresh/revocation or rate limits); do not expose publicly yet.
+Le CI producono APK Android e build Windows nella pagina **GitHub Actions → Flutter CI → Artifacts**. Login, sincronizzazione e notifiche saranno rilasciati solo dopo i rispettivi test.

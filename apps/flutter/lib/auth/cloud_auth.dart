@@ -194,14 +194,30 @@ class CloudAuth extends StateNotifier<CloudSession> {
     final raw = await _storage.read(key: _refreshKey);
     await _storage.delete(key: _refreshKey);
     state = const CloudSession();
+    String? warning;
+
+    // Android Credential Manager keeps its own Google session. Clear it too,
+    // otherwise repeated sign-in may fail with "[16] Account reauth failed".
+    if (Platform.isAndroid && CloudConfig.googleWebClientId.isNotEmpty) {
+      try {
+        final google = GoogleSignIn.instance;
+        await google.initialize(serverClientId: CloudConfig.googleWebClientId);
+        await google.signOut();
+      } catch (_) {
+        warning = 'Sessione locale rimossa; logout Google non confermato.';
+      }
+    }
+
     if (raw != null) {
       try {
         await _exchange('/auth/logout', {'refreshToken': raw});
       } catch (_) {
-        state = const CloudSession(error:
-          'Sessione rimossa dal dispositivo; revoca remota non confermata.');
+        warning = warning == null
+            ? 'Sessione rimossa dal dispositivo; revoca remota non confermata.'
+            : '$warning Revoca remota non confermata.';
       }
     }
+    if (warning != null) state = CloudSession(error: warning);
   }
 
   @override

@@ -33,7 +33,8 @@
 - [x] Flutter dark Windows/Android, task-note locali e build Android/Windows (run `39604983987`).
 - [x] Drift/SQLite, outbox e migrazione dati legacy; analyze/test Flutter (run `39604983987`).
 - [x] Windows: avvio Flutter desktop e login Google OAuth reale verificati manualmente (21 ottobre 2026).
-- [ ] Android: Google Login reale su device, firma SHA-1 e package name da verificare.
+- [x] App Android avviata sul dispositivo fisico (22 ottobre 2026); prima build Kotlin locale risolta disattivando la cache incrementale.
+- [ ] Android Google Login: autenticazione fallisce su Google Credential Manager con `[16] Account reauth failed`; verificare SHA-1/package/Web Client ID, ripetere test.
 - [ ] Test end-to-end Google Login con client ID reali su due dispositivi.
 - [ ] Verifica client sync PC↔Android con dati reali, recupero errori, conflitti e sync automatica.
 - [ ] Notifiche, liste, tag, sottotask, ricorrenze e ricerca completa.
@@ -49,7 +50,7 @@
 - [x] Compose in root `docker-compose.yml` validato con `docker compose config --quiet` (CI run `39634311667`).
 - [x] Deployment Coolify HTTPS e health check `UP` verificati dall'utente; NON equivale a validazione di sicurezza per la produzione.
 - [x] Windows: compilazione e avvio dell'app, login Google reale verificato; dipendenza C++ ATL installata su Build Tools.
-- [ ] Android: login Google reale e sessione sicura da verificare su dispositivo.
+- [ ] Android: Google login e sessione sicura da verificare su dispositivo (app avviata, OAuth in errore codice 16).
 - [ ] Persistenza sessione Windows/Android, logout e refresh dopo riavvio da verificare con test E2E.
 - [x] Struttura iniziale utenti, task, note, versioni, tombstone, refresh sessions.
 - [ ] Liste, tag, sottotask, filtri, scadenze/ricorrenze avanzate e reminder.

@@ -4,7 +4,7 @@ App Windows 11 + Android per **task, note e produttività**, ispirata all'organi
 
 **Stack:** Flutter · Drift/SQLite · Spring Boot · PostgreSQL · Docker/Coolify.
 
-**Stato:** P0 in corso. Task/note locali, login Google nel codice e sync manuale sperimentale. Non è pronta per uso produttivo o deploy pubblico.
+**Stato:** P0 in corso. Backend Spring Boot su Coolify accessibile in HTTPS (`/actuator/health` = `UP`); client Windows e Google Login desktop avviati/testati manualmente. App Android e sync PC↔Android non ancora verificate. Sync manuale sperimentale; non pronta per un rilascio produttivo senza hardening e backup.
 
 - [project.md](project.md) — fasi P0–P3, checklist, regole e `Edit Timespan`
 - [design.md](design.md) — specifiche UI/UX e tutte le funzionalità previste

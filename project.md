@@ -2,7 +2,7 @@
 
 **Obiettivo:** app offline-first Windows 11 + Android ispirata alle funzionalità di TickTick, con UI originale, login Google e backend self-hosted su Coolify.
 **Stack:** Flutter/Dart + Riverpod + Drift/SQLite; Spring Boot (Java 21) + Spring Security + PostgreSQL/Flyway; REST + sync incrementale + WebSocket; Android FCM; Docker/Coolify.
-**Stato:** P0 IN CORSO (sync manuale sperimentale, release non pronta). Spuntare una voce solo quando implementata **e verificata**; nessuna funzione è completa per definizione.
+**Stato:** P0 IN CORSO (backend Coolify HTTPS `UP`, client Windows e Google Login Windows verificati dall'utente; sync manuale sperimentale, release non pronta). Spuntare una voce solo quando implementata **e verificata**; nessuna funzione è completa per definizione.
 
 ## Regole vincolanti — COME FARE
 - [ ] Lavorare in piccoli commit descrittivi, con test e documentazione aggiornati.
@@ -32,10 +32,13 @@
 - [x] Protocollo delta-sync: idempotenza, change log per utente e test PostgreSQL (run `39605619133`).
 - [x] Flutter dark Windows/Android, task-note locali e build Android/Windows (run `39604983987`).
 - [x] Drift/SQLite, outbox e migrazione dati legacy; analyze/test Flutter (run `39604983987`).
-- [ ] Test end-to-end Google Login con client ID reali, su due dispositivi.
+- [x] Windows: avvio Flutter desktop e login Google OAuth reale verificati manualmente (21 ottobre 2026).
+- [ ] Android: Google Login reale su device, firma SHA-1 e package name da verificare.
+- [ ] Test end-to-end Google Login con client ID reali su due dispositivi.
 - [ ] Verifica client sync PC↔Android con dati reali, recupero errori, conflitti e sync automatica.
 - [ ] Notifiche, liste, tag, sottotask, ricorrenze e ricerca completa.
-- [ ] Deploy Coolify HTTPS, backup/restore e rate limiting.
+- [x] Backend deployato su Coolify e raggiungibile via HTTPS: health check `https://api.notes.ddone.it/actuator/health` con `UP` (confermato dall'utente).
+- [ ] Hardening produzione: backup/restore, rate limiting, controlli di sicurezza e monitoraggio.
 - Stato della sync **client**: implementata in modalità manuale sperimentale; verifiche CI/E2E non equivalgono a validazione completa.
 
 ## P0 — Fondamenta e MVP
@@ -44,8 +47,10 @@
 - [ ] Routing/deep link, UX mobile definitiva e test accessibilità.
 - [x] Backend Spring Boot Java 21, PostgreSQL, Flyway, API health (test CI).
 - [x] Compose in root `docker-compose.yml` validato con `docker compose config --quiet` (CI run `39634311667`).
-- [ ] Prova di deploy sicuro su Coolify e verifica HTTPS/health (non eseguita).
-- [ ] Login Google reale Android/Windows + sessioni sicure verificate su device.
+- [x] Deployment Coolify HTTPS e health check `UP` verificati dall'utente; NON equivale a validazione di sicurezza per la produzione.
+- [x] Windows: compilazione e avvio dell'app, login Google reale verificato; dipendenza C++ ATL installata su Build Tools.
+- [ ] Android: login Google reale e sessione sicura da verificare su dispositivo.
+- [ ] Persistenza sessione Windows/Android, logout e refresh dopo riavvio da verificare con test E2E.
 - [x] Struttura iniziale utenti, task, note, versioni, tombstone, refresh sessions.
 - [ ] Liste, tag, sottotask, filtri, scadenze/ricorrenze avanzate e reminder.
 - [ ] Sync completa: retry in background, risoluzione conflitti, rebootstrap, più device.

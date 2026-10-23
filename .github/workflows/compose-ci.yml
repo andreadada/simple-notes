@@ -59,7 +59,8 @@ jobs:
             -e POSTGRES_USER=ciuser -e POSTGRES_DB=synthetic \
             -e POSTGRES_PASSWORD=ci-not-real postgres:17-alpine >/dev/null
           for i in $(seq 1 40); do
-            if docker exec "$db_name" pg_isready -U ciuser -d synthetic >/dev/null 2>&1; then
+            if docker logs "$db_name" 2>&1 | grep -q 'PostgreSQL init process complete' && \
+                docker exec "$db_name" pg_isready -U ciuser -d synthetic >/dev/null 2>&1; then
               break
             fi
             sleep 1

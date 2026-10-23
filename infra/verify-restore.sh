@@ -21,7 +21,9 @@ docker run --rm -d --name "$name" \
 
 ready=0
 for i in $(seq 1 45); do
-  if docker exec "$name" pg_isready -U postgres -d postgres >/dev/null 2>&1; then
+  # Ignore temporary bootstrap server: wait until entrypoint finishes init.
+  if docker logs "$name" 2>&1 | grep -q 'PostgreSQL init process complete' && \
+      docker exec "$name" pg_isready -U postgres -d postgres >/dev/null 2>&1; then
     ready=1
     break
   fi

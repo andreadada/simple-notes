@@ -6,11 +6,11 @@ App Windows 11 + Android per **task, note e produttività**, ispirata alle funzi
 
 ## Stato effettivo — 23 ottobre 2026
 
-**P0 in corso: non pronto per il rilascio pubblico.** Liste, priorità, tag e sottotask implementati nel codice con backend/Flyway V6 e Flutter/Drift v4; test automatizzati riusciti, verifica su dispositivi reali ancora aperta. API Coolify health `UP`; Google Login su Windows/Android; **note sincronizzate realmente PC↔Android** e un'attività creata sul telefono visibile su Windows (conferme dell'utente).
+**P0 in corso: non pronto per il rilascio pubblico.** Liste, priorità, tag e sottotask implementati nel codice con backend/Flyway V6 e Flutter/Drift v4; test automatizzati riusciti, verifica su dispositivi reali ancora aperta. I titoli delle liste sono modificabili direttamente nell'header senza comando Rinomina. La CI Flutter più recente verificata per questo incremento è [40001351564](https://github.com/andreadada/simple-notes/actions/runs/40001351564): analyze/test, Windows release e Android debug JDK 17/21 riusciti; non equivale a deploy Coolify o test E2E. API Coolify health `UP`; Google Login su Windows/Android; **note sincronizzate realmente PC↔Android** e un'attività creata sul telefono visibile su Windows (conferme dell'utente).
 
 L'auto-sync è foreground; sono stati aggiunti gestione dei conflitti Forui, descrizioni delle attività, test offline simulati e procedure di backup PostgreSQL con ripristino di prova in CI. Non sono ancora verificati sul vero Coolify/dei dispositivi i nuovi flussi di conflitto e il restore reale.
 
-**[Leggi il P0 aggiornato](docs/P0-STATUS.md)** per i dettagli e per le funzioni ancora mancanti (liste, tag, sottotask, ricorrenze, reminder/notifiche native, sicurezza e release).
+**[Leggi il P0 aggiornato](docs/P0-STATUS.md)** per i dettagli e per le parti ancora mancanti (verifica reale delle liste/tag/sottotask, scadenze con orario, ricorrenze, reminder/notifiche native, sicurezza e release).
 
 ## Da dove iniziare
 
@@ -26,4 +26,4 @@ L'auto-sync è foreground; sono stati aggiunti gestione dei conflitti Forui, des
 - [docs/android-troubleshooting.md](docs/android-troubleshooting.md) — Kotlin/Gradle JDK 17/21, Google OAuth Android, ADB e installazione USB.
 - [infra/README.md](infra/README.md) — Compose Coolify, ambiente backend e sicurezza.
 
-**Novità P0:** avatar Google con menu account unico (Accedi, Sincronizza ora, Esci), invece di due pulsanti; la foto è fornita dal backend dopo redeploy Coolify. **Prossimo passo:** backup dell'API Coolify, redeploy dell'endpoint latest/Flyway V5 e verifica conflitti, offline e completamento attività fra dispositivi; poi core task e notifiche. Per build e comandi usare [docs/HANDOFF.md](docs/HANDOFF.md).
+**Prossimo passo vincolante:** fare un backup *del database PostgreSQL* Coolify (non della sola API), verificarne il restore isolato, conservare copia offsite e soltanto dopo valutare il redeploy backend da `main` con Flyway V5+V6. Aggiornare entrambi i client e verificare organizzazione attività, sessioni, conflitti e offline su PC/telefono. **Nuovo incremento successivo:** scadenze con orario e semantica date-only, poi ricorrenze/notifiche. Procedura: [checklist P0](docs/P0-DEVICE-CHECKS.md) e [runbook infrastruttura](infra/README.md). Non modificare credenziali e non eliminare database locali.

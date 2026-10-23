@@ -120,6 +120,14 @@
 - [ ] Riepiloghi/suggerimenti AI **opzionali**, con controllo privacy.
 - [ ] Ottimizzazioni, test di carico e UX.
 
+## Gate immediato e prossimo incremento (23 ottobre 2026)
+
+- [ ] Backup PostgreSQL Coolify **reale**, verifica checksum, restore temporaneo isolato e copia offsite (non eseguiti da CI).
+- [ ] Solo dopo il backup, redeploy API con Flyway V5+V6 e verifica health/log; installare client aggiornati Windows e Android senza rimuovere SQLite.
+- [ ] Verifica E2E hardware delle liste, tag, priorità, sottotask, sessioni, conflitti e offline con [checklist dedicata](docs/P0-DEVICE-CHECKS.md).
+- [ ] Prossimo incremento di codice: scadenza con orario e semantica date-only esplicita, timezone IANA/DST; a seguire ricorrenze e notifiche native.
+- [ ] Correggere residui di documentazione storica prima dei rilasci, preservando attestazioni e prove precedenti.
+
 ## Handoff e nuova chat
 
 - Partire da [docs/HANDOFF.md](docs/HANDOFF.md), [AGENTS.md](AGENTS.md) e [docs/android-troubleshooting.md](docs/android-troubleshooting.md) per ricostruire lo stato senza cronologia della chat.
@@ -198,3 +206,4 @@ Esempio: `2026-10-21 14:20 CEST | commit abc1234 | Aggiunto modulo promemoria e 
 - 2026-10-23 | commit 634fbc41 / fd23f1fd | Test Flutter a due device simulati e widget sidebar; analyze/test success CI 39991667611.
 
 - 2026-10-23 | UX design rule inline-edit first: `InlineEditableTitle` condiviso per titoli in-place Windows/Android; rimosso `Rinomina` dal titolo di lista. Specifica vincolante in design.md, AGENTS.md e docs/ui-forui.md. Test widget del salvataggio inline.
+- 2026-10-23 | docs audit | Riallineamento README, AGENTS, handoff, architettura, client, P0; nuova checklist real-device e deploy sicuro. Commit di riferimento nella cronologia Git.

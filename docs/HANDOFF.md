@@ -98,6 +98,10 @@ flutter run -d windows `
 
 Per istruzioni dettagliate e controlli SHA-1 consultare [android-troubleshooting.md](android-troubleshooting.md).
 
+## Stato funzionale storico: NON usare per lo stato corrente
+
+> Questa tabella descrive un momento precedente all'introduzione dei dialoghi conflitto Forui, dell'auto-sync e delle liste. Lo stato corrente è in [P0-STATUS.md](P0-STATUS.md) e la prova manuale è in [P0-DEVICE-CHECKS.md](P0-DEVICE-CHECKS.md). Le sezioni storiche seguenti non devono guidare nuove implementazioni.
+
 ## Stato funzionale: non promuovere un test in una release
 
 | Funzionalità | Evidenza | Stato |
@@ -113,7 +117,9 @@ Per istruzioni dettagliate e controlli SHA-1 consultare [android-troubleshooting
 | Sync automatica e UI conflitti | Non implementati | Da fare |
 | Backup/ripristino, rate limit, notifiche, release firmata | Non verificati o mancanti | Da fare |
 
-## Prossima sessione: ordine di lavoro
+## Prossima sessione: ordine di lavoro (storico, sostituito da P0-STATUS)
+
+> Non eseguire questa sequenza alla lettera: include test e sviluppi ora già conclusi. Per le nuove sessioni seguire la checklist corrente.
 
 1. **Redeploy Coolify** per la migrazione opzionale V4 della foto profilo (non cambiare segreti), poi **accertare login Android** sul dispositivo fisico con Google (dopo il fix package/gradle) e testare restore sessione dopo riavvio. Se fallisce, usare [android-troubleshooting.md](android-troubleshooting.md), non modificare alla cieca Coolify.
 2. **Test manuale sync a due device** con lo stesso account (menu avatar mostra esito e operazioni in coda su Android e Windows): creare `Test PC → Android` in Windows → `Sincronizza ora` Windows → sync Android e verificare; creare `Test Android → PC` sul telefono, sync Android → sync Windows; ripetere con una nota.

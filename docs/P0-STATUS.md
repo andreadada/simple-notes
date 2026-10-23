@@ -39,12 +39,14 @@
 
 P1, P2 e P3 rimangono **non avviati** come fasi complete; la presenza di un componente UI non equivale a feature di prodotto finita.
 
-## Ordine consigliato dei prossimi incrementi P0
+## Ordine corretto dei prossimi incrementi P0
 
-1. Ripristino affidabile degli elementi cancellati in conflitto e test e2e a due dispositivi.
-2. Liste, priorità, tag e sottotask sincronizzati; modellare le entità con schema/migrazioni e test, non solo UI.
-3. Filtri combinati/salvati, scadenze con orari, ricorrenze e notifiche native, compresi timezone/DST.
-4. Backup offsite, rate limit, sicurezza, test restore reale, packaging e prova dei rilasci.
+1. **Gate di deployment e dati:** backup PostgreSQL reale, restore isolato, copia offsite; solo dopo redeploy Flyway V5+V6 e controllo log/health. Nessun deploy automatico da questa checklist.
+2. **Verifica fisica:** Windows ↔ Android con due client aggiornati: liste (incluse vuote), priorità, tag, sottotask, cancellazioni sicure, sessioni dopo riavvio, operazioni offline e conflitti 409. Le funzioni dell'organizzazione sono già implementate e testate in CI: **non reimplementarle**.
+3. **Prossimo sviluppo:** scadenze con orario opzionale e date-only robuste, timezone/DST; poi ricorrenze e reminder/notifiche native con deduplicazione. Filtri combinati/salvati a seguire.
+4. **Chiusura P0:** recupero edit-vs-delete remoto, rebootstrap e compatibilità REST legacy, rate limiting auth, restore reale periodico, packaging/firma, test accessibilità e release.
+
+Checklist operativa con prove da registrare: [P0-DEVICE-CHECKS.md](P0-DEVICE-CHECKS.md).
 
 ## Deploy / sicurezza dati
 

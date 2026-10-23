@@ -57,8 +57,8 @@ La nuova `AutoSyncHost` sincronizza quando si effettua login/ripristino sessione
 
 Non è un servizio Android in background con app chiusa; lo stato della connessione non garantisce accesso a Internet, quindi i timeout HTTP restano necessari. I test reali PC↔Android, conflitti e offline/retry sono ancora da verificare.
 
-## Limiti
-La sync non è automatica; le credenziali Google non sono presenti nelle build CI. **Login reale Windows verificato dall'utente**, ma nessun test E2E tra Windows e Android né validazione completa della persistenza sessioni. Mancano conflitti assistiti, promemoria, liste, tag e notifiche.
+## Limiti correnti (23/10/2026)
+La sync **è automatica in foreground** (login/ripristino, modifica, ritorno online, resume, poll ogni 60 s); la sync manuale rimane disponibile. Note PC↔Android e task Android→Windows sono confermati dall'utente, mentre conflitti reali, logout/refresh su entrambi, delete e recovery offline restano da verificare. Le **liste, priorità, tag e sottotask esistono e hanno test CI**, ma richiedono Flyway V6 deployata e prova fisica. Rimangono da sviluppare scadenze con orari robusti, ricorrenze, reminder/notifiche native, filtri salvati, packaging e hardening. **Non installare client nuovi prima che il server sia compatibile; non cancellare dati locali.** Vedere [P0-STATUS.md](../../docs/P0-STATUS.md).
 
 ## Diagnostica sincronizzazione note (23/10/2026)
 

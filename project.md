@@ -2,7 +2,7 @@
 
 **Obiettivo:** app offline-first Windows 11 + Android ispirata alle funzionalità di TickTick, con UI originale, login Google e backend self-hosted su Coolify.
 **Stack:** Flutter/Dart + Forui (UI) + Riverpod + Drift/SQLite; Spring Boot (Java 21) + Spring Security + PostgreSQL/Flyway; REST + sync incrementale + WebSocket; Android FCM; Docker/Coolify.
-**Stato:** P0 IN CORSO (backend Coolify HTTPS `UP`, Windows+Google Login verificati, Android segnalato funzionante sul telefono dopo fix 23/10, Google Login Android non ancora riconfermato esplicitamente, auto-sync foreground sperimentale non ancora E2E; release non pronta). Spuntare una voce solo quando implementata **e verificata**; nessuna funzione è completa per definizione.
+**Stato:** P0 IN CORSO. Note sincronizzate realmente PC↔Android e attività create su Android viste su Windows (conferma utente, 23/10). Auto-sync foreground funzionante per questi flussi. Nuovo recupero conflitti, descrizioni attività e backup operativo implementati con test automatici, ma da verificare con Coolify/dispositivi aggiornati. **Non pronto per il rilascio**. Stato dettagliato in [docs/P0-STATUS.md](docs/P0-STATUS.md).
 
 ## Regole vincolanti — COME FARE
 - [ ] Lavorare in piccoli commit descrittivi, con test e documentazione aggiornati.
@@ -37,13 +37,23 @@
 - [x] Configurazione Android versionata: applicationId/namespace `it.andreadada.simplenotes`, Java target allineato a JDK 17/21, Kotlin incremental off su dischi differenti, Activity Java; CI Android/JDK17/JDK21 riuscita (run `39955667440`).
 - [x] JDK 17 e JDK 21: Android debug APK build riuscite su entrambi, Flutter CI run `39955667440` (success).
 - [x] Android: dopo correzioni Gradle/JVM l'utente segnala «Perfetto funziona» il 23/10. L'errore precedente `INSTALL_FAILED_USER_RESTRICTED` è storicizzato nel runbook; evitare di dichiarare verificato il login Google senza conferma specifica.
-- [ ] Test end-to-end Google Login con client ID reali su due dispositivi.
-- [ ] Verifica client sync PC↔Android con dati reali, recupero errori e conflitti. Backend accetta note senza titolo, test delta note bidirezionale; menu avatar mostra errori/operazioni in coda anche Android. Richiede test E2E e deploy Coolify.
+- [x] Login con lo stesso account Google su Windows e Android e sync note PC↔Android confermate dall'utente (23/10). Session refresh, logout, riavvio da testare.
+- [ ] Sincronizzazione bidirezionale note confermata dall'utente e attività Android→Windows visualizzate; **restano** test offline/409/cancellazioni su device reali. Gestione conflitto Forui (scelta locale/server), endpoint latest e prove simulate aggiunti; richiede nuovo backend Coolify.
 - [ ] Notifiche, liste, tag, sottotask, ricorrenze e ricerca completa.
 - [ ] Avatar Google e menu unico account implementati (Flutter + claim `picture` sul backend con Flyway), da verificare con login reale e redeploy Coolify.
 - [x] Backend deployato su Coolify e raggiungibile via HTTPS: health check `https://api.notes.ddone.it/actuator/health` con `UP` (confermato dall'utente).
-- [ ] Hardening produzione: backup/restore, rate limiting, controlli di sicurezza e monitoraggio.
+- [ ] Hardening produzione: script backup e prova restore sintetico aggiunti; manca **restore reale isolato**, backup offsite, rate limiting, controlli sicurezza e monitoraggio.
 - Stato della sync **client**: automatica foreground sperimentale e fallback manuale; verifiche CI/E2E non equivalgono a validazione completa.
+
+## P0 — Incrementi di affidabilità (23 ottobre 2026)
+
+- [x] Endpoint `GET /sync/latest` isolato per account con test backend, indice Flyway V5 (CI backend).
+- [x] Dialog Forui per confronto versioni e scelta esplicita, con doppia conferma prima di scartare modifiche locali; test simulato PC↔Android e offline/retry (CI Flutter).
+- [x] Descrizioni delle attività persistenti SQLite, sincronizzate nel payload già supportato dal backend, con test e migrazione Drift V3 (CI Flutter).
+- [x] Script dump e restore isolato con smoke test su dati sintetici in CI Compose.
+- [ ] Verificare le nuove funzioni con account e device reali dopo backup e redeploy Coolify, e provare il restore del database reale in ambiente isolato.
+- [ ] Completare P0: liste, tag, sottotask, ricorrenze, reminder/notifiche native, sicurezza, backup offsite e release.
+- Guida di stato e criteri: [docs/P0-STATUS.md](docs/P0-STATUS.md).
 
 ## P0 — Fondamenta e MVP
 - [x] Inizializzazione repository, README breve, design.md, project.md e documentazione API/sync.
@@ -56,8 +66,8 @@
 - [ ] Android: confermare Google Login e ripristino sessione **dopo** fix JVM e package Android. Il precedente `[16] Account reauth failed` era prima degli ultimi fix; non sappiamo ancora se risolto.
 - [ ] Persistenza sessione Windows/Android, logout e refresh dopo riavvio da verificare con test E2E.
 - [x] Struttura iniziale utenti, task, note, versioni, tombstone, refresh sessions.
-- [ ] Liste, tag, sottotask, filtri, scadenze/ricorrenze avanzate e reminder.
-- [ ] Sync completa: auto-sync foreground implementata ma non E2E; restano background, UI conflitti, rebootstrap e test multi-device.
+- [ ] Liste, tag, sottotask, priorità, filtri, scadenze/ricorrenze avanzate e reminder; **descrizioni attività implementate** con migrazione Drift V3 e test.
+- [ ] Sync completa: auto-sync foreground e sync note multi-device confermate; UI conflitti Forui implementata e testata in simulazione, ma non ancora su due device reali; restano tombstone recovery, rebootstrap, REST legacy e possibile background.
 - [ ] Notifiche Android e Windows, snooze, recurring, controllo fusi orari.
 - [ ] Test E2E PC↔Android, offline, recupero conflitti/riavvio, back-up/restore.
 
@@ -165,3 +175,9 @@ Esempio: `2026-10-21 14:20 CEST | commit abc1234 | Aggiunto modulo promemoria e 
 - 2026-10-23 | commit bed16b48 | Editor attività/nota e picker scadenza migrati da AlertDialog/showDatePicker Material a Forui FDialog/FTextField/FCalendar/FButton.
 - 2026-10-23 | commit 8ed6a3f1 | Test modali Forui, date-only e persistenza task; aggiornati ui-forui.md, README Flutter, AGENTS.md e handoff.
 - 2026-10-23 | commit cc0a6328 | Risolto overflow header calendario Forui e disposal anticipato controller editor; analyze+widget tests CI 39977182371 riusciti.
+- 2026-10-23 | commit 5bbc32c4 / 6ee76330 | Endpoint latest per elemento con scope utente, test backend (versione corretta delle query).
+- 2026-10-23 | commit 84c3a248 / 2cdad403 | Risoluzione conflitti Forui, confronto versioni, doppia conferma scelta server, retry sicuro e correzione analyzer.
+- 2026-10-23 | commit 82aea37e / 69ff820e | Test due SQLite, edit concorrenti, modalità keep-local/use-server e offline; fix aspettative versioni.
+- 2026-10-23 | commit 3f2a3a7d | Descrizioni attività Forui/SQLite/sync, migrazione Drift V3 e test.
+- 2026-10-23 | commit 785cd547 / ccb96021 / 77a70efc | Backup e restore isolato PostgreSQL, smoke CI e fix init temporaneo.
+- 2026-10-23 | commit 622e3278 | Indice Flyway V5 per latest entity/account.

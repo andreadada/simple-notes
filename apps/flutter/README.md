@@ -2,7 +2,7 @@
 
 **Design system ufficiale:** Forui `^0.27.6` (Flutter >= 3.47), con tema dark centralizzato in `lib/ui/notes_theme.dart`, responsive desktop/touch; usare [docs/ui-forui.md](../../docs/ui-forui.md) per regole e widget migrati. `MaterialApp` resta un bridge per dialoghi e componenti legacy.
 
-Client Flutter Windows/Android con UI dark, task/note, **ricerca e modifica task**, Drift/SQLite e outbox transazionale. Auto-sync foreground sperimentale con delta pull, outbox e retry con backoff; sync manuale ancora disponibile dal menu profilo. **Windows + Google Login Desktop** verificati manualmente (21/10/2026); **Android avviato e segnalato funzionante** dopo il fix JVM del 23/10 (CI JDK 17/21 riuscita). **Google Login Android dopo il fix e sync fra due dispositivi ancora da verificare esplicitamente.** Vedere [handoff](../../docs/HANDOFF.md) e [runbook Android](../../docs/android-troubleshooting.md).
+Client Flutter Windows/Android con UI dark, task/note, **ricerca e modifica task**, Drift/SQLite e outbox transazionale. Auto-sync foreground sperimentale con delta pull, outbox e retry con backoff; sync manuale ancora disponibile dal menu profilo. **Windows + Google Login Desktop** verificati manualmente (21/10/2026); **Android avviato e segnalato funzionante** dopo il fix JVM del 23/10 (CI JDK 17/21 riuscita). **Note sincronizzate PC↔Android e attività Android→PC confermate manualmente dall'utente il 23/10.** Restano prove conflitti/retry su dispositivi reali. Vedere [handoff](../../docs/HANDOFF.md) e [runbook Android](../../docs/android-troubleshooting.md).
 
 ## Build
 ```bash
@@ -70,3 +70,9 @@ La sync non è automatica; le credenziali Google non sono presenti nelle build C
 ### Modali Forui (23/10/2026)
 
 Modifica attività, modifica nota e scelta scadenza utilizzano ora `showFDialog`, `FDialog`, `FTextField`, `FButton` e `FCalendar.grid`. Il layout è riutilizzabile in `lib/ui/notes_dialogs.dart` e non dipende dal backend. Consultare [UI Forui](../../docs/ui-forui.md). Il bottom sheet dettagli attività rimane da convertire.
+
+## Incrementi P0 — conflitti e descrizione attività
+
+- `ui/sync_conflict_dialog.dart` mostra un FDialog per confrontare locale/server quando la sync ottiene 409; accessibile dal menu avatar. Nessuna cancellazione senza doppia conferma. Recupera latest da endpoint JWT protetto (richiede backend aggiornato a Flyway V5).
+- `data/models.dart` include `LocalTask.description`; `data/app_database.dart` migra Drift a schema v3 con la colonna SQLite non nullable e default vuoto, mantenendo i dati precedenti. Campo descrizione Forui nell'editor task, visualizzazione nel pannello dettagli, sync nel payload già supportato da Spring Boot.
+- Test `test/sync_conflict_test.dart` simulano due SQLite indipendenti, conflitti, scelta utente e rete assente. **Non** sono test hardware. [Stato completo](../../docs/P0-STATUS.md).

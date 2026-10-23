@@ -56,7 +56,7 @@ User(id, googleSub, email), Device(id, userId, lastSeen), Session(id, deviceId, 
 3. Server valida ownership, atomizza write+change log, incrementa revisione e restituisce ack.
 4. Pull delta tramite cursor per utente; applica update nel DB locale senza cancellare outbox ancora pendenti.
 5. Se `expectedVersion` non coincide, restituisce 409 e blocca l'upload senza perdere la coda. Target: ottenere stato server, conservarne due versioni e offrire una UI di scelta.
-6. Attualmente sync manuale; target: retry su ritorno online, refresh all'avvio, invalidazione WebSocket. No polling aggressivo.
+6. Attualmente auto-sync foreground (login, modifiche, resume, reconnessione, pull ogni 60s), con riprova esponenziale. Target futuro: invalidazione WebSocket/back-end, eventuale background sync, nessun polling aggressivo.
 7. Logout cancella credenziali, interrompe sync e isola dataset dell'account. Il cambio account non mescola dati.
 
 **Non fare:** last-write-wins silenzioso, shared_preferences per dataset finale, delete senza tombstone, sync basata sui soli orologi client.

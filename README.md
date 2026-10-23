@@ -6,15 +6,18 @@ App Windows 11 + Android per **task, note e produttività**, ispirata alle funzi
 
 ## Stato effettivo — 23 ottobre 2026
 
-**P0 in corso, non pronto per il rilascio.** API su `https://api.notes.ddone.it` con health `UP` confermato dall'utente. Windows e login Google Desktop verificati; app Android segnalata funzionante sul telefono dopo fix Gradle/JVM. **Login Google Android dopo gli ultimi fix e sync Windows↔Android non sono ancora verificati esplicitamente.** È stata implementata **auto-sync foreground sperimentale** con outbox, retry/backoff e pull ogni 60 s, non ancora verificata end-to-end.
+**P0 in corso: non pronto per il rilascio pubblico.** API Coolify health `UP`; Google Login su Windows/Android; **note sincronizzate realmente PC↔Android** e un'attività creata sul telefono visibile su Windows (conferme dell'utente).
 
-Ultima pipeline verificata: [Flutter CI 39955667440](https://github.com/andreadada/simple-notes/actions/runs/39955667440) — **successo** di Android JDK 17/21, Windows, analisi e test. Questo **non** certifica il login o la sincronizzazione reali.
+L'auto-sync è foreground; sono stati aggiunti gestione dei conflitti Forui, descrizioni delle attività, test offline simulati e procedure di backup PostgreSQL con ripristino di prova in CI. Non sono ancora verificati sul vero Coolify/dei dispositivi i nuovi flussi di conflitto e il restore reale.
+
+**[Leggi il P0 aggiornato](docs/P0-STATUS.md)** per i dettagli e per le funzioni ancora mancanti (liste, tag, sottotask, ricorrenze, reminder/notifiche native, sicurezza e release).
 
 ## Da dove iniziare
 
 - **[docs/HANDOFF.md](docs/HANDOFF.md)** — leggere per primo entrando in una nuova chat/sessione; stato, setup, problemi risolti e prossimi test.
 - **[AGENTS.md](AGENTS.md)** — istruzioni per assistenti AI/Codex (criteri di verifica e workflow).
 - [project.md](project.md) — roadmap P0–P3, checklist, registro `Edit Timespan`.
+- [docs/P0-STATUS.md](docs/P0-STATUS.md) — stato P0 verificabile, nuove funzioni e blocchi.
 - [design.md](design.md) — requisiti UI/UX e funzionalità obiettivo; non tutte implementate.
 - [docs/ui-forui.md](docs/ui-forui.md) — Forui come design system di riferimento e stato della migrazione.
 - [docs/architecture.md](docs/architecture.md) · [docs/api.md](docs/api.md) · [docs/sync.md](docs/sync.md) — architettura e contratti.
@@ -22,4 +25,4 @@ Ultima pipeline verificata: [Flutter CI 39955667440](https://github.com/andreada
 - [docs/android-troubleshooting.md](docs/android-troubleshooting.md) — Kotlin/Gradle JDK 17/21, Google OAuth Android, ADB e installazione USB.
 - [infra/README.md](infra/README.md) — Compose Coolify, ambiente backend e sicurezza.
 
-**Novità P0:** avatar Google con menu account unico (Accedi, Sincronizza ora, Esci), invece di due pulsanti; la foto è fornita dal backend dopo redeploy Coolify. **Prossimo passo:** confermare il login Google Android, poi test reale dell'auto-sync delle attività/note fra Windows e Android con lo stesso account, anche offline. Per build e comandi usare [docs/HANDOFF.md](docs/HANDOFF.md).
+**Novità P0:** avatar Google con menu account unico (Accedi, Sincronizza ora, Esci), invece di due pulsanti; la foto è fornita dal backend dopo redeploy Coolify. **Prossimo passo:** backup dell'API Coolify, redeploy dell'endpoint latest/Flyway V5 e verifica conflitti, offline e completamento attività fra dispositivi; poi core task e notifiche. Per build e comandi usare [docs/HANDOFF.md](docs/HANDOFF.md).

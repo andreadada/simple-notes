@@ -48,3 +48,22 @@ Il backend include ora `AuthResponse.photoUrl` ricavato dal claim Google OpenID 
 - Confermare periodicamente dominio DNS, rinnovo certificato TLS HTTPS e stato health.
 
 **Stato aggiornato (23/10/2026):** l'utente ha confermato **deployment effettivo su Coolify** e health HTTPS `UP` su `https://api.notes.ddone.it/actuator/health`. La pipeline Compose valida solo la sintassi. Il server è utilizzato come **ambiente operativo di test** e NON va considerato production-ready finché non esistono hardening, backup e test di ripristino.
+
+## Backup e test di ripristino prima del redeploy
+
+È stato aggiunto un endpoint per confrontare conflitti di sync con indice Flyway **V5**: **prima di aggiornare Coolify effettuare un backup**.
+
+Sul VPS, con repo disponibile e accesso Docker, individuare *esplicitamente* il container PostgreSQL Simple Notes (non usare il nome di altri DB):
+
+```bash
+docker ps --format '{{.ID}} {{.Names}} {{.Image}}'
+# Sostituire <container-id-postgres-simplenotes> con quello corretto.
+DB_CONTAINER=<container-id-postgres-simplenotes> BACKUP_DIR=/percorso/sicuro/backup \\
+  bash infra/backup-postgres.sh
+# Usare il nome effettivo del file prodotto:
+bash infra/verify-restore.sh /percorso/sicuro/backup/simple-notes-AAAA*.dump
+```
+
+**Importante:** backup e restore-check **non scrivono nel DB originale**; il restore-check usa un container PostgreSQL 17 **temporaneo e isolato**, poi lo elimina. Sono stati testati automaticamente con dati sintetici in GitHub Actions ([Compose CI](https://github.com/andreadada/simple-notes/actions)). Occorre ancora testare il dump **reale** e conservarne una copia cifrata **fuori dal VPS** con policy di retention (il dump include dati personali). Le due operazioni sono da eseguire esplicitamente sul VPS, non sono un backup automatico già configurato.
+
+Dopo verifica backup, distribuire `main` da Coolify, verificare log Flyway V5 e `/actuator/health`. Se l'API non risponde, non modificare il database manualmente. Confronto conflitti Forui nel nuovo client richiede l'endpoint latest nel server aggiornato.

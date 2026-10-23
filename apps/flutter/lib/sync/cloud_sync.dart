@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
 
 import '../auth/cloud_auth.dart';
+import '../data/app_database.dart';
 import '../data/local_store.dart';
 
 class ConflictDetails {

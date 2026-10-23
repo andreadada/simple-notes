@@ -38,6 +38,19 @@
 - Focus visibile, testo leggibile, semantica e touch targets almeno 44–48 dp.
 - Stati sempre previsti: vuoto, caricamento, offline, conflitto, errore, successo.
 
+### Vincolo UX: inline editing first (obbligatorio)
+
+**Un attributo già mostrato deve, nella maggior parte dei casi, essere modificabile direttamente nello stesso punto in cui viene letto.** Preferire il contenuto stesso come campo editabile (aspetto tipografico normale quando inattivo) a bottoni ridondanti `Rinomina`, `Modifica titolo` o modal separati.
+
+- Esempi prioritari: **titolo della lista nell'header**, titolo task, titolo nota, descrizione breve e altre proprietà testuali semplici. Un click/tap sul valore attiva cursore e selezione senza cambiare pagina.
+- Il componente inline deve avere **stile coerente con il testo originale**, larghezza legata al contenuto, focus visibile ma leggero, semantica accessibile e comportamento adeguato a mouse, tastiera e touch.
+- Per campi brevi, **Invio o perdita del focus salva**; **Esc annulla** e ripristina il testo precedente. Non salvare stringhe vuote, rispettare limiti e mostrare errori non distruttivi.
+- Ogni modifica deve passare per gli stessi metodi di persistenza offline-first e outbox/sync, **mai essere solo un cambiamento grafico**. Non creare stati in cui il testo appare aggiornato ma non è stato salvato.
+- Usare form/dialog Forui quando servono **più campi correlati, conferme, validazioni complesse o azioni distruttive**, non per una semplice rinomina. Preferire un controllo mirato (es. calendario, selettore) quando il dato non è testo libero.
+- Considerare questo criterio nelle review di **ogni nuova schermata** e durante il refactoring delle schermate esistenti; le eccezioni vanno motivate per accessibilità o complessità.
+
+Implementazione riusabile: `apps/flutter/lib/ui/inline_editable_title.dart` (`InlineEditableTitle`). Il titolo della lista nella UI corrente ne è il riferimento.
+
 ## 4. Funzionalità
 **P0 — MVP:** login Google, account/sessioni, task, liste, note, tags, sottotask, scadenze, ricorrenze, reminder, ricerca, SQLite locale, push/pull incrementale, conflitti, Android/Windows.
 **P1 — Produttività:** calendario giorno/settimana/mese, Eisenhower, Kanban, Pomodoro, stopwatch, habit, streak, countdown, sticky notes, shortcuts, tray.

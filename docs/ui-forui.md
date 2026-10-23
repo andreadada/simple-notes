@@ -9,6 +9,16 @@
 - Sito: [forui.dev](https://forui.dev/) · [Getting Started](https://forui.dev/docs/getting-started) · [pub.dev](https://pub.dev/packages/forui) · [GitHub](https://github.com/duobaseio/forui).
 - Forui è compatibile con Android e Windows (oltre alle altre piattaforme Flutter), ma **le build e i test reali su entrambe le piattaforme restano obbligatori**.
 
+## Regola vincolante: modifica inline degli attributi
+
+**Inline-edit first:** per titoli, nomi, descrizioni brevi e altri attributi testuali già visibili, rendere il **testo direttamente modificabile in loco** invece di aggiungere pulsanti `Rinomina`/`Modifica` che aprono modali dedicati. L'utente deve poter cliccare sul testo, digitare e continuare senza attraversare un secondo flusso.
+
+- In modalità lettura, l'input deve somigliare alla tipografia già usata, senza box o bordi superflui; al focus mostrare un indicatore sottile. La larghezza deve seguire il testo, senza occupare tutta la riga quando il titolo è corto.
+- Su campi testuali brevi: **Invio / perdita focus → salva**; **Esc → annulla**; se vuoto o invalido ripristinare l'ultimo valore valido. Mantenere selezione, keyboard focus, semantics, supporto touch, feedback errore.
+- Il salvataggio deve andare in SQLite/outbox e poi nella sync; non manipolare soltanto lo stato visuale. Non perdere bozze durante refresh remoto mentre l'utente scrive.
+- Usare `FDialog`/form Forui per dati complessi o multi-campo, date, conferme esplicite e operazioni potenzialmente distruttive. Non fare inline di qualsiasi campo indiscriminatamente: il principio vale **la maggior parte delle volte** dove il risultato rimane comprensibile.
+- Componente di riferimento: `apps/flutter/lib/ui/inline_editable_title.dart` (`InlineEditableTitle`); è usato sul titolo della lista in header Windows e nella app bar Android. **Non reintrodurre il pulsante Rinomina lista** o una modale per la sola rinomina.
+
 ## Implementazione attuale
 
 | Elemento | Implementazione |
@@ -18,6 +28,7 @@
 | Breakpoint/ergonomia | `FTheme.neutral.dark.desktop` per PC, `.touch` per Android; scelta dal `TargetPlatform` |
 | Brand | Accent blu `#547AFF`, superfici dark, sidebar separata, contrasto e bordi |
 | Navigazione | `FSidebar` + `FSidebarGroup` + `FSidebarItem`, condivise da desktop e drawer mobile |
+| Titoli modificabili | `InlineEditableTitle` per titoli di lista: campo tipografico editabile direttamente in pagina, senza comando Rinomina |
 | Interfaccia note | `FCard` per righe e `FButton` per nuova nota |
 | Ricerca task | `FTextField` con callback di ricerca |
 | Dettagli task | `FButton` variante outline per modifiche |

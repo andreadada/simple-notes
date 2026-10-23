@@ -11,6 +11,7 @@
 - [ ] API versionate, migrazioni Flyway, UUID, revisioni, idempotenza e soft-delete/tombstone.
 - [ ] Login Google verificato lato server; OAuth PKCE su Windows; credenziali e token in storage sicuro.
 - [ ] Distinguere layout Windows e Android; testare accessibilità, ridimensionamento e dark/light.
+- [x] **Design rule inline-edit first:** se un titolo/nome/attributo semplice è già visibile, renderlo editabile sul posto, senza bottone/modale Rinomina. Invio/blur salva, Esc annulla; validazione e SQLite/outbox sempre obbligatori. Eccezioni per form complessi o distruttivi.
 - [ ] Gestire i fusi orari, DST, le ricorrenze e la deduplicazione dei promemoria.
 - [ ] Eseguire test unitari, integrazione, offline/online e ripristino backup prima dei rilasci.
 - [ ] Aggiornare **Edit Timespan** in fondo ad ogni commit che modifica il progetto.
@@ -195,3 +196,5 @@ Esempio: `2026-10-21 14:20 CEST | commit abc1234 | Aggiunto modulo promemoria e 
 - 2026-10-23 | commit d073147c / e51e2737 / 79387d33 | Modelli Flutter, Drift v4, lista CRUD e outbox a ordine deterministico.
 - 2026-10-23 | commit b58984fd / 41d41c2f / ddd1325b | Navigazione e filtri liste, editor Forui tag/priorità/sottotask, dettagli interattivi.
 - 2026-10-23 | commit 634fbc41 / fd23f1fd | Test Flutter a due device simulati e widget sidebar; analyze/test success CI 39991667611.
+
+- 2026-10-23 | UX design rule inline-edit first: `InlineEditableTitle` condiviso per titoli in-place Windows/Android; rimosso `Rinomina` dal titolo di lista. Specifica vincolante in design.md, AGENTS.md e docs/ui-forui.md. Test widget del salvataggio inline.

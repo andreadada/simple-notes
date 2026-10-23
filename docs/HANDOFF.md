@@ -152,3 +152,6 @@ Per la nuova sessione consultare **[P0-STATUS.md](P0-STATUS.md)**: backend lates
 
 ## Organizzazione attività — prossimo blocco implementato (23/10/2026)
 Nuova guida [task-organization.md](task-organization.md): liste sincronizzate con versione e owner, priorità/tag/sottotask, editor Forui, ricerca/filtro e cancellazione sicura della lista. Drift v4 e Flyway V6. Backend CI e analyze/test Flutter automatici riusciti; prove Coolify e dispositivi fisici ancora aperte. **Leggere P0-STATUS.md**, fare backup e redeploy backend V6 *prima* di eseguire nuove operazioni lista su client aggiornati.
+
+## Vincolo UI deciso il 23 ottobre 2026 — inline editing first
+Per titoli e altri valori testuali semplici, **preferire la modifica direttamente sul testo** a pulsanti `Rinomina`/dialog. Il titolo lista è editabile in header grazie a `InlineEditableTitle`; Invio/blur salvano, Esc annulla, SQLite/outbox invariati. Non reintrodurre la rinomina tramite modal salvo necessità motivata. Specifiche aggiornate in `design.md`, `docs/ui-forui.md`, `AGENTS.md`.

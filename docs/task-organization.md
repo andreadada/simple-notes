@@ -4,7 +4,7 @@
 
 ## Comportamento
 
-- **Liste personalizzate**: creazione, rinomina e cancellazione da sidebar Forui (Windows e Android). Le liste vuote rimangono disponibili anche dopo un riavvio perché sono entità vere; non sono ricavate dai task.
+- **Liste personalizzate**: creazione e cancellazione dalla sidebar Forui (Windows e Android); il **titolo della lista si rinomina direttamente nell'header**, cliccando sul testo, senza pulsante Rinomina né dialog aggiuntivo. Le liste vuote rimangono disponibili anche dopo un riavvio perché sono entità vere; non sono ricavate dai task.
 - **Inbox**: attività senza lista, anche se hanno una scadenza. **Tutto** mostra le attività aperte di tutte le liste. Selezionando una lista, si filtrano le attività di quella lista.
 - **Eliminazione lista**: conferma esplicita, poi tutte le attività della lista (anche completate) vengono spostate senza essere cancellate; soltanto dopo viene registrata la cancellazione della lista. La sync backend rifiuta la rimozione di una lista non vuota con 409, così evita riferimenti orfani.
 - **Priorità**: normale = 0, P1 = 1, P2 = 2, P3 = 3. Nei risultati P3 viene prima; c'è un filtro per livello.
@@ -47,3 +47,7 @@ La migrazione schema v4 è incrementale e usa default: priorità 0, tag e sottot
 - Filtri salvati, ordinamenti personalizzati, tag come entità globali, ricorrenze e notifiche rimangono da sviluppare.
 - Rebootstrap completo e recupero edit-vs-delete remoto restano attività aperte nel P0.
 - CI green non prova né deploy Coolify né funzionamento fisico o backup del database reale.
+
+## UX obbligatoria — titoli inline
+
+I valori testuali semplici già mostrati devono essere **normalmente editabili nello stesso punto**: il titolo di lista nell'header è già `InlineEditableTitle`. Clicca il testo, scrivi, salva con Invio o perdita di focus, annulla con Esc; senza pulsante `Rinomina`. Titolo corto = campo compatto, non un input largo quanto la pagina. La modifica richiama `LocalStore.renameList()` e viene registrata nella stessa outbox della precedente rinomina. Applicare progressivamente a titoli di task/note quando non comporta regressioni; mantenere dialog per le modifiche multi-campo. Regola generale: [design.md](../design.md) e [ui-forui.md](ui-forui.md).

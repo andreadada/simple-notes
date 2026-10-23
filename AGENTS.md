@@ -26,6 +26,7 @@ Repository: **Simple Notes** — Flutter Windows/Android + Spring Boot/PG su Coo
 - Non risolvere problemi di build con cambi non necessari a backend, domini, Google Cloud o Coolify. Non inventare configurazioni/secret.
 - Non fare comandi Git distruttivi su modifiche locali. Preservare sempre outbox, SQLite e dati offline.
 - Aggiornare `project.md` e aggiungere una voce a `Edit Timespan` quando si modifica significativamente il progetto.
+- **REGOLA UX VINCOLANTE — INLINE EDIT FIRST:** quando un titolo/nome/attributo testuale semplice è già visibile, renderlo direttamente editabile **nello stesso punto** (testo che diventa input) invece di aggiungere un bottone `Rinomina`/`Modifica` + dialog. Invio/perdita focus salva; Esc annulla; validazione, focus accessibile, salvataggio offline-first reale, niente perdita di bozze su refresh. La larghezza deve seguire il contenuto, non essere un form full-width. Eccezioni solo per dati complessi, conferme o azioni distruttive. Riferimenti: `design.md`, `docs/ui-forui.md`, `ui/inline_editable_title.dart`; niente `Rinomina` sulle liste.
 - UI Flutter: **Forui-first**, vedi `apps/flutter/lib/ui/notes_theme.dart` e `docs/ui-forui.md`; preservare i widget Material che supportano i test finché non vengono migrati correttamente.
 - Flutter: `apps/flutter`. API: `services/api`. Compose Coolify: `/docker-compose.yml`.
 - Package Android OAuth: **`it.andreadada.simplenotes`**; Web Client ID per `google_sign_in` su Android, Desktop Client ID per OAuth Windows. Mai committare secret, file credenziali, token o keystore.

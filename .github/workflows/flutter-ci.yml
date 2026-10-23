@@ -43,6 +43,10 @@ jobs:
         run: flutter test
   android-build:
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        java: ['17', '21']
     permissions:
       contents: read
     steps:
@@ -50,7 +54,7 @@ jobs:
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
-          java-version: '17'
+          java-version: ${{ matrix.java }}
       - uses: subosito/flutter-action@v2
         with:
           channel: stable
@@ -60,17 +64,19 @@ jobs:
         run: flutter create --platforms=android --project-name simple_notes .
       - name: Generate Drift database
         working-directory: apps/flutter
-        run: dart run build_runner build --delete-conflicting-outputs
+        run: dart run build_runner build
       - name: Verify tracked Android identity
         working-directory: apps/flutter
         run: |
           grep -F 'applicationId = "it.andreadada.simplenotes"' android/app/build.gradle.kts
           grep -F 'namespace = "it.andreadada.simplenotes"' android/app/build.gradle.kts
           test -f android/app/src/main/java/it/andreadada/simplenotes/MainActivity.java
+          grep -F 'enableKotlin = false' android/app/build.gradle.kts
       - name: Build debug APK
         working-directory: apps/flutter
         run: flutter build apk --debug
       - uses: actions/upload-artifact@v4
+        if: matrix.java == '17'
         with:
           name: simple-notes-android-debug
           path: apps/flutter/build/app/outputs/flutter-apk/app-debug.apk
@@ -90,7 +96,7 @@ jobs:
         run: flutter create --platforms=windows --project-name simple_notes .
       - name: Generate Drift database
         working-directory: apps/flutter
-        run: dart run build_runner build --delete-conflicting-outputs
+        run: dart run build_runner build
       - name: Build Windows executable
         working-directory: apps/flutter
         run: flutter build windows --release

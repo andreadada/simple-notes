@@ -19,10 +19,10 @@ Su Windows occorrono gli strumenti C++ di Visual Studio e **C++ ATL** (`atlstr.h
 ## Configurazione Android versionata
 
 La configurazione Android ora è presente **direttamente in Git**:
-- `android/app/build.gradle.kts`: package e namespace definitivi `it.andreadada.simplenotes`, configurazione Java 17 senza estensione `kotlin { compilerOptions { ... } }`.
+- `android/app/build.gradle.kts`: package e namespace definitivi `it.andreadada.simplenotes`, configurazione Java 17 senza estensione `kotlin { compilerOptions { ... } }`. **`enableKotlin = false` solo nel modulo `:app`**, perché `MainActivity.java` è Java e Kotlin non serve nel launcher. I plugin Android restano liberi di usare Kotlin.
 - `android/gradle.properties`: disattiva la compilazione incrementale Kotlin per evitare `this and base files have different roots` quando il progetto sta su E: e PUB_CACHE su C:.
 - `android/app/src/main/java/it/andreadada/simplenotes/MainActivity.java`: Activity nel namespace definitivo.
-- La CI controlla package e namespace prima della build Android e pubblica un APK **debug**.
+- La CI controlla package e namespace prima della build Android; esegue la build sia con **JDK 17 sia con JDK 21**, per evitare l'errore locale `compileDebugJavaWithJavac (17) / compileDebugKotlin (21)`. Pubblica un APK **debug**.
 
 **Primo pull sui PC dove Flutter aveva già generato file Android:** `git pull` può fermarsi con `untracked working tree files would be overwritten`. È normale: salva una copia *fuori dalla repo* dei due file generati e spostali prima del pull. Non cancellare l'intera cartella Android. Dalle volte successive `git pull origin main` basterà.
 

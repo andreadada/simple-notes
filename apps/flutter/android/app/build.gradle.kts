@@ -8,6 +8,11 @@ plugins {
 }
 
 android {
+    // Flutter's Android launcher is written in Java. AGP 9 built-in Kotlin
+    // otherwise creates an unnecessary compileDebugKotlin task whose JVM
+    // target may follow JDK 21, conflicting with Java bytecode target 17.
+    // This is scoped to :app; Flutter plugins can still compile Kotlin.
+    enableKotlin = false
     namespace = "it.andreadada.simplenotes"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion

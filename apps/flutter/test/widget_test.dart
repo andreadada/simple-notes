@@ -232,4 +232,34 @@ void main() {
         'Capitoli 1–4');
   });
 
+
+  testWidgets('Forui sidebar creates and selects a synced task list',
+      (tester) async {
+    tester.view.physicalSize = const Size(1500, 900);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(() {
+      tester.view.resetPhysicalSize();
+      tester.view.resetDevicePixelRatio();
+    });
+    final db = AppDatabase(NativeDatabase.memory());
+    await tester.pumpWidget(ProviderScope(overrides: [
+      databaseProvider.overrideWithValue(db),
+      initialDataProvider.overrideWithValue(const LocalData()),
+    ], child: const SimpleNotesApp()));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('create-list')));
+    await tester.pumpAndSettle();
+    expect(find.byType(FDialog), findsOneWidget);
+    await tester.enterText(find.byKey(const Key('list-title')), 'Università');
+    await tester.tap(find.byKey(const Key('save-list')));
+    await tester.pumpAndSettle();
+    expect((await db.snapshot()).lists.single.title, 'Università');
+    final newListId = (await db.snapshot()).lists.single.id;
+    await tester.tap(find.byKey(Key('list-$newListId')));
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('rename-list')), findsOneWidget);
+    await tester.pumpWidget(const SizedBox.shrink());
+    await db.close();
+  });
+
 }

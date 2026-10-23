@@ -13,6 +13,10 @@ final initialDataProvider = Provider<LocalData>((ref) {
 });
 final localStoreProvider = NotifierProvider<LocalStore, LocalData>(LocalStore.new);
 
+// Only local writes advance the revision; remote reloads cannot create
+// feedback loops of repeated sync attempts.
+final localMutationRevisionProvider = StateProvider<int>((ref) => 0);
+
 class LocalStore extends Notifier<LocalData> {
   @override
   LocalData build() => ref.read(initialDataProvider);
@@ -20,6 +24,8 @@ class LocalStore extends Notifier<LocalData> {
   Future<void> reload() async {
     state = await ref.read(databaseProvider).snapshot();
   }
+
+  void _changed() => ref.read(localMutationRevisionProvider.notifier).state++;
 
   Future<void> addTask(String title, {DateTime? dueAt}) async {
     final trimmed = title.trim();
@@ -30,6 +36,7 @@ class LocalStore extends Notifier<LocalData> {
     );
     await ref.read(databaseProvider).upsertTask(task);
     state = LocalData(tasks: [...state.tasks, task], notes: state.notes);
+    _changed();
   }
 
   Future<void> editTask(String id, {required String title, DateTime? dueAt}) async {
@@ -47,6 +54,7 @@ class LocalStore extends Notifier<LocalData> {
           tasks: [for (final t in state.tasks) if (t.id == id) changed else t],
           notes: state.notes,
         );
+        _changed();
         return;
       }
     }
@@ -71,6 +79,7 @@ class LocalStore extends Notifier<LocalData> {
     state = LocalData(
       tasks: state.tasks.where((t) => t.id != id).toList(), notes: state.notes,
     );
+    _changed();
   }
 
   Future<void> addNote() async {
@@ -80,6 +89,7 @@ class LocalStore extends Notifier<LocalData> {
     );
     await ref.read(databaseProvider).upsertNote(note);
     state = LocalData(tasks: state.tasks, notes: [...state.notes, note]);
+    _changed();
   }
 
   Future<void> editNote(String id, {String? title, String? body}) async {
@@ -91,6 +101,7 @@ class LocalStore extends Notifier<LocalData> {
           tasks: state.tasks,
           notes: [for (final n in state.notes) if (n.id == id) changed else n],
         );
+        _changed();
         return;
       }
     }
@@ -100,5 +111,6 @@ class LocalStore extends Notifier<LocalData> {
     await ref.read(databaseProvider).removeNote(id);
     state = LocalData(tasks: state.tasks,
       notes: state.notes.where((n) => n.id != id).toList());
+    _changed();
   }
 }

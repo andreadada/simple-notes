@@ -60,8 +60,14 @@ class CloudSync extends StateNotifier<SyncState> {
       // Explicit user action determines which account owns the local dataset.
       await db.bindOwner(cloud.userId!);
       final mutations = await db.pendingOperations();
+      void verifyAccount() {
+        if (ref.read(cloudAuthProvider).userId != cloud.userId) {
+          throw StateError('Account cambiato durante la sincronizzazione');
+        }
+      }
       int uploaded = 0;
       for (final op in mutations) {
+        verifyAccount();
         final payload = jsonDecode(op.payload) as Map<String, dynamic>;
         if (op.entityType == 'task' && payload['dueAt'] is String) {
           final parsed = DateTime.tryParse(payload['dueAt'] as String);
@@ -82,9 +88,11 @@ class CloudSync extends StateNotifier<SyncState> {
       int cursor = int.tryParse(await db.setting('syncCursor') ?? '') ?? 0;
       int downloaded = 0;
       while (true) {
+        verifyAccount();
         final result = await _request('GET', '/sync/changes?cursor=$cursor&limit=100');
         final changes = result['changes'] as List<dynamic>;
         for (final raw in changes) {
+          verifyAccount();
           final item = raw as Map<String, dynamic>;
           await db.applyRemote(
             type: item['entityType'] as String,

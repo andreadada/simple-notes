@@ -38,11 +38,11 @@
 - [x] JDK 17 e JDK 21: Android debug APK build riuscite su entrambi, Flutter CI run `39955667440` (success).
 - [x] Android: dopo correzioni Gradle/JVM l'utente segnala «Perfetto funziona» il 23/10. L'errore precedente `INSTALL_FAILED_USER_RESTRICTED` è storicizzato nel runbook; evitare di dichiarare verificato il login Google senza conferma specifica.
 - [ ] Test end-to-end Google Login con client ID reali su due dispositivi.
-- [ ] Verifica client sync PC↔Android con dati reali, recupero errori, conflitti e sync automatica.
+- [ ] Verifica client sync PC↔Android con dati reali, recupero errori e conflitti. Auto-sync foreground implementata (login/edit/resume/reconnect/pull 60s), richiede E2E.
 - [ ] Notifiche, liste, tag, sottotask, ricorrenze e ricerca completa.
 - [x] Backend deployato su Coolify e raggiungibile via HTTPS: health check `https://api.notes.ddone.it/actuator/health` con `UP` (confermato dall'utente).
 - [ ] Hardening produzione: backup/restore, rate limiting, controlli di sicurezza e monitoraggio.
-- Stato della sync **client**: implementata in modalità manuale sperimentale; verifiche CI/E2E non equivalgono a validazione completa.
+- Stato della sync **client**: automatica foreground sperimentale e fallback manuale; verifiche CI/E2E non equivalgono a validazione completa.
 
 ## P0 — Fondamenta e MVP
 - [x] Inizializzazione repository, README breve, design.md, project.md e documentazione API/sync.
@@ -56,7 +56,7 @@
 - [ ] Persistenza sessione Windows/Android, logout e refresh dopo riavvio da verificare con test E2E.
 - [x] Struttura iniziale utenti, task, note, versioni, tombstone, refresh sessions.
 - [ ] Liste, tag, sottotask, filtri, scadenze/ricorrenze avanzate e reminder.
-- [ ] Sync completa: retry in background, risoluzione conflitti, rebootstrap, più device.
+- [ ] Sync completa: auto-sync foreground implementata ma non E2E; restano background, UI conflitti, rebootstrap e test multi-device.
 - [ ] Notifiche Android e Windows, snooze, recurring, controllo fusi orari.
 - [ ] Test E2E PC↔Android, offline, recupero conflitti/riavvio, back-up/restore.
 

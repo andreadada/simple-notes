@@ -5,6 +5,7 @@ import 'data/local_store.dart';
 import 'data/app_database.dart';
 import 'auth/cloud_auth.dart';
 import 'sync/cloud_sync.dart';
+import 'sync/auto_sync.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -44,7 +45,7 @@ class SimpleNotesApp extends StatelessWidget {
             contentPadding: EdgeInsets.symmetric(horizontal: 14, vertical: 13),
           ),
         ),
-        home: const NotesHome(),
+        home: const AutoSyncHost(child: NotesHome()),
       );
 }
 

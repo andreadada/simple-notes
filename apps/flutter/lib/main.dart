@@ -592,7 +592,7 @@ class _NotesHomeState extends ConsumerState<NotesHome> {
             )),
           if (task.listId != null) ...[
             const SizedBox(height: 10),
-            Text('Lista: ${ref.watch(localStoreProvider).lists
+            Text('Lista: ${ref.read(localStoreProvider).lists
                 .where((list) => list.id == task.listId)
                 .firstOrNull?.title ?? 'Non disponibile'}'),
           ],

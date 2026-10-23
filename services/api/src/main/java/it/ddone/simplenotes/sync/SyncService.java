@@ -19,16 +19,18 @@ public class SyncService {
     private final SyncChangeRepository changes;
     private final SyncOperationRepository operations;
     private final TaskRepository tasks;
+    private final TaskListRepository lists;
     private final NoteRepository notes;
     private final ObjectMapper json;
 
     public SyncService(EntityManager em, SyncChangeRepository changes,
             SyncOperationRepository operations, TaskRepository tasks,
-            NoteRepository notes, ObjectMapper json) {
+            TaskListRepository lists, NoteRepository notes, ObjectMapper json) {
         this.em = em;
         this.changes = changes;
         this.operations = operations;
         this.tasks = tasks;
+        this.lists = lists;
         this.notes = notes;
         this.json = json;
     }
@@ -40,7 +42,7 @@ public class SyncService {
         em.createNativeQuery("SELECT pg_advisory_xact_lock(hashtext(:owner))")
             .setParameter("owner", owner.toString()).getSingleResult();
 
-        if (!Set.of("task", "note").contains(req.entityType()) ||
+        if (!Set.of("task", "note", "list").contains(req.entityType()) ||
                 !Set.of("upsert", "delete").contains(req.action()))
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Unsupported sync operation");
 
@@ -55,8 +57,11 @@ public class SyncService {
         if ("upsert".equals(req.action()) && (req.payload() == null || !req.payload().isObject()))
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Missing payload");
 
-        Mutation applied = "task".equals(req.entityType()) ?
-            applyTask(owner, req) : applyNote(owner, req);
+        Mutation applied = switch (req.entityType()) {
+            case "task" -> applyTask(owner, req);
+            case "list" -> applyList(owner, req);
+            default -> applyNote(owner, req);
+        };
         SyncChange change = changes.saveAndFlush(new SyncChange(owner, req.entityType(),
             req.entityId(), applied.payload(), applied.deleted(), applied.version()));
         operations.saveAndFlush(new SyncOperation(req.operationId(), owner, req.entityType(),
@@ -82,6 +87,16 @@ public class SyncService {
             optionalText(value, "description");
         Instant due = optionalInstant(value, "dueAt");
         boolean completed = value.path("completed").asBoolean(false);
+        UUID listId = optionalUuid(value, "listId");
+        if (listId != null && !lists.existsByIdAndOwnerIdAndDeletedAtIsNull(listId, owner)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Unknown or foreign list");
+        }
+        int priority = value.path("priority").asInt(0);
+        if (priority < 0 || priority > 3 || (value.has("priority") && !value.get("priority").isInt())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid priority");
+        }
+        String tagsJson = encode(readTags(value.path("tags")));
+        String subtasksJson = encode(readSubtasks(value.path("subtasks")));
         TaskEntity entity;
         if (existing == null) {
             if (req.expectedVersion() != null)
@@ -96,14 +111,104 @@ public class SyncService {
             entity.dueAt = due;
             entity.updatedAt = Instant.now();
         }
+        entity.listId = listId;
+        entity.priority = priority;
+        entity.tagsJson = tagsJson;
+        entity.subtasksJson = subtasksJson;
         entity.completedAt = completed ?
             (entity.completedAt == null ? Instant.now() : entity.completedAt) : null;
         tasks.saveAndFlush(entity);
+        Map<String, Object> result = new LinkedHashMap<>();
+        result.put("title", entity.title);
+        result.put("completed", entity.completedAt != null);
+        result.put("description", entity.description == null ? "" : entity.description);
+        result.put("dueAt", entity.dueAt == null ? "" : entity.dueAt.toString());
+        result.put("createdAt", entity.createdAt.toString());
+        result.put("listId", entity.listId == null ? null : entity.listId.toString());
+        result.put("priority", entity.priority);
+        result.put("tags", readStoredJson(entity.tagsJson));
+        result.put("subtasks", readStoredJson(entity.subtasksJson));
+        return new Mutation(entity.version, false, encode(result));
+    }
+
+    private Mutation applyList(UUID owner, SyncController.ApplyRequest req) {
+        TaskListEntity existing = lists.findByIdAndOwnerIdAndDeletedAtIsNull(req.entityId(), owner)
+            .orElse(null);
+        if ("delete".equals(req.action())) {
+            if (existing == null) return new Mutation(0, true, "{}");
+            requireVersion(req.expectedVersion(), existing.version);
+            if (tasks.existsByOwnerIdAndListIdAndDeletedAtIsNull(owner, req.entityId())) {
+                throw new ResponseStatusException(HttpStatus.CONFLICT,
+                    "Move existing tasks to Inbox before deleting list");
+            }
+            existing.deletedAt = existing.updatedAt = Instant.now();
+            lists.saveAndFlush(existing);
+            return new Mutation(existing.version, true, "{}");
+        }
+        String title = requiredText(req.payload(), "title", 255).trim();
+        TaskListEntity entity;
+        if (existing == null) {
+            if (req.expectedVersion() != null)
+                throw new ResponseStatusException(HttpStatus.CONFLICT, "List deleted or missing");
+            entity = new TaskListEntity(owner, title);
+            entity.id = req.entityId();
+        } else {
+            requireVersion(req.expectedVersion(), existing.version);
+            entity = existing;
+            entity.title = title;
+            entity.updatedAt = Instant.now();
+        }
+        lists.saveAndFlush(entity);
         return new Mutation(entity.version, false, encode(Map.of(
-            "title", entity.title, "completed", entity.completedAt != null,
-            "description", entity.description == null ? "" : entity.description,
-            "dueAt", entity.dueAt == null ? "" : entity.dueAt.toString(),
-            "createdAt", entity.createdAt.toString())));
+            "title", entity.title, "createdAt", entity.createdAt.toString())));
+    }
+
+    private static UUID optionalUuid(JsonNode payload, String field) {
+        JsonNode value = payload.get(field);
+        if (value == null || value.isNull() || value.asText().isBlank()) return null;
+        if (!value.isTextual()) throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid " + field);
+        try { return UUID.fromString(value.textValue()); }
+        catch (IllegalArgumentException exception) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid " + field);
+        }
+    }
+
+    private static List<String> readTags(JsonNode value) {
+        if (value.isMissingNode() || value.isNull()) return List.of();
+        if (!value.isArray() || value.size() > 16)
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid tags");
+        LinkedHashSet<String> tags = new LinkedHashSet<>();
+        for (JsonNode item : value) {
+            if (!item.isTextual() || item.textValue().isBlank() || item.textValue().length() > 40)
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid tag");
+            tags.add(item.textValue().trim());
+        }
+        return List.copyOf(tags);
+    }
+
+    private static List<Map<String, Object>> readSubtasks(JsonNode value) {
+        if (value.isMissingNode() || value.isNull()) return List.of();
+        if (!value.isArray() || value.size() > 50)
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid subtasks");
+        Set<UUID> seen = new HashSet<>();
+        List<Map<String, Object>> result = new ArrayList<>();
+        for (JsonNode item : value) {
+            if (!item.isObject()) throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid subtask");
+            UUID id = optionalUuid(item, "id");
+            if (id == null || !seen.add(id))
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid subtask ID");
+            String title = requiredText(item, "title", 255).trim();
+            if (!item.path("completed").isBoolean() && item.has("completed"))
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid subtask status");
+            result.add(Map.of("id", id.toString(), "title", title,
+                "completed", item.path("completed").asBoolean(false)));
+        }
+        return result;
+    }
+
+    private JsonNode readStoredJson(String jsonText) {
+        try { return json.readTree(jsonText); }
+        catch (JsonProcessingException exception) { throw new IllegalStateException(exception); }
     }
 
     private Mutation applyNote(UUID owner, SyncController.ApplyRequest req) {
@@ -184,7 +289,7 @@ public class SyncService {
 
     @Transactional(readOnly = true)
     public SyncController.LatestChange latest(UUID owner, String type, UUID id) {
-        if (!Set.of("task", "note").contains(type)) {
+        if (!Set.of("task", "note", "list").contains(type)) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Unsupported entity type");
         }
         SyncChange change = changes.latest(owner, type, id)

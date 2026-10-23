@@ -10,6 +10,11 @@ public class TaskEntity {
     @Id public UUID id;
     @Column(name = "owner_id", nullable = false) public UUID ownerId;
     @Column(name = "list_id") public UUID listId;
+    @Column(nullable = false) public int priority;
+    @Column(name = "tags_json", nullable = false, columnDefinition = "text")
+    public String tagsJson = "[]";
+    @Column(name = "subtasks_json", nullable = false, columnDefinition = "text")
+    public String subtasksJson = "[]";
     @Column(nullable = false) public String title;
     @Column(columnDefinition = "text") public String description;
     @Column(name = "due_at") public Instant dueAt;

@@ -503,8 +503,10 @@ class _NotesHomeState extends ConsumerState<NotesHome> {
     DateTime? selectedDue = task.dueAt;
     showFDialog<void>(
       context: context,
-      builder: (dialogContext, style, animation) => StatefulBuilder(
-        builder: (dialogContext, updateDialog) => NotesDialog(
+      builder: (dialogContext, style, animation) => NotesEditorControllerScope(
+        controllers: [title],
+        child: StatefulBuilder(
+          builder: (dialogContext, updateDialog) => NotesDialog(
           style: style,
           animation: animation,
           title: const Text('Modifica attività'),
@@ -580,9 +582,10 @@ class _NotesHomeState extends ConsumerState<NotesHome> {
               child: const Text('Salva'),
             ),
           ],
+          ),
         ),
       ),
-    ).whenComplete(title.dispose);
+    );
   }
 
   void showNoteEditor(LocalNote note) {
@@ -590,8 +593,10 @@ class _NotesHomeState extends ConsumerState<NotesHome> {
     final body = TextEditingController(text: note.body);
     showFDialog<void>(
       context: context,
-      builder: (dialogContext, style, animation) => NotesDialog(
-        style: style,
+      builder: (dialogContext, style, animation) => NotesEditorControllerScope(
+        controllers: [title, body],
+        child: NotesDialog(
+          style: style,
         animation: animation,
         maxWidth: 540,
         title: const Text('Modifica nota'),
@@ -637,10 +642,8 @@ class _NotesHomeState extends ConsumerState<NotesHome> {
             child: const Text('Salva'),
           ),
         ],
+        ),
       ),
-    ).whenComplete(() {
-      title.dispose();
-      body.dispose();
-    });
+    );
   }
 }

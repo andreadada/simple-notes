@@ -3,6 +3,37 @@ import 'package:forui/forui.dart';
 
 import 'notes_theme.dart';
 
+/// Keep text controllers alive until the route has finished its exit
+/// animation and Flutter actually unmounts the editor subtree.
+class NotesEditorControllerScope extends StatefulWidget {
+  const NotesEditorControllerScope({
+    super.key,
+    required this.controllers,
+    required this.child,
+  });
+
+  final List<TextEditingController> controllers;
+  final Widget child;
+
+  @override
+  State<NotesEditorControllerScope> createState() =>
+      _NotesEditorControllerScopeState();
+}
+
+class _NotesEditorControllerScopeState
+    extends State<NotesEditorControllerScope> {
+  @override
+  Widget build(BuildContext context) => widget.child;
+
+  @override
+  void dispose() {
+    for (final controller in widget.controllers) {
+      controller.dispose();
+    }
+    super.dispose();
+  }
+}
+
 /// Reusable content layout for Forui's opinionated modal surface.
 /// Both Windows and Android use the same spacing and action placement.
 class NotesDialog extends StatelessWidget {
@@ -96,6 +127,69 @@ Future<DateTime?> showNotesDatePicker(
                 end: DateTime.utc(2100, 12, 31),
                 initial: selected,
               ),
+              // Forui's default calendar header can be wider than its
+              // 308 px day grid, especially at larger text scale. Use a
+              // compact header with actual Forui buttons.
+              headerBuilder: (context, controller, selection, header) {
+                const months = [
+                  'Gen', 'Feb', 'Mar', 'Apr', 'Mag', 'Giu',
+                  'Lug', 'Ago', 'Set', 'Ott', 'Nov', 'Dic',
+                ];
+                final month = controller.currentMonth;
+                final previousEnabled = switch (controller.type) {
+                  FCalendarPickerGridType.day => controller.day.hasPrevious,
+                  FCalendarPickerGridType.month => controller.month.hasPrevious,
+                  FCalendarPickerGridType.year => controller.year.hasPrevious,
+                };
+                final nextEnabled = switch (controller.type) {
+                  FCalendarPickerGridType.day => controller.day.hasNext,
+                  FCalendarPickerGridType.month => controller.month.hasNext,
+                  FCalendarPickerGridType.year => controller.year.hasNext,
+                };
+                void previous() {
+                  switch (controller.type) {
+                    case FCalendarPickerGridType.day:
+                      controller.day.previous();
+                    case FCalendarPickerGridType.month:
+                      controller.month.previous();
+                    case FCalendarPickerGridType.year:
+                      controller.year.previous();
+                  }
+                }
+                void next() {
+                  switch (controller.type) {
+                    case FCalendarPickerGridType.day:
+                      controller.day.next();
+                    case FCalendarPickerGridType.month:
+                      controller.month.next();
+                    case FCalendarPickerGridType.year:
+                      controller.year.next();
+                  }
+                }
+                return Row(children: [
+                  Expanded(child: FButton(
+                    variant: FButtonVariant.ghost,
+                    size: FButtonSizeVariant.sm,
+                    onPress: controller.cycle,
+                    child: Text('${months[month.month - 1]} ${month.year}',
+                      maxLines: 1, overflow: TextOverflow.ellipsis),
+                  )),
+                  FButton.icon(
+                    key: const Key('calendar-previous'),
+                    variant: FButtonVariant.ghost,
+                    size: FButtonSizeVariant.xs,
+                    onPress: previousEnabled ? previous : null,
+                    child: const Icon(Icons.chevron_left, size: 18),
+                  ),
+                  FButton.icon(
+                    key: const Key('calendar-next'),
+                    variant: FButtonVariant.ghost,
+                    size: FButtonSizeVariant.xs,
+                    onPress: nextEnabled ? next : null,
+                    child: const Icon(Icons.chevron_right, size: 18),
+                  ),
+                ]);
+              },
               selectionControl: FDateSelectionControl.managedSingle(
                 initial: selected,
                 toggleable: false,

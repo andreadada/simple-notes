@@ -16,8 +16,22 @@ class TaskEntries extends Table {
   TextColumn get id => text()();
   TextColumn get title => text()();
   TextColumn get description => text().withDefault(const Constant(''))();
+  TextColumn get listId => text().nullable()();
+  IntColumn get priority => integer().withDefault(const Constant(0))();
+  TextColumn get tagsJson => text().withDefault(const Constant('[]'))();
+  TextColumn get subtasksJson => text().withDefault(const Constant('[]'))();
   DateTimeColumn get dueAt => dateTime().nullable()();
   BoolColumn get completed => boolean().withDefault(const Constant(false))();
+  DateTimeColumn get createdAt => dateTime()();
+  IntColumn get remoteVersion => integer().nullable()();
+  DateTimeColumn get deletedAt => dateTime().nullable()();
+  @override
+  Set<Column<Object>> get primaryKey => {id};
+}
+
+class TaskListEntries extends Table {
+  TextColumn get id => text()();
+  TextColumn get title => text()();
   DateTimeColumn get createdAt => dateTime()();
   IntColumn get remoteVersion => integer().nullable()();
   DateTimeColumn get deletedAt => dateTime().nullable()();
@@ -54,12 +68,14 @@ class SyncSettings extends Table {
   Set<Column<Object>> get primaryKey => {key};
 }
 
-@DriftDatabase(tables: [TaskEntries, NoteEntries, PendingMutations, SyncSettings])
+@DriftDatabase(tables: [
+  TaskEntries, TaskListEntries, NoteEntries, PendingMutations, SyncSettings,
+])
 class AppDatabase extends _$AppDatabase {
   AppDatabase([QueryExecutor? executor]) : super(executor ?? _openDatabase());
 
   @override
-  int get schemaVersion => 3;
+  int get schemaVersion => 4;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -67,6 +83,13 @@ class AppDatabase extends _$AppDatabase {
     onUpgrade: (m, from, to) async {
       if (from < 2) await m.createTable(syncSettings);
       if (from < 3) await m.addColumn(taskEntries, taskEntries.description);
+      if (from < 4) {
+        await m.createTable(taskListEntries);
+        await m.addColumn(taskEntries, taskEntries.listId);
+        await m.addColumn(taskEntries, taskEntries.priority);
+        await m.addColumn(taskEntries, taskEntries.tagsJson);
+        await m.addColumn(taskEntries, taskEntries.subtasksJson);
+      }
     },
   );
 
@@ -83,10 +106,21 @@ class AppDatabase extends _$AppDatabase {
     final notes = await (select(noteEntries)
           ..where((n) => n.deletedAt.isNull()))
         .get();
+    final lists = await (select(taskListEntries)
+          ..where((l) => l.deletedAt.isNull())).get();
     return LocalData(
+      lists: lists.map((l) => LocalTaskList(
+        id: l.id, title: l.title, createdAt: l.createdAt,
+      )).toList(),
       tasks: tasks.map((t) => LocalTask(
         id: t.id, title: t.title, description: t.description,
         dueAt: t.dueAt,
+        listId: t.listId,
+        priority: t.priority,
+        tags: (jsonDecode(t.tagsJson) as List<dynamic>).cast<String>(),
+        subtasks: (jsonDecode(t.subtasksJson) as List<dynamic>)
+            .map((item) => LocalSubtask.fromJson(item as Map<String, dynamic>))
+            .toList(),
         completed: t.completed, createdAt: t.createdAt,
       )).toList(),
       notes: notes.map((n) => LocalNote(
@@ -102,6 +136,11 @@ class AppDatabase extends _$AppDatabase {
       id: task.id,
       title: task.title,
       description: Value(task.description),
+      listId: Value(task.listId),
+      priority: Value(task.priority),
+      tagsJson: Value(jsonEncode(task.tags)),
+      subtasksJson: Value(jsonEncode(
+          task.subtasks.map((item) => item.toJson()).toList())),
       dueAt: Value(task.dueAt),
       completed: Value(task.completed),
       createdAt: task.createdAt,
@@ -115,6 +154,25 @@ class AppDatabase extends _$AppDatabase {
     await (update(taskEntries)..where((t) => t.id.equals(id)))
         .write(TaskEntriesCompanion(deletedAt: Value(DateTime.now())));
     await _enqueue('task', id, 'delete', '{}');
+  });
+
+  Future<void> upsertList(LocalTaskList list) => transaction(() async {
+    final previous = await (select(taskListEntries)
+        ..where((row) => row.id.equals(list.id))).getSingleOrNull();
+    await into(taskListEntries).insertOnConflictUpdate(
+      TaskListEntriesCompanion.insert(
+        id: list.id, title: list.title, createdAt: list.createdAt,
+        remoteVersion: Value(previous?.remoteVersion),
+        deletedAt: const Value(null),
+      ),
+    );
+    await _enqueue('list', list.id, 'upsert', jsonEncode(list.toJson()));
+  });
+
+  Future<void> removeList(String id) => transaction(() async {
+    await (update(taskListEntries)..where((row) => row.id.equals(id)))
+        .write(TaskListEntriesCompanion(deletedAt: Value(DateTime.now())));
+    await _enqueue('list', id, 'delete', '{}');
   });
 
   Future<void> upsertNote(LocalNote note) => transaction(() async {
@@ -135,13 +193,21 @@ class AppDatabase extends _$AppDatabase {
   });
 
   Future<void> _enqueue(String type, String id, String action, String body) async {
+    // Drift stores SQLite DateTime with second resolution. Force a strictly
+    // monotonic order to preserve list-upsert → task-upsert and move → delete.
+    final latest = await (select(pendingMutations)
+      ..orderBy([(row) => OrderingTerm.desc(row.createdAt)])
+      ..limit(1)).getSingleOrNull();
+    final now = DateTime.now();
+    final next = latest?.createdAt.add(const Duration(seconds: 1));
+    final timestamp = next != null && now.isBefore(next) ? next : now;
     await into(pendingMutations).insert(PendingMutationsCompanion.insert(
       operationId: const Uuid().v4(),
       entityType: type,
       entityId: id,
       action: action,
       payload: body,
-      createdAt: DateTime.now(),
+      createdAt: timestamp,
     ));
   }
 
@@ -150,6 +216,11 @@ class AppDatabase extends _$AppDatabase {
         ..orderBy([(p) => OrderingTerm.asc(p.createdAt)])).get();
 
   Future<int?> remoteVersionFor(String type, String id) async {
+    if (type == 'list') {
+      final row = await (select(taskListEntries)
+          ..where((item) => item.id.equals(id))).getSingleOrNull();
+      return row?.remoteVersion;
+    }
     if (type == 'task') {
       final row = await (select(taskEntries)..where((t) => t.id.equals(id)))
           .getSingleOrNull();
@@ -161,7 +232,11 @@ class AppDatabase extends _$AppDatabase {
   }
 
   Future<void> acknowledge(PendingMutation op, int version) => transaction(() async {
-    if (op.entityType == 'task') {
+    if (op.entityType == 'list') {
+      await (update(taskListEntries)
+        ..where((row) => row.id.equals(op.entityId)))
+          .write(TaskListEntriesCompanion(remoteVersion: Value(version)));
+    } else if (op.entityType == 'task') {
       await (update(taskEntries)..where((t) => t.id.equals(op.entityId)))
           .write(TaskEntriesCompanion(remoteVersion: Value(version)));
     } else {
@@ -191,7 +266,10 @@ class AppDatabase extends _$AppDatabase {
     required String entityId,
     required int remoteVersion,
   }) => transaction(() async {
-    if (type == 'task') {
+    if (type == 'list') {
+      await (update(taskListEntries)..where((row) => row.id.equals(entityId)))
+          .write(TaskListEntriesCompanion(remoteVersion: Value(remoteVersion)));
+    } else if (type == 'task') {
       await (update(taskEntries)..where((t) => t.id.equals(entityId)))
           .write(TaskEntriesCompanion(remoteVersion: Value(remoteVersion)));
     } else if (type == 'note') {
@@ -234,7 +312,24 @@ class AppDatabase extends _$AppDatabase {
     final pending = await (select(pendingMutations)
         ..where((p) => p.entityId.equals(entityId))).get();
     if (pending.isNotEmpty) return;
-    if (type == 'task') {
+    if (type == 'list') {
+      if (deleted) {
+        await (update(taskListEntries)..where((l) => l.id.equals(entityId)))
+            .write(TaskListEntriesCompanion(
+              deletedAt: Value(DateTime.now()), remoteVersion: Value(version)));
+        return;
+      }
+      final created = DateTime.tryParse(payload['createdAt'] as String? ?? '');
+      await into(taskListEntries).insertOnConflictUpdate(
+        TaskListEntriesCompanion.insert(
+          id: entityId,
+          title: payload['title'] as String,
+          createdAt: created ?? DateTime.now(),
+          deletedAt: const Value(null),
+          remoteVersion: Value(version),
+        ),
+      );
+    } else if (type == 'task') {
       if (deleted) {
         await (update(taskEntries)..where((t) => t.id.equals(entityId)))
             .write(TaskEntriesCompanion(
@@ -247,6 +342,10 @@ class AppDatabase extends _$AppDatabase {
         id: entityId,
         title: payload['title'] as String,
         description: Value(payload['description'] as String? ?? ''),
+        listId: Value(payload['listId'] as String?),
+        priority: Value(payload['priority'] as int? ?? 0),
+        tagsJson: Value(jsonEncode(payload['tags'] ?? const [])),
+        subtasksJson: Value(jsonEncode(payload['subtasks'] ?? const [])),
         dueAt: Value(raw == null || raw.isEmpty ? null : DateTime.tryParse(raw)?.toLocal()),
         completed: Value(payload['completed'] as bool? ?? false),
         createdAt: created ?? DateTime.now(),

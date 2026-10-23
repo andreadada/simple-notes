@@ -69,3 +69,9 @@ Questa pagina documenta il *codice introdotto*; non dichiara che il passaggio di
 - Tutte le selezioni scadenza nell'attuale UI (creazione task e modifica task) passano dal calendario Forui: il vecchio `showDatePicker` Material è stato rimosso.
 - Date-only: `FCalendar` restituisce giorni UTC; il picker restituisce intenzionalmente `DateTime(year, month, day)` **locale**, come nella semantica precedente del campo scadenza. Annulla non modifica il valore; il comando Rimuovi scadenza resta distinto.
 - Controllare keyboard/focus, finestre Windows ridimensionate, dimensioni mobile, e test `apps/flutter/test/widget_test.dart`. Logica SQLite/outbox/sync invariata.
+
+### Correzioni riscontrate nei test
+
+- `FCalendar.grid` usa un header personalizzato compatto con pulsanti **Forui** per navigare tra mesi/anni; quello predefinito sforava di 26 px in una finestra stretta.
+- `NotesEditorControllerScope` mantiene i `TextEditingController` attivi fino allo smontaggio completo della route; chiamare `.whenComplete(controller.dispose)` subito dopo `showFDialog` li liberava prima della fine dell'animazione e causava eccezioni in Flutter.
+- Analisi e test widget del commit `cc0a6328` riusciti nella [CI Flutter 39977182371](https://github.com/andreadada/simple-notes/actions/runs/39977182371). Verificare separatamente anche le build native Windows/Android, ancora in esecuzione all'ultima osservazione.

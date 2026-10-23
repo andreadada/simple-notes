@@ -69,6 +69,7 @@ class LocalStore extends Notifier<LocalData> {
           tasks: [for (final t in state.tasks) if (t.id == id) changed else t],
           notes: state.notes,
         );
+        _changed();
         return;
       }
     }

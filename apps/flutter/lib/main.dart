@@ -809,7 +809,9 @@ class _NotesHomeState extends ConsumerState<NotesHome> {
                   onPress: () {
                     final text = subtaskInput.text.trim();
                     if (text.isEmpty || text.length > 255 ||
-                        editedSubtasks.length >= 50) return;
+                        editedSubtasks.length >= 50) {
+                      return;
+                    }
                     updateDialog(() {
                       editedSubtasks = [
                         ...editedSubtasks,

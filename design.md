@@ -81,6 +81,10 @@ User(id, googleSub, email), Device(id, userId, lastSeen), Session(id, deviceId, 
 - Segreti in Coolify e storage OS sicuro; TLS obbligatorio, rate-limit auth, auditing errori non sensibili, backup cifrati e test restore.
 - Nessuna chiave privata, token, keystore o credenziale reale committata.
 
+### Prossimo incremento P0: data-only e fusi orari (solo piano)
+
+Il futuro modello distingue `none`/`date` (giorno civile, nessuna ora) / `datetime` (data/ora, timezone IANA, istante UTC, offset DST) / `legacy` (dato `dueAt` precedente, non inferire automaticamente dal valore 00:00). Non equivale a funzionalità implementata: sono pianificati Flyway V7, Drift v5, protezione per vecchi client e test multi-device. Leggere [docs/due-dates-timezones.md](docs/due-dates-timezones.md) prima di sviluppare ricorrenze o reminder.
+
 ## 8. Promemoria e calendari
 - Android: notifiche locali prenotate + FCM per invalidazione/sync; gestione POST_NOTIFICATIONS, reboot e restrizioni exact alarms.
 - Windows: notification center, processo in tray opzionale; impossibile notificare a PC spento.

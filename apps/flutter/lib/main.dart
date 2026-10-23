@@ -120,7 +120,7 @@ class _NotesHomeState extends ConsumerState<NotesHome> {
           Section.today => !t.completed && t.dueAt != null && t.dueAt!.isBefore(today.add(const Duration(days: 1))),
           Section.next7 => !t.completed && t.dueAt != null && t.dueAt!.isBefore(next),
           Section.completed => t.completed,
-          Section.inbox => !t.completed && t.dueAt == null,
+          Section.inbox => !t.completed && t.listId == null,
           Section.everything => !t.completed,
           Section.notes => false,
         }).toList()..sort((a, b) => a.createdAt.compareTo(b.createdAt));
@@ -571,43 +571,100 @@ class _NotesHomeState extends ConsumerState<NotesHome> {
   }
 
   Widget taskDetails(LocalTask task) => Padding(
-        padding: const EdgeInsets.all(20),
+    padding: const EdgeInsets.all(20),
+    child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+      const Text('DETTAGLI', style: TextStyle(
+        color: NotesPalette.secondaryText, fontSize: 12)),
+      const SizedBox(height: 18),
+      Expanded(child: SingleChildScrollView(
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          const Text('DETTAGLI', style: TextStyle(color: Colors.grey, fontSize: 12)),
-          const SizedBox(height: 22),
-          Text(task.title, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w600)),
+          Text(task.title, style: const TextStyle(
+            fontSize: 20, fontWeight: FontWeight.w600)),
           const SizedBox(height: 12),
-          Text(task.dueAt == null ? 'Nessuna scadenza' : 'Scadenza: ${task.dueAt!.toLocal()}'),
+          Text(task.dueAt == null ? 'Nessuna scadenza'
+            : 'Scadenza: ${task.dueAt!.day}/${task.dueAt!.month}/${task.dueAt!.year}'),
+          const SizedBox(height: 10),
+          Text(task.priority == 0 ? 'Priorità normale'
+            : 'Priorità P${task.priority}',
+            style: TextStyle(
+              color: task.priority > 0
+                ? Colors.orangeAccent : NotesPalette.secondaryText,
+            )),
+          if (task.listId != null) ...[
+            const SizedBox(height: 10),
+            Text('Lista: ${ref.watch(localStoreProvider).lists
+                .where((list) => list.id == task.listId)
+                .firstOrNull?.title ?? 'Non disponibile'}'),
+          ],
+          if (task.tags.isNotEmpty) ...[
+            const SizedBox(height: 14),
+            Wrap(spacing: 7, runSpacing: 7, children: [
+              for (final tag in task.tags)
+                Chip(label: Text('#$tag')),
+            ]),
+          ],
           if (task.description.isNotEmpty) ...[
             const SizedBox(height: 20),
             const Text('DESCRIZIONE', style: TextStyle(
               color: NotesPalette.secondaryText, fontSize: 11)),
             const SizedBox(height: 8),
-            Text(task.description),
+            SelectableText(task.description),
           ],
-          const Spacer(),
-          FButton(
-            variant: FButtonVariant.outline,
-            mainAxisSize: MainAxisSize.min,
-            onPress: () => showTaskEditor(task),
-            prefix: const Icon(Icons.edit_outlined, size: 18),
-            child: const Text('Modifica'),
-          ),
-          TextButton.icon(
-            onPressed: () {
-              ref.read(localStoreProvider.notifier).deleteTask(task.id);
-              setState(() => selectedId = null);
-              Navigator.maybePop(context);
-            },
-            icon: const Icon(Icons.delete_outline), label: const Text('Elimina attività'),
-          ),
+          if (task.subtasks.isNotEmpty) ...[
+            const SizedBox(height: 20),
+            Text('SOTTOTASK  ·  '
+              '${task.subtasks.where((item) => item.completed).length}/'
+              '${task.subtasks.length}',
+              style: const TextStyle(color: NotesPalette.secondaryText,
+                fontSize: 11, fontWeight: FontWeight.w700)),
+            for (final item in task.subtasks)
+              CheckboxListTile(
+                key: Key('subtask-${item.id}'),
+                dense: true,
+                contentPadding: EdgeInsets.zero,
+                controlAffinity: ListTileControlAffinity.leading,
+                title: Text(item.title, style: TextStyle(
+                  decoration: item.completed
+                      ? TextDecoration.lineThrough : null)),
+                value: item.completed,
+                onChanged: (_) => ref.read(localStoreProvider.notifier)
+                  .toggleSubtask(task.id, item.id),
+              ),
+          ],
         ]),
-      );
+      )),
+      const SizedBox(height: 12),
+      FButton(
+        variant: FButtonVariant.outline,
+        mainAxisSize: MainAxisSize.min,
+        onPress: () => showTaskEditor(task),
+        prefix: const Icon(Icons.edit_outlined, size: 18),
+        child: const Text('Modifica'),
+      ),
+      TextButton.icon(
+        onPressed: () {
+          ref.read(localStoreProvider.notifier).deleteTask(task.id);
+          setState(() => selectedId = null);
+          Navigator.maybePop(context);
+        },
+        icon: const Icon(Icons.delete_outline),
+        label: const Text('Elimina attività'),
+      ),
+    ]),
+  );
 
   void showTaskDetails(LocalTask task) => showModalBottomSheet<void>(
-        context: context, isScrollControlled: true,
-        builder: (ctx) => SizedBox(height: 300, child: taskDetails(task)),
-      );
+    context: context, isScrollControlled: true,
+    builder: (sheetContext) => SizedBox(
+      height: MediaQuery.sizeOf(sheetContext).height * 0.75,
+      child: Consumer(builder: (context, watcher, _) {
+        final current = watcher.watch(localStoreProvider).tasks
+            .where((item) => item.id == task.id).firstOrNull;
+        return current == null ? const SizedBox.shrink()
+          : taskDetails(current);
+      }),
+    ),
+  );
 
   void showListEditor([LocalTaskList? list]) {
     final title = TextEditingController(text: list?.title ?? '');

@@ -7,7 +7,7 @@ Repository: **Simple Notes** — Flutter Windows/Android + Spring Boot/PG su Coo
 2. [docs/P0-DEVICE-CHECKS.md](docs/P0-DEVICE-CHECKS.md) — checklist di backup, deploy sicuro e test PC↔Android.
 3. [docs/HANDOFF.md](docs/HANDOFF.md) — contesto storico, subordinato allo stato corrente.
 4. [project.md](project.md) — checklist P0–P3 e `Edit Timespan`.
-5. [docs/task-organization.md](docs/task-organization.md), [docs/ui-forui.md](docs/ui-forui.md), [design.md](design.md).
+5. [docs/task-organization.md](docs/task-organization.md), [docs/due-dates-timezones.md](docs/due-dates-timezones.md) (**prossimo incremento, solo piano**), [docs/ui-forui.md](docs/ui-forui.md), [design.md](design.md).
 6. [docs/architecture.md](docs/architecture.md), [docs/api.md](docs/api.md), [docs/sync.md](docs/sync.md).
 7. [apps/flutter/README.md](apps/flutter/README.md), [docs/android-troubleshooting.md](docs/android-troubleshooting.md), [infra/README.md](infra/README.md).
 
@@ -30,6 +30,7 @@ Repository: **Simple Notes** — Flutter Windows/Android + Spring Boot/PG su Coo
 - Flutter: `apps/flutter`. API: `services/api`. Compose Coolify: `/docker-compose.yml`.
 - Package Android OAuth: **`it.andreadada.simplenotes`**; Web Client ID per `google_sign_in` su Android, Desktop Client ID per OAuth Windows. Mai committare secret, file credenziali, token o keystore.
 - La build Android con JDK 21 richiede la configurazione JVM del modulo in `android/app/build.gradle.kts`; **non ripristinare target Java 17 fisso** senza considerare Kotlin 21.
+- Per modifiche a scadenze e timezone seguire [docs/due-dates-timezones.md](docs/due-dates-timezones.md): value object `none/date/datetime/legacy`, Flyway V7/Drift v5, DST/ambiguità 00:00 e protezione dei vecchi client. È un **piano**, non codice pronto.
 - Prossima priorità: **prima** backup PostgreSQL reale e restore isolato/offsite, **poi** deploy backend V5+V6 e verifica PC↔Android (liste, tag, sottotask, conflitti/offline e sessioni). Solo dopo, scadenze con orario e fusi, ricorrenze e reminder nativi. Vedere `docs/P0-DEVICE-CHECKS.md`; non presupporre che Coolify abbia già applicato V6. Avatar Google (claim picture) richiede il backend con migration Flyway V4.
 
 **Su qualsiasi incongruenza tra handoff e codice/CI più recente, verificare e aggiornare la documentazione invece di inventare uno stato.**

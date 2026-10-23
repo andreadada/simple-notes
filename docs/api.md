@@ -30,4 +30,6 @@ Base URL `/api/v1`. Per endpoint privati: header `Authorization: Bearer <accessT
 - `entityType=task` ora include `listId`, `priority`, `tags`, `subtasks` (vedi [task-organization.md](task-organization.md)); `listId` è validato rispetto all'utente JWT.
 - Contratto ed esempi: [sync.md](sync.md).
 
+**Prossimo contratto (NON implementato):** campo oggetto `due` con modalità `none/date/datetime/legacy`, timezone IANA, offset esplicito per DST, Flyway V7 e gating vecchi client. Vedi [due-dates-timezones.md](due-dates-timezones.md). **Adesso** l'API usa ancora `dueAt`.
+
 **Nota:** i vecchi endpoint REST non alimentano ancora il change log: per dati multi-device usare esclusivamente `/sync/apply`. Mancano rate limiting, prove di conflitto su device reali e verifica del nuovo deploy Coolify; UI Forui e test simulati aggiunti.

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:forui/forui.dart';
 import 'ui/notes_theme.dart';
+import 'ui/inline_editable_title.dart';
 import 'ui/notes_dialogs.dart';
 import 'ui/sync_conflict_dialog.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -420,7 +421,17 @@ class _NotesHomeState extends ConsumerState<NotesHome> {
     );
     return Scaffold(
       appBar: desktop ? null : AppBar(
-        title: Text(pageTitle),
+        title: activeList == null
+          ? Text(pageTitle)
+          : InlineEditableTitle(
+              key: ValueKey('inline-list-title-${activeList.id}'),
+              value: activeList.title,
+              semanticsLabel: 'Titolo lista modificabile',
+              style: const TextStyle(fontSize: 20,
+                fontWeight: FontWeight.w600),
+              onSave: (title) => ref.read(localStoreProvider.notifier)
+                  .renameList(activeList.id, title),
+            ),
         actions: [Center(child: accountControl(compact: true))],
       ),
       drawer: desktop ? null : Drawer(child: SafeArea(child: navigation())),
@@ -434,7 +445,18 @@ class _NotesHomeState extends ConsumerState<NotesHome> {
             Padding(
               padding: const EdgeInsets.fromLTRB(25, 26, 25, 12),
               child: Align(alignment: Alignment.centerLeft,
-                child: Text(pageTitle, style: const TextStyle(fontSize: 23, fontWeight: FontWeight.bold))),
+                child: activeList == null
+                  ? Text(pageTitle, style: const TextStyle(
+                      fontSize: 23, fontWeight: FontWeight.bold))
+                  : InlineEditableTitle(
+                      key: ValueKey('inline-list-title-${activeList.id}'),
+                      value: activeList.title,
+                      semanticsLabel: 'Titolo lista modificabile',
+                      style: const TextStyle(fontSize: 23,
+                        fontWeight: FontWeight.bold),
+                      onSave: (title) => ref.read(localStoreProvider.notifier)
+                          .renameList(activeList.id, title),
+                    )),
             ),
           if (section != Section.notes)
             Padding(
@@ -468,13 +490,6 @@ class _NotesHomeState extends ConsumerState<NotesHome> {
                 ),
                 if (activeListId != null) ...[
                   const SizedBox(width: 8),
-                  FButton(
-                    key: const Key('rename-list'),
-                    variant: FButtonVariant.ghost,
-                    mainAxisSize: MainAxisSize.min,
-                    onPress: () => showListEditor(activeList),
-                    child: const Text('Rinomina'),
-                  ),
                   FButton(
                     key: const Key('delete-list'),
                     variant: FButtonVariant.ghost,
@@ -666,15 +681,15 @@ class _NotesHomeState extends ConsumerState<NotesHome> {
     ),
   );
 
-  void showListEditor([LocalTaskList? list]) {
-    final title = TextEditingController(text: list?.title ?? '');
+  void showListEditor() {
+    final title = TextEditingController();
     showFDialog<void>(
       context: context,
       builder: (ctx, style, animation) => NotesEditorControllerScope(
         controllers: [title],
         child: NotesDialog(
           style: style, animation: animation,
-          title: Text(list == null ? 'Nuova lista' : 'Rinomina lista'),
+          title: const Text('Nuova lista'),
           body: FTextField(
             key: const Key('list-title'),
             control: FTextFieldControl.managed(controller: title),
@@ -694,12 +709,7 @@ class _NotesHomeState extends ConsumerState<NotesHome> {
               onPress: () async {
                 final value = title.text.trim();
                 if (value.isEmpty || value.length > 255) return;
-                if (list == null) {
-                  await ref.read(localStoreProvider.notifier).addList(value);
-                } else {
-                  await ref.read(localStoreProvider.notifier).renameList(
-                    list.id, value);
-                }
+                await ref.read(localStoreProvider.notifier).addList(value);
                 if (ctx.mounted) Navigator.pop(ctx);
               },
               child: const Text('Salva'),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:forui/forui.dart';
 import 'ui/notes_theme.dart';
+import 'ui/notes_dialogs.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'data/local_store.dart';
@@ -120,9 +121,9 @@ class _NotesHomeState extends ConsumerState<NotesHome> {
   }
 
   Future<void> selectDue() async {
-    final date = await showDatePicker(
-      context: context, initialDate: dueAt ?? DateTime.now(),
-      firstDate: DateTime(2020), lastDate: DateTime(2100),
+    final date = await showNotesDatePicker(
+      context,
+      initialDate: dueAt,
     );
     if (date != null && mounted) setState(() => dueAt = date);
   }
@@ -498,57 +499,81 @@ class _NotesHomeState extends ConsumerState<NotesHome> {
       );
 
   void showTaskEditor(LocalTask task) {
-    final controller = TextEditingController(text: task.title);
+    final title = TextEditingController(text: task.title);
     DateTime? selectedDue = task.dueAt;
-    showDialog<void>(
+    showFDialog<void>(
       context: context,
-      builder: (dialogContext) => StatefulBuilder(
-        builder: (dialogContext, updateDialog) => AlertDialog(
+      builder: (dialogContext, style, animation) => StatefulBuilder(
+        builder: (dialogContext, updateDialog) => NotesDialog(
+          style: style,
+          animation: animation,
           title: const Text('Modifica attività'),
-          content: SizedBox(width: 420, child: Column(
+          body: Column(
             mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              TextField(
+              FTextField(
                 key: const Key('edit-task-title'),
-                controller: controller,
-                decoration: const InputDecoration(labelText: 'Titolo'),
+                control: FTextFieldControl.managed(controller: title),
+                label: const Text('Titolo'),
+                hint: 'Cosa devi fare?',
+                autofocus: true,
               ),
-              const SizedBox(height: 12),
+              const SizedBox(height: 20),
+              const Text('SCADENZA', style: TextStyle(
+                fontSize: 11,
+                fontWeight: FontWeight.w600,
+                color: NotesPalette.secondaryText,
+                letterSpacing: 0.6,
+              )),
+              const SizedBox(height: 8),
               Row(children: [
-                Expanded(child: Text(selectedDue == null
-                    ? 'Nessuna scadenza'
-                    : 'Scadenza: ${selectedDue!.day}/${selectedDue!.month}/${selectedDue!.year}')),
-                IconButton(
-                  tooltip: 'Scegli data',
-                  icon: const Icon(Icons.event_outlined),
-                  onPressed: () async {
-                    final picked = await showDatePicker(
-                      context: dialogContext,
-                      initialDate: selectedDue ?? DateTime.now(),
-                      firstDate: DateTime(2020), lastDate: DateTime(2100),
+                Expanded(child: FButton(
+                  key: const Key('edit-task-due'),
+                  variant: FButtonVariant.outline,
+                  onPress: () async {
+                    final picked = await showNotesDatePicker(
+                      dialogContext, initialDate: selectedDue,
                     );
                     if (picked != null && dialogContext.mounted) {
                       updateDialog(() => selectedDue = picked);
                     }
                   },
-                ),
-                IconButton(
-                  tooltip: 'Rimuovi data',
-                  icon: const Icon(Icons.event_busy),
-                  onPressed: () => updateDialog(() => selectedDue = null),
-                ),
+                  prefix: const Icon(Icons.calendar_today_outlined, size: 17),
+                  child: Text(selectedDue == null
+                      ? 'Nessuna scadenza'
+                      : '${selectedDue!.day.toString().padLeft(2, '0')}/'
+                        '${selectedDue!.month.toString().padLeft(2, '0')}/'
+                        '${selectedDue!.year}'),
+                )),
+                if (selectedDue != null) ...[
+                  const SizedBox(width: 8),
+                  FButton.icon(
+                    key: const Key('clear-task-due'),
+                    variant: FButtonVariant.outline,
+                    onPress: () => updateDialog(() => selectedDue = null),
+                    child: const Icon(Icons.close, size: 17),
+                  ),
+                ],
               ]),
             ],
-          )),
+          ),
           actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(dialogContext),
+            FButton(
+              variant: FButtonVariant.ghost,
+              mainAxisSize: MainAxisSize.min,
+              onPress: () => Navigator.pop(dialogContext),
               child: const Text('Annulla'),
             ),
-            FilledButton(
-              onPressed: () async {
+            FButton(
+              key: const Key('save-task'),
+              mainAxisSize: MainAxisSize.min,
+              onPress: () async {
+                if (title.text.trim().isEmpty) return;
                 await ref.read(localStoreProvider.notifier).editTask(
-                  task.id, title: controller.text, dueAt: selectedDue,
+                  task.id,
+                  title: title.text,
+                  dueAt: selectedDue,
                 );
                 if (dialogContext.mounted) Navigator.pop(dialogContext);
               },
@@ -557,29 +582,65 @@ class _NotesHomeState extends ConsumerState<NotesHome> {
           ],
         ),
       ),
-    ).whenComplete(controller.dispose);
+    ).whenComplete(title.dispose);
   }
 
   void showNoteEditor(LocalNote note) {
     final title = TextEditingController(text: note.title);
     final body = TextEditingController(text: note.body);
-    showDialog<void>(context: context, builder: (dialogContext) => AlertDialog(
-      title: const Text('Modifica nota'),
-      content: SizedBox(width: 490, child: Column(mainAxisSize: MainAxisSize.min, children: [
-        TextField(controller: title, decoration: const InputDecoration(labelText: 'Titolo')),
-        const SizedBox(height: 12),
-        TextField(controller: body, minLines: 4, maxLines: 10,
-          decoration: const InputDecoration(labelText: 'Testo')),
-      ])),
-      actions: [
-        TextButton(onPressed: () => Navigator.pop(dialogContext), child: const Text('Annulla')),
-        FilledButton(onPressed: () async {
-          await ref.read(localStoreProvider.notifier).editNote(
-            note.id, title: title.text, body: body.text,
-          );
-          if (dialogContext.mounted) Navigator.pop(dialogContext);
-        }, child: const Text('Salva')),
-      ],
-    )).whenComplete(() { title.dispose(); body.dispose(); });
+    showFDialog<void>(
+      context: context,
+      builder: (dialogContext, style, animation) => NotesDialog(
+        style: style,
+        animation: animation,
+        maxWidth: 540,
+        title: const Text('Modifica nota'),
+        body: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            FTextField(
+              key: const Key('edit-note-title'),
+              control: FTextFieldControl.managed(controller: title),
+              label: const Text('Titolo'),
+              hint: 'Senza titolo',
+              autofocus: true,
+            ),
+            const SizedBox(height: 16),
+            FTextField.multiline(
+              key: const Key('edit-note-body'),
+              control: FTextFieldControl.managed(controller: body),
+              label: const Text('Contenuto'),
+              hint: 'Scrivi qualcosa...',
+              minLines: 4,
+              maxLines: 10,
+            ),
+          ],
+        ),
+        actions: [
+          FButton(
+            variant: FButtonVariant.ghost,
+            mainAxisSize: MainAxisSize.min,
+            onPress: () => Navigator.pop(dialogContext),
+            child: const Text('Annulla'),
+          ),
+          FButton(
+            key: const Key('save-note'),
+            mainAxisSize: MainAxisSize.min,
+            onPress: () async {
+              await ref.read(localStoreProvider.notifier).editNote(
+                note.id,
+                title: title.text,
+                body: body.text,
+              );
+              if (dialogContext.mounted) Navigator.pop(dialogContext);
+            },
+            child: const Text('Salva'),
+          ),
+        ],
+      ),
+    ).whenComplete(() {
+      title.dispose();
+      body.dispose();
+    });
   }
 }

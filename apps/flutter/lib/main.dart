@@ -563,7 +563,7 @@ class _NotesHomeState extends ConsumerState<NotesHome> {
                           title: Text(task.title, style: TextStyle(
                             decoration: task.completed ? TextDecoration.lineThrough : null)),
                           subtitle: task.dueAt == null ? null : Text(
-                            'Scadenza: ${task.dueAt!.day}/${task.dueAt!.month}/${task.dueAt!.year}'),
+                            'Scadenza: ${task.dueAt!.day}/${task.dueAt!.month}/${task.dueAt!.year}${task.dueAt!.hour == 0 && task.dueAt!.minute == 0 ? '' : ' ${task.dueAt!.hour.toString().padLeft(2, '0')}:${task.dueAt!.minute.toString().padLeft(2, '0')}'}'),
                           onTap: () {
                             setState(() => selectedId = task.id);
                             if (!desktop) showTaskDetails(task);
@@ -757,7 +757,7 @@ class _NotesHomeState extends ConsumerState<NotesHome> {
     final tags = TextEditingController(text: task.tags.join(', '));
     final dueTime = TextEditingController(text: task.dueAt == null ||
       (task.dueAt!.hour == 0 && task.dueAt!.minute == 0)
-      ? '' : '${task.dueAt!.hour.toString().padLeft(2, '0')}:' 
+      ? '' : '${task.dueAt!.hour.toString().padLeft(2, '0')}:'
         '${task.dueAt!.minute.toString().padLeft(2, '0')}');
     final subtaskInput = TextEditingController();
     var selectedList = task.listId;

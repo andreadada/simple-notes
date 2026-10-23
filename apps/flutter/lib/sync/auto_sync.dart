@@ -91,7 +91,9 @@ class _AutoSyncHostState extends ConsumerState<AutoSyncHost>
         return;
       }
       if (result.message?.startsWith('Sync non riuscita') ?? false) {
-        if (_failures < 5) _failures++;
+        if (_failures < 5) {
+          _failures++;
+        }
         final seconds = 5 * (1 << (_failures - 1)); // 5, 10, 20, 40, 80.
         _retry?.cancel();
         _retry = Timer(Duration(seconds: seconds), () {

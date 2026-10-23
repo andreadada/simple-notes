@@ -61,4 +61,32 @@ void main() {
     await db.close();
   });
 
+
+  test('Only local edits advance auto-sync revision, not remote reloads', () async {
+    final db = AppDatabase(NativeDatabase.memory());
+    final container = ProviderContainer(overrides: [
+      databaseProvider.overrideWithValue(db),
+      initialDataProvider.overrideWithValue(const LocalData()),
+    ]);
+    addTearDown(() async {
+      container.dispose();
+      await db.close();
+    });
+
+    expect(container.read(localMutationRevisionProvider), 0);
+    await container.read(localStoreProvider.notifier).addTask('Auto-sync test');
+    expect(container.read(localMutationRevisionProvider), 1);
+    expect(await db.pendingCount(), 1);
+
+    // Applying server results never creates fresh local mutations, and
+    // must not cause a sync-pull -> reload -> sync feedback loop.
+    await container.read(localStoreProvider.notifier).reload();
+    expect(container.read(localMutationRevisionProvider), 1);
+
+    final task = container.read(localStoreProvider).tasks.single;
+    await container.read(localStoreProvider.notifier).toggleTask(task.id);
+    expect(container.read(localMutationRevisionProvider), 2);
+    expect(await db.pendingCount(), 2);
+  });
+
 }

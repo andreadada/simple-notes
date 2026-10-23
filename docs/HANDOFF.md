@@ -10,7 +10,8 @@
 - **Windows:** compilazione ed esecuzione reali, login Google Desktop completato manualmente (21/10/2026).
 - **Android:** dispositivo fisico rilevato (`2412DPC0AG`), installazione e avvio iniziali verificati; dopo la correzione finale Gradle/JVM (23/10) l'utente riferisce **«funziona»**. Non è stato però confermato esplicitamente, dopo quest'ultima correzione, **se funziona anche il login Google Android**: richiedere/effettuare quella verifica prima di considerarlo completato.
 - **CI:** [Flutter CI run 39955667440](https://github.com/andreadada/simple-notes/actions/runs/39955667440) riuscita: analisi e test Flutter, build Windows, build Android con **JDK 17 e JDK 21**. Sono build tecniche, non prove di autenticazione/sync reali.
-- **Sync:** implementata lato client come **azione manuale sperimentale**, con outbox SQLite e push/pull delta; **nessun test end-to-end Windows↔Android confermato**.
+- **Sync:** nuova auto-sync foreground su avvio/login, modifica locale, riconnessione, ritorno attivo e pull ogni 60 s (con debounce e retry esponenziale); comando manuale resta nel menu account. **Nessun test end-to-end Windows↔Android confermato**.
+- **Account:** avatar Google (claim opzionale `picture`) e menu compatto al posto dei due pulsanti; backend Flyway V4 conserva la foto. **Richiede redeploy Coolify** e nuovo login per valorizzare la foto di utenti preesistenti.
 - **Stato del prodotto:** **P0 IN CORSO, non pronto per release pubblica**. La roadmap e i criteri di completamento sono in [../project.md](../project.md).
 
 ## Percorso di lettura per chi inizia da zero
@@ -108,7 +109,7 @@ Per istruzioni dettagliate e controlli SHA-1 consultare [android-troubleshooting
 | Android avvio dopo ultimi fix | «Perfetto funziona», 23/10 | Segnalato funzionante dall'utente |
 | Login Google Android dopo ultimi fix | Nessuna conferma esplicita distinta dall'avvio | Da verificare |
 | Creazione task/note locali | Codice e test Flutter | Implementato, test E2E da estendere |
-| Sync manuale | `CloudSync.synchronize()` e API delta | Implementato, test PC↔Android mancante |
+| Auto-sync foreground + manuale | `AutoSyncHost` + `CloudSync.synchronize()`, outbox/REST delta | Implementato, test PC↔Android mancante |
 | Sync automatica e UI conflitti | Non implementati | Da fare |
 | Backup/ripristino, rate limit, notifiche, release firmata | Non verificati o mancanti | Da fare |
 
@@ -117,7 +118,7 @@ Per istruzioni dettagliate e controlli SHA-1 consultare [android-troubleshooting
 1. **Accertare login Android** sul dispositivo fisico con Google (dopo il fix package/gradle) e testare restore sessione dopo riavvio. Se fallisce, usare [android-troubleshooting.md](android-troubleshooting.md), non modificare alla cieca Coolify.
 2. **Test manuale sync a due device** con lo stesso account: creare `Test PC → Android` in Windows → `Sincronizza ora` Windows → sync Android e verificare; creare `Test Android → PC` sul telefono, sync Android → sync Windows; ripetere con una nota.
 3. **Verificare offline/retry e conflitti**: creare item offline e sincronizzare al ritorno della rete; una collisione deve **preservare l'outbox**, non sovrascrivere contenuti silenziosamente. Controllare isolamento dati al cambio account.
-4. Solo dopo E2E stabile, sviluppare **sync automatica** (all'avvio, riconnessione, dopo modifica, retry/backoff) con test; poi reminder/notifiche e altre P0 secondo [../project.md](../project.md).
+4. L'**auto-sync foreground è ora implementata**: verificarne il comportamento a due dispositivi, gestione di errori e conflitti, poi introdurre eventuale background sync e reminder/notifiche secondo [../project.md](../project.md).
 5. Prima di pubblicare: firma Android **release** (attualmente debug per test), backup e prova restore PostgreSQL, rate limiting auth, sicurezza e validazione completa dei flussi.
 
 ## Convenzioni per chi implementa

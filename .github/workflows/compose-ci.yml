@@ -3,6 +3,8 @@ on:
   push:
     paths:
       - docker-compose.yml
+      - infra/backup-postgres.sh
+      - infra/verify-restore.sh
       - .github/workflows/compose-ci.yml
   pull_request:
     paths:
@@ -17,6 +19,8 @@ jobs:
       contents: read
     steps:
       - uses: actions/checkout@v4
+      - name: Validate backup script syntax (no Docker operations)
+        run: bash -n infra/backup-postgres.sh infra/verify-restore.sh
       - name: Validate build Compose without runtime secrets
         run: |
           # Coolify uses a build-time.env with no runtime-only credentials.

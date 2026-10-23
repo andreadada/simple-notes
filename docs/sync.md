@@ -47,9 +47,9 @@ Quando una mutazione riceve 409, il client conserva **tutte** le modifiche in co
 
 Per i test: `apps/flutter/test/sync_conflict_test.dart` copre note concorrenti PC/telefono simulati, retry offline, entrambe le risoluzioni. `SyncIntegrationTest` verifica query latest e isolamento per account. Il protocollo mantiene limitazioni per la risoluzione di delete-vs-edit, da trattare con copia/recupero in una nuova UUID.
 
-## Prossima estensione date-only / timezone (solo piano)
+## Estensione date-only / timezone (T1 nel codice backend, non deployato)
 
-Il campo `dueAt` attuale è un istante UTC e non preserva il significato di un *giorno civile* o la differenza tra `00:00` esplicita e «solo giorno». Prima delle ricorrenze è progettato un nuovo campo `due` con `none/date/datetime/legacy`, migrazioni additive e protezione contro client vecchi. Vedi [due-dates-timezones.md](due-dates-timezones.md). Flyway V7/Drift v5 **non** sono ancora implementati; non cambiare i payload senza relativo version gating.
+Il campo `due` è ora supportato nel **codice backend**: `{kind:none}`, `{kind:date,date:YYYY-MM-DD}`, `{kind:datetime,date,time,timeZone,instant,offsetSeconds}`, `{kind:legacy,instant}`. Viene validato contro le regole IANA e restituito come payload canonico anche nei delta e nel latest. `dueAt` è conservato per gli istanti legacy e timed, ed è nullo/vuoto per date-only. Vecchi client senza `due` non possono sovrascrivere date/datetime: HTTP 426 con `CLIENT_UPGRADE_REQUIRED`, **non** un normale 409. `GET /api/v1/capabilities` richiede JWT e presenta `taskDueSchema: 1`. **Drift v5, gestione 426/capability nel client, migrazione PostgreSQL reale e deploy Coolify non ancora eseguiti.** Vedere [due-dates-timezones.md](due-dates-timezones.md).
 
 ## Organizzazione attività — sync v1 estesa
 

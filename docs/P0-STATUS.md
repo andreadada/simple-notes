@@ -37,8 +37,13 @@
 
 ## Prossima implementazione progettata, non sviluppata
 
-- Piano dettagliato: [due-dates-timezones.md](due-dates-timezones.md). Il prossimo incremento separa scadenze `none/date/datetime/legacy`, introduce timezone IANA e gestione corretta del cambio ora, con **Flyway V7 + Drift v5 ancora da implementare**. L'attuale UI HH:mm ha superato le CI Flutter [40011701417](https://github.com/andreadada/simple-notes/actions/runs/40011701417) e [40011789270](https://github.com/andreadada/simple-notes/actions/runs/40011789270): non equivale a test real-device.
+- Piano dettagliato: [due-dates-timezones.md](due-dates-timezones.md). T1 backend + Flyway V7 **introdotti nel repository**, non deployati. Il prossimo incremento **T2 Flutter** introduce Drift v5 e poi la UI T3; test hardware e gestione 426 ancora necessari. L'attuale UI HH:mm ha superato le CI Flutter [40011701417](https://github.com/andreadada/simple-notes/actions/runs/40011701417) e [40011789270](https://github.com/andreadada/simple-notes/actions/runs/40011789270): non equivale a test real-device.
 - Gate preliminare immutato: backup PostgreSQL reale e restore isolato/offsite, deploy V5+V6 se non già effettuato, poi verifica fisica dei flussi attuali.
+
+## Avanzamento T1 backend (solo repository)
+
+- Nel commit [1bafec0](https://github.com/andreadada/simple-notes/commit/1bafec046dd0cbd3f18b8933873da7381fc28a26) sono stati introdotti `TaskDue`, `V7__task_due_semantics.sql`, capability backend e protezione 426 vecchi client, con test Java. La CI deve essere verificata e **Coolify non è stato aggiornato**.
+- Flutter continua a usare Drift v4 / `dueAt`; T2 e T3 ancora da fare. Non installare un nuovo client che scriva `due` senza prima verificare che il backend aggiornato supporti `taskDueSchema=1` dopo un backup PostgreSQL verificato.
 
 ## Rimane da fare per dichiarare P0 completo
 

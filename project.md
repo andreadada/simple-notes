@@ -133,7 +133,7 @@
 Specifica **solo progettuale**: [docs/due-dates-timezones.md](docs/due-dates-timezones.md). L'editor HH:mm esistente ha CI Flutter verde; NON distingue ancora mezzanotte esplicita da «solo giorno».
 
 - [ ] T0: backup reale, ripristino isolato, copia offsite, Coolify V5+V6 e test E2E del P0 attuale.
-- [ ] T1: nuovo payload `due`, capability server/client, validazione Java timezone/DST, Flyway V7 e test.
+- [ ] T1: **codice backend e test aggiunti** (commit `1bafec0`), Flyway V7/capabilities/protezione 426; attende CI verificata e deploy post-backup. Capability lato client rimane in T2.
 - [ ] T2: value object Flutter `TaskDue`, Drift v5 e migrazione senza perdita di SQLite/outbox, sync multi-device.
 - [ ] T3: UI Forui solo-giorno/data+ora/fuso, scelta DST, filtri Oggi/7 giorni, test widget.
 - [ ] T4: CI, backend-first deploy sicuro ed E2E PC↔Android; solo dopo ricorrenze e notifiche.
@@ -221,3 +221,5 @@ Esempio: `2026-10-21 14:20 CEST | commit abc1234 | Aggiunto modulo promemoria e 
 - 2026-10-23 | feat(tasks) | Primo editor scadenza HH:mm opzionale via dueAt esistente, senza migrazioni; semantica date-only/timezone esplicita ancora da realizzare. Verifiche CI/hardware separate.
 
 - 2026-10-23 | docs(plan) | Specifica P0 scadenze date-only/datetime/legacy, timezone IANA/DST, backend Flyway V7, Flutter Drift v5, compatibilità old-client e matrice test in `docs/due-dates-timezones.md`. Nessuna migrazione applicata; commit documentale nella cronologia Git.
+
+- 2026-10-23 | commit 1bafec0 | T1 backend: `TaskDue` con date/ora/fuso e DST, Flyway V7 additiva, sync con payload `due`, protezione HTTP 426 old-client, capabilities e test. **Non deployato; Flutter T2 pendente.**

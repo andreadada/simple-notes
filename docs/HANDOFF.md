@@ -6,6 +6,10 @@
 
 Per intervenire su scadenze, SQLite, Flyway o sync leggere **[due-dates-timezones.md](due-dates-timezones.md)**: pianifica il tipo `none/date/datetime/legacy`, la migrazione PostgreSQL V7 e Flutter Drift v5, timezone IANA/DST, protezione dei client precedenti e test. **Non è implementato**. Le CI per l'editor HH:mm già esistente sono verdi ([40011789270](https://github.com/andreadada/simple-notes/actions/runs/40011789270)). Restano gate backup/restore reale, deploy sicuro e prova hardware in [P0-DEVICE-CHECKS.md](P0-DEVICE-CHECKS.md).
 
+## T1 backend introdotto nel repository (23 ottobre 2026)
+
+Commit [1bafec0](https://github.com/andreadada/simple-notes/commit/1bafec046dd0cbd3f18b8933873da7381fc28a26): aggiunti migrazione Flyway V7, validazione `TaskDue` incl. DST, `GET /api/v1/capabilities` autenticato e blocco HTTP 426 `CLIENT_UPGRADE_REQUIRED` per vecchi client che tentano di sovrascrivere nuove scadenze. **Non deployato su Coolify**; Flutter ancora Drift v4 e senza `TaskDue`/gestione 426. Leggere [due-dates-timezones.md](due-dates-timezones.md) per T2, T3 e procedure di backup.
+
 ## TL;DR: che cos'è e a che punto siamo
 
 - **Obiettivo:** app originale di produttività per Windows 11 e Android, con note, attività, futuro calendario/promemoria e moduli avanzati ispirati funzionalmente a TickTick, non una copia.

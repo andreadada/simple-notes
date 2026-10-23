@@ -31,6 +31,7 @@ Repository: **Simple Notes** — Flutter Windows/Android + Spring Boot/PG su Coo
 - Package Android OAuth: **`it.andreadada.simplenotes`**; Web Client ID per `google_sign_in` su Android, Desktop Client ID per OAuth Windows. Mai committare secret, file credenziali, token o keystore.
 - La build Android con JDK 21 richiede la configurazione JVM del modulo in `android/app/build.gradle.kts`; **non ripristinare target Java 17 fisso** senza considerare Kotlin 21.
 - Per modifiche a scadenze e timezone seguire [docs/due-dates-timezones.md](docs/due-dates-timezones.md): value object `none/date/datetime/legacy`, Flyway V7/Drift v5, DST/ambiguità 00:00 e protezione dei vecchi client. È un **piano**, non codice pronto.
+- T1 backend `TaskDue`/Flyway V7/protezione 426/capabilities aggiunto nel commit `1bafec0`; **non distribuito**. In T2 il Flutter client deve leggere `/api/v1/capabilities`, gestire 426 senza perdita di outbox e migrare Drift v4→v5. Prima del deploy backup/restore reale.
 - Prossima priorità: **prima** backup PostgreSQL reale e restore isolato/offsite, **poi** deploy backend V5+V6 e verifica PC↔Android (liste, tag, sottotask, conflitti/offline e sessioni). Solo dopo, scadenze con orario e fusi, ricorrenze e reminder nativi. Vedere `docs/P0-DEVICE-CHECKS.md`; non presupporre che Coolify abbia già applicato V6. Avatar Google (claim picture) richiede il backend con migration Flyway V4.
 
 **Su qualsiasi incongruenza tra handoff e codice/CI più recente, verificare e aggiornare la documentazione invece di inventare uno stato.**

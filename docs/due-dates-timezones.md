@@ -1,13 +1,22 @@
 # P0 — Scadenze, date-only e fusi orari
 
-> **Piano tecnico del 23 ottobre 2026 — NON IMPLEMENTATO.** Il primo input orario HH:mm è già su main e ha superato le CI Flutter [40011701417](https://github.com/andreadada/simple-notes/actions/runs/40011701417) e [40011789270](https://github.com/andreadada/simple-notes/actions/runs/40011789270). Questo documento definisce il **prossimo incremento**, non certifica migrazioni o deploy effettuati.
+> **Stato del 23 ottobre 2026 — T1 BACKEND IMPLEMENTATO SU GITHUB, NON DEPLOYATO.** Il primo input orario HH:mm è già su main e ha superato le CI Flutter [40011701417](https://github.com/andreadada/simple-notes/actions/runs/40011701417) e [40011789270](https://github.com/andreadada/simple-notes/actions/runs/40011789270). Questo documento definisce l'intero incremento: **solo T1 backend è stato introdotto nel codice** (commit [`1bafec0`](https://github.com/andreadada/simple-notes/commit/1bafec046dd0cbd3f18b8933873da7381fc28a26)). La CI backend deve essere verificata separatamente e il database Coolify **NON è stato migrato**. T0, T2, T3 e T4 ancora aperti.
+
+## Implementazione disponibile nel repository — backend T1
+
+- Nuovo `TaskDue.java` con quattro modalità, controllo del fuso IANA e selezione dell'offset DST per il fold.
+- Migrazione **Flyway V7** additiva con `due_kind`, `due_date`, `due_time`, `due_timezone`, `due_offset_seconds`; backfill `legacy` o `none` senza dedurre che mezzanotte indichi solo-data.
+- `SyncService` riconosce il campo `due`, lo salva nel DB e nel change log. Le vecchie scritture `dueAt` continuano a funzionare su task `none/legacy`.
+- Una modifica priva di `due` a un task `date/datetime` produce **426** con `code: CLIENT_UPGRADE_REQUIRED`; stessa protezione sul vecchio `PUT /tasks/{id}`. Preservare l'outbox lato client: la gestione specifica 426 nei client è **ancora da sviluppare in T2**.
+- `GET /api/v1/capabilities` (richiede autenticazione) dichiara `taskDueSchema: 1`. Un client T2/T3 dovrà verificare questa capability **prima** di creare task con formato moderno.
+- Test Java: validazione date-only/00:00/DST gap/fold, sync+privacy/idempotenza/upgrade e prova di migrazione PostgreSQL popolato V6→V7. **Verificare la CI**; test hardware e deploy ancora mancanti.
 
 ## Problema effettivo nel codice
 
 - `LocalTask.dueAt` (`apps/flutter/lib/data/models.dart`) rappresenta sia una scadenza solo-giorno che una scadenza con ora. `00:00` immessa esplicitamente è indistinguibile da un orario non specificato.
 - `showNotesDatePicker()` restituisce mezzanotte locale; `cloud_sync.dart` converte `dueAt` in UTC; il server usa `Instant`; `app_database.dart` lo rilegge con `toLocal()`. Un task «entro il 26 ottobre» rischia di apparire in un altro giorno cambiando fuso.
 - Le sezioni Oggi / Prossimi 7 giorni confrontano timestamp. Il dettaglio task ancora non mostra l'ora, e non esiste timezone IANA persistente.
-- Stato schema: **Drift v4**, **Flyway V6**. La nuova UI HH:mm non ha cambiato il DB né il protocollo; test su dispositivi fisici mancanti.
+- Stato attuale: Flutter **Drift v4** e UI HH:mm senza semantica date-only; backend **Flyway V7 ora nel repository**, ma Coolify potrebbe ancora usare una versione precedente. Non dedurre deploy dal codice.
 
 ## Decisione architetturale
 
@@ -39,12 +48,12 @@ Il backend deve verificare che `instant` concordi con data/ora/`timeZone`/`offse
 
 ## Migrazioni incrementali — da sviluppare
 
-**Backend: `V7__task_due_semantics.sql`**
+**Backend: `V7__task_due_semantics.sql` — presente nel codice, verifica CI/deploy ancora distinta**
 - Conservare `task.due_at TIMESTAMPTZ`, aggiungere `due_kind`, `due_date DATE`, `due_time TIME` (precisione minuti), `due_timezone VARCHAR(128)`, `due_offset_seconds INTEGER`; vincoli `CHECK` per combinazioni ammesse.
 - Backfill: `due_at IS NULL -> none` e `due_at IS NOT NULL -> legacy`, senza reinterpretare date già archiviate.
 - Spring Boot: introdurre `TaskDue` e validazione `LocalDate`/`LocalTime`/`ZoneId`/`ZoneRules`; serializzare i campi canonici nel change log, preservando compatibilità. Test con PostgreSQL/Testcontainers e dati provenienti da V6.
 
-**Flutter: Drift `schemaVersion 5`**
+**Flutter: Drift `schemaVersion 5` — DA IMPLEMENTARE (T2)**
 - Aggiungere a `task_entries` `due_kind`, `due_date` (ISO text), `due_time` (`HH:mm` text), `due_timezone`, `due_offset_seconds`; conservare `due_at` durante la migrazione.
 - `onUpgrade(from < 5)`: backfill `legacy/none` senza azzerare task, `remoteVersion`, tombstone, `pendingMutations`, cursor o account. Le operazioni già in coda, anche se in formato precedente, devono essere inviate senza inferenze e senza riordinamento.
 - `LocalTask`, `LocalStore`, `AppDatabase.snapshot/upsertTask/applyRemote`, `CloudSync` e confronto conflitti si devono basare sul value object; non mantenere due fonti di verità.
@@ -71,7 +80,7 @@ Il backend deve verificare che `instant` concordi con data/ora/`timeZone`/`offse
 ## Piano eseguibile, in piccoli commit
 
 1. **T0 – Gate operativo:** completare [P0-DEVICE-CHECKS.md](P0-DEVICE-CHECKS.md): backup/recovery reale, Coolify V5+V6 e test E2E delle attuali liste, tag, sottotask, offline e 409.
-2. **T1 – Backend-first:** definire contract/capabilities, value object Java, Flyway V7, `SyncService`, protezione scritture da vecchi client e test PostgreSQL/CI. Nessun deploy prima del gate.
+2. **T1 – Backend-first:** codice e test aggiunti su `main` con commit `1bafec0`; CI da verificare; **mai considerare il deploy automatico**. Correggere eventuali problemi della CI prima di passare a T2.
 3. **T2 – Flutter core:** `TaskDue` + Drift v5; migrazione/snapshot/outbox/push-pull/risoluzione conflitti; test doppio SQLite, versioni e dati legacy.
 4. **T3 – UI:** editor e presentazione Forui, date-only, timed, timezone e fold; filtri oggi/7 giorni; test widget su desktop e mobile.
 5. **T4 – Compatibilità e release:** verificare backend aggiornato, capability, upgrade senza reset, test Windows↔Android reali in entrambi i versi, offline/restart/conflict/DST. Aggiornare checklist soltanto dopo prova.

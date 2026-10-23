@@ -31,3 +31,5 @@ Repository: **Simple Notes** — Flutter Windows/Android + Spring Boot/PG su Coo
 - Prossima priorità: confermare Google Login Android, testare auto-sync foreground Windows↔Android con lo stesso account, offline/retry/conflitti; valutare in seguito background sync. Avatar Google (claim picture) richiede il backend con migration Flyway V4.
 
 **Su qualsiasi incongruenza tra handoff e codice/CI più recente, verificare e aggiornare la documentazione invece di inventare uno stato.**
+
+- Dialoghi di modifica attività/nota e scadenze usano **FDialog/FCalendar**, con layout in `apps/flutter/lib/ui/notes_dialogs.dart`. Non reintrodurre `showDatePicker`/Material `AlertDialog` nei loro flussi; mantenere test dei picker e date locali.

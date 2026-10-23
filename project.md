@@ -72,7 +72,7 @@
 
 - [x] Decisione adottata: `forui ^0.27.6` come libreria UI principale Flutter. Documentazione [docs/ui-forui.md](docs/ui-forui.md).
 - [ ] Tema Forui centralizzato, sidebar, schede note, pulsanti principali e ricerca inseriti nel codice; considerare **verificati** solo dopo CI verde su Windows/Android e prova manuale.
-- [ ] Completare migrazione di input rapido, editor, checkbox, dialoghi, menu e pannelli ridimensionabili senza regressioni.
+- [ ] Completare migrazione input rapido, checkbox, menu, bottom sheet e pannelli ridimensionabili; **editor task/nota e selettore scadenza migrati a Forui**, in attesa CI/test su device.
 - [ ] Screenshot/test responsive Android e Windows con stato offline/sync e contenuti reali.
 - [ ] Sincronizzazione PC↔Android ancora da confermare E2E; la migrazione UI non ne prova il funzionamento.
 

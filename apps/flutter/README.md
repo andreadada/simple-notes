@@ -66,3 +66,7 @@ La sync non è automatica; le credenziali Google non sono presenti nelle build C
 - Se la nota non compare sull'altro device: eseguire `Sincronizza ora` **su entrambi** e leggere i messaggi e il conteggio in coda. Codice `400` su `/sync/apply` poteva dipendere da titolo nota vuoto; il backend lo accetta dopo aggiornamento e **redeploy Coolify** (test JUnit nuovo).
 - Non cancellare i dati locali, non eseguire `flutter clean` sull'app installata come "rimedio", non disinstallare: l'outbox SQLite contiene dati non ancora sincronizzati.
 - Serve E2E manuale con due client e medesimo utente; la CI e il test backend con due chiamate simulate non equivalgono a test remoto di Coolify.
+
+### Modali Forui (23/10/2026)
+
+Modifica attività, modifica nota e scelta scadenza utilizzano ora `showFDialog`, `FDialog`, `FTextField`, `FButton` e `FCalendar.grid`. Il layout è riutilizzabile in `lib/ui/notes_dialogs.dart` e non dipende dal backend. Consultare [UI Forui](../../docs/ui-forui.md). Il bottom sheet dettagli attività rimane da convertire.

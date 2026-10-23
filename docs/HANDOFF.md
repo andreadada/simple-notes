@@ -143,3 +143,6 @@ Richiesta confronto Forui (duobaseio/forui) vs alternative: Forui è candidata p
 ## UI Forui — decisione del 23 ottobre 2026
 
 Forui `^0.27.6` è stata adottata come base UI ufficiale. Tema centralizzato `apps/flutter/lib/ui/notes_theme.dart`, `FTheme` per tutto il Navigator, `FSidebar` e `FSidebarItem` in navigazione, `FTextField` per ricerca, `FCard` e `FButton` in note/dettaglio. Restano ancora componenti Material come bridge, inclusi inserimento rapido, date picker e dialoghi. **Per migrazioni future leggere [ui-forui.md](ui-forui.md)** e conservare logica offline-first e test. Nessuna dipendenza backend aggiunta.
+
+## Modali Forui (23/10/2026)
+I vecchi `AlertDialog` Material di modifica attività/nota e `showDatePicker` per le scadenze sono stati sostituiti da `showFDialog` + `NotesDialog` e `FCalendar.grid`. Vedere `apps/flutter/lib/ui/notes_dialogs.dart`, `apps/flutter/lib/main.dart`, test widget. Persistenza locale e sync non modificate. Il bottom sheet dettagli mobile è ancora Material.

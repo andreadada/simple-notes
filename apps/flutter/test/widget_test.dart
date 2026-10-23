@@ -139,4 +139,73 @@ void main() {
     await database.close();
   });
 
+
+  testWidgets('Due date picker uses Forui dialog and calendar', (tester) async {
+    final database = AppDatabase(NativeDatabase.memory());
+    await tester.pumpWidget(ProviderScope(overrides: [
+      databaseProvider.overrideWithValue(database),
+      initialDataProvider.overrideWithValue(const LocalData()),
+    ], child: const SimpleNotesApp()));
+
+    await tester.tap(find.byTooltip('Imposta data'));
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('forui-date-dialog')), findsOneWidget);
+    expect(find.byType(FDialog), findsOneWidget);
+    expect(find.byType(FCalendar), findsOneWidget);
+    expect(find.byType(DatePickerDialog), findsNothing);
+
+    // The chosen calendar day must be retained for a newly created task.
+    await tester.tap(find.byKey(const Key('confirm-due-date')));
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byKey(const Key('task-input')),
+        'Attività con scadenza');
+    await tester.testTextInput.receiveAction(TextInputAction.done);
+    await tester.pumpAndSettle();
+    final task = (await database.snapshot()).tasks.single;
+    expect(task.dueAt, isNotNull);
+
+    await tester.pumpWidget(const SizedBox.shrink());
+    await database.close();
+  });
+
+  testWidgets('Task editor is a Forui dialog with editable title',
+      (tester) async {
+    tester.view.physicalSize = const Size(1300, 900);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(() {
+      tester.view.resetPhysicalSize();
+      tester.view.resetDevicePixelRatio();
+    });
+    final database = AppDatabase(NativeDatabase.memory());
+    await database.upsertTask(LocalTask(
+      id: 'modal-test-task',
+      title: 'Attività originale',
+      dueAt: null,
+      completed: false,
+      createdAt: DateTime.utc(2026, 10, 23),
+    ));
+    await tester.pumpWidget(ProviderScope(overrides: [
+      databaseProvider.overrideWithValue(database),
+      initialDataProvider.overrideWithValue(await database.snapshot()),
+    ], child: const SimpleNotesApp()));
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text('Attività originale'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Modifica'));
+    await tester.pumpAndSettle();
+    expect(find.byType(FDialog), findsOneWidget);
+    expect(find.byType(AlertDialog), findsNothing);
+    expect(find.byKey(const Key('edit-task-title')), findsOneWidget);
+
+    await tester.enterText(
+      find.byKey(const Key('edit-task-title')), 'Titolo aggiornato');
+    await tester.tap(find.byKey(const Key('save-task')));
+    await tester.pumpAndSettle();
+    expect((await database.snapshot()).tasks.single.title, 'Titolo aggiornato');
+
+    await tester.pumpWidget(const SizedBox.shrink());
+    await database.close();
+  });
+
 }

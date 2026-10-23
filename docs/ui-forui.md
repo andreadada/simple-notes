@@ -21,7 +21,8 @@
 | Interfaccia note | `FCard` per righe e `FButton` per nuova nota |
 | Ricerca task | `FTextField` con callback di ricerca |
 | Dettagli task | `FButton` variante outline per modifiche |
-| Compatibilità | `MaterialApp`, `Scaffold`, `TextField` di inserimento rapido, `ListTile`, `Checkbox`, `PopupMenuButton`, `AlertDialog`, `showDatePicker` restano temporaneamente Material |
+| Modali Forui | `NotesDialog` (basato su `FDialog`) per modifica attività e note; `showNotesDatePicker` con `FCalendar.grid` per tutte le scadenze |
+| Compatibilità | `MaterialApp`, `Scaffold`, `TextField` di inserimento rapido, `ListTile`, `Checkbox`, `PopupMenuButton` e il bottom sheet dettagli restano temporaneamente Material |
 
 ## Regole per tutte le future modifiche
 
@@ -52,7 +53,7 @@ FButton(
 ## Piani successivi
 
 - Esaminare conversione editor e ricerca avanzata a `FTextField` senza perdere comportamento dei controller.
-- Convertire checkbox/list item, dialoghi e menu account ai widget Forui dedicati.
+- Convertire checkbox/list item, bottom sheet dettagli e menu account ai widget Forui dedicati; **dialoghi di modifica e calendario sono già Forui**.
 - Valutare `FResizable` per tre colonne desktop e navigazione mobile FBottomNavigationBar.
 - Fare test visivi su Windows (finestra ridotta, DPI 125–200%) e Android (keyboard, scrolling, dimensioni touch).
 - Solo dopo prova reale, valutare tema chiaro, personalizzazione da Forui Create e preferenza utente.
@@ -60,3 +61,11 @@ FButton(
 ## Note di verifica
 
 Questa pagina documenta il *codice introdotto*; non dichiara che il passaggio di tutti i componenti sia terminato. Le verifiche effettive restano in `project.md` ed eventuali run GitHub Actions.
+
+## Modali e scadenze — 23 ottobre 2026
+
+- `apps/flutter/lib/ui/notes_dialogs.dart` contiene `NotesDialog`, layout condiviso su `FDialog` per tutti gli editor, e `showNotesDatePicker()` con `FCalendar.grid`.
+- `Modifica attività` e `Modifica nota` sono `showFDialog` con input `FTextField` e azioni `FButton`. Non reintrodurre `AlertDialog` in questi flussi.
+- Tutte le selezioni scadenza nell'attuale UI (creazione task e modifica task) passano dal calendario Forui: il vecchio `showDatePicker` Material è stato rimosso.
+- Date-only: `FCalendar` restituisce giorni UTC; il picker restituisce intenzionalmente `DateTime(year, month, day)` **locale**, come nella semantica precedente del campo scadenza. Annulla non modifica il valore; il comando Rimuovi scadenza resta distinto.
+- Controllare keyboard/focus, finestre Windows ridimensionate, dimensioni mobile, e test `apps/flutter/test/widget_test.dart`. Logica SQLite/outbox/sync invariata.

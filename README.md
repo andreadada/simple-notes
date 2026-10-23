@@ -2,7 +2,7 @@
 
 App Windows 11 + Android per **task, note e produttività**, ispirata alle funzionalità di TickTick con interfaccia originale.
 
-**Stack:** Flutter + Riverpod + Drift/SQLite (offline-first); Spring Boot Java 21 + PostgreSQL/Flyway; Docker Compose/Coolify; Google OAuth Windows/Android.
+**Stack:** Flutter + **Forui (design system)** + Riverpod + Drift/SQLite (offline-first); Spring Boot Java 21 + PostgreSQL/Flyway; Docker Compose/Coolify; Google OAuth Windows/Android.
 
 ## Stato effettivo — 23 ottobre 2026
 
@@ -16,6 +16,7 @@ Ultima pipeline verificata: [Flutter CI 39955667440](https://github.com/andreada
 - **[AGENTS.md](AGENTS.md)** — istruzioni per assistenti AI/Codex (criteri di verifica e workflow).
 - [project.md](project.md) — roadmap P0–P3, checklist, registro `Edit Timespan`.
 - [design.md](design.md) — requisiti UI/UX e funzionalità obiettivo; non tutte implementate.
+- [docs/ui-forui.md](docs/ui-forui.md) — Forui come design system di riferimento e stato della migrazione.
 - [docs/architecture.md](docs/architecture.md) · [docs/api.md](docs/api.md) · [docs/sync.md](docs/sync.md) — architettura e contratti.
 - [apps/flutter/README.md](apps/flutter/README.md) — build Windows/Android e OAuth.
 - [docs/android-troubleshooting.md](docs/android-troubleshooting.md) — Kotlin/Gradle JDK 17/21, Google OAuth Android, ADB e installazione USB.

@@ -5,7 +5,7 @@
 ## TL;DR: che cos'è e a che punto siamo
 
 - **Obiettivo:** app originale di produttività per Windows 11 e Android, con note, attività, futuro calendario/promemoria e moduli avanzati ispirati funzionalmente a TickTick, non una copia.
-- **Architettura:** Flutter/Dart + Riverpod; Drift/SQLite per dati offline; Spring Boot Java 21 + PostgreSQL/Flyway per account e sincronizzazione; deploy Docker Compose su Coolify.
+- **Architettura:** Flutter/Dart + **Forui (design system)** + Riverpod; Drift/SQLite per dati offline; Spring Boot Java 21 + PostgreSQL/Flyway per account e sincronizzazione; deploy Docker Compose su Coolify.
 - **Server:** `https://api.notes.ddone.it` — `/actuator/health` ha restituito `{"status":"UP"}` secondo verifica manuale dell'utente. Non confondere servizio raggiungibile con produzione pronta.
 - **Windows:** compilazione ed esecuzione reali, login Google Desktop completato manualmente (21/10/2026).
 - **Android:** dispositivo fisico rilevato (`2412DPC0AG`), installazione e avvio iniziali verificati; dopo la correzione finale Gradle/JVM (23/10) l'utente riferisce **«funziona»**. Non è stato però confermato esplicitamente, dopo quest'ultima correzione, **se funziona anche il login Google Android**: richiedere/effettuare quella verifica prima di considerarlo completato.
@@ -139,3 +139,7 @@ Per istruzioni dettagliate e controlli SHA-1 consultare [android-troubleshooting
 
 ## Valutazione libreria grafica (23 ottobre 2026)
 Richiesta confronto Forui (duobaseio/forui) vs alternative: Forui è candidata per futuro restyle (cross-platform, shadcn-like, resizable panels; richiede Flutter 3.47+ nelle release 0.26+). Alternative shadcn_ui e fluent_ui. **Non integrata**, in attesa della verifica end-to-end della sincronizzazione. Dettagli e link in `project.md`.
+
+## UI Forui — decisione del 23 ottobre 2026
+
+Forui `^0.27.6` è stata adottata come base UI ufficiale. Tema centralizzato `apps/flutter/lib/ui/notes_theme.dart`, `FTheme` per tutto il Navigator, `FSidebar` e `FSidebarItem` in navigazione, `FTextField` per ricerca, `FCard` e `FButton` in note/dettaglio. Restano ancora componenti Material come bridge, inclusi inserimento rapido, date picker e dialoghi. **Per migrazioni future leggere [ui-forui.md](ui-forui.md)** e conservare logica offline-first e test. Nessuna dipendenza backend aggiunta.

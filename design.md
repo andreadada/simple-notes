@@ -18,6 +18,8 @@
 **Sticky note:** finestra Windows separata, always-on-top opzionale, chiusura non elimina i dati.
 
 ## 3. Visual design
+
+**Decisione (23 ottobre 2026):** Forui è la base UI ufficiale del client Flutter. Il tema, i colori e le modalità desktop/touch sono centralizzati in `apps/flutter/lib/ui/notes_theme.dart` e la documentazione attuativa è in [docs/ui-forui.md](docs/ui-forui.md). I componenti Material già in uso vengono sostituiti gradualmente, senza rifare il sistema di sincronizzazione o i dati.
 | Token | Dark (base) | Light (target) |
 |---|---|---|
 | Surface | #181818 | #FFFFFF |

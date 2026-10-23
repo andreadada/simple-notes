@@ -1,7 +1,7 @@
 # Simple Notes — Project
 
 **Obiettivo:** app offline-first Windows 11 + Android ispirata alle funzionalità di TickTick, con UI originale, login Google e backend self-hosted su Coolify.
-**Stack:** Flutter/Dart + Riverpod + Drift/SQLite; Spring Boot (Java 21) + Spring Security + PostgreSQL/Flyway; REST + sync incrementale + WebSocket; Android FCM; Docker/Coolify.
+**Stack:** Flutter/Dart + Forui (UI) + Riverpod + Drift/SQLite; Spring Boot (Java 21) + Spring Security + PostgreSQL/Flyway; REST + sync incrementale + WebSocket; Android FCM; Docker/Coolify.
 **Stato:** P0 IN CORSO (backend Coolify HTTPS `UP`, Windows+Google Login verificati, Android segnalato funzionante sul telefono dopo fix 23/10, Google Login Android non ancora riconfermato esplicitamente, auto-sync foreground sperimentale non ancora E2E; release non pronta). Spuntare una voce solo quando implementata **e verificata**; nessuna funzione è completa per definizione.
 
 ## Regole vincolanti — COME FARE
@@ -66,7 +66,15 @@
 - **Forui** ([GitHub](https://github.com/duobaseio/forui), [pub.dev](https://pub.dev/packages/forui)): candidata preferita per restyle cross-platform Windows+Android, stile minimalista shadcn-like, oltre 50 widget, resizable panes, temi; release 0.26+ richiedono Flutter >=3.47.
 - **shadcn_ui** ([pub.dev](https://pub.dev/packages/shadcn_ui)): alternativa valida per personalizzazioni profonde e interfaccia shadcn-style.
 - **fluent_ui** ([pub.dev](https://pub.dev/packages/fluent_ui)): migliore per estetica Windows nativa, meno prioritaria per identità uniforme mobile+desktop.
-- **Decisione:** nessuna libreria aggiunta per ora. Prima risolvere E2E note/sync su dispositivi reali. Poi provare Forui su componente isolato con test Windows+Android, senza riscrivere subito intera UI o introdurre regressioni.
+- **Decisione aggiornata 23/10:** **Forui è stata adottata come base UI** con migrazione graduale. L'introduzione non modifica il protocollo sync; test multi-device ancora aperti.
+
+## Forui — design system principale (dal 23 ottobre 2026)
+
+- [x] Decisione adottata: `forui ^0.27.6` come libreria UI principale Flutter. Documentazione [docs/ui-forui.md](docs/ui-forui.md).
+- [ ] Tema Forui centralizzato, sidebar, schede note, pulsanti principali e ricerca inseriti nel codice; considerare **verificati** solo dopo CI verde su Windows/Android e prova manuale.
+- [ ] Completare migrazione di input rapido, editor, checkbox, dialoghi, menu e pannelli ridimensionabili senza regressioni.
+- [ ] Screenshot/test responsive Android e Windows con stato offline/sync e contenuti reali.
+- [ ] Sincronizzazione PC↔Android ancora da confermare E2E; la migrazione UI non ne prova il funzionamento.
 
 ## P1 — Produttività completa
 - [ ] Calendario giorno/settimana/mese e time blocking.

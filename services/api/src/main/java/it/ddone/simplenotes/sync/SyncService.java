@@ -183,6 +183,21 @@ public class SyncService {
     }
 
     @Transactional(readOnly = true)
+    public SyncController.LatestChange latest(UUID owner, String type, UUID id) {
+        if (!Set.of("task", "note").contains(type)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Unsupported entity type");
+        }
+        SyncChange change = changes.latest(owner, type, id)
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Entity not synced"));
+        try {
+            return new SyncController.LatestChange(change.entityType, change.entityId,
+                json.readTree(change.payload), change.deleted, change.version, change.id);
+        } catch (JsonProcessingException ex) {
+            throw new IllegalStateException(ex);
+        }
+    }
+
+    @Transactional(readOnly = true)
     public SyncController.Changes changes(UUID owner, long cursor, int limit) {
         List<SyncChange> page = changes.after(owner, cursor, limit + 1);
         boolean hasMore = page.size() > limit;

@@ -120,4 +120,41 @@ class SyncIntegrationTest {
             .andExpect(jsonPath("$.changes[1].version").value(1));
     }
 
+    @Test
+    void latestConflictSnapshotIsOwnerScopedAndIncludesTombstones() throws Exception {
+        var a = users.save(new AppUser("latest-a-" + UUID.randomUUID(), "latest-a@example.com", "A"));
+        var b = users.save(new AppUser("latest-b-" + UUID.randomUUID(), "latest-b@example.com", "B"));
+        String aBearer = "Bearer " + jwt(a.id);
+        String bBearer = "Bearer " + jwt(b.id);
+        String entity = UUID.randomUUID().toString();
+        String create = """
+            {"operationId":"%s","entityId":"%s","entityType":"note",
+             "action":"upsert","payload":{"title":"Online","body":"Contenuto server"}}
+            """.formatted(UUID.randomUUID(), entity);
+        mvc.perform(post("/api/v1/sync/apply").header("Authorization", aBearer)
+                .contentType(MediaType.APPLICATION_JSON).content(create))
+            .andExpect(status().isOk());
+        String query = "/api/v1/sync/latest";
+        mvc.perform(get(query).header("Authorization", aBearer)
+                .param("entityType", "note").param("entityId", entity))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.payload.body").value("Contenuto server"))
+            .andExpect(jsonPath("$.version").value(0))
+            .andExpect(jsonPath("$.deleted").value(false));
+        mvc.perform(get(query).header("Authorization", bBearer)
+                .param("entityType", "note").param("entityId", entity))
+            .andExpect(status().isNotFound());
+        String remove = """
+            {"operationId":"%s","entityId":"%s","entityType":"note",
+             "action":"delete","expectedVersion":0}
+            """.formatted(UUID.randomUUID(), entity);
+        mvc.perform(post("/api/v1/sync/apply").header("Authorization", aBearer)
+                .contentType(MediaType.APPLICATION_JSON).content(remove))
+            .andExpect(status().isOk());
+        mvc.perform(get(query).header("Authorization", aBearer)
+                .param("entityType", "note").param("entityId", entity))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.deleted").value(true));
+    }
+
 }

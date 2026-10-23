@@ -167,6 +167,37 @@ class AppDatabase extends _$AppDatabase {
     await (delete(pendingMutations)..where((p) => p.operationId.equals(op.operationId))).go();
   });
 
+  // The user must explicitly choose a conflict resolution. Keep other
+  // entities in the outbox, and never clear the entire local database.
+  Future<void> acceptRemoteConflict({
+    required String type,
+    required String entityId,
+    required Map<String, dynamic> payload,
+    required bool deleted,
+    required int version,
+  }) => transaction(() async {
+    await (delete(pendingMutations)..where((m) =>
+        m.entityType.equals(type) & m.entityId.equals(entityId))).go();
+    await applyRemote(type: type, entityId: entityId,
+        payload: payload, deleted: deleted, version: version);
+  });
+
+  Future<void> rebaseLocalConflict({
+    required String type,
+    required String entityId,
+    required int remoteVersion,
+  }) => transaction(() async {
+    if (type == 'task') {
+      await (update(taskEntries)..where((t) => t.id.equals(entityId)))
+          .write(TaskEntriesCompanion(remoteVersion: Value(remoteVersion)));
+    } else if (type == 'note') {
+      await (update(noteEntries)..where((n) => n.id.equals(entityId)))
+          .write(NoteEntriesCompanion(remoteVersion: Value(remoteVersion)));
+    } else {
+      throw StateError('Tipo di entità non valido');
+    }
+  });
+
   Future<String?> setting(String keyName) async {
     final row = await (select(syncSettings)..where((s) => s.key.equals(keyName)))
         .getSingleOrNull();

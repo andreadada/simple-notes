@@ -6,11 +6,35 @@ import 'package:http/http.dart' as http;
 import '../auth/cloud_auth.dart';
 import '../data/local_store.dart';
 
+class ConflictDetails {
+  final String entityType;
+  final String entityId;
+  final String localTitle;
+  final String localBody;
+  final bool localDeleted;
+  final Map<String, dynamic>? remotePayload;
+  final bool remoteDeleted;
+  final int? remoteVersion;
+
+  const ConflictDetails({
+    required this.entityType,
+    required this.entityId,
+    required this.localTitle,
+    required this.localBody,
+    required this.localDeleted,
+    required this.remotePayload,
+    required this.remoteDeleted,
+    required this.remoteVersion,
+  });
+}
+
 class SyncState {
   final bool running;
   final bool conflict;
   final String? message;
-  const SyncState({this.running = false, this.conflict = false, this.message});
+  final ConflictDetails? details;
+  const SyncState({this.running = false, this.conflict = false,
+      this.message, this.details});
 }
 
 final cloudSyncProvider = StateNotifierProvider<CloudSync, SyncState>(
@@ -62,6 +86,7 @@ class CloudSync extends StateNotifier<SyncState> {
     }
     state = const SyncState(running: true);
     final db = ref.read(databaseProvider);
+    PendingMutation? conflicting;
     try {
       // Explicit user action determines which account owns the local dataset.
       await db.bindOwner(cloud.userId!);
@@ -73,6 +98,7 @@ class CloudSync extends StateNotifier<SyncState> {
       }
       int uploaded = 0;
       for (final op in mutations) {
+        conflicting = op;
         verifyAccount();
         final payload = jsonDecode(op.payload) as Map<String, dynamic>;
         if (op.entityType == 'task' && payload['dueAt'] is String) {
@@ -88,7 +114,9 @@ class CloudSync extends StateNotifier<SyncState> {
           'expectedVersion': expected,
           'payload': payload,
         });
+        verifyAccount();
         await db.acknowledge(op, result['version'] as int);
+        conflicting = null;
         uploaded++;
       }
       int cursor = int.tryParse(await db.setting('syncCursor') ?? '') ?? 0;
@@ -117,11 +145,80 @@ class CloudSync extends StateNotifier<SyncState> {
       state = SyncState(message: 'Sincronizzazione completata: $uploaded inviate, '
           '$downloaded aggiornamenti ricevuti.');
     } on SyncConflict {
-      state = const SyncState(conflict: true,
-        message: 'Conflitto: i dati remoti sono stati modificati. '
-          'Operazioni locali preservate, nessuna sovrascrittura.');
+      final op = conflicting;
+      ConflictDetails? details;
+      if (op != null) {
+        final local = jsonDecode(op.payload) as Map<String, dynamic>;
+        Map<String, dynamic>? latest;
+        try {
+          latest = await _request('GET',
+              '/sync/latest?entityType=${op.entityType}&entityId=${op.entityId}');
+        } catch (_) {
+          // The conflict remains unresolved; no local writes are discarded.
+        }
+        details = ConflictDetails(
+          entityType: op.entityType, entityId: op.entityId,
+          localTitle: local['title'] as String? ?? '(eliminato)',
+          localBody: local['body'] as String? ?? local['description'] as String? ?? '',
+          localDeleted: op.action == 'delete',
+          remotePayload: latest?['payload'] as Map<String, dynamic>?,
+          remoteDeleted: latest?['deleted'] == true,
+          remoteVersion: latest?['version'] as int?,
+        );
+      }
+      state = SyncState(conflict: true, details: details,
+        message: 'Conflitto tra modifiche locali e server: scegli quale '
+          'versione conservare. Nessun dato è stato cancellato.');
     } catch (e) {
       state = SyncState(message: 'Sync non riuscita; modifiche conservate offline. $e');
+    }
+  }
+
+  /// Explicitly resolve a conflict. Never silently discard outbox entries.
+  /// The latest server version is refetched to avoid acting on a stale
+  /// comparison if another device edits while the dialog is open.
+  Future<void> resolveConflict({required bool keepLocal}) async {
+    final conflict = state.details;
+    final cloud = ref.read(cloudAuthProvider);
+    if (conflict == null || state.running || cloud.userId == null ||
+        conflict.remoteVersion == null) return;
+    state = SyncState(running: true, conflict: true, details: conflict);
+    try {
+      final latest = await _request('GET',
+          '/sync/latest?entityType=${conflict.entityType}&entityId=${conflict.entityId}');
+      if (ref.read(cloudAuthProvider).userId != cloud.userId) {
+        throw StateError('Account Google cambiato');
+      }
+      final version = latest['version'] as int;
+      if (version != conflict.remoteVersion ||
+          (latest['deleted'] == true) != conflict.remoteDeleted) {
+        state = const SyncState(conflict: true,
+          message: 'La versione server è cambiata ancora. '
+              'Sincronizza nuovamente per rivedere il conflitto.');
+        return;
+      }
+      final db = ref.read(databaseProvider);
+      if (keepLocal) {
+        if (conflict.remoteDeleted) {
+          state = SyncState(conflict: true, details: conflict,
+            message: 'Elemento eliminato sul server: non è possibile '
+                'sovrascriverlo. Conserva una copia separata prima di procedere.');
+          return;
+        }
+        await db.rebaseLocalConflict(type: conflict.entityType,
+            entityId: conflict.entityId, remoteVersion: version);
+      } else {
+        await db.acceptRemoteConflict(type: conflict.entityType,
+            entityId: conflict.entityId,
+            payload: latest['payload'] as Map<String, dynamic>,
+            deleted: latest['deleted'] as bool, version: version);
+        await ref.read(localStoreProvider.notifier).reload();
+      }
+      state = const SyncState(message: 'Conflitto risolto. Sincronizzazione in corso...');
+      await synchronize();
+    } catch (error) {
+      state = SyncState(conflict: true, details: conflict,
+        message: 'Impossibile risolvere il conflitto: $error');
     }
   }
 

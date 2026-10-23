@@ -18,6 +18,8 @@ public class SyncController {
     public record Change(long changeId, String entityType, UUID entityId,
         JsonNode payload, boolean deleted, long version) {}
     public record Changes(List<Change> changes, long nextCursor, boolean hasMore) {}
+    public record LatestChange(String entityType, UUID entityId, JsonNode payload,
+        boolean deleted, long version, long changeId) {}
 
     private final SyncService service;
     public SyncController(SyncService service) { this.service = service; }
@@ -27,6 +29,12 @@ public class SyncController {
     public ApplyResponse apply(@AuthenticationPrincipal Jwt jwt, @Valid @RequestBody ApplyRequest body) {
         return service.apply(owner(jwt), body);
     }
+    @GetMapping("/latest")
+    public LatestChange latest(@AuthenticationPrincipal Jwt jwt,
+            @RequestParam String entityType, @RequestParam UUID entityId) {
+        return service.latest(owner(jwt), entityType, entityId);
+    }
+
     @GetMapping("/changes")
     public Changes changes(@AuthenticationPrincipal Jwt jwt,
                            @RequestParam(defaultValue = "0") @Min(0) long cursor,

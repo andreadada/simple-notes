@@ -76,3 +76,7 @@ Modifica attività, modifica nota e scelta scadenza utilizzano ora `showFDialog`
 - `ui/sync_conflict_dialog.dart` mostra un FDialog per confrontare locale/server quando la sync ottiene 409; accessibile dal menu avatar. Nessuna cancellazione senza doppia conferma. Recupera latest da endpoint JWT protetto (richiede backend aggiornato a Flyway V5).
 - `data/models.dart` include `LocalTask.description`; `data/app_database.dart` migra Drift a schema v3 con la colonna SQLite non nullable e default vuoto, mantenendo i dati precedenti. Campo descrizione Forui nell'editor task, visualizzazione nel pannello dettagli, sync nel payload già supportato da Spring Boot.
 - Test `test/sync_conflict_test.dart` simulano due SQLite indipendenti, conflitti, scelta utente e rete assente. **Non** sono test hardware. [Stato completo](../../docs/P0-STATUS.md).
+
+## Organizzazione attività (Drift v4, 23/10/2026)
+
+Liste con create/rename/delete nella sidebar Forui, priorità P1–P3, tag, sottotask e filtro/ricerca. Le operazioni locali vengono persistite in SQLite e sincronizzate con `entityType: list` per le liste e `entityType: task` per i metadati. **Richiede server con Flyway V6** prima di usare liste nuove. Nuova migrazione Drift v4, conservare il database locale. Documentazione e test: [task-organization.md](../../docs/task-organization.md) e `test/task_organization_test.dart`.

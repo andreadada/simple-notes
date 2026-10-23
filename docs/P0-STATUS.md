@@ -20,10 +20,18 @@
 5. **Backup PostgreSQL**: `infra/backup-postgres.sh` (dump custom, controllo catalogo, SHA256) e `infra/verify-restore.sh` (restaura un backup soltanto in un container PostgreSQL 17 temporaneo e lo elimina); prova su dataset sintetico in GitHub Actions. **Non** è stata ancora effettuata una prova di ripristino del vero DB Coolify né configurata una destinazione offsite.
 6. Test automatici dedicati: due DB SQLite separati, modifiche simultanee e due modalità di risoluzione, perdita e ritorno di rete, più test HTTP per la privacy dell'endpoint latest/tombstone.
 
+## Nuovo incremento — organizzazione attività (23 ottobre 2026)
+
+- Liste personalizzate vere (compresa lista vuota) sincronizzate come `entityType: list`, con creazione/rinomina/eliminazione dalla sidebar Forui.
+- Priorità, tag e sottotask del task; ricerca e filtro; modifiche da client e server tramite outbox e delta.
+- Drift schema **v4**, PostgreSQL/Flyway **V6**; nessuna istruzione di reinstallazione/cancellazione SQLite.
+- Test Backend CI [39990997833](https://github.com/andreadada/simple-notes/actions/runs/39990997833) riuscita; analyze/test Flutter [39991667611](https://github.com/andreadada/simple-notes/actions/runs/39991667611) riusciti. Build native da confermare nell'ultima run.
+- **Non provato su infrastruttura reale**: Coolify aggiornato e sync di questi campi Windows/Android. Vedere [task-organization.md](task-organization.md) per procedura e limiti.
+
 ## Rimane da fare per dichiarare P0 completo
 
 - **Prove hardware**: aggiornare API Coolify solo dopo backup; verificare Google session refresh/logout, task completati, cancellazioni, sync offline → online, conflitti Forui e data delle attività su Windows e Android, compresi riavvii.
-- **Organizzazione delle attività**: liste personalizzate, tag, sottotask, priorità, filtri avanzati.
+- **Organizzazione delle attività**: liste, tag, sottotask e priorità implementati e testati in CI (vedi `task-organization.md`); restano verifica su device e filtri avanzati.
 - **Ricorrenze e promemoria**: date e ore, timezone IANA, cambio ora DST, snooze, notifiche Android e Windows verificate anche con app in background; evitare notifiche duplicate. Nessuna promessa di reminder a PC spento.
 - **Sync avanzata**: risoluzione delle cancellazioni remote con recupero/duplicazione; test cambio account; strategia di rebootstrap e integrazione degli endpoint REST legacy nel change log. Background sync se previsto.
 - **Qualità UI**: componenti Material residui, accessibilità, test su diverse dimensioni e DPI, UI mobile e test di navigazione.
@@ -35,11 +43,11 @@ P1, P2 e P3 rimangono **non avviati** come fasi complete; la presenza di un comp
 
 1. Ripristino affidabile degli elementi cancellati in conflitto e test e2e a due dispositivi.
 2. Liste, priorità, tag e sottotask sincronizzati; modellare le entità con schema/migrazioni e test, non solo UI.
-3. Scadenze con orari, ricorrenze e notifiche native, compresi timezone/DST.
+3. Filtri combinati/salvati, scadenze con orari, ricorrenze e notifiche native, compresi timezone/DST.
 4. Backup offsite, rate limit, sicurezza, test restore reale, packaging e prova dei rilasci.
 
 ## Deploy / sicurezza dati
 
-- L'endpoint `/sync/latest` e Flyway V5 richiedono **redeploy del backend su Coolify**. Prima produrre un backup verificabile del database. Mai cancellare dati app/SQLite per risolvere errori di sync.
+- Il nuovo client richiede API con supporto `entityType:list` e migrazioni Flyway **V5+V6**: **redeploy del backend su Coolify**. Prima produrre un backup verificabile del database. Mai cancellare dati app/SQLite per risolvere errori di sync.
 - Le modifiche Flutter si installano con `git pull origin main`, `flutter pub get` e la normale build; eseguire `dart run build_runner build` dopo migrazioni Drift se necessario.
 - [Playbook operativo](../infra/README.md) · [Protocollo](sync.md) · [Roadmap](../project.md).

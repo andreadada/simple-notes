@@ -25,7 +25,9 @@ Base URL `/api/v1`. Per endpoint privati: header `Authorization: Bearer <accessT
 ## Synchronization
 - `POST /sync/apply` — write idempotente con `operationId`, `entityId`, `entityType`, `action`, `expectedVersion`, `payload`.
 - `GET /sync/changes?cursor=N&limit=100` — delta per utente; cursor monotono.
-- `GET /sync/latest?entityType=note|task&entityId=UUID` — ultimo stato dell'elemento, compresi tombstone, limitato all'utente del JWT; 404 su elementi altrui/mancanti. Usato nel confronto conflitti.
+- `GET /sync/latest?entityType=note|task|list&entityId=UUID` — ultimo stato dell'elemento, compresi tombstone, limitato all'utente del JWT; 404 su elementi altrui/mancanti. Usato nel confronto conflitti.
+- `entityType=list`: upsert/delete di lista personalizzata; payload `{title,createdAt}`.
+- `entityType=task` ora include `listId`, `priority`, `tags`, `subtasks` (vedi [task-organization.md](task-organization.md)); `listId` è validato rispetto all'utente JWT.
 - Contratto ed esempi: [sync.md](sync.md).
 
 **Nota:** i vecchi endpoint REST non alimentano ancora il change log: per dati multi-device usare esclusivamente `/sync/apply`. Mancano rate limiting, prove di conflitto su device reali e verifica del nuovo deploy Coolify; UI Forui e test simulati aggiunti.

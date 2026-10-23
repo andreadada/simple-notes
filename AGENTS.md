@@ -6,7 +6,8 @@ Repository: **Simple Notes** — Flutter Windows/Android + Spring Boot/PG su Coo
 1. [docs/P0-STATUS.md](docs/P0-STATUS.md) — **stato P0 più recente**, progressi verificati e blocchi.
 2. [docs/HANDOFF.md](docs/HANDOFF.md) — storia precedente, non sovrascrivere lo stato recente.
 2. [project.md](project.md) — checklist P0–P3 e `Edit Timespan`.
-3. [docs/ui-forui.md](docs/ui-forui.md) — **Forui base UI ufficiale** e regole di migrazione.
+3. [docs/task-organization.md](docs/task-organization.md) — liste/task metadata con Drift v4 e Flyway V6, deploy e test.
+4. [docs/ui-forui.md](docs/ui-forui.md) — **Forui base UI ufficiale** e regole di migrazione.
 3. [design.md](design.md) — visione prodotto (molte feature future).
 4. [docs/architecture.md](docs/architecture.md), [docs/api.md](docs/api.md), [docs/sync.md](docs/sync.md).
 5. [apps/flutter/README.md](apps/flutter/README.md), [docs/android-troubleshooting.md](docs/android-troubleshooting.md), [infra/README.md](infra/README.md).
@@ -34,3 +35,5 @@ Repository: **Simple Notes** — Flutter Windows/Android + Spring Boot/PG su Coo
 **Su qualsiasi incongruenza tra handoff e codice/CI più recente, verificare e aggiornare la documentazione invece di inventare uno stato.**
 
 - Dialoghi di modifica attività/nota e scadenze usano **FDialog/FCalendar**, con layout in `apps/flutter/lib/ui/notes_dialogs.dart`. Non reintrodurre `showDatePicker`/Material `AlertDialog` nei loro flussi; mantenere test dei picker e date locali.
+
+- Organizzazione P0: le liste sono entità sync `list` vere, non nomi locali; `TaskListEntity`, `LocalTaskList` e task `listId/priority/tags/subtasks` sono obbligatori. Preservare ordine outbox (prima lista, poi task; prima movimento task, poi delete-list) e vincolo owner. Non introdurre delete cascade. Qualsiasi modifica ai modelli richiede migration Flyway/Drift incrementale e test con due client. Leggere `docs/task-organization.md`.

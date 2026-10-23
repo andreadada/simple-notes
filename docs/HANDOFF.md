@@ -149,3 +149,6 @@ I vecchi `AlertDialog` Material di modifica attività/nota e `showDatePicker` pe
 
 ## Incremento P0 — conflitti, descrizioni e backup
 Per la nuova sessione consultare **[P0-STATUS.md](P0-STATUS.md)**: backend latest con scope utente e Flyway V5; scelta conflitti in Forui senza cancellazioni automatiche; descrizione attività con Drift schema V3; script dump + restore isolato, verificati con database sintetico. I precedenti paragrafi su mancanza della UI di conflitto sono storici e sostituiti dal documento P0.
+
+## Organizzazione attività — prossimo blocco implementato (23/10/2026)
+Nuova guida [task-organization.md](task-organization.md): liste sincronizzate con versione e owner, priorità/tag/sottotask, editor Forui, ricerca/filtro e cancellazione sicura della lista. Drift v4 e Flyway V6. Backend CI e analyze/test Flutter automatici riusciti; prove Coolify e dispositivi fisici ancora aperte. **Leggere P0-STATUS.md**, fare backup e redeploy backend V6 *prima* di eseguire nuove operazioni lista su client aggiornati.

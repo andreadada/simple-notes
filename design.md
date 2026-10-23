@@ -92,3 +92,6 @@ Qualsiasi feature con sola UI o solo endpoint **non** è completata.
 - Roadmap e log: [project.md](project.md)
 - Architettura: [docs/architecture.md](docs/architecture.md)
 - Contratto API: [docs/api.md](docs/api.md)
+
+### Implementazione organizzazione P0 (23 ottobre 2026)
+Le liste personalizzate persistenti, priorità, tag e sottotask sono ora nel codice client/server con migrazioni e UI Forui. La roadmap di P0 e i limiti dei test sono in [task-organization.md](docs/task-organization.md). Le funzioni di calendario, ricorrenze, notifiche e filtri complessi restano progettuali, non operative.

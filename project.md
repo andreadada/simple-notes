@@ -39,7 +39,7 @@
 - [x] Android: dopo correzioni Gradle/JVM l'utente segnala «Perfetto funziona» il 23/10. L'errore precedente `INSTALL_FAILED_USER_RESTRICTED` è storicizzato nel runbook; evitare di dichiarare verificato il login Google senza conferma specifica.
 - [x] Login con lo stesso account Google su Windows e Android e sync note PC↔Android confermate dall'utente (23/10). Session refresh, logout, riavvio da testare.
 - [ ] Sincronizzazione bidirezionale note confermata dall'utente e attività Android→Windows visualizzate; **restano** test offline/409/cancellazioni su device reali. Gestione conflitto Forui (scelta locale/server), endpoint latest e prove simulate aggiunti; richiede nuovo backend Coolify.
-- [ ] Notifiche, liste, tag, sottotask, ricorrenze e ricerca completa.
+- [ ] Liste, tag, priorità, sottotask e ricerca testuale introdotti con test automatici; **ancora da verificare sui due dispositivi reali** dopo deploy V6. Ricorrenze, notifiche e filtri avanzati da sviluppare.
 - [ ] Avatar Google e menu unico account implementati (Flutter + claim `picture` sul backend con Flyway), da verificare con login reale e redeploy Coolify.
 - [x] Backend deployato su Coolify e raggiungibile via HTTPS: health check `https://api.notes.ddone.it/actuator/health` con `UP` (confermato dall'utente).
 - [ ] Hardening produzione: script backup e prova restore sintetico aggiunti; manca **restore reale isolato**, backup offsite, rate limiting, controlli sicurezza e monitoraggio.
@@ -52,8 +52,17 @@
 - [x] Descrizioni delle attività persistenti SQLite, sincronizzate nel payload già supportato dal backend, con test e migrazione Drift V3 (CI Flutter).
 - [x] Script dump e restore isolato con smoke test su dati sintetici in CI Compose.
 - [ ] Verificare le nuove funzioni con account e device reali dopo backup e redeploy Coolify, e provare il restore del database reale in ambiente isolato.
-- [ ] Completare P0: liste, tag, sottotask, ricorrenze, reminder/notifiche native, sicurezza, backup offsite e release.
+- [ ] Completare P0: verifica E2E dell'organizzazione, filtri avanzati, ricorrenze, reminder/notifiche native, sicurezza, backup offsite e release.
 - Guida di stato e criteri: [docs/P0-STATUS.md](docs/P0-STATUS.md).
+
+## P0 — Organizzazione attività (23 ottobre 2026)
+
+- [x] Liste personalizzate CRUD e vista per lista, comprese liste vuote, con entità `list` sincronizzata e privacy per owner verificata (Backend CI 39990997833).
+- [x] Priorità 0–3, tag multipli, sottotask con stato e UUID, ricerca per contenuti e filtro priorità; UI Forui per modifica attività e liste.
+- [x] Drift/SQLite schema v4 + PostgreSQL/Flyway V6, senza eliminazione dei dati precedenti, test Flutter simulati a due database (run 39991667611).
+- [x] Eliminazione lista con spostamento task in Inbox e 409 backend se la lista contiene ancora task; test automatici riusciti.
+- [ ] **Verifica ancora necessaria:** backup e deploy Flyway V6 su Coolify, poi test reale PC↔Android/riavvio/offline. Non segnare come release-ready.
+- Specifiche e runbook: [docs/task-organization.md](docs/task-organization.md).
 
 ## P0 — Fondamenta e MVP
 - [x] Inizializzazione repository, README breve, design.md, project.md e documentazione API/sync.
@@ -66,7 +75,7 @@
 - [ ] Android: confermare Google Login e ripristino sessione **dopo** fix JVM e package Android. Il precedente `[16] Account reauth failed` era prima degli ultimi fix; non sappiamo ancora se risolto.
 - [ ] Persistenza sessione Windows/Android, logout e refresh dopo riavvio da verificare con test E2E.
 - [x] Struttura iniziale utenti, task, note, versioni, tombstone, refresh sessions.
-- [ ] Liste, tag, sottotask, priorità, filtri, scadenze/ricorrenze avanzate e reminder; **descrizioni attività implementate** con migrazione Drift V3 e test.
+- [ ] Liste, tag, sottotask, priorità, ricerca base **implementati nel codice e verificati con test automatici**, con Drift v4 e Flyway V6; restano verifica PC↔Android reale, filtri avanzati, ricorrenze e reminder.
 - [ ] Sync completa: auto-sync foreground e sync note multi-device confermate; UI conflitti Forui implementata e testata in simulazione, ma non ancora su due device reali; restano tombstone recovery, rebootstrap, REST legacy e possibile background.
 - [ ] Notifiche Android e Windows, snooze, recurring, controllo fusi orari.
 - [ ] Test E2E PC↔Android, offline, recupero conflitti/riavvio, back-up/restore.
@@ -181,3 +190,8 @@ Esempio: `2026-10-21 14:20 CEST | commit abc1234 | Aggiunto modulo promemoria e 
 - 2026-10-23 | commit 3f2a3a7d | Descrizioni attività Forui/SQLite/sync, migrazione Drift V3 e test.
 - 2026-10-23 | commit 785cd547 / ccb96021 / 77a70efc | Backup e restore isolato PostgreSQL, smoke CI e fix init temporaneo.
 - 2026-10-23 | commit 622e3278 | Indice Flyway V5 per latest entity/account.
+
+- 2026-10-23 | commit fbb363a3 / 9443fe3d | Flyway V6 e backend per liste e metadati task; test scope utente e rimozione lista.
+- 2026-10-23 | commit d073147c / e51e2737 / 79387d33 | Modelli Flutter, Drift v4, lista CRUD e outbox a ordine deterministico.
+- 2026-10-23 | commit b58984fd / 41d41c2f / ddd1325b | Navigazione e filtri liste, editor Forui tag/priorità/sottotask, dettagli interattivi.
+- 2026-10-23 | commit 634fbc41 / fd23f1fd | Test Flutter a due device simulati e widget sidebar; analyze/test success CI 39991667611.

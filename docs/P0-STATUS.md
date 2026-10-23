@@ -42,7 +42,7 @@
 
 ## Avanzamento T1 backend (solo repository)
 
-- Nel commit [1bafec0](https://github.com/andreadada/simple-notes/commit/1bafec046dd0cbd3f18b8933873da7381fc28a26) sono stati introdotti `TaskDue`, `V7__task_due_semantics.sql`, capability backend e protezione 426 vecchi client, con test Java. La CI deve essere verificata e **Coolify non è stato aggiornato**.
+- Nel commit [1bafec0](https://github.com/andreadada/simple-notes/commit/1bafec046dd0cbd3f18b8933873da7381fc28a26) sono stati introdotti `TaskDue`, `V7__task_due_semantics.sql`, capability backend e protezione 426 vecchi client, con test Java. La [CI backend 40019181083](https://github.com/andreadada/simple-notes/actions/runs/40019181083) è **riuscita** e **Coolify non è stato aggiornato**.
 - Flutter continua a usare Drift v4 / `dueAt`; T2 e T3 ancora da fare. Non installare un nuovo client che scriva `due` senza prima verificare che il backend aggiornato supporti `taskDueSchema=1` dopo un backup PostgreSQL verificato.
 
 ## Rimane da fare per dichiarare P0 completo

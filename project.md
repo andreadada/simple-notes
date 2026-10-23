@@ -133,7 +133,8 @@
 Specifica **solo progettuale**: [docs/due-dates-timezones.md](docs/due-dates-timezones.md). L'editor HH:mm esistente ha CI Flutter verde; NON distingue ancora mezzanotte esplicita da «solo giorno».
 
 - [ ] T0: backup reale, ripristino isolato, copia offsite, Coolify V5+V6 e test E2E del P0 attuale.
-- [ ] T1: **codice backend e test aggiunti** (commit `1bafec0`), Flyway V7/capabilities/protezione 426; attende CI verificata e deploy post-backup. Capability lato client rimane in T2.
+- [x] T1 backend: **codice, test e bootJar verificati nella [CI 40019181083](https://github.com/andreadada/simple-notes/actions/runs/40019181083)** (commit `1bafec0`), Flyway V7/capabilities/protezione 426. **Non deployato.**
+- [ ] Deploy T1 backend solo dopo backup/restore Coolify verificati; capability e protezione 426 lato Flutter in T2 ancora da implementare.
 - [ ] T2: value object Flutter `TaskDue`, Drift v5 e migrazione senza perdita di SQLite/outbox, sync multi-device.
 - [ ] T3: UI Forui solo-giorno/data+ora/fuso, scelta DST, filtri Oggi/7 giorni, test widget.
 - [ ] T4: CI, backend-first deploy sicuro ed E2E PC↔Android; solo dopo ricorrenze e notifiche.

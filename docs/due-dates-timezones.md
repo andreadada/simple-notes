@@ -1,6 +1,6 @@
 # P0 — Scadenze, date-only e fusi orari
 
-> **Stato del 23 ottobre 2026 — T1 BACKEND IMPLEMENTATO SU GITHUB, NON DEPLOYATO.** Il primo input orario HH:mm è già su main e ha superato le CI Flutter [40011701417](https://github.com/andreadada/simple-notes/actions/runs/40011701417) e [40011789270](https://github.com/andreadada/simple-notes/actions/runs/40011789270). Questo documento definisce l'intero incremento: **solo T1 backend è stato introdotto nel codice** (commit [`1bafec0`](https://github.com/andreadada/simple-notes/commit/1bafec046dd0cbd3f18b8933873da7381fc28a26)). La CI backend deve essere verificata separatamente e il database Coolify **NON è stato migrato**. T0, T2, T3 e T4 ancora aperti.
+> **Stato del 23 ottobre 2026 — T1 BACKEND IMPLEMENTATO SU GITHUB, NON DEPLOYATO.** Il primo input orario HH:mm è già su main e ha superato le CI Flutter [40011701417](https://github.com/andreadada/simple-notes/actions/runs/40011701417) e [40011789270](https://github.com/andreadada/simple-notes/actions/runs/40011789270). Questo documento definisce l'intero incremento: **solo T1 backend è stato introdotto nel codice** (commit [`1bafec0`](https://github.com/andreadada/simple-notes/commit/1bafec046dd0cbd3f18b8933873da7381fc28a26)). La CI backend [40019181083](https://github.com/andreadada/simple-notes/actions/runs/40019181083) è **riuscita** (Gradle test e bootJar) e il database Coolify **NON è stato migrato**. T0, T2, T3 e T4 ancora aperti.
 
 ## Implementazione disponibile nel repository — backend T1
 
@@ -9,7 +9,7 @@
 - `SyncService` riconosce il campo `due`, lo salva nel DB e nel change log. Le vecchie scritture `dueAt` continuano a funzionare su task `none/legacy`.
 - Una modifica priva di `due` a un task `date/datetime` produce **426** con `code: CLIENT_UPGRADE_REQUIRED`; stessa protezione sul vecchio `PUT /tasks/{id}`. Preservare l'outbox lato client: la gestione specifica 426 nei client è **ancora da sviluppare in T2**.
 - `GET /api/v1/capabilities` (richiede autenticazione) dichiara `taskDueSchema: 1`. Un client T2/T3 dovrà verificare questa capability **prima** di creare task con formato moderno.
-- Test Java: validazione date-only/00:00/DST gap/fold, sync+privacy/idempotenza/upgrade e prova di migrazione PostgreSQL popolato V6→V7. **Verificare la CI**; test hardware e deploy ancora mancanti.
+- Test Java: validazione date-only/00:00/DST gap/fold, sync+privacy/idempotenza/upgrade e prova di migrazione PostgreSQL popolato V6→V7. **CI backend 40019181083 riuscita**; test hardware e deploy ancora mancanti.
 
 ## Problema effettivo nel codice
 
@@ -80,7 +80,7 @@ Il backend deve verificare che `instant` concordi con data/ora/`timeZone`/`offse
 ## Piano eseguibile, in piccoli commit
 
 1. **T0 – Gate operativo:** completare [P0-DEVICE-CHECKS.md](P0-DEVICE-CHECKS.md): backup/recovery reale, Coolify V5+V6 e test E2E delle attuali liste, tag, sottotask, offline e 409.
-2. **T1 – Backend-first:** codice e test aggiunti su `main` con commit `1bafec0`; CI da verificare; **mai considerare il deploy automatico**. Correggere eventuali problemi della CI prima di passare a T2.
+2. **T1 – Backend-first:** codice e test aggiunti su `main` con commit `1bafec0`; [Backend CI 40019181083](https://github.com/andreadada/simple-notes/actions/runs/40019181083) **success** (test e bootJar). **Mai considerare il deploy automatico**. T2 Flutter rimane da realizzare.
 3. **T2 – Flutter core:** `TaskDue` + Drift v5; migrazione/snapshot/outbox/push-pull/risoluzione conflitti; test doppio SQLite, versioni e dati legacy.
 4. **T3 – UI:** editor e presentazione Forui, date-only, timed, timezone e fold; filtri oggi/7 giorni; test widget su desktop e mobile.
 5. **T4 – Compatibilità e release:** verificare backend aggiornato, capability, upgrade senza reset, test Windows↔Android reali in entrambi i versi, offline/restart/conflict/DST. Aggiornare checklist soltanto dopo prova.

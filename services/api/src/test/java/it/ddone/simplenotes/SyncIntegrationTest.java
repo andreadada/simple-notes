@@ -157,4 +157,77 @@ class SyncIntegrationTest {
             .andExpect(jsonPath("$.deleted").value(true));
     }
 
+    @Test
+    void organizedTasksAndListsSyncWithOwnerIsolation() throws Exception {
+        var a = users.save(new AppUser("org-a-" + UUID.randomUUID(), "org-a@example.com", "A"));
+        var b = users.save(new AppUser("org-b-" + UUID.randomUUID(), "org-b@example.com", "B"));
+        String bearerA = "Bearer " + jwt(a.id);
+        String bearerB = "Bearer " + jwt(b.id);
+        String listId = UUID.randomUUID().toString();
+        String taskId = UUID.randomUUID().toString();
+        String subId = UUID.randomUUID().toString();
+        String createList = """
+            {"operationId":"%s","entityId":"%s","entityType":"list",
+             "action":"upsert","payload":{"title":"Università"}}
+            """.formatted(UUID.randomUUID(), listId);
+        mvc.perform(post("/api/v1/sync/apply").header("Authorization", bearerA)
+                .contentType(MediaType.APPLICATION_JSON).content(createList))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.version").value(0));
+
+        String task = """
+            {"operationId":"%s","entityId":"%s","entityType":"task",
+             "action":"upsert",
+             "payload":{"title":"Ripassare","completed":false,
+                "listId":"%s","priority":3,"tags":["esame","urgente"],
+                "subtasks":[{"id":"%s","title":"Capitolo 1","completed":false}]}}
+            """.formatted(UUID.randomUUID(), taskId, listId, subId);
+        mvc.perform(post("/api/v1/sync/apply").header("Authorization", bearerB)
+                .contentType(MediaType.APPLICATION_JSON).content(task))
+            .andExpect(status().isBadRequest());
+        mvc.perform(post("/api/v1/sync/apply").header("Authorization", bearerA)
+                .contentType(MediaType.APPLICATION_JSON).content(task))
+            .andExpect(status().isOk());
+        mvc.perform(get("/api/v1/sync/changes").header("Authorization", bearerA))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.changes.length()").value(2))
+            .andExpect(jsonPath("$.changes[0].entityType").value("list"))
+            .andExpect(jsonPath("$.changes[1].payload.listId").value(listId))
+            .andExpect(jsonPath("$.changes[1].payload.priority").value(3))
+            .andExpect(jsonPath("$.changes[1].payload.tags[0]").value("esame"))
+            .andExpect(jsonPath("$.changes[1].payload.subtasks[0].title").value("Capitolo 1"));
+        mvc.perform(get("/api/v1/sync/changes").header("Authorization", bearerB))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.changes.length()").value(0));
+
+        String deleteList = """
+            {"operationId":"%s","entityId":"%s","entityType":"list",
+             "action":"delete","expectedVersion":0}
+            """.formatted(UUID.randomUUID(), listId);
+        mvc.perform(post("/api/v1/sync/apply").header("Authorization", bearerA)
+                .contentType(MediaType.APPLICATION_JSON).content(deleteList))
+            .andExpect(status().isConflict());
+
+        // Moving the task to Inbox does not delete it, then list removal
+        // becomes legal. Confirm tombstone is visible in the change log.
+        String moved = """
+            {"operationId":"%s","entityId":"%s","entityType":"task",
+             "action":"upsert","expectedVersion":0,
+             "payload":{"title":"Ripassare","completed":false,"listId":null,
+                "priority":3,"tags":["esame"],
+                "subtasks":[{"id":"%s","title":"Capitolo 1","completed":true}]}}
+            """.formatted(UUID.randomUUID(), taskId, subId);
+        mvc.perform(post("/api/v1/sync/apply").header("Authorization", bearerA)
+                .contentType(MediaType.APPLICATION_JSON).content(moved))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.version").value(1));
+        mvc.perform(post("/api/v1/sync/apply").header("Authorization", bearerA)
+                .contentType(MediaType.APPLICATION_JSON).content(deleteList))
+            .andExpect(status().isOk());
+        mvc.perform(get("/api/v1/sync/latest").header("Authorization", bearerA)
+                .param("entityType", "list").param("entityId", listId))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.deleted").value(true));
+    }
+
 }

@@ -79,7 +79,9 @@ class _AutoSyncHostState extends ConsumerState<AutoSyncHost>
     }
     final cloud = ref.read(cloudAuthProvider);
     if (!cloud.authenticated || cloud.userId == null ||
-        ref.read(cloudSyncProvider).conflict) return;
+        ref.read(cloudSyncProvider).conflict) {
+      return;
+    }
     _inFlight = true;
     try {
       await ref.read(cloudSyncProvider.notifier).synchronize();

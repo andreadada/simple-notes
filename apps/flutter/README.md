@@ -19,7 +19,7 @@ Su Windows occorrono gli strumenti C++ di Visual Studio e **C++ ATL** (`atlstr.h
 ## Configurazione Android versionata
 
 La configurazione Android ora è presente **direttamente in Git**:
-- `android/app/build.gradle.kts`: package e namespace definitivi `it.andreadada.simplenotes`, configurazione Java 17 senza estensione `kotlin { compilerOptions { ... } }`. **`enableKotlin = false` solo nel modulo `:app`**, perché `MainActivity.java` è Java e Kotlin non serve nel launcher. I plugin Android restano liberi di usare Kotlin.
+- `android/app/build.gradle.kts`: package e namespace definitivi `it.andreadada.simplenotes`, configurazione Java allineata alla JDK di Gradle (17 o 21) senza estensione `kotlin { compilerOptions { ... } }`. **`enableKotlin = false` solo nel modulo `:app`**, perché `MainActivity.java` è Java; alcune versioni Flutter registrano comunque `compileDebugKotlin`. Per evitare la validazione `Java (17) / Kotlin (21)` la `compileOptions` Java usa `JavaVersion.current()`, che vale 17 oppure 21 come la JDK che esegue Gradle. La CI testa entrambe.
 - `android/gradle.properties`: disattiva la compilazione incrementale Kotlin per evitare `this and base files have different roots` quando il progetto sta su E: e PUB_CACHE su C:.
 - `android/app/src/main/java/it/andreadada/simplenotes/MainActivity.java`: Activity nel namespace definitivo.
 - La CI controlla package e namespace prima della build Android; esegue la build sia con **JDK 17 sia con JDK 21**, per evitare l'errore locale `compileDebugJavaWithJavac (17) / compileDebugKotlin (21)`. Pubblica un APK **debug**.

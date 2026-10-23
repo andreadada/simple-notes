@@ -35,7 +35,7 @@
 - [x] Windows: avvio Flutter desktop e login Google OAuth reale verificati manualmente (21 ottobre 2026).
 - [x] App Android avviata sul dispositivo fisico (22 ottobre 2026); prima build Kotlin locale risolta disattivando la cache incrementale.
 - [x] Configurazione Android versionata: applicationId/namespace `it.andreadada.simplenotes`, Gradle Java 17, Kotlin incremental off su dischi differenti, Activity Java e verifica in CI (build da confermare).
-- [ ] Verificare su CI con JDK 17/21 che il launcher Java non compili Kotlin e non generi più il disallineamento JVM 17/21.
+- [ ] Verificare su CI con JDK 17/21 l'allineamento bytecode Java/Kotlin: la modifica precedente `enableKotlin = false` non bastava con JDK 21; ora Java segue la JDK di Gradle.
 - [ ] Android: APK compilato localmente, installazione tramite USB ancora bloccata dal sistema (`INSTALL_FAILED_USER_RESTRICTED`); verificare permesso sul telefono e ritestare il Google Login.
 - [ ] Test end-to-end Google Login con client ID reali su due dispositivi.
 - [ ] Verifica client sync PC↔Android con dati reali, recupero errori, conflitti e sync automatica.

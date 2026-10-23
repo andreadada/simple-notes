@@ -8,18 +8,20 @@ plugins {
 }
 
 android {
-    // Flutter's Android launcher is written in Java. AGP 9 built-in Kotlin
-    // otherwise creates an unnecessary compileDebugKotlin task whose JVM
-    // target may follow JDK 21, conflicting with Java bytecode target 17.
-    // This is scoped to :app; Flutter plugins can still compile Kotlin.
+    // Java-only Flutter launcher: leave AGP built-in Kotlin disabled when
+    // possible. Some Flutter/plugin versions still register a Kotlin task.
     enableKotlin = false
     namespace = "it.andreadada.simplenotes"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
 
+    // Flutter/Gradle runs with JDK 17 or 21 depending on the developer
+    // machine. Kotlin's task defaults to that JVM, too. Keep Java bytecode
+    // compatibility aligned with the actual Gradle JDK so KGP's strict JVM
+    // target validation never sees Java 17 vs Kotlin 21. CI builds both.
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
+        sourceCompatibility = JavaVersion.current()
+        targetCompatibility = JavaVersion.current()
     }
 
     defaultConfig {

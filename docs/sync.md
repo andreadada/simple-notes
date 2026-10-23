@@ -47,6 +47,10 @@ Quando una mutazione riceve 409, il client conserva **tutte** le modifiche in co
 
 Per i test: `apps/flutter/test/sync_conflict_test.dart` copre note concorrenti PC/telefono simulati, retry offline, entrambe le risoluzioni. `SyncIntegrationTest` verifica query latest e isolamento per account. Il protocollo mantiene limitazioni per la risoluzione di delete-vs-edit, da trattare con copia/recupero in una nuova UUID.
 
+## Prossima estensione date-only / timezone (solo piano)
+
+Il campo `dueAt` attuale è un istante UTC e non preserva il significato di un *giorno civile* o la differenza tra `00:00` esplicita e «solo giorno». Prima delle ricorrenze è progettato un nuovo campo `due` con `none/date/datetime/legacy`, migrazioni additive e protezione contro client vecchi. Vedi [due-dates-timezones.md](due-dates-timezones.md). Flyway V7/Drift v5 **non** sono ancora implementati; non cambiare i payload senza relativo version gating.
+
 ## Organizzazione attività — sync v1 estesa
 
 - `entityType: list`: stessa struttura di `/sync/apply` (`operationId` UUID, `entityId` UUID, `action=upsert|delete`, `expectedVersion`), con payload `{title,createdAt}` per gli upsert. Il server valida owner e versioni. `/sync/changes` trasporta anche create/update/delete/tombstone delle liste; `/sync/latest` accetta `entityType=list`.

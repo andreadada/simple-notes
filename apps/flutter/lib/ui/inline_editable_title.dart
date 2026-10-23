@@ -101,39 +101,60 @@ class _InlineEditableTitleState extends State<InlineEditableTitle> {
   }
 
   @override
-  Widget build(BuildContext context) => Focus(
-    onKeyEvent: (node, event) {
-      if (event is KeyDownEvent &&
-          event.logicalKey == LogicalKeyboardKey.escape) {
-        _cancel();
-        return KeyEventResult.handled;
-      }
-      return KeyEventResult.ignored;
-    },
-    child: Semantics(
-      label: widget.semanticsLabel,
-      textField: true,
-      child: TextField(
-        controller: _controller,
-        focusNode: _focusNode,
-        style: widget.style,
-        cursorColor: NotesPalette.accent,
-        textInputAction: TextInputAction.done,
+  Widget build(BuildContext context) => LayoutBuilder(
+    builder: (context, constraints) {
+      // A heading should look like its own text, not a full-width form row.
+      final text = _controller.text.isEmpty ? widget.hint : _controller.text;
+      final painter = TextPainter(
+        text: TextSpan(text: text, style: widget.style),
         maxLines: 1,
-        inputFormatters: [LengthLimitingTextInputFormatter(255)],
-        onSubmitted: (_) => _focusNode.unfocus(),
-        onTapOutside: (_) => _focusNode.unfocus(),
-        decoration: InputDecoration(
-          isDense: true,
-          hintText: widget.hint,
-          contentPadding: const EdgeInsets.symmetric(vertical: 3),
-          border: InputBorder.none,
-          enabledBorder: InputBorder.none,
-          focusedBorder: const UnderlineInputBorder(
-            borderSide: BorderSide(color: NotesPalette.accent, width: 1.5),
+        textDirection: Directionality.of(context),
+      )..layout();
+      final limit = constraints.maxWidth.isFinite
+          ? constraints.maxWidth
+          : MediaQuery.sizeOf(context).width * 0.75;
+      final width = (painter.width + 26).clamp(84.0, limit < 84 ? 84.0 : limit);
+      painter.dispose();
+      return SizedBox(
+        width: width,
+        child: Focus(
+          onKeyEvent: (node, event) {
+            if (event is KeyDownEvent &&
+                event.logicalKey == LogicalKeyboardKey.escape) {
+              _cancel();
+              return KeyEventResult.handled;
+            }
+            return KeyEventResult.ignored;
+          },
+          child: Semantics(
+            label: widget.semanticsLabel,
+            textField: true,
+            child: TextField(
+              controller: _controller,
+              focusNode: _focusNode,
+              style: widget.style,
+              cursorColor: NotesPalette.accent,
+              textInputAction: TextInputAction.done,
+              maxLines: 1,
+              inputFormatters: [LengthLimitingTextInputFormatter(255)],
+              onChanged: (_) => setState(() {}),
+              onSubmitted: (_) => _focusNode.unfocus(),
+              onTapOutside: (_) => _focusNode.unfocus(),
+              decoration: InputDecoration(
+                isDense: true,
+                hintText: widget.hint,
+                contentPadding: const EdgeInsets.symmetric(vertical: 3),
+                border: InputBorder.none,
+                enabledBorder: InputBorder.none,
+                focusedBorder: const UnderlineInputBorder(
+                  borderSide: BorderSide(
+                    color: NotesPalette.accent, width: 1.5),
+                ),
+              ),
+            ),
           ),
         ),
-      ),
-    ),
+      );
+    },
   );
 }

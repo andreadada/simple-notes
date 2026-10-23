@@ -16,6 +16,22 @@ Il backend è raggiungibile in HTTPS. Google Cloud OAuth (client Desktop, Androi
 
 Su Windows occorrono gli strumenti C++ di Visual Studio e **C++ ATL** (`atlstr.h`) per `flutter_secure_storage_windows`. Su Android verificare `applicationId` e impronta SHA-1 della firma con il client OAuth Android. Le APK CI possono avere un certificato debug diverso; la configurazione CI non integra ancora gli OAuth reali.
 
+## Configurazione Android versionata
+
+La configurazione Android ora è presente **direttamente in Git**:
+- `android/app/build.gradle.kts`: package e namespace definitivi `it.andreadada.simplenotes`, configurazione Java 17 senza estensione `kotlin { compilerOptions { ... } }`.
+- `android/gradle.properties`: disattiva la compilazione incrementale Kotlin per evitare `this and base files have different roots` quando il progetto sta su E: e PUB_CACHE su C:.
+- `android/app/src/main/java/it/andreadada/simplenotes/MainActivity.java`: Activity nel namespace definitivo.
+- La CI controlla package e namespace prima della build Android e pubblica un APK **debug**.
+
+**Primo pull sui PC dove Flutter aveva già generato file Android:** `git pull` può fermarsi con `untracked working tree files would be overwritten`. È normale: salva una copia *fuori dalla repo* dei due file generati e spostali prima del pull. Non cancellare l'intera cartella Android. Dalle volte successive `git pull origin main` basterà.
+
+Il Client OAuth Android Google Cloud deve avere package `it.andreadada.simplenotes` e lo **SHA-1 della firma debug del PC**. La build CI è firmata da un certificato diverso e non è garantito che il login Google funzioni su quell'APK.
+
+### Errore d'installazione `INSTALL_FAILED_USER_RESTRICTED`
+
+Se Flutter mostra `✓ Built ... app-debug.apk` ma ADB dice `Install canceled by user`, **la compilazione è riuscita**. Lo smartphone ha bloccato l'installazione tramite USB; su Xiaomi/Redmi/POCO controllare in *Opzioni sviluppatore* le opzioni **Debug USB** e **Installa tramite USB**, lasciare lo schermo sbloccato e accettare la richiesta d'installazione. Questa restrizione **non è risolvibile dal codice GitHub**. In alternativa è possibile trasferire l'APK sul telefono e installarlo manualmente, confermando le autorizzazioni del sistema.
+
 ## Debug Google Login Android: `[16] Account reauth failed`
 
 Questo errore può essere restituito da Google Credential Manager come `canceled` **anche se l'utente non ha annullato il login**. Verificare prima i tre elementi OAuth, senza cambiare il backend funzionante:

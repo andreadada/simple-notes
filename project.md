@@ -34,7 +34,8 @@
 - [x] Drift/SQLite, outbox e migrazione dati legacy; analyze/test Flutter (run `39604983987`).
 - [x] Windows: avvio Flutter desktop e login Google OAuth reale verificati manualmente (21 ottobre 2026).
 - [x] App Android avviata sul dispositivo fisico (22 ottobre 2026); prima build Kotlin locale risolta disattivando la cache incrementale.
-- [ ] Android Google Login: autenticazione fallisce su Google Credential Manager con `[16] Account reauth failed`; verificare SHA-1/package/Web Client ID, ripetere test.
+- [x] Configurazione Android versionata: applicationId/namespace `it.andreadada.simplenotes`, Gradle Java 17, Kotlin incremental off su dischi differenti, Activity Java e verifica in CI (build da confermare).
+- [ ] Android: APK compilato localmente, installazione tramite USB ancora bloccata dal sistema (`INSTALL_FAILED_USER_RESTRICTED`); verificare permesso sul telefono e ritestare il Google Login.
 - [ ] Test end-to-end Google Login con client ID reali su due dispositivi.
 - [ ] Verifica client sync PC↔Android con dati reali, recupero errori, conflitti e sync automatica.
 - [ ] Notifiche, liste, tag, sottotask, ricorrenze e ricerca completa.

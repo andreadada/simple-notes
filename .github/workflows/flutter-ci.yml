@@ -23,12 +23,18 @@ jobs:
       - name: Generate Android and Windows scaffold
         working-directory: apps/flutter
         run: flutter create --platforms=android,windows --project-name simple_notes .
+      - name: Verify tracked Android identity
+        working-directory: apps/flutter
+        run: |
+          grep -F 'applicationId = "it.andreadada.simplenotes"' android/app/build.gradle.kts
+          grep -F 'namespace = "it.andreadada.simplenotes"' android/app/build.gradle.kts
+          test -f android/app/src/main/java/it/andreadada/simplenotes/MainActivity.java
       - name: Fetch dependencies
         working-directory: apps/flutter
         run: flutter pub get
       - name: Generate Drift database
         working-directory: apps/flutter
-        run: dart run build_runner build --delete-conflicting-outputs
+        run: dart run build_runner build
       - name: Static analysis
         working-directory: apps/flutter
         run: flutter analyze
@@ -55,6 +61,12 @@ jobs:
       - name: Generate Drift database
         working-directory: apps/flutter
         run: dart run build_runner build --delete-conflicting-outputs
+      - name: Verify tracked Android identity
+        working-directory: apps/flutter
+        run: |
+          grep -F 'applicationId = "it.andreadada.simplenotes"' android/app/build.gradle.kts
+          grep -F 'namespace = "it.andreadada.simplenotes"' android/app/build.gradle.kts
+          test -f android/app/src/main/java/it/andreadada/simplenotes/MainActivity.java
       - name: Build debug APK
         working-directory: apps/flutter
         run: flutter build apk --debug

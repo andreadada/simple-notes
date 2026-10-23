@@ -2,7 +2,7 @@
 
 **Obiettivo:** app offline-first Windows 11 + Android ispirata alle funzionalità di TickTick, con UI originale, login Google e backend self-hosted su Coolify.
 **Stack:** Flutter/Dart + Riverpod + Drift/SQLite; Spring Boot (Java 21) + Spring Security + PostgreSQL/Flyway; REST + sync incrementale + WebSocket; Android FCM; Docker/Coolify.
-**Stato:** P0 IN CORSO (backend Coolify HTTPS `UP`, Windows+Google Login verificati, Android segnalato funzionante sul telefono dopo fix 23/10, Google Login Android non ancora riconfermato esplicitamente, sync manuale sperimentale e non E2E; release non pronta). Spuntare una voce solo quando implementata **e verificata**; nessuna funzione è completa per definizione.
+**Stato:** P0 IN CORSO (backend Coolify HTTPS `UP`, Windows+Google Login verificati, Android segnalato funzionante sul telefono dopo fix 23/10, Google Login Android non ancora riconfermato esplicitamente, auto-sync foreground sperimentale non ancora E2E; release non pronta). Spuntare una voce solo quando implementata **e verificata**; nessuna funzione è completa per definizione.
 
 ## Regole vincolanti — COME FARE
 - [ ] Lavorare in piccoli commit descrittivi, con test e documentazione aggiornati.

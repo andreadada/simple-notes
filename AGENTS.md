@@ -14,7 +14,7 @@ Repository: **Simple Notes** — Flutter Windows/Android + Spring Boot/PG su Coo
 - **La CI non equivale a un test OAuth/sync E2E.** Ultima CI Flutter verificata: [39955667440](https://github.com/andreadada/simple-notes/actions/runs/39955667440), tutto riuscito, incluso Android JDK 17/21.
 - **Windows + Google Login** verificati manualmente; Android segnalato funzionante su dispositivo dopo fix JVM. **Login Google Android post-fix e sync PC↔Android non ancora confermati esplicitamente.**
 - Backend HTTPS operativo secondo health-check dell'utente, **non release production-ready**.
-- La sync manuale/outbox è implementata, ma mancano sync automatica e UI di conflitto.
+- Auto-sync foreground è implementata (login, edit, resume, rete, pull 60 s), con outbox e comando manuale nel menu avatar; mancano test E2E, background sync e UI di conflitto.
 - **Non segnare `[x]` finché non hai prove** del comportamento richiesto; distinguere implementato, test CI, test manuale e non verificato.
 
 ## Modalità di lavoro
@@ -26,6 +26,6 @@ Repository: **Simple Notes** — Flutter Windows/Android + Spring Boot/PG su Coo
 - Flutter: `apps/flutter`. API: `services/api`. Compose Coolify: `/docker-compose.yml`.
 - Package Android OAuth: **`it.andreadada.simplenotes`**; Web Client ID per `google_sign_in` su Android, Desktop Client ID per OAuth Windows. Mai committare secret, file credenziali, token o keystore.
 - La build Android con JDK 21 richiede la configurazione JVM del modulo in `android/app/build.gradle.kts`; **non ripristinare target Java 17 fisso** senza considerare Kotlin 21.
-- Prossima priorità: confermare Google Login Android, quindi testare sync manuale Windows↔Android con lo stesso account, offline/retry/conflitti; solo dopo fare sync automatica.
+- Prossima priorità: confermare Google Login Android, testare auto-sync foreground Windows↔Android con lo stesso account, offline/retry/conflitti; valutare in seguito background sync. Avatar Google (claim picture) richiede il backend con migration Flyway V4.
 
 **Su qualsiasi incongruenza tra handoff e codice/CI più recente, verificare e aggiornare la documentazione invece di inventare uno stato.**

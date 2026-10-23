@@ -6,7 +6,7 @@ App Windows 11 + Android per **task, note e produttività**, ispirata alle funzi
 
 ## Stato effettivo — 23 ottobre 2026
 
-**P0 in corso, non pronto per il rilascio.** API su `https://api.notes.ddone.it` con health `UP` confermato dall'utente. Windows e login Google Desktop verificati; app Android segnalata funzionante sul telefono dopo fix Gradle/JVM. **Login Google Android dopo gli ultimi fix e sync Windows↔Android non sono ancora verificati esplicitamente.** La sincronizzazione esistente è **manuale e sperimentale**.
+**P0 in corso, non pronto per il rilascio.** API su `https://api.notes.ddone.it` con health `UP` confermato dall'utente. Windows e login Google Desktop verificati; app Android segnalata funzionante sul telefono dopo fix Gradle/JVM. **Login Google Android dopo gli ultimi fix e sync Windows↔Android non sono ancora verificati esplicitamente.** È stata implementata **auto-sync foreground sperimentale** con outbox, retry/backoff e pull ogni 60 s, non ancora verificata end-to-end.
 
 Ultima pipeline verificata: [Flutter CI 39955667440](https://github.com/andreadada/simple-notes/actions/runs/39955667440) — **successo** di Android JDK 17/21, Windows, analisi e test. Questo **non** certifica il login o la sincronizzazione reali.
 
@@ -21,4 +21,4 @@ Ultima pipeline verificata: [Flutter CI 39955667440](https://github.com/andreada
 - [docs/android-troubleshooting.md](docs/android-troubleshooting.md) — Kotlin/Gradle JDK 17/21, Google OAuth Android, ADB e installazione USB.
 - [infra/README.md](infra/README.md) — Compose Coolify, ambiente backend e sicurezza.
 
-**Prossimo passo:** confermare il login Google Android, poi test manuale della sincronizzazione delle attività/note fra Windows e Android con lo stesso account, anche offline. Per build e comandi usare [docs/HANDOFF.md](docs/HANDOFF.md).
+**Novità P0:** avatar Google con menu account unico (Accedi, Sincronizza ora, Esci), invece di due pulsanti; la foto è fornita dal backend dopo redeploy Coolify. **Prossimo passo:** confermare il login Google Android, poi test reale dell'auto-sync delle attività/note fra Windows e Android con lo stesso account, anche offline. Per build e comandi usare [docs/HANDOFF.md](docs/HANDOFF.md).

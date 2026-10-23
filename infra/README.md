@@ -36,6 +36,10 @@ cp .env.example .env
 docker compose --env-file .env -f infra/compose.yaml up --build
 ```
 
+## Aggiornamento avatar Google (23 ottobre 2026)
+
+Il backend include ora `AuthResponse.photoUrl` ricavato dal claim Google OpenID `picture` (quando presente), persistito con Flyway `V4__google_profile_photo.sql` nella tabella `app_user`. Dopo il `git pull` lato client occorre **redeploy del servizio API su Coolify** dal branch `main`. La migrazione aggiunge una colonna nullable e conserva i dati esistenti; per visualizzare la foto dopo un refresh su Windows, gli utenti già registrati devono effettuare un nuovo Google Login una volta. Non modificare alcun Client Secret o variabile d'ambiente. Verificare `/actuator/health` e i log Flyway prima di considerare il deploy riuscito.
+
 ## Da completare prima della produzione
 - Rate limiting e protezione anti-abuso sugli endpoint di autenticazione.
 - Test OAuth Windows/Android con client reali e firma Android coerente.

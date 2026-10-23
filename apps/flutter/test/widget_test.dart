@@ -89,4 +89,20 @@ void main() {
     expect(await db.pendingCount(), 2);
   });
 
+
+  testWidgets('Google account is represented by one avatar menu', (tester) async {
+    final db = AppDatabase(NativeDatabase.memory());
+    await tester.pumpWidget(ProviderScope(overrides: [
+      databaseProvider.overrideWithValue(db),
+      initialDataProvider.overrideWithValue(const LocalData()),
+    ], child: const SimpleNotesApp()));
+    expect(find.byKey(const Key('account-menu-mobile')), findsOneWidget);
+    expect(find.byType(OutlinedButton), findsNothing);
+    await tester.tap(find.byKey(const Key('account-menu-mobile')));
+    await tester.pumpAndSettle();
+    expect(find.text('Accedi con Google'), findsWidgets);
+    await tester.pumpWidget(const SizedBox.shrink());
+    await db.close();
+  });
+
 }

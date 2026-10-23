@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:forui/forui.dart';
 import 'ui/notes_theme.dart';
 import 'ui/notes_dialogs.dart';
+import 'ui/sync_conflict_dialog.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'data/local_store.dart';
@@ -170,6 +171,11 @@ class _NotesHomeState extends ConsumerState<NotesHome> {
       onSelected: (value) async {
         if (value == 'sync') {
           await ref.read(cloudSyncProvider.notifier).synchronize();
+        } else if (value == 'resolve') {
+          final details = ref.read(cloudSyncProvider).details;
+          if (details != null) {
+            await showNotesSyncConflictDialog(context, ref, details);
+          }
         } else if (value == 'logout') {
           await ref.read(cloudAuthProvider.notifier).logout();
         } else if (value == 'login') {
@@ -223,6 +229,15 @@ class _NotesHomeState extends ConsumerState<NotesHome> {
           const PopupMenuDivider(),
         ],
         if (cloud.authenticated) ...[
+          if (sync.conflict && sync.details != null)
+            const PopupMenuItem<String>(
+              value: 'resolve',
+              child: ListTile(
+                dense: true, contentPadding: EdgeInsets.zero,
+                leading: Icon(Icons.compare_arrows, color: Colors.orangeAccent),
+                title: Text('Risolvi conflitto'),
+              ),
+            ),
           PopupMenuItem<String>(
             value: 'sync',
             enabled: !sync.running,

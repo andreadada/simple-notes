@@ -137,7 +137,7 @@ class _NotesHomeState extends ConsumerState<NotesHome> {
         backgroundColor: const Color(0xff303545),
         child: ClipOval(child: validPhoto
             ? Image.network(url, width: 38, height: 38, fit: BoxFit.cover,
-                errorBuilder: (_, _, _) =>
+                errorBuilder: (context, error, stackTrace) =>
                     const Icon(Icons.person, color: Colors.white70))
             : const Icon(Icons.person, color: Colors.white70)),
       );

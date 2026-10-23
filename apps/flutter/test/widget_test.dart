@@ -257,7 +257,15 @@ void main() {
     final newListId = (await db.snapshot()).lists.single.id;
     await tester.tap(find.byKey(Key('list-$newListId')));
     await tester.pumpAndSettle();
-    expect(find.byKey(const Key('rename-list')), findsOneWidget);
+    final inline = find.byKey(Key('inline-list-title-$newListId'));
+    expect(inline, findsOneWidget);
+    expect(find.byKey(const Key('rename-list')), findsNothing);
+    final titleInput = find.descendant(
+      of: inline, matching: find.byType(TextField));
+    await tester.enterText(titleInput, 'Università e lavoro');
+    await tester.testTextInput.receiveAction(TextInputAction.done);
+    await tester.pumpAndSettle();
+    expect((await db.snapshot()).lists.single.title, 'Università e lavoro');
     await tester.pumpWidget(const SizedBox.shrink());
     await db.close();
   });

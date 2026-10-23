@@ -85,7 +85,20 @@ public class SyncService {
         String title = requiredText(value, "title", 1024);
         String description = value.path("description").isNull() ? null :
             optionalText(value, "description");
-        Instant due = optionalInstant(value, "dueAt");
+        // Modern due semantics must never be silently overwritten by an older
+        // client which uploads only dueAt during an unrelated title update.
+        TaskDue due;
+        if (value.has("due")) {
+            due = TaskDue.parse(value.get("due"));
+            if (value.has("dueAt") &&
+                !Objects.equals(optionalInstant(value, "dueAt"), due.instant()))
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "dueAt does not match explicit due specification");
+        } else {
+            if (existing != null && Set.of("date", "datetime").contains(existing.dueKind))
+                throw new ClientUpgradeRequiredException();
+            due = TaskDue.fromOldInstant(optionalInstant(value, "dueAt"));
+        }
         boolean completed = value.path("completed").asBoolean(false);
         UUID listId = optionalUuid(value, "listId");
         if (listId != null && !lists.existsByIdAndOwnerIdAndDeletedAtIsNull(listId, owner)) {
@@ -101,16 +114,16 @@ public class SyncService {
         if (existing == null) {
             if (req.expectedVersion() != null)
                 throw new ResponseStatusException(HttpStatus.CONFLICT, "Task deleted or missing on server");
-            entity = new TaskEntity(owner, title, description, due);
+            entity = new TaskEntity(owner, title, description, due.instant());
             entity.id = req.entityId();
         } else {
             requireVersion(req.expectedVersion(), existing.version);
             entity = existing;
             entity.title = title;
             entity.description = description;
-            entity.dueAt = due;
             entity.updatedAt = Instant.now();
         }
+        due.applyTo(entity);
         entity.listId = listId;
         entity.priority = priority;
         entity.tagsJson = tagsJson;
@@ -123,6 +136,7 @@ public class SyncService {
         result.put("completed", entity.completedAt != null);
         result.put("description", entity.description == null ? "" : entity.description);
         result.put("dueAt", entity.dueAt == null ? "" : entity.dueAt.toString());
+        result.put("due", TaskDue.fromEntity(entity).toPayload());
         result.put("createdAt", entity.createdAt.toString());
         result.put("listId", entity.listId == null ? null : entity.listId.toString());
         result.put("priority", entity.priority);

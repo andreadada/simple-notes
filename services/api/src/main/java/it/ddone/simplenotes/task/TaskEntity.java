@@ -2,6 +2,8 @@ package it.ddone.simplenotes.task;
 
 import jakarta.persistence.*;
 import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.UUID;
 
 @Entity
@@ -18,6 +20,12 @@ public class TaskEntity {
     @Column(nullable = false) public String title;
     @Column(columnDefinition = "text") public String description;
     @Column(name = "due_at") public Instant dueAt;
+    @Column(name = "due_kind", nullable = false, length = 16)
+    public String dueKind = "none";
+    @Column(name = "due_date") public LocalDate dueDate;
+    @Column(name = "due_time") public LocalTime dueTime;
+    @Column(name = "due_timezone", length = 128) public String dueTimezone;
+    @Column(name = "due_offset_seconds") public Integer dueOffsetSeconds;
     @Column(name = "completed_at") public Instant completedAt;
     @Version public long version;
     @Column(name = "created_at", nullable = false) public Instant createdAt;
@@ -30,7 +38,7 @@ public class TaskEntity {
         this.ownerId = ownerId;
         this.title = title;
         this.description = description;
-        this.dueAt = dueAt;
+        TaskDue.fromOldInstant(dueAt).applyTo(this);
         createdAt = updatedAt = Instant.now();
     }
 }

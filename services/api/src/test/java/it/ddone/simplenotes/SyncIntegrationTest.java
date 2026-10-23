@@ -230,4 +230,118 @@ class SyncIntegrationTest {
             .andExpect(jsonPath("$.deleted").value(true));
     }
 
+    @Test
+    void modernDueSyncIsPrivateAndOldClientsCannotOverwriteIt() throws Exception {
+        var owner = users.save(new AppUser("due-owner-" + UUID.randomUUID(),
+            "due-owner@example.com", "Due owner"));
+        var stranger = users.save(new AppUser("due-foreign-" + UUID.randomUUID(),
+            "due-foreign@example.com", "Foreign"));
+        String auth = "Bearer " + jwt(owner.id);
+        String foreignAuth = "Bearer " + jwt(stranger.id);
+        String entity = UUID.randomUUID().toString();
+
+        mvc.perform(get("/api/v1/capabilities").header("Authorization", auth))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.taskDueSchema").value(1))
+            .andExpect(jsonPath("$.requiresExplicitDueForModernTasks").value(true));
+        mvc.perform(get("/api/v1/capabilities")).andExpect(status().isUnauthorized());
+
+        String date = """
+            {"operationId":"%s","entityId":"%s","entityType":"task",
+             "action":"upsert","payload":{"title":"Esame","completed":false,
+               "due":{"kind":"date","date":"2026-10-26"}}}
+            """.formatted(UUID.randomUUID(), entity);
+        mvc.perform(post("/api/v1/sync/apply").header("Authorization", auth)
+            .contentType(MediaType.APPLICATION_JSON).content(date))
+            .andExpect(status().isOk()).andExpect(jsonPath("$.version").value(0));
+        // The same operation must stay idempotent.
+        mvc.perform(post("/api/v1/sync/apply").header("Authorization", auth)
+            .contentType(MediaType.APPLICATION_JSON).content(date))
+            .andExpect(status().isOk()).andExpect(jsonPath("$.version").value(0));
+
+        mvc.perform(get("/api/v1/sync/latest").header("Authorization", auth)
+            .param("entityType", "task").param("entityId", entity))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.payload.due.kind").value("date"))
+            .andExpect(jsonPath("$.payload.due.date").value("2026-10-26"))
+            .andExpect(jsonPath("$.payload.dueAt").value(""));
+        mvc.perform(get("/api/v1/sync/latest").header("Authorization", foreignAuth)
+            .param("entityType", "task").param("entityId", entity))
+            .andExpect(status().isNotFound());
+
+        String oldWrite = """
+            {"operationId":"%s","entityId":"%s","entityType":"task",
+             "action":"upsert","expectedVersion":0,
+             "payload":{"title":"Old client edit","dueAt":null}}
+            """.formatted(UUID.randomUUID(), entity);
+        mvc.perform(post("/api/v1/sync/apply").header("Authorization", auth)
+            .contentType(MediaType.APPLICATION_JSON).content(oldWrite))
+            .andExpect(status().is(426))
+            .andExpect(jsonPath("$.code").value("CLIENT_UPGRADE_REQUIRED"));
+        mvc.perform(put("/api/v1/tasks/{id}", entity).header("Authorization", auth)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content("""
+                {"version":0,"title":"Legacy REST edit","completed":false}"""))
+            .andExpect(status().is(426))
+            .andExpect(jsonPath("$.code").value("CLIENT_UPGRADE_REQUIRED"));
+
+        String timed = """
+            {"operationId":"%s","entityId":"%s","entityType":"task",
+             "action":"upsert","expectedVersion":0,
+             "payload":{"title":"Esame alle due e mezza",
+               "due":{"kind":"datetime","date":"2026-10-25","time":"02:30",
+                 "timeZone":"Europe/Rome","offsetSeconds":3600,
+                 "instant":"2026-10-25T01:30:00Z"}}}
+            """.formatted(UUID.randomUUID(), entity);
+        mvc.perform(post("/api/v1/sync/apply").header("Authorization", auth)
+            .contentType(MediaType.APPLICATION_JSON).content(timed))
+            .andExpect(status().isOk()).andExpect(jsonPath("$.version").value(1));
+        mvc.perform(get("/api/v1/sync/latest").header("Authorization", auth)
+            .param("entityType", "task").param("entityId", entity))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.payload.due.kind").value("datetime"))
+            .andExpect(jsonPath("$.payload.due.offsetSeconds").value(3600))
+            .andExpect(jsonPath("$.payload.due.instant").value("2026-10-25T01:30:00Z"))
+            .andExpect(jsonPath("$.payload.dueAt").value("2026-10-25T01:30:00Z"));
+
+        mvc.perform(get("/api/v1/sync/changes").header("Authorization", auth))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.changes.length()").value(2))
+            .andExpect(jsonPath("$.changes[0].payload.due.date").value("2026-10-26"))
+            .andExpect(jsonPath("$.changes[1].payload.due.timeZone").value("Europe/Rome"));
+    }
+
+    @Test
+    void invalidTimedPayloadDoesNotCreateTaskOrChangeLog() throws Exception {
+        var user = users.save(new AppUser("invalid-due-" + UUID.randomUUID(),
+            "invalid-due@example.com", "No invalid dates"));
+        String bearer = "Bearer " + jwt(user.id);
+        String bad = """
+            {"operationId":"%s","entityId":"%s","entityType":"task",
+             "action":"upsert","payload":{"title":"DST gap",
+               "due":{"kind":"datetime","date":"2026-03-29","time":"02:30",
+                 "timeZone":"Europe/Rome","offsetSeconds":3600,
+                 "instant":"2026-03-29T01:30:00Z"}}}
+            """.formatted(UUID.randomUUID(), UUID.randomUUID());
+        mvc.perform(post("/api/v1/sync/apply").header("Authorization", bearer)
+            .contentType(MediaType.APPLICATION_JSON).content(bad))
+            .andExpect(status().isBadRequest());
+        mvc.perform(get("/api/v1/sync/changes").header("Authorization", bearer))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.changes.length()").value(0));
+
+        String old = """
+            {"operationId":"%s","entityId":"%s","entityType":"task",
+             "action":"upsert","payload":{"title":"Old app","dueAt":"2026-10-24T22:00:00Z"}}
+            """.formatted(UUID.randomUUID(), UUID.randomUUID());
+        mvc.perform(post("/api/v1/sync/apply").header("Authorization", bearer)
+            .contentType(MediaType.APPLICATION_JSON).content(old))
+            .andExpect(status().isOk());
+        mvc.perform(get("/api/v1/sync/changes").header("Authorization", bearer))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.changes.length()").value(1))
+            .andExpect(jsonPath("$.changes[0].payload.due.kind").value("legacy"))
+            .andExpect(jsonPath("$.changes[0].payload.due.instant").value("2026-10-24T22:00:00Z"));
+    }
+
 }

@@ -28,9 +28,11 @@ public class TaskService {
         TaskEntity task = owned(ownerId, taskId);
         if (task.version != expectedVersion)
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Version conflict");
+        if ("date".equals(task.dueKind) || "datetime".equals(task.dueKind))
+            throw new ClientUpgradeRequiredException();
         task.title = title;
         task.description = description;
-        task.dueAt = dueAt;
+        TaskDue.fromOldInstant(dueAt).applyTo(task);
         task.completedAt = completed ? (task.completedAt == null ? Instant.now() : task.completedAt) : null;
         task.updatedAt = Instant.now();
         return repository.saveAndFlush(task);

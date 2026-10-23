@@ -28,6 +28,13 @@
 - Test Backend CI [39990997833](https://github.com/andreadada/simple-notes/actions/runs/39990997833) riuscita; analyze/test Flutter [39991667611](https://github.com/andreadada/simple-notes/actions/runs/39991667611) riusciti. Build native da confermare nell'ultima run.
 - **Non provato su infrastruttura reale**: Coolify aggiornato e sync di questi campi Windows/Android. Vedere [task-organization.md](task-organization.md) per procedura e limiti.
 
+## Primo incremento orari delle scadenze (23 ottobre 2026)
+
+- L'editor attività Forui ora consente **HH:mm opzionale** insieme alla data. Il valore usa il campo `dueAt` già presente, senza nuove migrazioni, ed è visibile nelle liste attività quando diverso da mezzanotte.
+- La validazione richiede ore 0–23 e minuti 00–59 e rifiuta le ore locali inesistenti durante la transizione DST. Nessun cambiamento al protocollo sync; il client continua a convertire l'istante in UTC per il server.
+- **Limitazione importante:** mezzanotte e una scadenza «solo giorno» non sono ancora distinguibili nel modello. La separazione esplicita `dueDate` / `dueTime` / `timezone` con migrazioni incrementali e test DST resta da realizzare **prima** di ricorrenze e notifiche. Il campo HH:mm è il primo incremento UI, non il completamento del sottoprogetto promemoria.
+- La build CI di questo incremento va controllata; non dichiarare test hardware superati senza prova.
+
 ## Rimane da fare per dichiarare P0 completo
 
 - **Prove hardware**: aggiornare API Coolify solo dopo backup; verificare Google session refresh/logout, task completati, cancellazioni, sync offline → online, conflitti Forui e data delle attività su Windows e Android, compresi riavvii.

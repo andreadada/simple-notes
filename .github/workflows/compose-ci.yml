@@ -41,3 +41,37 @@ jobs:
           assert cfg["api"]["environment"]["GOOGLE_CLIENT_IDS"] == "ci-placeholder.apps.googleusercontent.com"
           print("Runtime credential mapping validated (values not displayed)")
           '
+
+  backup-restore-smoke:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - name: Isolated synthetic backup and restore
+        shell: bash
+        run: |
+          set -euo pipefail
+          db_name="simple-notes-backup-smoke-$GITHUB_RUN_ID"
+          folder="$(mktemp -d)"
+          trap 'docker rm -f "$db_name" >/dev/null 2>&1 || true; rm -rf "$folder"' EXIT
+          docker run --rm -d --name "$db_name" \
+            -e POSTGRES_USER=ciuser -e POSTGRES_DB=synthetic \
+            -e POSTGRES_PASSWORD=ci-not-real postgres:17-alpine >/dev/null
+          for i in $(seq 1 40); do
+            if docker exec "$db_name" pg_isready -U ciuser -d synthetic >/dev/null 2>&1; then
+              break
+            fi
+            sleep 1
+          done
+          docker exec "$db_name" psql -U ciuser -d synthetic \
+            -v ON_ERROR_STOP=1 -c '
+              CREATE TABLE app_user(id UUID PRIMARY KEY);
+              CREATE TABLE task(id UUID PRIMARY KEY);
+              CREATE TABLE note(id UUID PRIMARY KEY);
+              CREATE TABLE sync_change(id BIGINT PRIMARY KEY);
+              CREATE TABLE sync_operation(id UUID PRIMARY KEY);
+              INSERT INTO app_user VALUES ('"'"'00000000-0000-0000-0000-000000000001'"'"');
+            '
+          DB_CONTAINER="$db_name" BACKUP_DIR="$folder" bash infra/backup-postgres.sh
+          bash infra/verify-restore.sh "$folder"/simple-notes-*.dump

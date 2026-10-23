@@ -755,6 +755,10 @@ class _NotesHomeState extends ConsumerState<NotesHome> {
     final title = TextEditingController(text: task.title);
     final description = TextEditingController(text: task.description);
     final tags = TextEditingController(text: task.tags.join(', '));
+    final dueTime = TextEditingController(text: task.dueAt == null ||
+      (task.dueAt!.hour == 0 && task.dueAt!.minute == 0)
+      ? '' : '${task.dueAt!.hour.toString().padLeft(2, '0')}:' 
+        '${task.dueAt!.minute.toString().padLeft(2, '0')}');
     final subtaskInput = TextEditingController();
     var selectedList = task.listId;
     var selectedPriority = task.priority;
@@ -763,7 +767,7 @@ class _NotesHomeState extends ConsumerState<NotesHome> {
     showFDialog<void>(
       context: context,
       builder: (dialogContext, style, animation) => NotesEditorControllerScope(
-        controllers: [title, description, tags, subtaskInput],
+        controllers: [title, description, tags, subtaskInput, dueTime],
         child: StatefulBuilder(
           builder: (dialogContext, updateDialog) => NotesDialog(
           style: style,
@@ -927,6 +931,13 @@ class _NotesHomeState extends ConsumerState<NotesHome> {
                   ),
                 ],
               ]),
+              const SizedBox(height: 12),
+              FTextField(
+                key: const Key('edit-task-due-time'),
+                control: FTextFieldControl.managed(controller: dueTime),
+                label: const Text('Orario opzionale (HH:mm)'),
+                hint: 'Es. 18:30 — vuoto = solo giorno',
+              ),
             ],
           ),
           actions: [
@@ -950,11 +961,34 @@ class _NotesHomeState extends ConsumerState<NotesHome> {
                     content: Text('Massimo 16 tag, 40 caratteri ciascuno.')));
                   return;
                 }
-                await ref.read(localStoreProvider.notifier).editTask(
+                DateTime? resolvedDue = selectedDue;
+                 final clock = dueTime.text.trim();
+                 if (clock.isNotEmpty) {
+                   final match = RegExp(r'^(\d{1,2}):(\d{2})$').firstMatch(clock);
+                   final hour = match == null ? null : int.tryParse(match.group(1)!);
+                   final minute = match == null ? null : int.tryParse(match.group(2)!);
+                   if (resolvedDue == null || hour == null || minute == null ||
+                       hour > 23 || minute > 59) {
+                     ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                       content: Text('Seleziona una data e usa un orario HH:mm valido.')));
+                     return;
+                   }
+                   resolvedDue = DateTime(resolvedDue.year, resolvedDue.month,
+                     resolvedDue.day, hour, minute);
+                   if (resolvedDue.hour != hour || resolvedDue.minute != minute) {
+                     ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                       content: Text('Orario inesistente per il cambio di ora.')));
+                     return;
+                   }
+                 } else if (resolvedDue != null) {
+                   resolvedDue = DateTime(resolvedDue.year, resolvedDue.month,
+                     resolvedDue.day);
+                 }
+                 await ref.read(localStoreProvider.notifier).editTask(
                   task.id,
                   title: title.text,
                   description: description.text,
-                  dueAt: selectedDue,
+                  dueAt: resolvedDue,
                   listId: selectedList,
                   changeListId: true,
                   priority: selectedPriority,

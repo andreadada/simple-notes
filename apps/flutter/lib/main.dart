@@ -609,18 +609,99 @@ class _NotesHomeState extends ConsumerState<NotesHome> {
         builder: (ctx) => SizedBox(height: 300, child: taskDetails(task)),
       );
 
+  void showListEditor([LocalTaskList? list]) {
+    final title = TextEditingController(text: list?.title ?? '');
+    showFDialog<void>(
+      context: context,
+      builder: (ctx, style, animation) => NotesEditorControllerScope(
+        controllers: [title],
+        child: NotesDialog(
+          style: style, animation: animation,
+          title: Text(list == null ? 'Nuova lista' : 'Rinomina lista'),
+          body: FTextField(
+            key: const Key('list-title'),
+            control: FTextFieldControl.managed(controller: title),
+            autofocus: true,
+            label: const Text('Nome della lista'),
+            hint: 'Es. Università, Lavoro...',
+          ),
+          actions: [
+            FButton(
+              variant: FButtonVariant.ghost, mainAxisSize: MainAxisSize.min,
+              onPress: () => Navigator.pop(ctx),
+              child: const Text('Annulla'),
+            ),
+            FButton(
+              key: const Key('save-list'),
+              mainAxisSize: MainAxisSize.min,
+              onPress: () async {
+                final value = title.text.trim();
+                if (value.isEmpty || value.length > 255) return;
+                if (list == null) {
+                  await ref.read(localStoreProvider.notifier).addList(value);
+                } else {
+                  await ref.read(localStoreProvider.notifier).renameList(
+                    list.id, value);
+                }
+                if (ctx.mounted) Navigator.pop(ctx);
+              },
+              child: const Text('Salva'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void confirmListDeletion(LocalTaskList list) {
+    showFDialog<void>(
+      context: context,
+      builder: (ctx, style, animation) => NotesDialog(
+        style: style, animation: animation,
+        title: const Text('Eliminare la lista?'),
+        body: Text('La lista "${list.title}" verrà eliminata. '
+          'Le sue attività non saranno cancellate: verranno spostate in '
+          'Tutto/Inbox. La modifica verrà sincronizzata.'),
+        actions: [
+          FButton(
+            variant: FButtonVariant.ghost, mainAxisSize: MainAxisSize.min,
+            onPress: () => Navigator.pop(ctx),
+            child: const Text('Annulla'),
+          ),
+          FButton(
+            key: const Key('confirm-delete-list'),
+            mainAxisSize: MainAxisSize.min,
+            onPress: () async {
+              await ref.read(localStoreProvider.notifier).deleteList(list.id);
+              if (!mounted) return;
+              setState(() { activeListId = null; selectedId = null; });
+              if (ctx.mounted) Navigator.pop(ctx);
+            },
+            child: const Text('Elimina lista'),
+          ),
+        ],
+      ),
+    );
+  }
+
   void showTaskEditor(LocalTask task) {
     final title = TextEditingController(text: task.title);
     final description = TextEditingController(text: task.description);
+    final tags = TextEditingController(text: task.tags.join(', '));
+    final subtaskInput = TextEditingController();
+    var selectedList = task.listId;
+    var selectedPriority = task.priority;
+    var editedSubtasks = [...task.subtasks];
     DateTime? selectedDue = task.dueAt;
     showFDialog<void>(
       context: context,
       builder: (dialogContext, style, animation) => NotesEditorControllerScope(
-        controllers: [title, description],
+        controllers: [title, description, tags, subtaskInput],
         child: StatefulBuilder(
           builder: (dialogContext, updateDialog) => NotesDialog(
           style: style,
           animation: animation,
+          maxWidth: 560,
           title: const Text('Modifica attività'),
           body: Column(
             mainAxisSize: MainAxisSize.min,
@@ -642,6 +723,104 @@ class _NotesHomeState extends ConsumerState<NotesHome> {
                 minLines: 2,
                 maxLines: 5,
               ),
+              const SizedBox(height: 20),
+              const Text('LISTA', style: TextStyle(
+                fontSize: 11, fontWeight: FontWeight.w600,
+                color: NotesPalette.secondaryText)),
+              const SizedBox(height: 8),
+              Wrap(spacing: 7, runSpacing: 7, children: [
+                for (final item in <LocalTaskList?>[
+                    null, ...ref.read(localStoreProvider).lists])
+                  FButton(
+                    variant: FButtonVariant.outline,
+                    mainAxisSize: MainAxisSize.min,
+                    onPress: () => updateDialog(() => selectedList = item?.id),
+                    prefix: selectedList == item?.id
+                      ? const Icon(Icons.check, size: 14) : null,
+                    child: Text(item?.title ?? 'Nessuna lista',
+                        overflow: TextOverflow.ellipsis),
+                  ),
+              ]),
+              const SizedBox(height: 18),
+              const Text('PRIORITÀ', style: TextStyle(
+                fontSize: 11, fontWeight: FontWeight.w600,
+                color: NotesPalette.secondaryText)),
+              const SizedBox(height: 8),
+              Wrap(spacing: 7, runSpacing: 7, children: [
+                for (var value = 0; value <= 3; value++)
+                  FButton(
+                    key: Key('edit-priority-$value'),
+                    variant: FButtonVariant.outline,
+                    mainAxisSize: MainAxisSize.min,
+                    onPress: () => updateDialog(() => selectedPriority = value),
+                    prefix: selectedPriority == value
+                      ? const Icon(Icons.check, size: 14) : null,
+                    child: Text(value == 0 ? 'Normale' : 'P$value'),
+                  ),
+              ]),
+              const SizedBox(height: 16),
+              FTextField(
+                key: const Key('edit-task-tags'),
+                control: FTextFieldControl.managed(controller: tags),
+                label: const Text('Tag'),
+                hint: 'università, lavoro, urgente',
+              ),
+              const SizedBox(height: 18),
+              Text('SOTTOTASK (${editedSubtasks.where((s) => s.completed).length}/'
+                  '${editedSubtasks.length})',
+                style: const TextStyle(fontSize: 11,
+                  fontWeight: FontWeight.w600,
+                  color: NotesPalette.secondaryText)),
+              for (final sub in editedSubtasks)
+                Row(children: [
+                  Checkbox(
+                    key: Key('edit-subtask-${sub.id}'),
+                    value: sub.completed,
+                    onChanged: (checked) => updateDialog(() {
+                      editedSubtasks = [
+                        for (final item in editedSubtasks)
+                          item.id == sub.id
+                            ? item.copyWith(completed: checked ?? false)
+                            : item,
+                      ];
+                    }),
+                  ),
+                  Expanded(child: Text(sub.title, maxLines: 2,
+                      overflow: TextOverflow.ellipsis)),
+                  FButton.icon(
+                    variant: FButtonVariant.ghost,
+                    onPress: () => updateDialog(() {
+                      editedSubtasks.removeWhere((item) => item.id == sub.id);
+                    }),
+                    child: const Icon(Icons.close, size: 16),
+                  ),
+                ]),
+              const SizedBox(height: 8),
+              Row(children: [
+                Expanded(child: FTextField(
+                  key: const Key('new-subtask-input'),
+                  control: FTextFieldControl.managed(controller: subtaskInput),
+                  hint: 'Aggiungi sottotask...',
+                )),
+                const SizedBox(width: 8),
+                FButton(
+                  key: const Key('add-subtask'),
+                  mainAxisSize: MainAxisSize.min,
+                  onPress: () {
+                    final text = subtaskInput.text.trim();
+                    if (text.isEmpty || text.length > 255 ||
+                        editedSubtasks.length >= 50) return;
+                    updateDialog(() {
+                      editedSubtasks = [
+                        ...editedSubtasks,
+                        LocalSubtask(id: const Uuid().v4(), title: text),
+                      ];
+                    });
+                    subtaskInput.clear();
+                  },
+                  child: const Icon(Icons.add, size: 19),
+                ),
+              ]),
               const SizedBox(height: 20),
               const Text('SCADENZA', style: TextStyle(
                 fontSize: 11,
@@ -693,11 +872,25 @@ class _NotesHomeState extends ConsumerState<NotesHome> {
               mainAxisSize: MainAxisSize.min,
               onPress: () async {
                 if (title.text.trim().isEmpty) return;
+                final parsedTags = tags.text.split(',')
+                  .map((tag) => tag.trim())
+                  .where((tag) => tag.isNotEmpty).toSet().toList();
+                if (parsedTags.length > 16 ||
+                    parsedTags.any((tag) => tag.length > 40)) {
+                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                    content: Text('Massimo 16 tag, 40 caratteri ciascuno.')));
+                  return;
+                }
                 await ref.read(localStoreProvider.notifier).editTask(
                   task.id,
                   title: title.text,
                   description: description.text,
                   dueAt: selectedDue,
+                  listId: selectedList,
+                  changeListId: true,
+                  priority: selectedPriority,
+                  tags: parsedTags,
+                  subtasks: editedSubtasks,
                 );
                 if (dialogContext.mounted) Navigator.pop(dialogContext);
               },

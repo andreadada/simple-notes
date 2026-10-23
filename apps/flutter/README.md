@@ -57,3 +57,10 @@ Non è un servizio Android in background con app chiusa; lo stato della connessi
 
 ## Limiti
 La sync non è automatica; le credenziali Google non sono presenti nelle build CI. **Login reale Windows verificato dall'utente**, ma nessun test E2E tra Windows e Android né validazione completa della persistenza sessioni. Mancano conflitti assistiti, promemoria, liste, tag e notifiche.
+
+## Diagnostica sincronizzazione note (23/10/2026)
+
+- **Menu profilo Google su Windows e Android**: mostra sempre l'esito della sync, l'errore con codice HTTP/end-point e il numero di modifiche in attesa (`pendingMutations`); indicatore arancione nell'avatar se errore/conflitto. Prima il messaggio era visibile solo in sidebar desktop.
+- Se la nota non compare sull'altro device: eseguire `Sincronizza ora` **su entrambi** e leggere i messaggi e il conteggio in coda. Codice `400` su `/sync/apply` poteva dipendere da titolo nota vuoto; il backend lo accetta dopo aggiornamento e **redeploy Coolify** (test JUnit nuovo).
+- Non cancellare i dati locali, non eseguire `flutter clean` sull'app installata come "rimedio", non disinstallare: l'outbox SQLite contiene dati non ancora sincronizzati.
+- Serve E2E manuale con due client e medesimo utente; la CI e il test backend con due chiamate simulate non equivalgono a test remoto di Coolify.

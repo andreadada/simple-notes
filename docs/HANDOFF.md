@@ -116,7 +116,7 @@ Per istruzioni dettagliate e controlli SHA-1 consultare [android-troubleshooting
 ## Prossima sessione: ordine di lavoro
 
 1. **Redeploy Coolify** per la migrazione opzionale V4 della foto profilo (non cambiare segreti), poi **accertare login Android** sul dispositivo fisico con Google (dopo il fix package/gradle) e testare restore sessione dopo riavvio. Se fallisce, usare [android-troubleshooting.md](android-troubleshooting.md), non modificare alla cieca Coolify.
-2. **Test manuale sync a due device** con lo stesso account: creare `Test PC → Android` in Windows → `Sincronizza ora` Windows → sync Android e verificare; creare `Test Android → PC` sul telefono, sync Android → sync Windows; ripetere con una nota.
+2. **Test manuale sync a due device** con lo stesso account (menu avatar mostra esito e operazioni in coda su Android e Windows): creare `Test PC → Android` in Windows → `Sincronizza ora` Windows → sync Android e verificare; creare `Test Android → PC` sul telefono, sync Android → sync Windows; ripetere con una nota.
 3. **Verificare offline/retry e conflitti**: creare item offline e sincronizzare al ritorno della rete; una collisione deve **preservare l'outbox**, non sovrascrivere contenuti silenziosamente. Controllare isolamento dati al cambio account.
 4. L'**auto-sync foreground è ora implementata**: verificarne il comportamento a due dispositivi, gestione di errori e conflitti, poi introdurre eventuale background sync e reminder/notifiche secondo [../project.md](../project.md).
 5. Prima di pubblicare: firma Android **release** (attualmente debug per test), backup e prova restore PostgreSQL, rate limiting auth, sicurezza e validazione completa dei flussi.
@@ -129,3 +129,10 @@ Per istruzioni dettagliate e controlli SHA-1 consultare [android-troubleshooting
 - Il codice deve rimanere offline-first: salvare prima su SQLite/outbox, non perdere modifiche locali per conflitto o rete non disponibile.
 - Non dichiarare `P0 completato`, `sync verificata`, `Google Android verificato` o `produzione pronta` senza prove esplicite.
 - Distinguere **fatti da codice**, **successo della CI**, **conferma manuale dell'utente** e **lavoro ancora in sospeso**.
+
+## Diagnostica sincronizzazione note: 23 ottobre 2026
+- Segnalazione: note non visibili fra Windows e Android pur usando lo stesso account Google.
+- Problema certo UI: esiti/HTTP della sync non erano visibili su Android, impedendo la diagnosi. Nuovo menu account con esito e numero di operazioni locali pendenti, badge errore.
+- Problema certo contratto: l'editor accettava titoli vuoti, mentre il backend li rifiutava con HTTP 400, bloccando l'outbox; la nuova validazione backend accetta titoli vuoti e limita a 255 caratteri. Richiede **redeploy Coolify**.
+- Test server aggiunto: crea nota su device A, device B legge delta, aggiorna, A rilegge.
+- **La causa esatta della mancata sync sul dispositivo non è stata ancora verificata**: leggere esiti dopo aggiornamento su entrambe le piattaforme. Non eliminare alcun dato locale.

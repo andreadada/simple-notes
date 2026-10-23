@@ -42,7 +42,7 @@ class CloudSync extends StateNotifier<SyncState> {
       throw const SyncConflict();
     }
     if (response.statusCode < 200 || response.statusCode >= 300) {
-      throw StateError('Server HTTP ${response.statusCode}');
+      throw StateError('Server HTTP ${response.statusCode} su $path');
     }
     return jsonDecode(response.body) as Map<String, dynamic>;
   }

@@ -132,7 +132,10 @@ class _NotesHomeState extends ConsumerState<NotesHome> {
       final url = cloud.photoUrl;
       final validPhoto = url != null &&
           Uri.tryParse(url)?.scheme == 'https';
-      return CircleAvatar(
+      return Stack(
+        clipBehavior: Clip.none,
+        children: [
+          CircleAvatar(
         radius: 19,
         backgroundColor: const Color(0xff303545),
         child: ClipOval(child: validPhoto
@@ -140,6 +143,14 @@ class _NotesHomeState extends ConsumerState<NotesHome> {
                 errorBuilder: (context, error, stackTrace) =>
                     const Icon(Icons.person, color: Colors.white70))
             : const Icon(Icons.person, color: Colors.white70)),
+          ),
+          if (sync.conflict ||
+              sync.message?.startsWith('Sync non riuscita') == true)
+            const Positioned(
+              right: -2, bottom: -2,
+              child: Icon(Icons.error, color: Colors.orangeAccent, size: 15),
+            ),
+        ],
       );
     }
 
@@ -173,6 +184,35 @@ class _NotesHomeState extends ConsumerState<NotesHome> {
             style: const TextStyle(fontWeight: FontWeight.w600)),
         ),
         const PopupMenuDivider(),
+        if (cloud.authenticated) ...[
+          // Synchronization results were previously invisible on Android.
+          // Always expose failures and pending data inside the account menu.
+          PopupMenuItem<String>(
+            enabled: false,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(sync.running ? 'Sincronizzazione in corso...'
+                    : sync.conflict ? 'Conflitto: modifica non inviata'
+                    : sync.message?.startsWith('Sync non riuscita') == true
+                        ? 'Sincronizzazione non riuscita'
+                        : sync.message ?? 'Sincronizzazione automatica attiva',
+                  style: TextStyle(fontSize: 12,
+                    color: sync.conflict ||
+                        sync.message?.startsWith('Sync non riuscita') == true
+                      ? Colors.orangeAccent : Colors.grey)),
+                const SizedBox(height: 4),
+                FutureBuilder<int>(
+                  future: ref.read(databaseProvider).pendingCount(),
+                  builder: (context, snapshot) => Text(
+                    'Modifiche in attesa: ${snapshot.data ?? '...'}',
+                    style: const TextStyle(fontSize: 12, color: Colors.grey)),
+                ),
+              ],
+            ),
+          ),
+          const PopupMenuDivider(),
+        ],
         if (cloud.authenticated) ...[
           PopupMenuItem<String>(
             value: 'sync',

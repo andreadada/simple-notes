@@ -208,4 +208,28 @@ void main() {
     await database.close();
   });
 
+
+  test('Task description persists offline and survives a DB reload', () async {
+    final database = AppDatabase(NativeDatabase.memory());
+    final container = ProviderContainer(overrides: [
+      databaseProvider.overrideWithValue(database),
+      initialDataProvider.overrideWithValue(const LocalData()),
+    ]);
+    addTearDown(() async {
+      container.dispose();
+      await database.close();
+    });
+    await container.read(localStoreProvider.notifier).addTask('Esame');
+    final task = container.read(localStoreProvider).tasks.single;
+    await container.read(localStoreProvider.notifier).editTask(
+      task.id, title: task.title, description: 'Capitoli 1–4',
+    );
+    expect((await database.snapshot()).tasks.single.description, 'Capitoli 1–4');
+    expect((await database.pendingOperations()).last.payload,
+        contains('Capitoli 1–4'));
+    await container.read(localStoreProvider.notifier).reload();
+    expect(container.read(localStoreProvider).tasks.single.description,
+        'Capitoli 1–4');
+  });
+
 }

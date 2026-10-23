@@ -489,6 +489,13 @@ class _NotesHomeState extends ConsumerState<NotesHome> {
           Text(task.title, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w600)),
           const SizedBox(height: 12),
           Text(task.dueAt == null ? 'Nessuna scadenza' : 'Scadenza: ${task.dueAt!.toLocal()}'),
+          if (task.description.isNotEmpty) ...[
+            const SizedBox(height: 20),
+            const Text('DESCRIZIONE', style: TextStyle(
+              color: NotesPalette.secondaryText, fontSize: 11)),
+            const SizedBox(height: 8),
+            Text(task.description),
+          ],
           const Spacer(),
           FButton(
             variant: FButtonVariant.outline,
@@ -515,11 +522,12 @@ class _NotesHomeState extends ConsumerState<NotesHome> {
 
   void showTaskEditor(LocalTask task) {
     final title = TextEditingController(text: task.title);
+    final description = TextEditingController(text: task.description);
     DateTime? selectedDue = task.dueAt;
     showFDialog<void>(
       context: context,
       builder: (dialogContext, style, animation) => NotesEditorControllerScope(
-        controllers: [title],
+        controllers: [title, description],
         child: StatefulBuilder(
           builder: (dialogContext, updateDialog) => NotesDialog(
           style: style,
@@ -535,6 +543,15 @@ class _NotesHomeState extends ConsumerState<NotesHome> {
                 label: const Text('Titolo'),
                 hint: 'Cosa devi fare?',
                 autofocus: true,
+              ),
+              const SizedBox(height: 16),
+              FTextField.multiline(
+                key: const Key('edit-task-description'),
+                control: FTextFieldControl.managed(controller: description),
+                label: const Text('Descrizione'),
+                hint: 'Dettagli, link o appunti...',
+                minLines: 2,
+                maxLines: 5,
               ),
               const SizedBox(height: 20),
               const Text('SCADENZA', style: TextStyle(
@@ -590,6 +607,7 @@ class _NotesHomeState extends ConsumerState<NotesHome> {
                 await ref.read(localStoreProvider.notifier).editTask(
                   task.id,
                   title: title.text,
+                  description: description.text,
                   dueAt: selectedDue,
                 );
                 if (dialogContext.mounted) Navigator.pop(dialogContext);

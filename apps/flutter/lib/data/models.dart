@@ -1,6 +1,7 @@
 class LocalTask {
   final String id;
   final String title;
+  final String description;
   final DateTime? dueAt;
   final bool completed;
   final DateTime createdAt;
@@ -8,24 +9,28 @@ class LocalTask {
   const LocalTask({
     required this.id, required this.title, required this.dueAt,
     required this.completed, required this.createdAt,
+    this.description = '',
   });
 
   factory LocalTask.fromJson(Map<String, dynamic> j) => LocalTask(
     id: j['id'] as String,
     title: j['title'] as String,
+    description: j['description'] as String? ?? '',
     dueAt: j['dueAt'] == null ? null : DateTime.parse(j['dueAt'] as String),
     completed: j['completed'] as bool? ?? false,
     createdAt: DateTime.parse(j['createdAt'] as String),
   );
 
   Map<String, dynamic> toJson() => {
-    'id': id, 'title': title, 'dueAt': dueAt?.toIso8601String(),
+    'id': id, 'title': title, 'description': description,
+    'dueAt': dueAt?.toIso8601String(),
     'completed': completed, 'createdAt': createdAt.toIso8601String(),
   };
 
-  LocalTask copyWith({bool? completed, String? title, DateTime? dueAt,
-    bool changeDueAt = false}) => LocalTask(
+  LocalTask copyWith({bool? completed, String? title,
+    String? description, DateTime? dueAt, bool changeDueAt = false}) => LocalTask(
       id: id, title: title ?? this.title,
+      description: description ?? this.description,
       dueAt: changeDueAt ? dueAt : this.dueAt,
       completed: completed ?? this.completed, createdAt: createdAt,
     );

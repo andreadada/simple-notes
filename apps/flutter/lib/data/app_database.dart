@@ -15,6 +15,7 @@ part 'app_database.g.dart';
 class TaskEntries extends Table {
   TextColumn get id => text()();
   TextColumn get title => text()();
+  TextColumn get description => text().withDefault(const Constant(''))();
   DateTimeColumn get dueAt => dateTime().nullable()();
   BoolColumn get completed => boolean().withDefault(const Constant(false))();
   DateTimeColumn get createdAt => dateTime()();
@@ -58,13 +59,14 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase([QueryExecutor? executor]) : super(executor ?? _openDatabase());
 
   @override
-  int get schemaVersion => 2;
+  int get schemaVersion => 3;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
     onCreate: (m) => m.createAll(),
     onUpgrade: (m, from, to) async {
       if (from < 2) await m.createTable(syncSettings);
+      if (from < 3) await m.addColumn(taskEntries, taskEntries.description);
     },
   );
 
@@ -83,7 +85,8 @@ class AppDatabase extends _$AppDatabase {
         .get();
     return LocalData(
       tasks: tasks.map((t) => LocalTask(
-        id: t.id, title: t.title, dueAt: t.dueAt,
+        id: t.id, title: t.title, description: t.description,
+        dueAt: t.dueAt,
         completed: t.completed, createdAt: t.createdAt,
       )).toList(),
       notes: notes.map((n) => LocalNote(
@@ -98,6 +101,7 @@ class AppDatabase extends _$AppDatabase {
     await into(taskEntries).insertOnConflictUpdate(TaskEntriesCompanion.insert(
       id: task.id,
       title: task.title,
+      description: Value(task.description),
       dueAt: Value(task.dueAt),
       completed: Value(task.completed),
       createdAt: task.createdAt,
@@ -242,6 +246,7 @@ class AppDatabase extends _$AppDatabase {
       await into(taskEntries).insertOnConflictUpdate(TaskEntriesCompanion.insert(
         id: entityId,
         title: payload['title'] as String,
+        description: Value(payload['description'] as String? ?? ''),
         dueAt: Value(raw == null || raw.isEmpty ? null : DateTime.tryParse(raw)?.toLocal()),
         completed: Value(payload['completed'] as bool? ?? false),
         createdAt: created ?? DateTime.now(),

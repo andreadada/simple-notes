@@ -39,13 +39,15 @@ class LocalStore extends Notifier<LocalData> {
     _changed();
   }
 
-  Future<void> editTask(String id, {required String title, DateTime? dueAt}) async {
+  Future<void> editTask(String id, {required String title,
+    String? description, DateTime? dueAt}) async {
     final trimmed = title.trim();
     if (trimmed.isEmpty) return;
     for (final task in state.tasks) {
       if (task.id == id) {
         final changed = task.copyWith(
           title: trimmed,
+          description: description,
           dueAt: dueAt,
           changeDueAt: true,
         );

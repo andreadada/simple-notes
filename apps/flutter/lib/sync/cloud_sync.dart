@@ -17,15 +17,21 @@ final cloudSyncProvider = StateNotifierProvider<CloudSync, SyncState>(
     (ref) => CloudSync(ref));
 
 class CloudSync extends StateNotifier<SyncState> {
-  CloudSync(this.ref) : super(const SyncState());
+  CloudSync(this.ref, {http.Client? client, String? apiBaseUrl})
+      : _client = client ?? http.Client(),
+        _ownsClient = client == null,
+        _apiBaseUrl = apiBaseUrl ?? CloudConfig.apiBaseUrl,
+        super(const SyncState());
   final Ref ref;
-  final http.Client _client = http.Client();
+  final http.Client _client;
+  final bool _ownsClient;
+  final String _apiBaseUrl;
 
   Future<Map<String, dynamic>> _request(
     String method, String path, {Map<String, dynamic>? json,
   }) async {
     final token = await ref.read(cloudAuthProvider.notifier).validAccessToken();
-    final uri = Uri.parse('${CloudConfig.apiBaseUrl}/api/v1$path');
+    final uri = Uri.parse('$_apiBaseUrl/api/v1$path');
     final headers = <String, String>{
       'Authorization': 'Bearer $token',
       'Content-Type': 'application/json',
@@ -121,7 +127,7 @@ class CloudSync extends StateNotifier<SyncState> {
 
   @override
   void dispose() {
-    _client.close();
+    if (_ownsClient) _client.close();
     super.dispose();
   }
 }

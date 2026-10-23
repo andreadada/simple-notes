@@ -5,6 +5,7 @@ import 'ui/notes_dialogs.dart';
 import 'ui/sync_conflict_dialog.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:uuid/uuid.dart';
 import 'data/local_store.dart';
 import 'data/app_database.dart';
 import 'auth/cloud_auth.dart';
@@ -89,6 +90,8 @@ class NotesHome extends ConsumerStatefulWidget {
 class _NotesHomeState extends ConsumerState<NotesHome> {
   Section section = Section.inbox;
   String? selectedId;
+  String? activeListId;
+  int? priorityFilter;
   String searchQuery = '';
   final newTask = TextEditingController();
   DateTime? dueAt;
@@ -102,7 +105,8 @@ class _NotesHomeState extends ConsumerState<NotesHome> {
   Future<void> submitTask() async {
     final text = newTask.text.trim();
     if (text.isEmpty) return;
-    await ref.read(localStoreProvider.notifier).addTask(text, dueAt: dueAt);
+    await ref.read(localStoreProvider.notifier)
+        .addTask(text, dueAt: dueAt, listId: activeListId);
     newTask.clear();
     setState(() => dueAt = null);
   }
@@ -111,7 +115,8 @@ class _NotesHomeState extends ConsumerState<NotesHome> {
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
     final next = today.add(const Duration(days: 7));
-    return tasks.where((t) => switch (section) {
+    return tasks.where((t) => (activeListId == null ||
+        t.listId == activeListId) && switch (section) {
           Section.today => !t.completed && t.dueAt != null && t.dueAt!.isBefore(today.add(const Duration(days: 1))),
           Section.next7 => !t.completed && t.dueAt != null && t.dueAt!.isBefore(next),
           Section.completed => t.completed,
@@ -135,9 +140,24 @@ class _NotesHomeState extends ConsumerState<NotesHome> {
     final cloud = ref.watch(cloudAuthProvider);
     final sync = ref.watch(cloudSyncProvider);
     final desktop = MediaQuery.sizeOf(context).width >= 850;
+    final query = searchQuery.trim().toLowerCase();
     final list = visibleTasks(data.tasks)
-        .where((task) => task.title.toLowerCase().contains(searchQuery.trim().toLowerCase()))
-        .toList();
+        .where((task) => (priorityFilter == null ||
+                task.priority == priorityFilter) &&
+            (query.isEmpty ||
+              task.title.toLowerCase().contains(query) ||
+              task.description.toLowerCase().contains(query) ||
+              task.tags.any((tag) => tag.toLowerCase().contains(query)) ||
+              task.subtasks.any((sub) =>
+                  sub.title.toLowerCase().contains(query))))
+        .toList()
+      ..sort((a, b) {
+        final priority = b.priority.compareTo(a.priority);
+        return priority != 0 ? priority : a.createdAt.compareTo(b.createdAt);
+      });
+    final activeList = data.lists.where((item) => item.id == activeListId)
+        .firstOrNull;
+    final pageTitle = activeList?.title ?? section.label;
     Widget avatar() {
       final url = cloud.photoUrl;
       final validPhoto = url != null &&
@@ -355,18 +375,52 @@ class _NotesHomeState extends ConsumerState<NotesHome> {
                 icon: Icon(s.icon, size: 20),
                 label: Text(s.label),
                 onPress: () {
-                  setState(() { section = s; selectedId = null; });
+                  setState(() {
+                    section = s;
+                    activeListId = null;
+                    selectedId = null;
+                  });
                   if (!desktop) Navigator.maybePop(context);
                 },
               ),
           ],
         ),
+        FSidebarGroup(
+          label: const Text('LISTE'),
+          children: [
+            for (final item in data.lists)
+              FSidebarItem(
+                key: Key('list-${item.id}'),
+                selected: activeListId == item.id,
+                icon: const Icon(Icons.folder_outlined, size: 20),
+                label: Text(item.title, maxLines: 1,
+                  overflow: TextOverflow.ellipsis),
+                onPress: () {
+                  setState(() {
+                    section = Section.everything;
+                    activeListId = item.id;
+                    selectedId = null;
+                  });
+                  if (!desktop) Navigator.maybePop(context);
+                },
+              ),
+            FSidebarItem(
+              key: const Key('create-list'),
+              selected: false,
+              icon: const Icon(Icons.add, size: 20),
+              label: const Text('Nuova lista'),
+              onPress: () {
+                if (!desktop) Navigator.maybePop(context);
+                showListEditor();
+              },
+            ),
+          ],
+        ),
       ],
-
     );
     return Scaffold(
       appBar: desktop ? null : AppBar(
-        title: Text(section.label),
+        title: Text(pageTitle),
         actions: [Center(child: accountControl(compact: true))],
       ),
       drawer: desktop ? null : Drawer(child: SafeArea(child: navigation())),
@@ -380,7 +434,7 @@ class _NotesHomeState extends ConsumerState<NotesHome> {
             Padding(
               padding: const EdgeInsets.fromLTRB(25, 26, 25, 12),
               child: Align(alignment: Alignment.centerLeft,
-                child: Text(section.label, style: const TextStyle(fontSize: 23, fontWeight: FontWeight.bold))),
+                child: Text(pageTitle, style: const TextStyle(fontSize: 23, fontWeight: FontWeight.bold))),
             ),
           if (section != Section.notes)
             Padding(
@@ -396,6 +450,41 @@ class _NotesHomeState extends ConsumerState<NotesHome> {
                   const Icon(Icons.search, size: 18),
 
               ),
+            ),
+          if (section != Section.notes)
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 5),
+              child: Row(children: [
+                FButton(
+                  key: const Key('priority-filter'),
+                  variant: FButtonVariant.outline,
+                  mainAxisSize: MainAxisSize.min,
+                  onPress: () => setState(() =>
+                    priorityFilter = priorityFilter == null ? 3 :
+                      priorityFilter == 1 ? null : priorityFilter! - 1),
+                  prefix: const Icon(Icons.flag_outlined, size: 16),
+                  child: Text(priorityFilter == null
+                    ? 'Tutte le priorità' : 'Priorità P${priorityFilter!}'),
+                ),
+                if (activeListId != null) ...[
+                  const SizedBox(width: 8),
+                  FButton(
+                    key: const Key('rename-list'),
+                    variant: FButtonVariant.ghost,
+                    mainAxisSize: MainAxisSize.min,
+                    onPress: () => showListEditor(activeList),
+                    child: const Text('Rinomina'),
+                  ),
+                  FButton(
+                    key: const Key('delete-list'),
+                    variant: FButtonVariant.ghost,
+                    mainAxisSize: MainAxisSize.min,
+                    onPress: activeList == null
+                      ? null : () => confirmListDeletion(activeList),
+                    child: const Icon(Icons.delete_outline, size: 17),
+                  ),
+                ],
+              ]),
             ),
           if (section != Section.notes)
             Padding(

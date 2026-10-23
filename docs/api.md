@@ -3,11 +3,11 @@
 Base URL `/api/v1`. Per endpoint privati: header `Authorization: Bearer <accessToken>`.
 
 ## Auth
-- `POST /auth/google`: `{"idToken":"..."}` → `{accessToken,refreshToken,expiresInSeconds,userId,displayName}`.
+- `POST /auth/google`: `{"idToken":"..."}` → `{accessToken,refreshToken,expiresInSeconds,userId,displayName,photoUrl?}`.
 - `POST /auth/desktop/exchange`: `{"code":"...","codeVerifier":"...","redirectUri":"http://127.0.0.1:PORT/oauth/callback"}`.
 - `POST /auth/refresh`: `{"refreshToken":"..."}` → sessione aggiornata (refresh token ruotato).
 - `POST /auth/logout`: `{"refreshToken":"..."}` → 204, revoca.
-- Google ID token convalidato server-side; secret Desktop solo in variabili backend. Auth rate limiting da completare.
+- Google ID token convalidato server-side; claim opzionale `picture` (HTTPS Googleusercontent) salvato su utente, restituito come `photoUrl` in login/refresh; secret Desktop solo in variabili backend. Auth rate limiting da completare.
 
 ## Tasks
 - `GET /tasks` — task dell'utente.

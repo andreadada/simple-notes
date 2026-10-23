@@ -24,6 +24,7 @@ class CloudSession {
   final bool busy;
   final String? accessToken;
   final String? displayName;
+  final String? photoUrl;
   final String? userId;
   final String? error;
   final DateTime? accessExpiresAt;
@@ -32,6 +33,7 @@ class CloudSession {
     this.busy = false,
     this.accessToken,
     this.displayName,
+    this.photoUrl,
     this.userId,
     this.error,
     this.accessExpiresAt,
@@ -91,6 +93,9 @@ class CloudAuth extends StateNotifier<CloudSession> {
           throw StateError('Google non ha restituito un ID token');
         }
         response = await _exchange('/auth/google', {'idToken': idToken});
+        // Show the real profile immediately, even before the backend is
+        // redeployed with the optional picture claim in AuthResponse.
+        response['photoUrl'] ??= account.photoUrl;
       } else if (Platform.isWindows) {
         response = await _desktopLogin();
       } else {
@@ -171,6 +176,7 @@ class CloudAuth extends StateNotifier<CloudSession> {
       accessExpiresAt: DateTime.now().add(Duration(seconds: json['expiresInSeconds'] as int)),
       userId: json['userId'] as String?,
       displayName: json['displayName'] as String?,
+      photoUrl: json['photoUrl'] as String?,
     );
   }
 

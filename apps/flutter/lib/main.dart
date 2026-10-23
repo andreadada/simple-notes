@@ -128,6 +128,113 @@ class _NotesHomeState extends ConsumerState<NotesHome> {
     final list = visibleTasks(data.tasks)
         .where((task) => task.title.toLowerCase().contains(searchQuery.trim().toLowerCase()))
         .toList();
+    Widget avatar() {
+      final url = cloud.photoUrl;
+      final validPhoto = url != null &&
+          Uri.tryParse(url)?.scheme == 'https';
+      return CircleAvatar(
+        radius: 19,
+        backgroundColor: const Color(0xff303545),
+        child: ClipOval(child: validPhoto
+            ? Image.network(url, width: 38, height: 38, fit: BoxFit.cover,
+                errorBuilder: (_, _, _) =>
+                    const Icon(Icons.person, color: Colors.white70))
+            : const Icon(Icons.person, color: Colors.white70)),
+      );
+    }
+
+    Widget accountControl({bool compact = false}) => PopupMenuButton<String>(
+      key: Key(compact ? 'account-menu-mobile' : 'account-menu'),
+      tooltip: cloud.authenticated ? 'Profilo Google' : 'Accedi con Google',
+      enabled: !cloud.busy,
+      onSelected: (value) async {
+        if (value == 'sync') {
+          await ref.read(cloudSyncProvider.notifier).synchronize();
+        } else if (value == 'logout') {
+          await ref.read(cloudAuthProvider.notifier).logout();
+        } else if (value == 'login') {
+          if (!CloudConfig.enabled) {
+            if (context.mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                content: Text('Configura API_BASE_URL e Google OAuth.'),
+              ));
+            }
+            return;
+          }
+          await ref.read(cloudAuthProvider.notifier).loginGoogle();
+        }
+      },
+      itemBuilder: (context) => [
+        PopupMenuItem<String>(
+          enabled: false,
+          child: Text(cloud.authenticated
+            ? (cloud.displayName ?? 'Account Google')
+            : 'Non hai effettuato l’accesso',
+            style: const TextStyle(fontWeight: FontWeight.w600)),
+        ),
+        const PopupMenuDivider(),
+        if (cloud.authenticated) ...[
+          PopupMenuItem<String>(
+            value: 'sync',
+            enabled: !sync.running,
+            child: const ListTile(
+              dense: true,
+              contentPadding: EdgeInsets.zero,
+              leading: Icon(Icons.sync),
+              title: Text('Sincronizza ora'),
+            ),
+          ),
+          const PopupMenuItem<String>(
+            value: 'logout',
+            child: ListTile(
+              dense: true,
+              contentPadding: EdgeInsets.zero,
+              leading: Icon(Icons.logout),
+              title: Text('Esci da Google'),
+            ),
+          ),
+        ] else
+          const PopupMenuItem<String>(
+            value: 'login',
+            child: ListTile(
+              dense: true,
+              contentPadding: EdgeInsets.zero,
+              leading: Icon(Icons.login),
+              title: Text('Accedi con Google'),
+            ),
+          ),
+      ],
+      child: Padding(
+        padding: EdgeInsets.symmetric(
+          horizontal: compact ? 12 : 16, vertical: 8),
+        child: Row(
+          mainAxisSize: compact ? MainAxisSize.min : MainAxisSize.max,
+          children: [
+            avatar(),
+            if (!compact) ...[
+              const SizedBox(width: 12),
+              Expanded(child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(cloud.authenticated
+                    ? (cloud.displayName ?? 'Account Google')
+                    : 'Accedi con Google',
+                    maxLines: 1, overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(fontSize: 13,
+                      fontWeight: FontWeight.w600)),
+                  Text(cloud.authenticated
+                    ? 'Sincronizzazione automatica'
+                    : 'Collega il tuo account',
+                    style: const TextStyle(fontSize: 11, color: Colors.grey)),
+                ],
+              )),
+              const Icon(Icons.keyboard_arrow_down, color: Colors.grey),
+            ],
+          ],
+        ),
+      ),
+    );
+
     Widget navigation() => Column(
           children: [
             const Padding(
@@ -151,49 +258,25 @@ class _NotesHomeState extends ConsumerState<NotesHome> {
                 ),
               ),
             const Spacer(),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(12, 8, 12, 2),
-              child: OutlinedButton.icon(
-                onPressed: cloud.busy ? null : () async {
-                  if (!CloudConfig.enabled) {
-                    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                      content: Text('Imposta API_BASE_URL e gli ID OAuth con --dart-define.'),
-                    ));
-                    return;
-                  }
-                  if (cloud.authenticated) {
-                    await ref.read(cloudAuthProvider.notifier).logout();
-                  } else {
-                    await ref.read(cloudAuthProvider.notifier).loginGoogle();
-                  }
-                },
-                icon: Icon(cloud.authenticated ? Icons.logout : Icons.account_circle_outlined),
-                label: Text(cloud.busy ? 'Connessione...' :
-                    cloud.authenticated ? 'Esci da Google' : 'Accedi con Google'),
+            if (desktop) accountControl(),
+            if (sync.running)
+              const Padding(
+                padding: EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                child: Row(children: [
+                  SizedBox(width: 12, height: 12,
+                    child: CircularProgressIndicator(strokeWidth: 2)),
+                  SizedBox(width: 8),
+                  Text('Sincronizzazione...', style: TextStyle(
+                    fontSize: 12, color: Colors.grey)),
+                ]),
               ),
-            ),
-            if (cloud.authenticated)
+            if (sync.message != null &&
+                (sync.conflict || sync.message!.startsWith('Sync non riuscita')))
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-                child: OutlinedButton.icon(
-                  onPressed: sync.running ? null :
-                      () => ref.read(cloudSyncProvider.notifier).synchronize(),
-                  icon: const Icon(Icons.sync),
-                  label: Text(sync.running ? 'Sincronizzo...' : 'Sincronizza ora'),
-                ),
-              ),
-            if (sync.message != null)
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: Text(sync.message!, maxLines: 4,
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                child: Text(sync.message!, maxLines: 3,
                   style: TextStyle(fontSize: 12,
                     color: sync.conflict ? Colors.orangeAccent : Colors.grey)),
-              ),
-            if (cloud.authenticated)
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: Text(cloud.displayName ?? 'Account collegato',
-                  style: const TextStyle(color: Colors.greenAccent, fontSize: 12)),
               ),
             if (cloud.error != null)
               Padding(
@@ -203,13 +286,16 @@ class _NotesHomeState extends ConsumerState<NotesHome> {
               ),
             const Padding(
               padding: EdgeInsets.all(16),
-              child: Text('Offline-first · Sync manuale P0',
+              child: Text('Offline-first · Sync automatica',
                 style: TextStyle(color: Colors.grey, fontSize: 12)),
             ),
           ],
         );
     return Scaffold(
-      appBar: desktop ? null : AppBar(title: Text(section.label)),
+      appBar: desktop ? null : AppBar(
+        title: Text(section.label),
+        actions: [Center(child: accountControl(compact: true))],
+      ),
       drawer: desktop ? null : Drawer(child: SafeArea(child: navigation())),
       body: Row(children: [
         if (desktop)

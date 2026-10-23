@@ -45,6 +45,10 @@ Questo errore può essere restituito da Google Credential Manager come `canceled
 
 Il logout su Android ora esegue anche `GoogleSignIn.instance.signOut()`: Google Credential Manager altrimenti può conservare una sessione precedente e fallire la riautenticazione. Il primo login Android non è ancora verificato, quindi questa correzione non garantisce da sola di eliminare il codice 16.
 
+## Account Google e avatar
+
+Nella sidebar desktop e nell'AppBar Android c'è un unico **avatar circolare** con menu profilo per **Accedi con Google**, **Sincronizza ora** ed **Esci da Google**; rimossi i due pulsanti originali. Se Google rilascia il claim OpenID `picture`, la UI usa la foto autentica HTTPS; altrimenti mostra un'icona persona. Il backend ora include `photoUrl` nella risposta auth e lo conserva con Flyway `V4__google_profile_photo.sql`. **Serve un redeploy Coolify** per avere la foto anche al ripristino della sessione Windows; per gli utenti già registrati occorre rifare login almeno una volta.
+
 ## Sincronizzazione automatica foreground
 
 La nuova `AutoSyncHost` sincronizza quando si effettua login/ripristino sessione, dopo modifiche locali (debounce 900 ms), al ritorno in primo piano, quando torna la connettività e con pull periodico ogni 60 secondi. Gli errori di rete usano backoff di 5–80 secondi; conflitti 409 interrompono il retry automatico e preservano l'outbox. Il menu account mantiene **Sincronizza ora**.

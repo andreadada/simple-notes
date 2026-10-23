@@ -40,6 +40,7 @@
 - [ ] Test end-to-end Google Login con client ID reali su due dispositivi.
 - [ ] Verifica client sync PC↔Android con dati reali, recupero errori e conflitti. Auto-sync foreground implementata (login/edit/resume/reconnect/pull 60s), richiede E2E.
 - [ ] Notifiche, liste, tag, sottotask, ricorrenze e ricerca completa.
+- [ ] Avatar Google e menu unico account implementati (Flutter + claim `picture` sul backend con Flyway), da verificare con login reale e redeploy Coolify.
 - [x] Backend deployato su Coolify e raggiungibile via HTTPS: health check `https://api.notes.ddone.it/actuator/health` con `UP` (confermato dall'utente).
 - [ ] Hardening produzione: backup/restore, rate limiting, controlli di sicurezza e monitoraggio.
 - Stato della sync **client**: automatica foreground sperimentale e fallback manuale; verifiche CI/E2E non equivalgono a validazione completa.

@@ -2,6 +2,7 @@ package it.ddone.simplenotes.auth;
 
 import it.ddone.simplenotes.user.*;
 import java.nio.charset.StandardCharsets;
+import java.net.URI;
 import java.security.MessageDigest;
 import java.security.SecureRandom;
 import java.time.Duration;
@@ -22,7 +23,7 @@ import org.springframework.web.server.ResponseStatusException;
 @Service
 public class AuthService {
     public record AuthResponse(String accessToken, String refreshToken,
-        long expiresInSeconds, UUID userId, String displayName) {}
+        long expiresInSeconds, UUID userId, String displayName, String photoUrl) {}
 
     private static final Duration ACCESS_TTL = Duration.ofMinutes(15);
     private static final Duration REFRESH_TTL = Duration.ofDays(30);
@@ -63,6 +64,8 @@ public class AuthService {
             .orElseGet(() -> new AppUser(identity.getSubject(), email, identity.getClaimAsString("name")));
         user.email = email;
         user.displayName = identity.getClaimAsString("name");
+        String picture = identity.getClaimAsString("picture");
+        if (validGooglePhoto(picture)) user.photoUrl = picture;
         users.saveAndFlush(user);
         return issue(user);
     }
@@ -110,7 +113,21 @@ public class AuthService {
         RANDOM.nextBytes(random);
         String refresh = Base64.getUrlEncoder().withoutPadding().encodeToString(random);
         sessions.save(new RefreshSession(user.id, sha256(refresh), now.plus(REFRESH_TTL)));
-        return new AuthResponse(access, refresh, ACCESS_TTL.toSeconds(), user.id, user.displayName);
+        return new AuthResponse(access, refresh, ACCESS_TTL.toSeconds(), user.id, user.displayName, user.photoUrl);
+    }
+
+    private static boolean validGooglePhoto(String value) {
+        if (value == null || value.isBlank()) return false;
+        try {
+            URI uri = URI.create(value);
+            String host = uri.getHost();
+            return "https".equalsIgnoreCase(uri.getScheme())
+                && host != null
+                && (host.equals("googleusercontent.com") || host.endsWith(".googleusercontent.com"))
+                && uri.getUserInfo() == null;
+        } catch (IllegalArgumentException exception) {
+            return false;
+        }
     }
 
     private static String sha256(String value) {

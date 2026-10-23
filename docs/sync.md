@@ -27,4 +27,4 @@ Ritorna `changes[]` con `changeId,entityType,entityId,payload,deleted,version`, 
 
 **Concorrenza:** advisory lock PostgreSQL per account serializza le mutazioni sync e garantisce ordine stabile degli identificativi di change per singolo utente. Tutte le scritture devono passare da questo percorso affinché il delta sia completo.
 
-**Ancora da completare:** invio outbox Flutter, gestione 409 con UI conflitti, isolamento profili locali, integrazione endpoint REST legacy col change log, compattazione, sincronizzazione in background.
+**Stato attuale:** il client Flutter implementa invio sequenziale dell'outbox, ack e pull delta per cursor in `apps/flutter/lib/sync/cloud_sync.dart`; `app_database.dart` gestisce owner e versioni locali. È **sincronizzazione manuale sperimentale**, senza prova E2E su Windows↔Android. Gli errori 409 preservano le operazioni locali ma **non** esiste ancora una UI di risoluzione. Da completare: test isolamento profili/rebootstrap multi-device, integrazione endpoint REST legacy col change log, compattazione, recupero conflitti, retry/background/auto-sync.

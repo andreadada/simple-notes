@@ -1,6 +1,6 @@
 # Flutter client — P0
 
-Client Flutter Windows/Android con UI dark, task/note, **ricerca e modifica task**, Drift/SQLite e outbox transazionale. Sync manuale sperimentale con delta pull. **Windows + login Google reale** avviati e verificati manualmente (21 ottobre 2026); **Google Android** e sync su due dispositivi ancora da testare.
+Client Flutter Windows/Android con UI dark, task/note, **ricerca e modifica task**, Drift/SQLite e outbox transazionale. Sync manuale sperimentale con delta pull. **Windows + Google Login Desktop** verificati manualmente (21/10/2026); **Android avviato e segnalato funzionante** dopo il fix JVM del 23/10 (CI JDK 17/21 riuscita). **Google Login Android dopo il fix e sync fra due dispositivi ancora da verificare esplicitamente.** Vedere [handoff](../../docs/HANDOFF.md) e [runbook Android](../../docs/android-troubleshooting.md).
 
 ## Build
 ```bash
@@ -19,10 +19,10 @@ Su Windows occorrono gli strumenti C++ di Visual Studio e **C++ ATL** (`atlstr.h
 ## Configurazione Android versionata
 
 La configurazione Android ora è presente **direttamente in Git**:
-- `android/app/build.gradle.kts`: package e namespace definitivi `it.andreadada.simplenotes`, configurazione Java allineata alla JDK di Gradle (17 o 21) senza estensione `kotlin { compilerOptions { ... } }`. **`enableKotlin = false` solo nel modulo `:app`**, perché `MainActivity.java` è Java; alcune versioni Flutter registrano comunque `compileDebugKotlin`. Per evitare la validazione `Java (17) / Kotlin (21)` la `compileOptions` Java usa `JavaVersion.current()`, che vale 17 oppure 21 come la JDK che esegue Gradle. La CI testa entrambe.
+- `android/app/build.gradle.kts`: package e namespace definitivi `it.andreadada.simplenotes`, configurazione Java allineata alla JDK di Gradle (17 o 21) senza estensione `kotlin { compilerOptions { ... } }`. **`enableKotlin = false` solo nel modulo `:app`**, perché `MainActivity.java` è Java; alcune versioni Flutter registrano comunque `compileDebugKotlin`. Per evitare la validazione `Java (17) / Kotlin (21)` la `compileOptions` Java usa `JavaVersion.current()`, che vale 17 oppure 21 come la JDK che esegue Gradle. La CI testa entrambe (run `39955667440`, riuscita).
 - `android/gradle.properties`: disattiva la compilazione incrementale Kotlin per evitare `this and base files have different roots` quando il progetto sta su E: e PUB_CACHE su C:.
 - `android/app/src/main/java/it/andreadada/simplenotes/MainActivity.java`: Activity nel namespace definitivo.
-- La CI controlla package e namespace prima della build Android; esegue la build sia con **JDK 17 sia con JDK 21**, per evitare l'errore locale `compileDebugJavaWithJavac (17) / compileDebugKotlin (21)`. Pubblica un APK **debug**.
+- La CI controlla package e namespace prima della build Android; esegue la build sia con **JDK 17 sia con JDK 21**: [run 39955667440](https://github.com/andreadada/simple-notes/actions/runs/39955667440) **riuscita**. Pubblica un APK **debug**. Non equivale a prova di login Google sull'APK CI.
 
 **Primo pull sui PC dove Flutter aveva già generato file Android:** `git pull` può fermarsi con `untracked working tree files would be overwritten`. È normale: salva una copia *fuori dalla repo* dei due file generati e spostali prima del pull. Non cancellare l'intera cartella Android. Dalle volte successive `git pull origin main` basterà.
 
@@ -31,6 +31,8 @@ Il Client OAuth Android Google Cloud deve avere package `it.andreadada.simplenot
 ### Errore d'installazione `INSTALL_FAILED_USER_RESTRICTED`
 
 Se Flutter mostra `✓ Built ... app-debug.apk` ma ADB dice `Install canceled by user`, **la compilazione è riuscita**. Lo smartphone ha bloccato l'installazione tramite USB; su Xiaomi/Redmi/POCO controllare in *Opzioni sviluppatore* le opzioni **Debug USB** e **Installa tramite USB**, lasciare lo schermo sbloccato e accettare la richiesta d'installazione. Questa restrizione **non è risolvibile dal codice GitHub**. In alternativa è possibile trasferire l'APK sul telefono e installarlo manualmente, confermando le autorizzazioni del sistema.
+
+Per cronologia degli errori locali (Gradle Java 8, Kotlin incremental, JDK 17/21, installazione USB) consultare il [runbook dedicato](../../docs/android-troubleshooting.md).
 
 ## Debug Google Login Android: `[16] Account reauth failed`
 

@@ -41,6 +41,6 @@ docker compose --env-file .env -f infra/compose.yaml up --build
 - Test OAuth Windows/Android con client reali e firma Android coerente.
 - Test sync fra due dispositivi e risoluzione dei conflitti.
 - Backup PostgreSQL fuori dal VPS e prova effettiva di ripristino.
-- Configurazione dominio DNS e TLS HTTPS.
+- Confermare periodicamente dominio DNS, rinnovo certificato TLS HTTPS e stato health.
 
-**Nota:** la pipeline GitHub valida la sintassi Compose, non equivale a un deployment Coolify verificato. Non è stato effettuato alcun deployment in produzione.
+**Stato aggiornato (23/10/2026):** l'utente ha confermato **deployment effettivo su Coolify** e health HTTPS `UP` su `https://api.notes.ddone.it/actuator/health`. La pipeline Compose valida solo la sintassi. Il server è utilizzato come **ambiente operativo di test** e NON va considerato production-ready finché non esistono hardening, backup e test di ripristino.

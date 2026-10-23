@@ -2,7 +2,7 @@
 
 **Obiettivo:** app offline-first Windows 11 + Android ispirata alle funzionalità di TickTick, con UI originale, login Google e backend self-hosted su Coolify.
 **Stack:** Flutter/Dart + Riverpod + Drift/SQLite; Spring Boot (Java 21) + Spring Security + PostgreSQL/Flyway; REST + sync incrementale + WebSocket; Android FCM; Docker/Coolify.
-**Stato:** P0 IN CORSO (backend Coolify HTTPS `UP`, client Windows e Google Login Windows verificati dall'utente; sync manuale sperimentale, release non pronta). Spuntare una voce solo quando implementata **e verificata**; nessuna funzione è completa per definizione.
+**Stato:** P0 IN CORSO (backend Coolify HTTPS `UP`, Windows+Google Login verificati, Android segnalato funzionante sul telefono dopo fix 23/10, Google Login Android non ancora riconfermato esplicitamente, sync manuale sperimentale e non E2E; release non pronta). Spuntare una voce solo quando implementata **e verificata**; nessuna funzione è completa per definizione.
 
 ## Regole vincolanti — COME FARE
 - [ ] Lavorare in piccoli commit descrittivi, con test e documentazione aggiornati.
@@ -34,9 +34,9 @@
 - [x] Drift/SQLite, outbox e migrazione dati legacy; analyze/test Flutter (run `39604983987`).
 - [x] Windows: avvio Flutter desktop e login Google OAuth reale verificati manualmente (21 ottobre 2026).
 - [x] App Android avviata sul dispositivo fisico (22 ottobre 2026); prima build Kotlin locale risolta disattivando la cache incrementale.
-- [x] Configurazione Android versionata: applicationId/namespace `it.andreadada.simplenotes`, Gradle Java 17, Kotlin incremental off su dischi differenti, Activity Java e verifica in CI (build da confermare).
-- [ ] Verificare su CI con JDK 17/21 l'allineamento bytecode Java/Kotlin: la modifica precedente `enableKotlin = false` non bastava con JDK 21; ora Java segue la JDK di Gradle.
-- [ ] Android: APK compilato localmente, installazione tramite USB ancora bloccata dal sistema (`INSTALL_FAILED_USER_RESTRICTED`); verificare permesso sul telefono e ritestare il Google Login.
+- [x] Configurazione Android versionata: applicationId/namespace `it.andreadada.simplenotes`, Java target allineato a JDK 17/21, Kotlin incremental off su dischi differenti, Activity Java; CI Android/JDK17/JDK21 riuscita (run `39955667440`).
+- [x] JDK 17 e JDK 21: Android debug APK build riuscite su entrambi, Flutter CI run `39955667440` (success).
+- [x] Android: dopo correzioni Gradle/JVM l'utente segnala «Perfetto funziona» il 23/10. L'errore precedente `INSTALL_FAILED_USER_RESTRICTED` è storicizzato nel runbook; evitare di dichiarare verificato il login Google senza conferma specifica.
 - [ ] Test end-to-end Google Login con client ID reali su due dispositivi.
 - [ ] Verifica client sync PC↔Android con dati reali, recupero errori, conflitti e sync automatica.
 - [ ] Notifiche, liste, tag, sottotask, ricorrenze e ricerca completa.
@@ -52,7 +52,7 @@
 - [x] Compose in root `docker-compose.yml` validato con `docker compose config --quiet` (CI run `39634311667`).
 - [x] Deployment Coolify HTTPS e health check `UP` verificati dall'utente; NON equivale a validazione di sicurezza per la produzione.
 - [x] Windows: compilazione e avvio dell'app, login Google reale verificato; dipendenza C++ ATL installata su Build Tools.
-- [ ] Android: Google login e sessione sicura da verificare su dispositivo (app avviata, OAuth in errore codice 16).
+- [ ] Android: confermare Google Login e ripristino sessione **dopo** fix JVM e package Android. Il precedente `[16] Account reauth failed` era prima degli ultimi fix; non sappiamo ancora se risolto.
 - [ ] Persistenza sessione Windows/Android, logout e refresh dopo riavvio da verificare con test E2E.
 - [x] Struttura iniziale utenti, task, note, versioni, tombstone, refresh sessions.
 - [ ] Liste, tag, sottotask, filtri, scadenze/ricorrenze avanzate e reminder.
@@ -83,6 +83,11 @@
 - [ ] Input vocale e comandi rapidi.
 - [ ] Riepiloghi/suggerimenti AI **opzionali**, con controllo privacy.
 - [ ] Ottimizzazioni, test di carico e UX.
+
+## Handoff e nuova chat
+
+- Partire da [docs/HANDOFF.md](docs/HANDOFF.md), [AGENTS.md](AGENTS.md) e [docs/android-troubleshooting.md](docs/android-troubleshooting.md) per ricostruire lo stato senza cronologia della chat.
+- Registrare ciò che è verificato manualmente separatamente dalle build CI; prossimi test: Google Login Android, sync PC↔Android con stesso account, offline, conflitti.
 
 ## Convenzioni
 - **P0–P3:** priorità di rilascio, non stato di completamento.

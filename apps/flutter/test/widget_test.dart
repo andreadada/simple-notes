@@ -1,5 +1,7 @@
 import 'package:drift/native.dart';
 import 'package:flutter/material.dart';
+import 'package:forui/forui.dart';
+import 'package:simple_notes/ui/notes_theme.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -103,6 +105,38 @@ void main() {
     expect(find.text('Accedi con Google'), findsWidgets);
     await tester.pumpWidget(const SizedBox.shrink());
     await db.close();
+  });
+
+
+  test('Forui themes share Simple Notes design tokens', () {
+    final desktop = NotesTheme.forPlatform(TargetPlatform.windows);
+    final touch = NotesTheme.forPlatform(TargetPlatform.android);
+    expect(desktop.colors.primary, NotesPalette.accent);
+    expect(touch.colors.primary, NotesPalette.accent);
+    expect(desktop.colors.background, NotesPalette.background);
+    expect(touch.colors.background, NotesPalette.background);
+  });
+
+  testWidgets('Forui provides the desktop sidebar and task search',
+      (tester) async {
+    tester.view.physicalSize = const Size(1300, 900);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(() {
+      tester.view.resetPhysicalSize();
+      tester.view.resetDevicePixelRatio();
+    });
+    final database = AppDatabase(NativeDatabase.memory());
+    await tester.pumpWidget(ProviderScope(overrides: [
+      databaseProvider.overrideWithValue(database),
+      initialDataProvider.overrideWithValue(const LocalData()),
+    ], child: const SimpleNotesApp()));
+    await tester.pump();
+    expect(find.byType(FTheme), findsOneWidget);
+    expect(find.byType(FSidebar), findsOneWidget);
+    expect(find.byType(FTextField), findsOneWidget);
+    expect(find.byKey(const Key('task-input')), findsOneWidget);
+    await tester.pumpWidget(const SizedBox.shrink());
+    await database.close();
   });
 
 }

@@ -19,6 +19,7 @@ L'auto-sync è foreground; sono stati aggiunti gestione dei conflitti Forui, des
 - [project.md](project.md) — roadmap P0–P3, checklist, registro `Edit Timespan`.
 - [docs/P0-STATUS.md](docs/P0-STATUS.md) — stato P0 verificabile, nuove funzioni e blocchi.
 - [docs/task-organization.md](docs/task-organization.md) — liste, priorità, tag, sottotask e deploy Flyway V6.
+- [docs/due-dates-timezones.md](docs/due-dates-timezones.md) — **prossimo incremento P0 pianificato**: date-only, ora, timezone IANA, migrazioni V7/v5 e test (non implementato).
 - [design.md](design.md) — requisiti UI/UX e funzionalità obiettivo; non tutte implementate.
 - [docs/ui-forui.md](docs/ui-forui.md) — Forui come design system di riferimento e stato della migrazione.
 - [docs/architecture.md](docs/architecture.md) · [docs/api.md](docs/api.md) · [docs/sync.md](docs/sync.md) — architettura e contratti.

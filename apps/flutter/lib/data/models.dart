@@ -1,3 +1,48 @@
+class LocalSubtask {
+  final String id;
+  final String title;
+  final bool completed;
+
+  const LocalSubtask({required this.id, required this.title,
+    this.completed = false});
+
+  factory LocalSubtask.fromJson(Map<String, dynamic> value) => LocalSubtask(
+    id: value['id'] as String,
+    title: value['title'] as String,
+    completed: value['completed'] as bool? ?? false,
+  );
+
+  Map<String, dynamic> toJson() =>
+      {'id': id, 'title': title, 'completed': completed};
+
+  LocalSubtask copyWith({String? title, bool? completed}) => LocalSubtask(
+    id: id, title: title ?? this.title,
+    completed: completed ?? this.completed,
+  );
+}
+
+class LocalTaskList {
+  final String id;
+  final String title;
+  final DateTime createdAt;
+
+  const LocalTaskList({required this.id, required this.title,
+    required this.createdAt});
+
+  factory LocalTaskList.fromJson(Map<String, dynamic> value) => LocalTaskList(
+    id: value['id'] as String,
+    title: value['title'] as String,
+    createdAt: DateTime.parse(value['createdAt'] as String),
+  );
+
+  Map<String, dynamic> toJson() =>
+      {'id': id, 'title': title, 'createdAt': createdAt.toIso8601String()};
+
+  LocalTaskList copyWith({String? title}) => LocalTaskList(
+    id: id, title: title ?? this.title, createdAt: createdAt,
+  );
+}
+
 class LocalTask {
   final String id;
   final String title;
@@ -5,35 +50,60 @@ class LocalTask {
   final DateTime? dueAt;
   final bool completed;
   final DateTime createdAt;
+  final String? listId;
+  final int priority;
+  final List<String> tags;
+  final List<LocalSubtask> subtasks;
 
   const LocalTask({
     required this.id, required this.title, required this.dueAt,
     required this.completed, required this.createdAt,
     this.description = '',
+    this.listId,
+    this.priority = 0,
+    this.tags = const [],
+    this.subtasks = const [],
   });
 
-  factory LocalTask.fromJson(Map<String, dynamic> j) => LocalTask(
-    id: j['id'] as String,
-    title: j['title'] as String,
-    description: j['description'] as String? ?? '',
-    dueAt: j['dueAt'] == null ? null : DateTime.parse(j['dueAt'] as String),
-    completed: j['completed'] as bool? ?? false,
-    createdAt: DateTime.parse(j['createdAt'] as String),
+  factory LocalTask.fromJson(Map<String, dynamic> value) => LocalTask(
+    id: value['id'] as String,
+    title: value['title'] as String,
+    description: value['description'] as String? ?? '',
+    dueAt: value['dueAt'] == null || value['dueAt'] == ''
+      ? null : DateTime.parse(value['dueAt'] as String),
+    completed: value['completed'] as bool? ?? false,
+    createdAt: DateTime.parse(value['createdAt'] as String),
+    listId: value['listId'] as String?,
+    priority: value['priority'] as int? ?? 0,
+    tags: (value['tags'] as List<dynamic>? ?? const [])
+        .cast<String>().toList(),
+    subtasks: (value['subtasks'] as List<dynamic>? ?? const [])
+        .map((item) => LocalSubtask.fromJson(item as Map<String, dynamic>))
+        .toList(),
   );
 
   Map<String, dynamic> toJson() => {
     'id': id, 'title': title, 'description': description,
     'dueAt': dueAt?.toIso8601String(),
     'completed': completed, 'createdAt': createdAt.toIso8601String(),
+    'listId': listId, 'priority': priority, 'tags': tags,
+    'subtasks': subtasks.map((item) => item.toJson()).toList(),
   };
 
-  LocalTask copyWith({bool? completed, String? title,
-    String? description, DateTime? dueAt, bool changeDueAt = false}) => LocalTask(
-      id: id, title: title ?? this.title,
-      description: description ?? this.description,
-      dueAt: changeDueAt ? dueAt : this.dueAt,
-      completed: completed ?? this.completed, createdAt: createdAt,
-    );
+  LocalTask copyWith({
+    bool? completed, String? title, String? description, DateTime? dueAt,
+    bool changeDueAt = false, String? listId, bool changeListId = false,
+    int? priority, List<String>? tags, List<LocalSubtask>? subtasks,
+  }) => LocalTask(
+    id: id, title: title ?? this.title,
+    description: description ?? this.description,
+    dueAt: changeDueAt ? dueAt : this.dueAt,
+    completed: completed ?? this.completed, createdAt: createdAt,
+    listId: changeListId ? listId : this.listId,
+    priority: priority ?? this.priority,
+    tags: tags ?? this.tags,
+    subtasks: subtasks ?? this.subtasks,
+  );
 }
 
 class LocalNote {
@@ -49,8 +119,7 @@ class LocalNote {
 
   factory LocalNote.fromJson(Map<String, dynamic> j) => LocalNote(
     id: j['id'] as String, title: j['title'] as String,
-    body: j['body'] as String,
-    createdAt: DateTime.parse(j['createdAt'] as String),
+    body: j['body'] as String, createdAt: DateTime.parse(j['createdAt'] as String),
   );
 
   Map<String, dynamic> toJson() => {
@@ -58,19 +127,36 @@ class LocalNote {
   };
 
   LocalNote copyWith({String? title, String? body}) => LocalNote(
-    id: id, title: title ?? this.title, body: body ?? this.body, createdAt: createdAt,
+    id: id, title: title ?? this.title, body: body ?? this.body,
+    createdAt: createdAt,
   );
 }
 
 class LocalData {
   final List<LocalTask> tasks;
   final List<LocalNote> notes;
-  const LocalData({this.tasks = const [], this.notes = const []});
+  final List<LocalTaskList> lists;
+  const LocalData({
+    this.tasks = const [],
+    this.notes = const [],
+    this.lists = const [],
+  });
 
-  factory LocalData.fromJson(Map<String, dynamic> j) => LocalData(
-    tasks: (j['tasks'] as List<dynamic>? ?? [])
-        .map((e) => LocalTask.fromJson(e as Map<String, dynamic>)).toList(),
-    notes: (j['notes'] as List<dynamic>? ?? [])
-        .map((e) => LocalNote.fromJson(e as Map<String, dynamic>)).toList(),
+  factory LocalData.fromJson(Map<String, dynamic> value) => LocalData(
+    tasks: (value['tasks'] as List<dynamic>? ?? const [])
+      .map((item) => LocalTask.fromJson(item as Map<String, dynamic>)).toList(),
+    notes: (value['notes'] as List<dynamic>? ?? const [])
+      .map((item) => LocalNote.fromJson(item as Map<String, dynamic>)).toList(),
+    lists: (value['lists'] as List<dynamic>? ?? const [])
+      .map((item) => LocalTaskList.fromJson(item as Map<String, dynamic>)).toList(),
+  );
+
+  LocalData copyWith({
+    List<LocalTask>? tasks, List<LocalNote>? notes,
+    List<LocalTaskList>? lists,
+  }) => LocalData(
+    tasks: tasks ?? this.tasks,
+    notes: notes ?? this.notes,
+    lists: lists ?? this.lists,
   );
 }

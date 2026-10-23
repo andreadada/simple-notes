@@ -30,6 +30,7 @@ class _AutoSyncHostState extends ConsumerState<AutoSyncHost>
   bool _inFlight = false;
   bool _queued = false;
   int _failures = 0;
+  bool _restoringSession = false;
 
   @override
   void initState() {
@@ -39,6 +40,7 @@ class _AutoSyncHostState extends ConsumerState<AutoSyncHost>
     _connectivity = Connectivity().onConnectivityChanged.listen(
       (results) {
         if (results.any((value) => value != ConnectivityResult.none)) {
+          _retryOfflineSession();
           _schedule(delay: const Duration(seconds: 1));
         }
       },
@@ -52,7 +54,27 @@ class _AutoSyncHostState extends ConsumerState<AutoSyncHost>
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     _active = state == AppLifecycleState.resumed;
-    if (_active) _schedule(delay: const Duration(seconds: 1));
+    if (_active) {
+      _retryOfflineSession();
+      _schedule(delay: const Duration(seconds: 1));
+    }
+  }
+
+  // If the app was launched without network, CloudAuth.restore() preserves
+  // the refresh token but initially fails. Recover without requiring the user
+  // to press Google Login again after the connection comes back.
+  void _retryOfflineSession() {
+    if (!mounted || !_active || _restoringSession) return;
+    final session = ref.read(cloudAuthProvider);
+    if (session.authenticated ||
+        !(session.error?.startsWith('Offline:') == true ||
+          session.error?.startsWith('Server non disponibile') == true)) {
+      return;
+    }
+    _restoringSession = true;
+    unawaited(ref.read(cloudAuthProvider.notifier).restore().whenComplete(() {
+      _restoringSession = false;
+    }));
   }
 
   void _schedule({Duration delay = _editDebounce}) {

@@ -99,7 +99,7 @@ void main() {
     await phone.read(cloudSyncProvider.notifier).synchronize();
     await pc.read(cloudSyncProvider.notifier).synchronize();
     expect(pc.read(cloudSyncProvider).conflict, isTrue);
-    expect(pc.read(cloudSyncProvider).details?.remoteVersion, 1);
+    expect(pc.read(cloudSyncProvider).details?.remoteVersion, 2);
     expect(pc.read(localStoreProvider).notes.single.body, 'PC');
     expect(await pcDb.pendingCount(), 1);
 

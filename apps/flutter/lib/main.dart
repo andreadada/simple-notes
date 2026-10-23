@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:forui/forui.dart';
+import 'ui/notes_theme.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'data/local_store.dart';
@@ -44,6 +46,12 @@ class SimpleNotesApp extends StatelessWidget {
             filled: true, fillColor: Color(0xff242424),
             contentPadding: EdgeInsets.symmetric(horizontal: 14, vertical: 13),
           ),
+        ),
+        // Forui is our primary widget system. Material remains only as a
+        // compatibility bridge for date pickers, dialogs and the editor.
+        builder: (context, child) => FTheme(
+          data: NotesTheme.forPlatform(Theme.of(context).platform),
+          child: child ?? const SizedBox.shrink(),
         ),
         home: const AutoSyncHost(child: NotesHome()),
       );
@@ -275,62 +283,70 @@ class _NotesHomeState extends ConsumerState<NotesHome> {
       ),
     );
 
-    Widget navigation() => Column(
+    // One responsive Forui navigation component for Windows and Android.
+    Widget navigation() => FSidebar(
+      header: const Padding(
+        padding: EdgeInsets.fromLTRB(18, 24, 18, 16),
+        child: Row(children: [
+          Icon(Icons.check_circle, color: NotesPalette.accent, size: 22),
+          SizedBox(width: 12),
+          Expanded(child: Text('Simple Notes',
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700))),
+        ]),
+      ),
+      children: [
+        FSidebarGroup(
+          label: const Text('ORGANIZZA'),
           children: [
-            const Padding(
-              padding: EdgeInsets.fromLTRB(20, 26, 16, 24),
-              child: Row(children: [
-                Icon(Icons.check_circle, color: Color(0xff547aff)),
-                SizedBox(width: 12),
-                Text('Simple Notes', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-              ]),
-            ),
             for (final s in Section.values)
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                child: ListTile(
-                  dense: true, selected: section == s, leading: Icon(s.icon, size: 20),
-                  title: Text(s.label),
-                  onTap: () {
-                    setState(() { section = s; selectedId = null; });
-                    if (!desktop) Navigator.maybePop(context);
-                  },
-                ),
+              FSidebarItem(
+                key: Key('nav-${s.name}'),
+                selected: section == s,
+                icon: Icon(s.icon, size: 20),
+                label: Text(s.label),
+                onPress: () {
+                  setState(() { section = s; selectedId = null; });
+                  if (!desktop) Navigator.maybePop(context);
+                },
               ),
-            const Spacer(),
-            if (desktop) accountControl(),
-            if (sync.running)
-              const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-                child: Row(children: [
-                  SizedBox(width: 12, height: 12,
-                    child: CircularProgressIndicator(strokeWidth: 2)),
-                  SizedBox(width: 8),
-                  Text('Sincronizzazione...', style: TextStyle(
-                    fontSize: 12, color: Colors.grey)),
-                ]),
-              ),
-            if (sync.message != null &&
-                (sync.conflict || sync.message!.startsWith('Sync non riuscita')))
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-                child: Text(sync.message!, maxLines: 3,
-                  style: TextStyle(fontSize: 12,
-                    color: sync.conflict ? Colors.orangeAccent : Colors.grey)),
-              ),
-            if (cloud.error != null)
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: Text(cloud.error!, maxLines: 3,
-                  style: const TextStyle(color: Colors.redAccent, fontSize: 12)),
-              ),
-            const Padding(
-              padding: EdgeInsets.all(16),
-              child: Text('Offline-first · Sync automatica',
-                style: TextStyle(color: Colors.grey, fontSize: 12)),
-            ),
           ],
-        );
+        ),
+      ],
+      footer: Column(mainAxisSize: MainAxisSize.min, children: [
+        if (desktop) accountControl(),
+        if (sync.running)
+          const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+            child: Row(children: [
+              SizedBox(width: 12, height: 12,
+                child: CircularProgressIndicator(strokeWidth: 2)),
+              SizedBox(width: 8),
+              Text('Sincronizzazione...',
+                style: TextStyle(fontSize: 12, color: Colors.grey)),
+            ]),
+          ),
+        if (sync.message != null &&
+            (sync.conflict ||
+                sync.message!.startsWith('Sync non riuscita')))
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+            child: Text(sync.message!, maxLines: 3,
+              style: TextStyle(fontSize: 12,
+                color: sync.conflict ? Colors.orangeAccent : Colors.grey)),
+          ),
+        if (cloud.error != null)
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Text(cloud.error!, maxLines: 3,
+              style: const TextStyle(color: Colors.redAccent, fontSize: 12)),
+          ),
+        const Padding(
+          padding: EdgeInsets.all(12),
+          child: Text('Offline-first · Sync automatica',
+            style: TextStyle(color: Colors.grey, fontSize: 12)),
+        ),
+      ]),
+    );
     return Scaffold(
       appBar: desktop ? null : AppBar(
         title: Text(section.label),
@@ -340,7 +356,7 @@ class _NotesHomeState extends ConsumerState<NotesHome> {
       body: Row(children: [
         if (desktop)
           SizedBox(width: 246, child: ColoredBox(
-            color: const Color(0xff202020), child: SafeArea(child: navigation()),
+            color: NotesPalette.sidebar, child: SafeArea(child: navigation()),
           )),
         Expanded(child: Column(children: [
           if (desktop)
@@ -352,13 +368,16 @@ class _NotesHomeState extends ConsumerState<NotesHome> {
           if (section != Section.notes)
             Padding(
               padding: const EdgeInsets.fromLTRB(16, 0, 16, 4),
-              child: TextField(
+              child: FTextField(
                 key: const Key('task-search'),
-                decoration: const InputDecoration(
-                  hintText: 'Cerca attività...',
-                  prefixIcon: Icon(Icons.search),
+                control: FTextFieldControl.managed(
+                  onChange: (value) =>
+                    setState(() => searchQuery = value.text),
                 ),
-                onChanged: (value) => setState(() => searchQuery = value),
+                hint: 'Cerca attività...',
+                prefixBuilder: (context, style, variants) =>
+                  const Icon(Icons.search, size: 18),
+
               ),
             ),
           if (section != Section.notes)
@@ -383,19 +402,25 @@ class _NotesHomeState extends ConsumerState<NotesHome> {
             Expanded(child: ListView(
               padding: const EdgeInsets.all(16),
               children: [
-                FilledButton.icon(
-                  onPressed: () => ref.read(localStoreProvider.notifier).addNote(),
-                  icon: const Icon(Icons.add), label: const Text('Nuova nota'),
+                FButton(
+                  key: const Key('new-note'),
+                  mainAxisSize: MainAxisSize.min,
+                  onPress: () => ref.read(localStoreProvider.notifier).addNote(),
+                  prefix: const Icon(Icons.add, size: 18),
+                  child: const Text('Nuova nota'),
                 ),
                 const SizedBox(height: 12),
                 for (final note in data.notes)
-                  Card(child: ListTile(
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 8),
+                    child: FCard(child: ListTile(
                     title: Text(note.title.isEmpty ? 'Senza titolo' : note.title),
                     subtitle: Text(note.body, maxLines: 2, overflow: TextOverflow.ellipsis),
                     onTap: () => showNoteEditor(note),
                     trailing: IconButton(tooltip: 'Elimina', icon: const Icon(Icons.delete_outline),
                       onPressed: () => ref.read(localStoreProvider.notifier).deleteNote(note.id)),
-                  )),
+                    )),
+                  ),
               ],
             ))
           else
@@ -448,10 +473,12 @@ class _NotesHomeState extends ConsumerState<NotesHome> {
           const SizedBox(height: 12),
           Text(task.dueAt == null ? 'Nessuna scadenza' : 'Scadenza: ${task.dueAt!.toLocal()}'),
           const Spacer(),
-          OutlinedButton.icon(
-            onPressed: () => showTaskEditor(task),
-            icon: const Icon(Icons.edit_outlined),
-            label: const Text('Modifica'),
+          FButton(
+            variant: .outline,
+            mainAxisSize: MainAxisSize.min,
+            onPress: () => showTaskEditor(task),
+            prefix: const Icon(Icons.edit_outlined, size: 18),
+            child: const Text('Modifica'),
           ),
           TextButton.icon(
             onPressed: () {

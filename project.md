@@ -38,7 +38,7 @@
 - [x] JDK 17 e JDK 21: Android debug APK build riuscite su entrambi, Flutter CI run `39955667440` (success).
 - [x] Android: dopo correzioni Gradle/JVM l'utente segnala «Perfetto funziona» il 23/10. L'errore precedente `INSTALL_FAILED_USER_RESTRICTED` è storicizzato nel runbook; evitare di dichiarare verificato il login Google senza conferma specifica.
 - [ ] Test end-to-end Google Login con client ID reali su due dispositivi.
-- [ ] Verifica client sync PC↔Android con dati reali, recupero errori e conflitti. Auto-sync foreground implementata (login/edit/resume/reconnect/pull 60s), richiede E2E.
+- [ ] Verifica client sync PC↔Android con dati reali, recupero errori e conflitti. Fix validazione note senza titolo, test di delta bidirezionale backend e diagnostica client; richiede E2E.
 - [ ] Notifiche, liste, tag, sottotask, ricorrenze e ricerca completa.
 - [ ] Avatar Google e menu unico account implementati (Flutter + claim `picture` sul backend con Flyway), da verificare con login reale e redeploy Coolify.
 - [x] Backend deployato su Coolify e raggiungibile via HTTPS: health check `https://api.notes.ddone.it/actuator/health` con `UP` (confermato dall'utente).

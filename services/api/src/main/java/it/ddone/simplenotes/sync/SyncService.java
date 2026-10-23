@@ -117,7 +117,13 @@ public class SyncService {
             return new Mutation(existing.version, true, "{}");
         }
         JsonNode value = req.payload();
-        String title = requiredText(value, "title", 255);
+        // Local note editor permits empty titles ("Senza titolo" in the UI).
+        // Rejecting them as 400 used to strand the oldest outbox operation,
+        // preventing later notes from uploading. Allow blank, still limit size.
+        String title = requiredTextAllowEmpty(value, "title");
+        if (title.length() > 255) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid title");
+        }
         String body = requiredTextAllowEmpty(value, "body");
         NoteEntity entity;
         if (existing == null) {

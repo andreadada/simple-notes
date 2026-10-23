@@ -73,4 +73,51 @@ class SyncIntegrationTest {
             .contentType(MediaType.APPLICATION_JSON).content(request))
             .andExpect(status().isConflict());
     }
+    @Test
+    void noteCreatedOnDeviceAIsVisibleToDeviceBAndCanBeEdited() throws Exception {
+        var user = users.save(new AppUser("note-sync-" + UUID.randomUUID(),
+            "note@example.com", "Two devices"));
+        String bearer = "Bearer " + jwt(user.id);
+        String entity = UUID.randomUUID().toString();
+        String op1 = UUID.randomUUID().toString();
+        String create = """
+            {"operationId":"%s","entityId":"%s","entityType":"note",
+             "action":"upsert","payload":{"title":"","body":"Nota creata su PC"}}
+            """.formatted(op1, entity);
+        mvc.perform(post("/api/v1/sync/apply")
+                .header("Authorization", bearer)
+                .contentType(MediaType.APPLICATION_JSON).content(create))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.version").value(0));
+
+        // Different device with the *same user* downloads the note.
+        mvc.perform(get("/api/v1/sync/changes")
+                .header("Authorization", bearer).param("cursor", "0"))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.changes.length()").value(1))
+            .andExpect(jsonPath("$.changes[0].entityType").value("note"))
+            .andExpect(jsonPath("$.changes[0].payload.body").value("Nota creata su PC"))
+            .andExpect(jsonPath("$.changes[0].payload.title").value(""));
+
+        String op2 = UUID.randomUUID().toString();
+        String update = """
+            {"operationId":"%s","entityId":"%s","entityType":"note",
+             "action":"upsert","expectedVersion":0,
+             "payload":{"title":"Aggiornata","body":"Modificata su Android"}}
+            """.formatted(op2, entity);
+        mvc.perform(post("/api/v1/sync/apply")
+                .header("Authorization", bearer)
+                .contentType(MediaType.APPLICATION_JSON).content(update))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.version").value(1));
+
+        // The first device can pull the subsequent version without losing data.
+        mvc.perform(get("/api/v1/sync/changes")
+                .header("Authorization", bearer).param("cursor", "0"))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.changes.length()").value(2))
+            .andExpect(jsonPath("$.changes[1].payload.body").value("Modificata su Android"))
+            .andExpect(jsonPath("$.changes[1].version").value(1));
+    }
+
 }

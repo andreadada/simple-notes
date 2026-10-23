@@ -23,7 +23,12 @@ abstract final class NotesTheme {
       _ => false,
     };
     final base = touch ? FTheme.neutral.dark.touch : FTheme.neutral.dark.desktop;
-    return base.copyWith(
+    return FThemeData(
+      touch: touch,
+      breakpoints: base.breakpoints,
+      typography: base.typography,
+      icons: base.icons,
+      style: base.style,
       colors: base.colors.copyWith(
         background: NotesPalette.background,
         foreground: NotesPalette.foreground,

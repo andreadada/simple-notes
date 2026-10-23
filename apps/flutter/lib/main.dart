@@ -294,24 +294,6 @@ class _NotesHomeState extends ConsumerState<NotesHome> {
             style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700))),
         ]),
       ),
-      children: [
-        FSidebarGroup(
-          label: const Text('ORGANIZZA'),
-          children: [
-            for (final s in Section.values)
-              FSidebarItem(
-                key: Key('nav-${s.name}'),
-                selected: section == s,
-                icon: Icon(s.icon, size: 20),
-                label: Text(s.label),
-                onPress: () {
-                  setState(() { section = s; selectedId = null; });
-                  if (!desktop) Navigator.maybePop(context);
-                },
-              ),
-          ],
-        ),
-      ],
       footer: Column(mainAxisSize: MainAxisSize.min, children: [
         if (desktop) accountControl(),
         if (sync.running)
@@ -346,6 +328,25 @@ class _NotesHomeState extends ConsumerState<NotesHome> {
             style: TextStyle(color: Colors.grey, fontSize: 12)),
         ),
       ]),
+      children: [
+        FSidebarGroup(
+          label: const Text('ORGANIZZA'),
+          children: [
+            for (final s in Section.values)
+              FSidebarItem(
+                key: Key('nav-${s.name}'),
+                selected: section == s,
+                icon: Icon(s.icon, size: 20),
+                label: Text(s.label),
+                onPress: () {
+                  setState(() { section = s; selectedId = null; });
+                  if (!desktop) Navigator.maybePop(context);
+                },
+              ),
+          ],
+        ),
+      ],
+
     );
     return Scaffold(
       appBar: desktop ? null : AppBar(
@@ -474,7 +475,7 @@ class _NotesHomeState extends ConsumerState<NotesHome> {
           Text(task.dueAt == null ? 'Nessuna scadenza' : 'Scadenza: ${task.dueAt!.toLocal()}'),
           const Spacer(),
           FButton(
-            variant: .outline,
+            variant: FButtonVariant.outline,
             mainAxisSize: MainAxisSize.min,
             onPress: () => showTaskEditor(task),
             prefix: const Icon(Icons.edit_outlined, size: 18),

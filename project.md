@@ -61,6 +61,13 @@
 - [ ] Notifiche Android e Windows, snooze, recurring, controllo fusi orari.
 - [ ] Test E2E PC↔Android, offline, recupero conflitti/riavvio, back-up/restore.
 
+## Valutazione UI library (23 ottobre 2026)
+
+- **Forui** ([GitHub](https://github.com/duobaseio/forui), [pub.dev](https://pub.dev/packages/forui)): candidata preferita per restyle cross-platform Windows+Android, stile minimalista shadcn-like, oltre 50 widget, resizable panes, temi; release 0.26+ richiedono Flutter >=3.47.
+- **shadcn_ui** ([pub.dev](https://pub.dev/packages/shadcn_ui)): alternativa valida per personalizzazioni profonde e interfaccia shadcn-style.
+- **fluent_ui** ([pub.dev](https://pub.dev/packages/fluent_ui)): migliore per estetica Windows nativa, meno prioritaria per identità uniforme mobile+desktop.
+- **Decisione:** nessuna libreria aggiunta per ora. Prima risolvere E2E note/sync su dispositivi reali. Poi provare Forui su componente isolato con test Windows+Android, senza riscrivere subito intera UI o introdurre regressioni.
+
 ## P1 — Produttività completa
 - [ ] Calendario giorno/settimana/mese e time blocking.
 - [ ] Eisenhower Matrix a quattro quadranti.

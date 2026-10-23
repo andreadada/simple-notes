@@ -136,3 +136,6 @@ Per istruzioni dettagliate e controlli SHA-1 consultare [android-troubleshooting
 - Problema certo contratto: l'editor accettava titoli vuoti, mentre il backend li rifiutava con HTTP 400, bloccando l'outbox; la nuova validazione backend accetta titoli vuoti e limita a 255 caratteri. Richiede **redeploy Coolify**.
 - Test server aggiunto: crea nota su device A, device B legge delta, aggiorna, A rilegge.
 - **La causa esatta della mancata sync sul dispositivo non è stata ancora verificata**: leggere esiti dopo aggiornamento su entrambe le piattaforme. Non eliminare alcun dato locale.
+
+## Valutazione libreria grafica (23 ottobre 2026)
+Richiesta confronto Forui (duobaseio/forui) vs alternative: Forui è candidata per futuro restyle (cross-platform, shadcn-like, resizable panels; richiede Flutter 3.47+ nelle release 0.26+). Alternative shadcn_ui e fluent_ui. **Non integrata**, in attesa della verifica end-to-end della sincronizzazione. Dettagli e link in `project.md`.

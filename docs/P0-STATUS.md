@@ -35,6 +35,11 @@
 - **Limitazione importante:** mezzanotte e una scadenza «solo giorno» non sono ancora distinguibili nel modello. La separazione esplicita `dueDate` / `dueTime` / `timezone` con migrazioni incrementali e test DST resta da realizzare **prima** di ricorrenze e notifiche. Il campo HH:mm è il primo incremento UI, non il completamento del sottoprogetto promemoria.
 - La build CI di questo incremento va controllata; non dichiarare test hardware superati senza prova.
 
+## Prossima implementazione progettata, non sviluppata
+
+- Piano dettagliato: [due-dates-timezones.md](due-dates-timezones.md). Il prossimo incremento separa scadenze `none/date/datetime/legacy`, introduce timezone IANA e gestione corretta del cambio ora, con **Flyway V7 + Drift v5 ancora da implementare**. L'attuale UI HH:mm ha superato le CI Flutter [40011701417](https://github.com/andreadada/simple-notes/actions/runs/40011701417) e [40011789270](https://github.com/andreadada/simple-notes/actions/runs/40011789270): non equivale a test real-device.
+- Gate preliminare immutato: backup PostgreSQL reale e restore isolato/offsite, deploy V5+V6 se non già effettuato, poi verifica fisica dei flussi attuali.
+
 ## Rimane da fare per dichiarare P0 completo
 
 - **Prove hardware**: aggiornare API Coolify solo dopo backup; verificare Google session refresh/logout, task completati, cancellazioni, sync offline → online, conflitti Forui e data delle attività su Windows e Android, compresi riavvii.

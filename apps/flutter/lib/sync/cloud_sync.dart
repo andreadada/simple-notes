@@ -182,7 +182,9 @@ class CloudSync extends StateNotifier<SyncState> {
     final conflict = state.details;
     final cloud = ref.read(cloudAuthProvider);
     if (conflict == null || state.running || cloud.userId == null ||
-        conflict.remoteVersion == null) return;
+        conflict.remoteVersion == null) {
+      return;
+    }
     state = SyncState(running: true, conflict: true, details: conflict);
     try {
       final latest = await _request('GET',

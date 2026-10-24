@@ -1,3 +1,6 @@
+import 'task_due.dart';
+export 'task_due.dart';
+
 class LocalSubtask {
   final String id;
   final String title;
@@ -47,7 +50,8 @@ class LocalTask {
   final String id;
   final String title;
   final String description;
-  final DateTime? dueAt;
+  final TaskDue due;
+  DateTime? get dueAt => due.displayLocal;
   final bool completed;
   final DateTime createdAt;
   final String? listId;
@@ -56,14 +60,15 @@ class LocalTask {
   final List<LocalSubtask> subtasks;
 
   LocalTask({
-    required this.id, required this.title, required this.dueAt,
+    required this.id, required this.title, required DateTime? dueAt,
+    TaskDue? due,
     required this.completed, required this.createdAt,
     this.description = '',
     this.listId,
     this.priority = 0,
     this.tags = const [],
     this.subtasks = const [],
-  });
+  }) : due = due ?? TaskDue.legacy(dueAt);
 
   factory LocalTask.fromJson(Map<String, dynamic> value) => LocalTask(
     id: value['id'] as String,
@@ -71,6 +76,9 @@ class LocalTask {
     description: value['description'] as String? ?? '',
     dueAt: value['dueAt'] == null || value['dueAt'] == ''
       ? null : DateTime.parse(value['dueAt'] as String),
+    due: TaskDue.fromJson(value['due'], oldDueAt:
+      value['dueAt'] == null || value['dueAt'] == ''
+        ? null : DateTime.parse(value['dueAt'] as String)),
     completed: value['completed'] as bool? ?? false,
     createdAt: DateTime.parse(value['createdAt'] as String),
     listId: value['listId'] as String?,
@@ -84,7 +92,8 @@ class LocalTask {
 
   Map<String, dynamic> toJson() => {
     'id': id, 'title': title, 'description': description,
-    'dueAt': dueAt?.toIso8601String(),
+    'dueAt': due.instant?.toUtc().toIso8601String(),
+    'due': due.toJson(),
     'completed': completed, 'createdAt': createdAt.toIso8601String(),
     'listId': listId, 'priority': priority, 'tags': tags,
     'subtasks': subtasks.map((item) => item.toJson()).toList(),
@@ -92,12 +101,15 @@ class LocalTask {
 
   LocalTask copyWith({
     bool? completed, String? title, String? description, DateTime? dueAt,
-    bool changeDueAt = false, String? listId, bool changeListId = false,
+    bool changeDueAt = false, TaskDue? due, bool changeDue = false,
+    String? listId, bool changeListId = false,
     int? priority, List<String>? tags, List<LocalSubtask>? subtasks,
   }) => LocalTask(
     id: id, title: title ?? this.title,
     description: description ?? this.description,
     dueAt: changeDueAt ? dueAt : this.dueAt,
+    due: changeDue ? (due ?? TaskDue.none) :
+      changeDueAt ? TaskDue.legacy(dueAt) : this.due,
     completed: completed ?? this.completed, createdAt: createdAt,
     listId: changeListId ? listId : this.listId,
     priority: priority ?? this.priority,

@@ -46,6 +46,6 @@ Le schermate sopra risiedono in **un unico client Flutter**, quindi condividono 
 
 ## Stato delle prove
 
-Il lavoro UI è in GitHub, **non equivale a test visivi reali o rilascio web**. Consultare [GitHub Actions Flutter](https://github.com/andreadada/simple-notes/actions/workflows/flutter-ci.yml) per l'ultimo risultato esatto: non confondere build native e test widget con compatibilità browser end-to-end.
+Il lavoro UI è in GitHub, **non equivale a test visivi reali o rilascio web**. La [CI Flutter 40047841376](https://github.com/andreadada/simple-notes/actions/runs/40047841376) sul commit `59e13bc` ha superato **flutter analyze e flutter test**, incluso il test di apertura del menu account Forui. Le build native Windows/Android erano ancora in corso all'ultima verifica. I popover Forui per account, priorità e lista comandano esplicitamente i rispettivi controller. Non confondere questi risultati con validazione visuale o con compatibilità browser end-to-end.
 
 Riferimenti: [design.md](../design.md), [Forui](ui-forui.md), [roadmap](../project.md), [status P0](P0-STATUS.md).

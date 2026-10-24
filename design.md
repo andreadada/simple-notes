@@ -105,6 +105,12 @@ User(id, googleSub, email), Device(id, userId, lastSeen), Session(id, deviceId, 
 
 Il futuro modello distingue `none`/`date` (giorno civile, nessuna ora) / `datetime` (data/ora, timezone IANA, istante UTC, offset DST) / `legacy` (dato `dueAt` precedente, non inferire automaticamente dal valore 00:00). Non equivale a funzionalità implementata: sono pianificati Flyway V7, Drift v5, protezione per vecchi client e test multi-device. Leggere [docs/due-dates-timezones.md](docs/due-dates-timezones.md) prima di sviluppare ricorrenze o reminder.
 
+## T2 — aggiornamento Flutter e compatibilità (24/10/2026)
+
+Flutter adotta `TaskDue` (`none/date/datetime/legacy`) e Drift **schema v5**. Una data senza ora resta una data civile; scadenze storiche conservate come `legacy`; `due_at` e outbox rimangono per compatibilità. `CloudSync` controlla il server `GET /api/v1/capabilities` prima di caricare scadenze `date/datetime` e richiede `taskDueSchema=1`; il server obsoleto non riceve aggiornamenti moderni. HTTP **426 CLIENT_UPGRADE_REQUIRED** blocca la sync senza cancellare mutazioni o attivare la risoluzione 409. I payload `dueAt` storici restano leggibili.
+
+Test introdotti per data-only, ora legale, due database, fallback server, outbox e migrazione SQLite v4 già popolato → v5. **Risultati CI e prove real-device vanno verificati**, il codice GitHub non implica deployment. T3 (UI Forui con scelta esplicita, timezone IANA e DST) resta da realizzare. Flyway V7 non è stato distribuito su Coolify, necessario backup/restore reale prima del rollout. Flutter Web non ancora supportato.
+
 ## 8. Promemoria e calendari
 - Android: notifiche locali prenotate + FCM per invalidazione/sync; gestione POST_NOTIFICATIONS, reboot e restrizioni exact alarms.
 - Windows: notification center, processo in tray opzionale; impossibile notificare a PC spento.

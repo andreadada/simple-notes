@@ -5,11 +5,17 @@ on:
       - docker-compose.yml
       - infra/backup-postgres.sh
       - infra/verify-restore.sh
+      - infra/t4-preflight.sh
+      - infra/t4-check-api.sh
       - .github/workflows/compose-ci.yml
   pull_request:
     paths:
       - docker-compose.yml
       - .github/workflows/compose-ci.yml
+      - infra/backup-postgres.sh
+      - infra/verify-restore.sh
+      - infra/t4-preflight.sh
+      - infra/t4-check-api.sh
   workflow_dispatch:
 
 jobs:
@@ -20,7 +26,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Validate backup script syntax (no Docker operations)
-        run: bash -n infra/backup-postgres.sh infra/verify-restore.sh
+        run: bash -n infra/backup-postgres.sh infra/verify-restore.sh infra/t4-preflight.sh infra/t4-check-api.sh
       - name: Validate build Compose without runtime secrets
         run: |
           # Coolify uses a build-time.env with no runtime-only credentials.
@@ -74,5 +80,25 @@ jobs:
               CREATE TABLE sync_operation(id UUID PRIMARY KEY);
               INSERT INTO app_user VALUES ('"'"'00000000-0000-0000-0000-000000000001'"'"');
             '
-          DB_CONTAINER="$db_name" BACKUP_DIR="$folder" bash infra/backup-postgres.sh
-          bash infra/verify-restore.sh "$folder"/simple-notes-*.dump
+          # The fixture's DB name is deliberately 'synthetic', not production.
+          EXPECTED_POSTGRES_DB=synthetic DB_CONTAINER="$db_name"             BACKUP_DIR="$folder" bash infra/backup-postgres.sh
+          archive="$(find "$folder" -maxdepth 1 -name '*.dump' -print -quit)"
+          test -n "$archive"
+          bash infra/verify-restore.sh "$archive"
+          test -s "$archive.restore-ok"
+          # Synthetic fixture ONLY: checking offsite-attestation gate behavior.
+          # This never attests anything about the real Coolify database.
+          if T4_ARCHIVE="$archive" T4_APPROVED_COMMIT="$(git rev-parse HEAD)"               bash infra/t4-preflight.sh; then
+            echo "ERROR: missing offsite confirmation accepted" >&2
+            exit 1
+          fi
+          T4_ARCHIVE="$archive" T4_OFFSITE_CONFIRMED=yes             T4_APPROVED_COMMIT="$(git rev-parse HEAD)" bash infra/t4-preflight.sh
+          printf 'tampered' >> "$archive"
+          if bash infra/verify-restore.sh "$archive"; then
+            echo "ERROR: tampered restore accepted" >&2
+            exit 1
+          fi
+          if T4_ARCHIVE="$archive" T4_OFFSITE_CONFIRMED=yes               T4_APPROVED_COMMIT="$(git rev-parse HEAD)" bash infra/t4-preflight.sh; then
+            echo "ERROR: tampered preflight accepted" >&2
+            exit 1
+          fi

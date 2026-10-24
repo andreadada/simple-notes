@@ -1,47 +1,82 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# DISPOSABLE validation database. Never point pg_restore at production.
-# Usage: ./infra/verify-restore.sh /safe/offsite/backup.dump
+# Restores only into an ephemeral container with no network or published ports.
+# Never names or connects to an existing production database.
 if [[ "$#" -ne 1 || ! -r "$1" ]]; then
-  echo "Usage: $0 /path/to/simple-notes-backup.dump" >&2
-  exit 2
+  echo "Usage: $0 /path/to/simple-notes-backup.dump" >&2; exit 2
 fi
-archive="$1"
-name="simple-notes-restore-check-$$"
+for cmd in docker sha256sum openssl awk mktemp; do
+  command -v "$cmd" >/dev/null || { echo "Missing $cmd" >&2; exit 2; }
+done
+archive="$(cd -- "$(dirname -- "$1")" && pwd -P)/$(basename -- "$1")"
+if [[ ! -s "$archive" || "$(head -c 5 "$archive")" != "PGDMP" ]]; then
+  echo "REFUSED: invalid PostgreSQL custom archive." >&2; exit 2
+fi
+if [[ ! -f "$archive.sha256" ]]; then
+  echo "REFUSED: matching .sha256 manifest required." >&2; exit 2
+fi
+hash="$(sha256sum -- "$archive" | awk '{print $1}')"
+expected="$(awk 'NR==1 {print $1}' "$archive.sha256")"
+if [[ ! "$expected" =~ ^[[:xdigit:]]{64}$ || "${expected,,}" != "$hash" ]]; then
+  echo "REFUSED: SHA256 mismatch; cannot restore untrusted archive." >&2; exit 2
+fi
+
+name="simple-notes-restore-check-$$-$(openssl rand -hex 4)"
 password="$(openssl rand -hex 24)"
+temp=""
 cleanup() {
+  if [[ -n "$temp" ]]; then rm -f -- "$temp"; fi
   docker rm -f "$name" >/dev/null 2>&1 || true
 }
 trap cleanup EXIT
 
-docker run --rm -d --name "$name" \
-  -e POSTGRES_PASSWORD="$password" \
-  postgres:17-alpine >/dev/null
-
+# Never mount live volumes or use the production Docker network.
+docker run --rm -d --network none --name "$name" \
+  -e POSTGRES_PASSWORD="$password" postgres:17-alpine >/dev/null
 ready=0
-for i in $(seq 1 45); do
-  # Ignore temporary bootstrap server: wait until entrypoint finishes init.
+for i in $(seq 1 60); do
   if docker logs "$name" 2>&1 | grep -q 'PostgreSQL init process complete' && \
-      docker exec "$name" pg_isready -U postgres -d postgres >/dev/null 2>&1; then
-    ready=1
-    break
+     docker exec "$name" pg_isready -U postgres -d postgres >/dev/null 2>&1; then
+    ready=1; break
   fi
   sleep 1
 done
 if [[ "$ready" != 1 ]]; then
-  echo "Isolated test Postgres did not become healthy." >&2
-  exit 1
+  echo "Isolated PostgreSQL failed readiness check." >&2; exit 1
+fi
+# No --clean / --create / production target. Entire restore is transactional.
+docker exec -i "$name" pg_restore -U postgres -d postgres \
+  --exit-on-error --single-transaction --no-owner --no-privileges < "$archive"
+
+for table in app_user task note sync_change sync_operation; do
+  docker exec "$name" psql -X -v ON_ERROR_STOP=1 -U postgres -d postgres -Atqc \
+    "SELECT COUNT(*) FROM public.$table;" >/dev/null
+done
+flyway="absent"
+has_flyway="$(docker exec "$name" psql -X -v ON_ERROR_STOP=1 \
+  -U postgres -d postgres -Atqc \
+  "SELECT CASE WHEN to_regclass('public.flyway_schema_history') IS NOT NULL THEN 1 ELSE 0 END")"
+if [[ "$has_flyway" == "1" ]]; then
+  flyway="$(docker exec "$name" psql -X -v ON_ERROR_STOP=1 \
+    -U postgres -d postgres -Atqc \
+    "SELECT COALESCE(MAX(installed_rank),0) FROM public.flyway_schema_history WHERE success")"
 fi
 
-docker exec -i "$name" pg_restore \
-  -U postgres -d postgres \
-  --exit-on-error --single-transaction --no-owner --no-privileges \
-  < "$archive"
-
-# Verify at least that the core schema exists and can be queried.
-for table in app_user task note sync_change sync_operation; do
-  docker exec "$name" psql -U postgres -d postgres -Atqc \
-    "SELECT COUNT(*) FROM $table;" >/dev/null
-done
-echo "Isolated restore succeeded; production DB was never touched."
+receipt="$archive.restore-ok"
+umask 077
+temp="$(mktemp "$(dirname -- "$archive")/.t4-proof.XXXXXXXX")"
+{
+  printf 'T4_RECEIPT_VERSION=1\n'
+  printf 'ARCHIVE_SHA256=%s\n' "$hash"
+  printf 'POSTGRES_IMAGE=postgres:17-alpine\n'
+  printf 'CORE_TABLES_VERIFIED=app_user,task,note,sync_change,sync_operation\n'
+  printf 'FLYWAY_MAX_INSTALLED_RANK=%s\n' "$flyway"
+  printf 'VERIFIED_UTC=%s\n' "$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+} > "$temp"
+chmod 600 "$temp"
+mv -- "$temp" "$receipt"
+temp=""
+echo "SUCCESS: full isolated restore and core table queries passed."
+echo "Receipt: $receipt"
+echo "NO production database, persistent volume or network was touched."

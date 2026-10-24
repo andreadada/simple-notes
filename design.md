@@ -52,7 +52,7 @@
 - Usare form/dialog Forui quando servono **più campi correlati, conferme, validazioni complesse o azioni distruttive**, non per una semplice rinomina. Preferire un controllo mirato (es. calendario, selettore) quando il dato non è testo libero.
 - Considerare questo criterio nelle review di **ogni nuova schermata** e durante il refactoring delle schermate esistenti; le eccezioni vanno motivate per accessibilità o complessità.
 
-Implementazione riusabile: `InlineEditableTitle`, `InlineEditableBody`, `InlineQuickAdd` e helper centralizzato `InlineTextMetrics.fieldWidth` in `apps/flutter/lib/ui/notes_theme.dart`. I valori sono modificabili direttamente e la sottolineatura è contenuta nella larghezza del testo; per l'input veloce dei task vedere `apps/flutter/lib/main.dart`.
+Implementazione riusabile: `InlineEditableTitle`, `InlineEditableBody`, `InlineQuickAdd` e helper centralizzato `InlineTextMetrics.fieldWidth` in `apps/flutter/lib/ui/notes_theme.dart`. I valori sono modificabili direttamente e la sottolineatura è contenuta nella larghezza del testo; per l'input veloce dei task vedere `apps/flutter/lib/main.dart`. **Vincolo layout:** se il widget si trova dentro `Expanded` / `SizedBox(width:...)` con constraint stretto, usare un `Align(alignment: centerStart, widthFactor: 1)` *tra* il parent e il `SizedBox` del `TextField`. Una sola misura tramite `TextPainter` non basta se il parent impone una larghezza fissa.
 
 ### Applicazione UX effettiva nelle schermate esistenti (24 ottobre 2026)
 

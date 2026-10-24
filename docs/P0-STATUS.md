@@ -1,5 +1,9 @@
 # P0 — Stato verificabile e piano di chiusura
 
+## T4.1 — Inventario database preparato
+
+`infra/t4-inspect-db.sh` ispeziona il container del database selezionato **solo con query SELECT**: verifica PostgreSQL 17, schema Simple Notes, stato Flyway e colonne delle nuove scadenze. CI sintetica include casi di identità sbagliata. `t4-preflight.sh` ora blocca ricevute di ripristino con verifica più vecchia di 24 ore (configurabile fino a sette giorni). **Non eseguiti** inventario reale VPS, backup/restore reale, redeploy o test su hardware; T4 resta aperto. [Runbook](T4-RELEASE-RUNBOOK.md).
+
 ## T4 — Gate di rilascio sicuro (24/10/2026)
 
 **Strumenti e CI implementati; backup reale, restore reale, deploy Coolify e prove hardware ancora DA ESEGUIRE.** `infra/backup-postgres.sh` verifica container e schema prima del dump PostgreSQL custom + SHA256; `infra/verify-restore.sh` ripristina in container PostgreSQL 17 **senza rete**, interroga le tabelle e genera un receipt legato al digest del dump. `infra/t4-preflight.sh` rifiuta dump/receipt incoerenti, copia offsite non attestata, commit non approvato o tree sporco; **non avvia deploy**. `infra/t4-check-api.sh` verifica soltanto salute HTTPS e capability autenticata `taskDueSchema:1`.

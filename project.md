@@ -1,5 +1,9 @@
 # Simple Notes — Project
 
+## T4.1 — Inventario pre-deploy
+
+Sorgente `infra/t4-inspect-db.sh`: query SELECT sul solo PostgreSQL selezionato, verifica versione 17, ultima Flyway, colonne V7 e conteggi strutturali. Preflight richiede restore verificato nelle ultime 24 ore per evitare attestati obsoleti. Da eseguire realmente sul VPS e conservare le evidenze PRIMA di deploy Coolify; nessuna modifica remota eseguita da questa chat. [Runbook](docs/T4-RELEASE-RUNBOOK.md).
+
 ## T4 — Gate di rilascio sicuro (24/10/2026)
 
 **Strumenti e CI implementati; backup reale, restore reale, deploy Coolify e prove hardware ancora DA ESEGUIRE.** `infra/backup-postgres.sh` verifica container e schema prima del dump PostgreSQL custom + SHA256; `infra/verify-restore.sh` ripristina in container PostgreSQL 17 **senza rete**, interroga le tabelle e genera un receipt legato al digest del dump. `infra/t4-preflight.sh` rifiuta dump/receipt incoerenti, copia offsite non attestata, commit non approvato o tree sporco; **non avvia deploy**. `infra/t4-check-api.sh` verifica soltanto salute HTTPS e capability autenticata `taskDueSchema:1`.

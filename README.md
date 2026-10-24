@@ -1,5 +1,9 @@
 # Simple Notes
 
+## T4.1 — Gate database (solo lettura)
+
+Aggiunto `infra/t4-inspect-db.sh`: verifica su PostgreSQL 17, versione Flyway e coerenza colonne scadenze, senza modificare dati. Il gate restore richiede una prova recente (24 ore, limite configurabile fino a 168 ore). Il vero inventario VPS, la copia offsite e il redeploy restano da eseguire: [runbook](docs/T4-RELEASE-RUNBOOK.md).
+
 ## T4 — Gate di rilascio sicuro (24/10/2026)
 
 **Strumenti e CI implementati; backup reale, restore reale, deploy Coolify e prove hardware ancora DA ESEGUIRE.** `infra/backup-postgres.sh` verifica container e schema prima del dump PostgreSQL custom + SHA256; `infra/verify-restore.sh` ripristina in container PostgreSQL 17 **senza rete**, interroga le tabelle e genera un receipt legato al digest del dump. `infra/t4-preflight.sh` rifiuta dump/receipt incoerenti, copia offsite non attestata, commit non approvato o tree sporco; **non avvia deploy**. `infra/t4-check-api.sh` verifica soltanto salute HTTPS e capability autenticata `taskDueSchema:1`.

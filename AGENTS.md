@@ -1,5 +1,12 @@
 # AGENTS.md — Istruzioni di lavoro per assistenti AI
 
+## Regole T4.1 obbligatorie
+
+- Eseguire `infra/t4-inspect-db.sh` solo su container specificamente identificato; è un controllo di sola lettura.
+- Non dichiarare un restore ancora valido se `.restore-ok` è più vecchio di 24 ore senza esplicita giustificazione operativa, e non superare la soglia massima di 168 ore.
+- Non confondere CI sintetica con accesso VPS/Coolify, identità del database o prova della copia cifrata offsite.
+- Nessun deploy del backend Flyway V7 prima di inventario reale, backup effettivo, restore isolato e verifica del commit approvato.
+
 ## T4 — Gate di rilascio sicuro (24/10/2026)
 
 **Strumenti e CI implementati; backup reale, restore reale, deploy Coolify e prove hardware ancora DA ESEGUIRE.** `infra/backup-postgres.sh` verifica container e schema prima del dump PostgreSQL custom + SHA256; `infra/verify-restore.sh` ripristina in container PostgreSQL 17 **senza rete**, interroga le tabelle e genera un receipt legato al digest del dump. `infra/t4-preflight.sh` rifiuta dump/receipt incoerenti, copia offsite non attestata, commit non approvato o tree sporco; **non avvia deploy**. `infra/t4-check-api.sh` verifica soltanto salute HTTPS e capability autenticata `taskDueSchema:1`.

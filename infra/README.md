@@ -7,6 +7,19 @@
 La CI Compose usa dump **sintetici** e verifica i rifiuti su backup alterati; la CI backend prova una migrazione V6→V7 PostgreSQL Testcontainers con task/note/liste/sync log esistenti. I gate T4 reali richiedono: backup PostgreSQL **esistente e offsite cifrato**, ripristino isolato dello stesso dump, preflight, deploy Flyway V7 in Coolify, health+capability, E2E Windows/Android offline/sync. Non distribuire né ripristinare sulla produzione durante una prova. [Runbook T4](../docs/T4-RELEASE-RUNBOOK.md) · [GitHub Actions](https://github.com/andreadada/simple-notes/actions).
 
 
+## T4.1 — Read-only DB inspection e restore recente
+
+L'incremento T4.1 aggiunge `infra/t4-inspect-db.sh`: **sola lettura**, si esegue sul VPS dopo aver identificato esattamente il container PostgreSQL Simple Notes. Rifiuta un DB differente, PostgreSQL diverso dalla major 17, schema inatteso, migrazioni Flyway fallite/versioni sconosciute e uno stato V7 incompatibile con le colonne realmente presenti. Mostra soltanto versione DB, versione Flyway, conteggi di righe per tabella e presenza delle cinque colonne `due_*`, non email o righe di utenti.
+
+```bash
+docker ps --format '{{.ID}} {{.Names}} {{.Image}}'
+DB_CONTAINER='<ID_DEL_POSTGRES_SIMPLE_NOTES>' \
+EXPECTED_POSTGRES_DB='simplenotes' \
+  bash infra/t4-inspect-db.sh
+```
+
+**Passo successivo necessario, non eseguito qui:** copiare il dump reale in una destinazione cifrata offsite, eseguire il restore isolato e ottenere la ricevuta `.restore-ok`. Il gate `t4-preflight.sh` ora richiede una verifica di restore **recente (24 ore)**, controlla data UTC non futura e rifiuta ricevute scadute. Per finestre più lunghe è possibile `T4_MAX_RESTORE_AGE_HOURS` da 1 a 168; non usarlo per eludere il restore. Questi controlli sono verificati in CI con **dati sintetici**, non rappresentano la prova del VPS.
+
 ## Coolify (scelta consigliata)
 - Repository: `andreadada/simple-notes`, branch `main`.
 - Build Pack: **Docker Compose**.

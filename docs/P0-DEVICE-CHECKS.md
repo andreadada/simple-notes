@@ -9,6 +9,13 @@ La CI Compose usa dump **sintetici** e verifica i rifiuti su backup alterati; la
 
 **Aggiornato: 24 ottobre 2026.** Questa checklist NON certifica alcun deploy. L'obiettivo è raccogliere prove reali distinguendole dai test automatici. Non inserire token/password nei log condivisi.
 
+## T4.1 — Primo controllo operativo (read-only)
+
+- [ ] Sul VPS: individuare esplicitamente il container DB e lanciare `DB_CONTAINER='<ID>' EXPECTED_POSTGRES_DB=simplenotes bash infra/t4-inspect-db.sh`.
+- [ ] Conservare l'esito (Flyway <= 7, schema coerente, PostgreSQL 17), senza dati personali né credenziali.
+- [ ] Dopo backup reale e restore isolato, verificare che `.restore-ok` sia ancora recente (24 ore predefinite) eseguendo `infra/t4-preflight.sh`.
+- [ ] Confermare che CI sintetiche e strumenti in repository NON certificano il database Coolify.
+
 ## Gate obbligatorio prima del redeploy
 - [ ] Identificare esplicitamente il container PostgreSQL del progetto Simple Notes (NON altri database).
 - [ ] Eseguire un dump consistente con `infra/backup-postgres.sh`, verificare il file SHA256 e la leggibilità dell'archivio.

@@ -1,5 +1,14 @@
 # Simple Notes — Passaggio di consegne (handoff)
 
+## Prossimo operatore T4 — cosa eseguire realmente
+
+1. Accedere al VPS/Coolify con una sessione autorizzata e identificare esattamente il DB Simple Notes.
+2. Eseguire **solo** `infra/t4-inspect-db.sh` e conservare l'output senza credenziali.
+3. Produrre un dump reale con `infra/backup-postgres.sh`, verificare copia cifrata offsite e restore isolato; receipt massimo 24 ore.
+4. Superare `infra/t4-preflight.sh`, quindi pianificare deploy Flyway V7 e test PC↔Android.
+
+Gli strumenti sono già nella repository; il modello non ha ancora avuto accesso a un VPS autenticato, quindi **nessuno di questi passi sul DB reale è stato compiuto**. [Runbook](T4-RELEASE-RUNBOOK.md).
+
 ## T4 — Gate di rilascio sicuro (24/10/2026)
 
 **Strumenti e CI implementati; backup reale, restore reale, deploy Coolify e prove hardware ancora DA ESEGUIRE.** `infra/backup-postgres.sh` verifica container e schema prima del dump PostgreSQL custom + SHA256; `infra/verify-restore.sh` ripristina in container PostgreSQL 17 **senza rete**, interroga le tabelle e genera un receipt legato al digest del dump. `infra/t4-preflight.sh` rifiuta dump/receipt incoerenti, copia offsite non attestata, commit non approvato o tree sporco; **non avvia deploy**. `infra/t4-check-api.sh` verifica soltanto salute HTTPS e capability autenticata `taskDueSchema:1`.

@@ -4,6 +4,19 @@
 
 Questo runbook è un gate per la migrazione Flyway V7 delle scadenze T1–T3, non un comando per fare deploy. Le prove in CI utilizzano **soltanto dati sintetici**. Non usare il loro esito come attestazione che il database reale è recuperabile. Backend API di test già su Coolify, stato operativo attuale non verificato da questa procedura.
 
+## T4.1 — Inventario sorgente e prova recente (24/10/2026)
+
+L'incremento T4.1 aggiunge `infra/t4-inspect-db.sh`: **sola lettura**, si esegue sul VPS dopo aver identificato esattamente il container PostgreSQL Simple Notes. Rifiuta un DB differente, PostgreSQL diverso dalla major 17, schema inatteso, migrazioni Flyway fallite/versioni sconosciute e uno stato V7 incompatibile con le colonne realmente presenti. Mostra soltanto versione DB, versione Flyway, conteggi di righe per tabella e presenza delle cinque colonne `due_*`, non email o righe di utenti.
+
+```bash
+docker ps --format '{{.ID}} {{.Names}} {{.Image}}'
+DB_CONTAINER='<ID_DEL_POSTGRES_SIMPLE_NOTES>' \
+EXPECTED_POSTGRES_DB='simplenotes' \
+  bash infra/t4-inspect-db.sh
+```
+
+**Passo successivo necessario, non eseguito qui:** copiare il dump reale in una destinazione cifrata offsite, eseguire il restore isolato e ottenere la ricevuta `.restore-ok`. Il gate `t4-preflight.sh` ora richiede una verifica di restore **recente (24 ore)**, controlla data UTC non futura e rifiuta ricevute scadute. Per finestre più lunghe è possibile `T4_MAX_RESTORE_AGE_HOURS` da 1 a 168; non usarlo per eludere il restore. Questi controlli sono verificati in CI con **dati sintetici**, non rappresentano la prova del VPS.
+
 ## Fonti tecniche verificate
 
 - [Coolify: Backups PostgreSQL e S3](https://coolify.io/docs/databases/backups) — database anche dentro uno stack Service, scope e retention separati.

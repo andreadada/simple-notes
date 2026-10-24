@@ -1,5 +1,14 @@
 # P0 — Stato verificabile e piano di chiusura
 
+## T3 — Scadenze Forui, IANA e DST (24/10/2026)
+
+**Implementato nel codice su main, non distribuito.** Un unico editor `ui/task_due_editor.dart` gestisce scadenze solo-giorno e data/ora, calendario Forui, HH:mm, fuso IANA e scelta esplicita delle due occorrenze in un cambio d'ora. Gli orari inesistenti sono rifiutati, la mezzanotte scelta rimane `datetime`, e le scadenze `legacy` non sono reinterpretate in automatico. Il fuso OS viene rilevato se disponibile, altrimenti richiesto esplicitamente.
+
+`data/task_due_clock.dart` usa `timezone ^0.11.2` e `flutter_timezone ^5.1.0`; `data/task_due_view.dart` presenta label e filtri Oggi/7 giorni secondo **giorni civili**, evitando il calcolo sbagliato di 168 ore attorno all'ora legale. Aggiunta rapida, dettagli ed editor avanzato salvano `TaskDue` con SQLite/outbox; una rinomina non muta `date/datetime` in `legacy`. Test per gap/fold, visualizzazione, filtri e modifica avanzata. **Backend Flyway V7 non deployato**: prima del rilascio effettuare backup+restore PostgreSQL reale, verifica capability `taskDueSchema:1` e prove reali Windows/Android. Ricorrenze, notifiche e browser web restano fuori da T3.
+
+Dettagli e checklist: [specifica T3](T3-SCADENZE.md). CI: [Flutter Actions](https://github.com/andreadada/simple-notes/actions/workflows/flutter-ci.yml).
+
+
 ## Vincolo correttivo: testo completo + sottolineatura aderente (24/10/2026)
 
 **Due larghezze diverse, entrambe necessarie:**
@@ -54,7 +63,7 @@ Riferimento tecnico: `apps/flutter/lib/ui/notes_theme.dart` (`InlineTextMetrics.
 - **Test creati**: `task_due_test.dart`, `task_due_sync_test.dart`, `task_due_migration_test.dart`; includono due database simulati, fold DST, mezzanotte esplicita, server obsoleto, 426, e upgrade di SQLite v4 popolato con versioni e operazioni in coda. Verificare l'esito CI effettivo prima di considerarli convalidati.
 - **Perimetro**: T2 è codice e test, **non** rilascio. T3 editor Forui solo-giorno/ora e timezone IANA ancora da completare; notifiche/ricorrenze successive. Backend Flyway V7 ancora **non deployato su Coolify**; prima del rollout completare il backup PostgreSQL e restore isolato. Il runtime Flutter Web resta non supportato.
 
-## Prossima implementazione progettata, non sviluppata
+## Piano precedente T2/T3 (ora codice implementato, gate operativi aperti)
 
 - Piano dettagliato: [due-dates-timezones.md](due-dates-timezones.md). T1 backend + Flyway V7 **introdotti nel repository**, non deployati. T2 Flutter include Drift v5 e gestione 426; la UI T3 e i test hardware sono ancora necessari. L'attuale UI HH:mm ha superato le CI Flutter [40011701417](https://github.com/andreadada/simple-notes/actions/runs/40011701417) e [40011789270](https://github.com/andreadada/simple-notes/actions/runs/40011789270): non equivale a test real-device.
 - Gate preliminare immutato: backup PostgreSQL reale e restore isolato/offsite, deploy V5+V6 se non già effettuato, poi verifica fisica dei flussi attuali.

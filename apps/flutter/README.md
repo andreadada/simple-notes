@@ -1,5 +1,10 @@
 # Flutter client — P0
 
+## T3 — Editor scadenze Forui e calendario civile (24/10/2026)
+
+Un editor condiviso `task_due_editor.dart` ora gestisce data senza ora, data/ora+IANA, conversione esplicita `legacy` e fold/gap dell'ora legale. `task_due_clock.dart` calcola le possibilità UTC senza arrotondamenti nascosti e tenta di rilevare il fuso OS (in caso di errore richiede una selezione); `task_due_view.dart` centralizza le etichette e i filtri per giorni di calendario. Tutte le scritture T3 utilizzano SQLite/outbox; nessuna migrazione Coolify è stata eseguita. [Specifiche T3](../../docs/T3-SCADENZE.md).
+
+
 ## Vincolo correttivo: testo completo + sottolineatura aderente (24/10/2026)
 
 **Due larghezze diverse, entrambe necessarie:**

@@ -1,5 +1,12 @@
 # Simple Notes — Passaggio di consegne (handoff)
 
+## T3 — Scadenze e fusi orari (24/10/2026)
+
+Il client Flutter ha ora un editor scadenze Forui riutilizzato in creazione rapida, pannello dettagli e editor avanzato (`ui/task_due_editor.dart`). Supporta `date` senza ora, `datetime` con HH:mm + timezone IANA, scelta del fold DST e rifiuto del gap; non converte automaticamente `legacy`. Il rilevamento OS fallibile non produce una UTC inventata: l'utente sceglie un fuso valido. `task_due_view.dart` centralizza l'etichetta (mostra il fuso) e i filtri Oggi/7 giorni in giorni civili; gli aggiornamenti rimangono offline-first.
+
+**Solo codice:** backend Flyway V7 e deploy Coolify non eseguiti; servono backup/restore reale e test hardware Windows↔Android. Esecuzione web, ricorrenze e notifiche non sono supportate in T3. Leggere [T3-SCADENZE.md](T3-SCADENZE.md) e verificare le [CI Flutter](https://github.com/andreadada/simple-notes/actions/workflows/flutter-ci.yml) per l'esito esatto.
+
+
 ## Vincolo correttivo: testo completo + sottolineatura aderente (24/10/2026)
 
 **Due larghezze diverse, entrambe necessarie:**
@@ -29,7 +36,7 @@ Test introdotti per data-only, ora legale, due database, fallback server, outbox
 
 ## Prossima implementazione progettata (23 ottobre 2026)
 
-Per intervenire su scadenze, SQLite, Flyway o sync leggere **[due-dates-timezones.md](due-dates-timezones.md)**: pianifica il tipo `none/date/datetime/legacy`, la migrazione PostgreSQL V7 e Flutter Drift v5, timezone IANA/DST, protezione dei client precedenti e test. **Non è implementato**. Le CI per l'editor HH:mm già esistente sono verdi ([40011789270](https://github.com/andreadada/simple-notes/actions/runs/40011789270)). Restano gate backup/restore reale, deploy sicuro e prova hardware in [P0-DEVICE-CHECKS.md](P0-DEVICE-CHECKS.md).
+Per intervenire su scadenze, SQLite, Flyway o sync leggere **[due-dates-timezones.md](due-dates-timezones.md)**: pianifica il tipo `none/date/datetime/legacy`, la migrazione PostgreSQL V7 e Flutter Drift v5, timezone IANA/DST, protezione dei client precedenti e test. **T1/T2/T3 implementati nel codice**, ma non deployati e non verificati sui dispositivi reali. Le CI per l'editor HH:mm già esistente sono verdi ([40011789270](https://github.com/andreadada/simple-notes/actions/runs/40011789270)). Restano gate backup/restore reale, deploy sicuro e prova hardware in [P0-DEVICE-CHECKS.md](P0-DEVICE-CHECKS.md).
 
 ## T1 backend introdotto nel repository (23 ottobre 2026)
 

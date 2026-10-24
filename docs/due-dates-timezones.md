@@ -1,6 +1,15 @@
 # P0 — Scadenze, date-only e fusi orari
 
-> **Stato del 23 ottobre 2026 — T1 BACKEND IMPLEMENTATO SU GITHUB, NON DEPLOYATO.** Il primo input orario HH:mm è già su main e ha superato le CI Flutter [40011701417](https://github.com/andreadada/simple-notes/actions/runs/40011701417) e [40011789270](https://github.com/andreadada/simple-notes/actions/runs/40011789270). Questo documento definisce l'intero incremento: **T1 backend e T2 client Flutter sono presenti nel codice** (commit [`1bafec0`](https://github.com/andreadada/simple-notes/commit/1bafec046dd0cbd3f18b8933873da7381fc28a26)). La CI backend [40019181083](https://github.com/andreadada/simple-notes/actions/runs/40019181083) è **riuscita** (Gradle test e bootJar) e il database Coolify **NON è stato migrato**. T0, T3 e T4 ancora aperti; T2 in verifica CI/real-device.
+## T3 — Scadenze Forui, IANA e DST (24/10/2026)
+
+**Implementato nel codice su main, non distribuito.** Un unico editor `ui/task_due_editor.dart` gestisce scadenze solo-giorno e data/ora, calendario Forui, HH:mm, fuso IANA e scelta esplicita delle due occorrenze in un cambio d'ora. Gli orari inesistenti sono rifiutati, la mezzanotte scelta rimane `datetime`, e le scadenze `legacy` non sono reinterpretate in automatico. Il fuso OS viene rilevato se disponibile, altrimenti richiesto esplicitamente.
+
+`data/task_due_clock.dart` usa `timezone ^0.11.2` e `flutter_timezone ^5.1.0`; `data/task_due_view.dart` presenta label e filtri Oggi/7 giorni secondo **giorni civili**, evitando il calcolo sbagliato di 168 ore attorno all'ora legale. Aggiunta rapida, dettagli ed editor avanzato salvano `TaskDue` con SQLite/outbox; una rinomina non muta `date/datetime` in `legacy`. Test per gap/fold, visualizzazione, filtri e modifica avanzata. **Backend Flyway V7 non deployato**: prima del rilascio effettuare backup+restore PostgreSQL reale, verifica capability `taskDueSchema:1` e prove reali Windows/Android. Ricorrenze, notifiche e browser web restano fuori da T3.
+
+Dettagli e checklist: [specifica T3](T3-SCADENZE.md). CI: [Flutter Actions](https://github.com/andreadada/simple-notes/actions/workflows/flutter-ci.yml).
+
+
+> **Stato del 23 ottobre 2026 — T1 BACKEND IMPLEMENTATO SU GITHUB, NON DEPLOYATO.** Il primo input orario HH:mm è già su main e ha superato le CI Flutter [40011701417](https://github.com/andreadada/simple-notes/actions/runs/40011701417) e [40011789270](https://github.com/andreadada/simple-notes/actions/runs/40011789270). Questo documento definisce l'intero incremento: **T1 backend e T2 client Flutter sono presenti nel codice** (commit [`1bafec0`](https://github.com/andreadada/simple-notes/commit/1bafec046dd0cbd3f18b8933873da7381fc28a26)). La CI backend [40019181083](https://github.com/andreadada/simple-notes/actions/runs/40019181083) è **riuscita** (Gradle test e bootJar) e il database Coolify **NON è stato migrato**. T0 e T4 ancora aperti; T2 e T3 presenti nel codice, ma non rilasciati sul backend e dispositivi reali.
 
 ## T2 — Flutter e SQLite v5 (implementato nel repository, non distribuito)
 
@@ -24,7 +33,7 @@
 - `LocalTask.dueAt` (`apps/flutter/lib/data/models.dart`) rappresenta sia una scadenza solo-giorno che una scadenza con ora. `00:00` immessa esplicitamente è indistinguibile da un orario non specificato.
 - `showNotesDatePicker()` restituisce mezzanotte locale; `cloud_sync.dart` converte `dueAt` in UTC; il server usa `Instant`; `app_database.dart` lo rilegge con `toLocal()`. Un task «entro il 26 ottobre» rischia di apparire in un altro giorno cambiando fuso.
 - Le sezioni Oggi / Prossimi 7 giorni confrontano timestamp. Il dettaglio task ancora non mostra l'ora, e non esiste timezone IANA persistente.
-- Stato attuale: Flutter **Drift v4** e UI HH:mm senza semantica date-only; backend **Flyway V7 ora nel repository**, ma Coolify potrebbe ancora usare una versione precedente. Non dedurre deploy dal codice.
+- Stato precedente a T2/T3: Flutter **Drift v4** e UI HH:mm senza semantica date-only; backend **Flyway V7 ora nel repository**, ma Coolify potrebbe ancora usare una versione precedente. Non dedurre deploy dal codice.
 
 ## Decisione architetturale
 
@@ -90,7 +99,7 @@ Il backend deve verificare che `instant` concordi con data/ora/`timeZone`/`offse
 1. **T0 – Gate operativo:** completare [P0-DEVICE-CHECKS.md](P0-DEVICE-CHECKS.md): backup/recovery reale, Coolify V5+V6 e test E2E delle attuali liste, tag, sottotask, offline e 409.
 2. **T1 – Backend-first:** codice e test aggiunti su `main` con commit `1bafec0`; [Backend CI 40019181083](https://github.com/andreadada/simple-notes/actions/runs/40019181083) **success** (test e bootJar). **Mai considerare il deploy automatico**. T2 Flutter è ora presente nel codice; rimangono verifiche e rilascio.
 3. **T2 – Flutter core:** `TaskDue` + Drift v5; migrazione/snapshot/outbox/push-pull/risoluzione conflitti; test doppio SQLite, versioni e dati legacy.
-4. **T3 – UI:** editor e presentazione Forui, date-only, timed, timezone e fold; filtri oggi/7 giorni; test widget su desktop e mobile.
+4. **T3 – UI:** codice aggiunto: editor Forui, date-only, timed, timezone/fold e filtri oggi/7 giorni; verifiche manuali e backend Coolify ancora da completare.
 5. **T4 – Compatibilità e release:** verificare backend aggiornato, capability, upgrade senza reset, test Windows↔Android reali in entrambi i versi, offline/restart/conflict/DST. Aggiornare checklist soltanto dopo prova.
 6. **T5 – Lavoro successivo:** ricorrenze e solo poi notifiche Android/Windows, snooze, deduplica per occorrenza/device, reboot, restrizioni sistema. **Non incluso** nel presente incremento.
 

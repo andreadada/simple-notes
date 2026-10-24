@@ -584,12 +584,18 @@ class _NotesHomeState extends ConsumerState<NotesHome> {
                                decoration: task.completed ? TextDecoration.lineThrough : null),
                              onSave: (text) => ref.read(localStoreProvider.notifier)
                                  .renameTask(task.id, text),
-                             onTap: () {
-                               setState(() => selectedId = task.id);
-                               if (!wideDetails) showTaskDetails(task);
-                             },
+                             onTap: () => setState(() => selectedId = task.id),
                            ),
-                          subtitle: task.dueAt == null ? null : Text(
+                           trailing: wideDetails ? null : FButton.icon(
+                             key: Key('open-task-details-${task.id}'),
+                             variant: FButtonVariant.ghost,
+                             onPress: () {
+                               setState(() => selectedId = task.id);
+                               showTaskDetails(task);
+                             },
+                             child: const Icon(Icons.chevron_right, size: 18),
+                           ),
+                           subtitle: task.dueAt == null ? null : Text(
                             'Scadenza: ${task.dueAt!.day}/${task.dueAt!.month}/${task.dueAt!.year}${task.dueAt!.hour == 0 && task.dueAt!.minute == 0 ? '' : ' ${task.dueAt!.hour.toString().padLeft(2, '0')}:${task.dueAt!.minute.toString().padLeft(2, '0')}'}'),
                           onTap: () {
                             setState(() => selectedId = task.id);
@@ -1061,8 +1067,21 @@ class _NotesHomeState extends ConsumerState<NotesHome> {
                       ];
                     }),
                   ),
-                  Expanded(child: Text(sub.title, maxLines: 2,
-                      overflow: TextOverflow.ellipsis)),
+                  Expanded(child: InlineEditableTitle(
+                    key: Key('advanced-inline-subtask-${sub.id}'),
+                    value: sub.title,
+                    semanticsLabel: 'Titolo sottotask modificabile',
+                    maxLength: 255,
+                    style: const TextStyle(fontSize: 13),
+                    onSave: (text) async {
+                      updateDialog(() {
+                        editedSubtasks = [
+                          for (final item in editedSubtasks)
+                            item.id == sub.id ? item.copyWith(title: text.trim()) : item,
+                        ];
+                      });
+                    },
+                  )),
                   FButton.icon(
                     variant: FButtonVariant.ghost,
                     onPress: () => updateDialog(() {

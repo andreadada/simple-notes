@@ -188,137 +188,123 @@ class _NotesHomeState extends ConsumerState<NotesHome> {
       );
     }
 
-    Widget accountControl({bool compact = false}) => PopupMenuButton<String>(
-      key: Key(compact ? 'account-menu-mobile' : 'account-menu'),
-      tooltip: cloud.authenticated ? 'Profilo Google' : 'Accedi con Google',
-      enabled: !cloud.busy,
-      onSelected: (value) async {
-        if (value == 'sync') {
-          await ref.read(cloudSyncProvider.notifier).synchronize();
-        } else if (value == 'resolve') {
-          final details = ref.read(cloudSyncProvider).details;
-          if (details != null) {
-            await showNotesSyncConflictDialog(context, ref, details);
-          }
-        } else if (value == 'logout') {
-          await ref.read(cloudAuthProvider.notifier).logout();
-        } else if (value == 'login') {
-          if (!CloudConfig.enabled) {
-            if (context.mounted) {
-              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                content: Text('Configura API_BASE_URL e Google OAuth.'),
-              ));
-            }
-            return;
-          }
-          await ref.read(cloudAuthProvider.notifier).loginGoogle();
+    Future<void> accountAction(String value) async {
+      if (value == 'sync') {
+        await ref.read(cloudSyncProvider.notifier).synchronize();
+      } else if (value == 'resolve') {
+        final details = ref.read(cloudSyncProvider).details;
+        if (details != null && context.mounted) {
+          await showNotesSyncConflictDialog(context, ref, details);
         }
-      },
-      itemBuilder: (context) => [
-        PopupMenuItem<String>(
-          enabled: false,
-          child: Text(cloud.authenticated
-            ? (cloud.displayName ?? 'Account Google')
-            : 'Non hai effettuato l’accesso',
-            style: const TextStyle(fontWeight: FontWeight.w600)),
-        ),
-        const PopupMenuDivider(),
-        if (cloud.authenticated) ...[
-          // Synchronization results were previously invisible on Android.
-          // Always expose failures and pending data inside the account menu.
-          PopupMenuItem<String>(
+      } else if (value == 'logout') {
+        await ref.read(cloudAuthProvider.notifier).logout();
+      } else if (value == 'login') {
+        if (!CloudConfig.enabled) {
+          if (context.mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+              content: Text('Configura API_BASE_URL e Google OAuth.'),
+            ));
+          }
+          return;
+        }
+        await ref.read(cloudAuthProvider.notifier).loginGoogle();
+      }
+    }
+
+    Widget accountControl({bool compact = false}) => FPopoverMenu(
+      key: Key(compact ? 'account-menu-mobile' : 'account-menu'),
+      menu: [
+        .group(children: [
+          .item(
             enabled: false,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(sync.running ? 'Sincronizzazione in corso...'
-                    : sync.conflict ? 'Conflitto: modifica non inviata'
-                    : sync.message?.startsWith('Sync non riuscita') == true
-                        ? 'Sincronizzazione non riuscita'
-                        : sync.message ?? 'Sincronizzazione automatica attiva',
-                  style: TextStyle(fontSize: 12,
-                    color: sync.conflict ||
-                        sync.message?.startsWith('Sync non riuscita') == true
-                      ? Colors.orangeAccent : Colors.grey)),
-                const SizedBox(height: 4),
-                FutureBuilder<int>(
-                  future: ref.read(databaseProvider).pendingCount(),
-                  builder: (context, snapshot) => Text(
-                    'Modifiche in attesa: ${snapshot.data ?? '...'}',
-                    style: const TextStyle(fontSize: 12, color: Colors.grey)),
-                ),
-              ],
-            ),
+            title: Text(cloud.authenticated
+              ? cloud.displayName ?? 'Account Google'
+              : 'Non hai effettuato l’accesso'),
           ),
-          const PopupMenuDivider(),
-        ],
-        if (cloud.authenticated) ...[
-          if (sync.conflict && sync.details != null)
-            const PopupMenuItem<String>(
-              value: 'resolve',
-              child: ListTile(
-                dense: true, contentPadding: EdgeInsets.zero,
-                leading: Icon(Icons.compare_arrows, color: Colors.orangeAccent),
-                title: Text('Risolvi conflitto'),
-              ),
-            ),
-          PopupMenuItem<String>(
-            value: 'sync',
-            enabled: !sync.running,
-            child: const ListTile(
-              dense: true,
-              contentPadding: EdgeInsets.zero,
-              leading: Icon(Icons.sync),
-              title: Text('Sincronizza ora'),
-            ),
-          ),
-          const PopupMenuItem<String>(
-            value: 'logout',
-            child: ListTile(
-              dense: true,
-              contentPadding: EdgeInsets.zero,
-              leading: Icon(Icons.logout),
-              title: Text('Esci da Google'),
-            ),
-          ),
-        ] else
-          const PopupMenuItem<String>(
-            value: 'login',
-            child: ListTile(
-              dense: true,
-              contentPadding: EdgeInsets.zero,
-              leading: Icon(Icons.login),
-              title: Text('Accedi con Google'),
-            ),
-          ),
-      ],
-      child: Padding(
-        padding: EdgeInsets.symmetric(
-          horizontal: compact ? 12 : 16, vertical: 8),
-        child: Row(
-          mainAxisSize: compact ? MainAxisSize.min : MainAxisSize.max,
-          children: [
-            avatar(),
-            if (!compact) ...[
-              const SizedBox(width: 12),
-              Expanded(child: Column(
+          if (cloud.authenticated)
+            .item(
+              enabled: false,
+              title: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(cloud.authenticated
-                    ? (cloud.displayName ?? 'Account Google')
-                    : 'Accedi con Google',
-                    maxLines: 1, overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(fontSize: 13,
-                      fontWeight: FontWeight.w600)),
-                  Text(cloud.authenticated
-                    ? 'Sincronizzazione automatica'
-                    : 'Collega il tuo account',
-                    style: const TextStyle(fontSize: 11, color: Colors.grey)),
+                  Text(sync.running ? 'Sincronizzazione in corso...'
+                    : sync.conflict ? 'Conflitto: modifica non inviata'
+                    : sync.message ?? 'Sincronizzazione automatica attiva',
+                    style: const TextStyle(fontSize: 12)),
+                  const SizedBox(height: 4),
+                  FutureBuilder<int>(
+                    future: ref.read(databaseProvider).pendingCount(),
+                    builder: (context, snapshot) => Text(
+                      'Modifiche in attesa: ${snapshot.data ?? '...'}',
+                      style: const TextStyle(fontSize: 12)),
+                  ),
                 ],
-              )),
-              const Icon(Icons.keyboard_arrow_down, color: Colors.grey),
+              ),
+            ),
+        ]),
+        .group(children: [
+          if (cloud.authenticated && sync.conflict && sync.details != null)
+            .item(
+              title: const Text('Risolvi conflitto'),
+              prefix: const Icon(Icons.compare_arrows, size: 18),
+              onPress: () => accountAction('resolve'),
+            ),
+          if (cloud.authenticated) ...[
+            .item(
+              title: const Text('Sincronizza ora'),
+              prefix: const Icon(Icons.sync, size: 18),
+              enabled: !sync.running,
+              onPress: () => accountAction('sync'),
+            ),
+            .item(
+              title: const Text('Esci da Google'),
+              prefix: const Icon(Icons.logout, size: 18),
+              onPress: () => accountAction('logout'),
+            ),
+          ] else
+            .item(
+              title: const Text('Accedi con Google'),
+              prefix: const Icon(Icons.login, size: 18),
+              onPress: () => accountAction('login'),
+            ),
+        ]),
+      ],
+      menuBuilder: (context, controller, menu) => menu!,
+      builder: (context, controller, child) => child!,
+      child: FButton(
+        variant: FButtonVariant.ghost,
+        mainAxisSize: compact ? MainAxisSize.min : MainAxisSize.max,
+        onPress: cloud.busy ? null : () {},
+        child: Padding(
+          padding: EdgeInsets.symmetric(
+            horizontal: compact ? 2 : 6, vertical: 5),
+          child: Row(
+            mainAxisSize: compact ? MainAxisSize.min : MainAxisSize.max,
+            children: [
+              avatar(),
+              if (!compact) ...[
+                const SizedBox(width: 12),
+                Expanded(child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(cloud.authenticated
+                      ? cloud.displayName ?? 'Account Google'
+                      : 'Accedi con Google',
+                      maxLines: 1, overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(fontSize: 13,
+                        fontWeight: FontWeight.w600)),
+                    Text(cloud.authenticated
+                      ? 'Sincronizzazione automatica'
+                      : 'Collega il tuo account',
+                      style: const TextStyle(fontSize: 11,
+                        color: NotesPalette.secondaryText)),
+                  ],
+                )),
+                const Icon(Icons.keyboard_arrow_down,
+                  color: NotesPalette.secondaryText, size: 17),
+              ],
             ],
-          ],
+          ),
         ),
       ),
     );

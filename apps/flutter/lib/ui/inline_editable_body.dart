@@ -103,7 +103,11 @@ class _InlineEditableBodyState extends State<InlineEditableBody> {
         style: const TextStyle(fontSize: 14, height: 1.45),
         maxWidth: maxWidth,
       );
-      return SizedBox(
+      // A parent may demand full width; the editable child does not.
+      return Align(
+        alignment: AlignmentDirectional.centerStart,
+        widthFactor: 1,
+        child: SizedBox(
         width: width,
         child: Focus(
     onKeyEvent: (node, event) {
@@ -150,6 +154,7 @@ class _InlineEditableBodyState extends State<InlineEditableBody> {
         ),
       ),
     ),
+      ),
       ),
     );
     },

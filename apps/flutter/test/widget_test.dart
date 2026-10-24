@@ -107,6 +107,8 @@ void main() {
       matching: find.byType(TextField),
     )).width;
     expect(body, lessThan(120));
+    // Even a tight Expanded/SizedBox parent cannot stretch the underline.
+    expect(tester.getSize(find.byType(InlineEditableBody)).width, 340);
     final quick = tester.getSize(
       find.byKey(const Key('inline-quick-add-input'))).width;
     expect(quick, lessThan(200));

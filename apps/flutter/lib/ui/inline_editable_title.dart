@@ -116,7 +116,12 @@ class _InlineEditableTitleState extends State<InlineEditableTitle> {
           : MediaQuery.sizeOf(context).width * 0.75;
       final width = InlineTextMetrics.fieldWidth(
         context, text: text, style: widget.style, maxWidth: limit);
-      return SizedBox(
+      // Align loosens even a tight Expanded/Row constraint for the input.
+      // Only the text, not the whole row, owns the underline.
+      return Align(
+        alignment: AlignmentDirectional.centerStart,
+        widthFactor: 1,
+        child: SizedBox(
         width: width,
         child: Focus(
           onKeyEvent: (node, event) {
@@ -156,6 +161,7 @@ class _InlineEditableTitleState extends State<InlineEditableTitle> {
               ),
             ),
           ),
+        ),
         ),
       );
     },

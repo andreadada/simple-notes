@@ -2,6 +2,10 @@
 
 > **Documentazione storica aggiornata al 23 ottobre 2026.** Per lo stato P0 più recente e le conferme di sync hardware usare [P0-STATUS.md](P0-STATUS.md). Documento operativo per sviluppatori e assistenti AI che aprono la repository senza conoscere le chat precedenti. Verificare sempre il codice e gli ultimi workflow, non usare questo testo come sostituto dei test reali.
 
+## Vincolo obbligatorio stile inline — aggiornamento 24/10/2026
+
+Nel commit [7303d45](https://github.com/andreadada/simple-notes/commit/7303d45c34eda2d38f3442080b0959c69ab1bbf0) è stato sostituito il dimensionamento per righe/moduli con una misurazione dei **caratteri effettivi** (`InlineTextMetrics.fieldWidth`). Sottolineatura senza background, larga quanto valore o placeholder (+~1px cursore); nessun minimo fisso 84/120px, né extra 22/26px. Hint semitrasparente `NotesPalette.placeholder` (~72%). Comprende titoli, descrizioni, tag, note, sottotask, aggiunta task/sottotask. Regola documentata in [design.md](../design.md), [Forui](ui-forui.md), [audit](ui-design-audit.md); conservare in tutti i futuri refactor Flutter (Windows/Android, UI riutilizzabile in futuro per web). Conserverà sempre il salvataggio offline-first. Nessun deploy Coolify necessario.
+
 ## Aggiornamento UX shared Flutter (24 ottobre 2026)
 
 Il client ha esteso `InlineEditableTitle` a task/note/sottotask/tag, aggiunto `InlineEditableBody` per descrizioni e note e un quick-add inline dei sottotask. Proprietà lista/priorità sono menu Forui, profilo ora popover Forui e dettaglio mobile sheet Forui; eliminazioni di task/note richiedono conferma. Le modifiche persistono in SQLite/outbox con i metodi `LocalStore`. L'editor avanzato resta per i cambi multi-campo. **Web runtime ancora non operativo**: database nativo e auth platform-specific. Leggere [ui-design-audit.md](ui-design-audit.md).

@@ -69,6 +69,12 @@ Checklist operativa con prove da registrare: [P0-DEVICE-CHECKS.md](P0-DEVICE-CHE
 
 Refactoring inline-first nelle schermate Flutter esistenti: titoli task/note/sottotask e descrizioni direttamente modificabili, tag, priorità e lista senza dialog di modifica generico, Forui account menu/sheet mobile, conferme delete. Tutti i salvataggi passano tramite SQLite/outbox. Stato dell'audit e limitazioni per runtime web: [ui-design-audit.md](ui-design-audit.md). **Le build web e la verifica visuale dei dispositivi non sono implicate dall'adozione dei componenti Forui.**
 
+## Regola UI esatta: underline e placeholder (24/10/2026)
+
+- Codice commit [7303d45](https://github.com/andreadada/simple-notes/commit/7303d45c34eda2d38f3442080b0959c69ab1bbf0): tutti i campi inline misurano la larghezza del **valore o placeholder** con `TextPainter` e `MediaQuery.textScalerOf`, invece della larghezza del contenitore; nessun minimo fisso e nessuna banda lunga nei task, descrizioni, tag, note, sottotask e quick-add.
+- Sotto il valore `A`, la linea segue il singolo carattere (spazio tecnico di ~1px per il cursore). Placeholders resi meno opachi tramite token `NotesPalette.placeholder` (~72% alpha). Focus accent blu; background trasparente.
+- Test widget aggiunti per confrontare titoli corti/lunghi, descrizioni vuote, aggiunta rapida e opacità del placeholder. **La CI e la prova visiva su Windows/Android devono essere valutate separatamente**; il browser web rimane fuori dal runtime esistente. Audit: [ui-design-audit.md](ui-design-audit.md).
+
 ## Deploy / sicurezza dati
 
 - Il nuovo client richiede API con supporto `entityType:list` e migrazioni Flyway **V5+V6**: **redeploy del backend su Coolify**. Prima produrre un backup verificabile del database. Mai cancellare dati app/SQLite per risolvere errori di sync.

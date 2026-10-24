@@ -20,6 +20,8 @@ L'auto-sync è foreground; sono stati aggiunti gestione dei conflitti Forui, des
 - [docs/P0-STATUS.md](docs/P0-STATUS.md) — stato P0 verificabile, nuove funzioni e blocchi.
 - [docs/task-organization.md](docs/task-organization.md) — liste, priorità, tag, sottotask e deploy Flyway V6.
 - [docs/due-dates-timezones.md](docs/due-dates-timezones.md) — **prossimo incremento P0 pianificato**: date-only, ora, timezone IANA, migrazioni V7/v5 e test (non implementato).
+**Regola UI aggiornata (24/10):** tutti gli input inline (titoli, descrizioni, tag, note e quick-add) hanno sfondo trasparente e underline **lunga esattamente quanto il testo o l'hint** (non fino al bordo del contenitore), con tolleranza di ~1px per il cursore; placeholder semitrasparente. `InlineTextMetrics.fieldWidth` in `notes_theme.dart` evita gli antichi min-width artificiali. Implementazione nel commit [7303d45](https://github.com/andreadada/simple-notes/commit/7303d45c34eda2d38f3442080b0959c69ab1bbf0); [design.md](design.md), [Forui](docs/ui-forui.md), [audit](docs/ui-design-audit.md). UI web futura ancora non operativa. CI dell'incremento in verifica separata.
+
 - [design.md](design.md) — requisiti UI/UX e funzionalità obiettivo; non tutte implementate.
 - [docs/ui-forui.md](docs/ui-forui.md) — Forui come design system di riferimento e stato della migrazione.
 - [docs/architecture.md](docs/architecture.md) · [docs/api.md](docs/api.md) · [docs/sync.md](docs/sync.md) — architettura e contratti.

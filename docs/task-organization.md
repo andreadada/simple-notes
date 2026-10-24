@@ -1,3 +1,4 @@
+<!-- Vincolo UI aggiornato 24/10/2026: tutti i titoli di liste, task e subtasks usano la stessa logica inline-first. La sottolineatura non deve eccedere la larghezza del valore (o dell'hint) +~1px, nessun grigio di riempimento; placeholder semitrasparente (~72%). Utilizzare InlineTextMetrics.fieldWidth in notes_theme.dart, non minWidth artificiale o Expanded TextField full-width. Regole: ../design.md, ui-forui.md e ui-design-audit.md. -->
 # Organizzazione attività (P0) — liste, priorità, tag e sottotask
 
 **Implementato nel codice del branch `main` il 23 ottobre 2026.** Test automatici backend + Flutter riusciti; **non è ancora stato testato con Coolify aggiornato e due dispositivi reali**.

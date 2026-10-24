@@ -99,3 +99,9 @@ La nuova versione Flutter usa `entityType:list` e campi `listId/priority/tags/su
 Il receipt `.restore-ok` è creato SOLO dopo un ripristino completo su PostgreSQL 17 temporaneo. Conservare il dump e `.sha256` insieme e proteggere la cartella (`0600`). Dopo verifica della copia **cifrata fuori dal VPS** eseguire `T4_ARCHIVE="$ARCHIVE" T4_OFFSITE_CONFIRMED=yes T4_APPROVED_COMMIT="$(git rev-parse HEAD)" bash infra/t4-preflight.sh`. Controllare poi endpoint health e capability con `T4_BEARER_TOKEN` tramite `infra/t4-check-api.sh`. Per un nuovo sistema consultare il runbook completo, non copiare i vecchi comandi senza leggere le condizioni di sicurezza. Non è stato effettuato alcun restore o redeploy sul DB operativo.
 
 **T4 controllo rafforzato:** `verify-restore.sh` salva `ROW_COUNT_<tabella>` nella ricevuta e rifiuta dump senza utenti esistenti. `t4-preflight.sh` impone conteggi numerici coerenti e almeno un record in `app_user`. Sono conteggi su database *isolato*; NON attestano che il VPS sia aggiornato, né sostituiscono il confronto operativo dei dati prima del rilascio.
+
+## T4.2 — Audit sola lettura su note scomparse
+
+`DB_CONTAINER='<id_postgres>' EXPECTED_POSTGRES_DB=simplenotes bash infra/t4-audit-note-loss.sh`
+
+Verifica soft delete e storico degli eventi sincronizzati (compreso il gap cursor 25→34). Esegue esclusivamente SELECT/SHOW in sessioni PostgreSQL read-only. Non stampa contenuti delle note o credenziali; non modifica il DB. Vedi `docs/T4-DEVICE-SYNC.md`.

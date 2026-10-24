@@ -71,6 +71,28 @@ Sostituire i segnaposto con gli identificativi OAuth già configurati localmente
 
 **Importante:** non disinstallare/azzerare i dati delle vecchie app: operazioni offline potrebbero essere ancora nella SQLite locale. Usare il medesimo package Android `it.andreadada.simplenotes` e la chiave debug Google OAuth compatibile con l'APK locale. L'app Flutter Web non è attualmente operativa.
 
+## Indagine T4.2 — Nota scomparsa dopo cursor 25 → 34 (24/10/2026)
+
+**Osservato sui dispositivi:** Android inizialmente 1 nota al cursor 25; dopo la sync Android e Windows mostravano 0 note al cursor 34, pending 0 e stesso account. Questo prova l'allineamento del *conteggio visibile*, non prova l'assenza fisica dei dati. Nel client `snapshot()` nasconde le note con `deletedAt != null`; `applyRemote(deleted: true)` imposta quel flag senza cancellare titolo e corpo dalla SQLite. Il backend usa `note.deleted_at` e lo storico `sync_change` mantiene le operazioni. Una tombstone server nell'intervallo 26–34 è un'ipotesi da verificare, non un fatto già accertato.
+
+**Prima di qualsiasi recupero, eseguire solo la lettura metadata sul VPS.** Identificare il container attuale: l'ID precedente può essere cambiato. Nessuna operazione su dispositivi o PostgreSQL:
+
+```bash
+docker ps --format '{{.ID}} {{.Names}} {{.Image}}'
+DB_CONTAINER='<ID_O_NOME_POSTGRES_SIMPLE_NOTES>' EXPECTED_POSTGRES_DB=simplenotes \
+  bash infra/t4-audit-note-loss.sh
+```
+
+Lo script verifica esplicitamente PostgreSQL 17, il DB e le tabelle; attiva il parametro PostgreSQL `default_transaction_read_only=on` su **ogni** connessione. Esegue solo `SELECT`/`SHOW`, restituisce conteggi `visible/soft_deleted`, riferimenti anonimi delle note (hash UUID), `version`, tempi UTC, cambiamenti per le note e gli eventi 26–34. **Non legge o stampa testi, titoli, e-mail, ID grezzi o payload** e non genera nuovi dump. L'output si può condividere per l'analisi. Se un account possiede più di 100 note/eventi, le tabelle di dettaglio mostrano solo le 100 più recenti.
+
+Interpretazione:
+- evento `entity_type=note`, `operation=DELETE` tra 26 e 34 e stato `soft_deleted` per la stessa `note_ref`: supporta l'ipotesi di tombstone remota recepita da Android; non identifica chi l'abbia inviata (il log non registra il dispositivo);
+- nota `soft_deleted`: la riga e il contenuto **possono essere ancora presenti** su PostgreSQL e SQLite, da verificare separatamente senza ripristino in produzione;
+- nessuna tombstone per la nota: non attribuire la scomparsa automaticamente al backend. Controllare la cronologia completa, eventuali dati locali e l'interfaccia;
+- nessuna riga nella tabella `note`: lo storico `sync_change` può ancora conservare un payload precedente. Non dedurre recuperabilità certa dai soli conteggi.
+
+**Non** eseguire `UPDATE note`, `DELETE`, `pg_restore`, reset SQLite, logout con cancellazione dati, `adb uninstall` o un import automatico. Un eventuale ripristino della nota deve essere progettato solo dopo aver identificato la causa, salvaguardando gli altri dati e i cursori.
+
 ## Sequenza di collaudo non distruttiva
 
 Usare **una sola attività nuova di prova**, per evitare di toccare i dati personali precedenti.

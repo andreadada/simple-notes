@@ -1,3 +1,5 @@
+> **Aggiornamento 24/10/2026 — test reali:** Windows e Android avevano API `taskDueSchema:1`, cursor entrambi 34 e pending 0, ma 0 note visibili dopo due cancellazioni arrivate al backend fra gli eventi 33 e 34. Audit read-only PostgreSQL ha mostrato **5 note soft-deleted** e i payload storici ancora presenti. L'utente conferma che sono tutti dati di test e sceglie un reset volontario dell'intero workspace di test, non il recupero. Procedura e garanzie: [RESET-TEST-DATA.md](RESET-TEST-DATA.md). Nuova app `0.4.2+6` include Cestino note, ripristino versionato e protezione stale-sync; funzionalità e reset **non ancora verificati sui device aggiornati**. Backend `noteRestoreSchema:1` richiede deploy dell'API, non una migrazione DB.
+
 # T4.2 — Verifica reale della sincronizzazione Windows ↔ Android
 
 **Stato:** strumenti diagnostici e build locali riproducibili implementati nel client Flutter. Prova fisica **non ancora eseguita** da questa chat.

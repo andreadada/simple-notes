@@ -105,3 +105,7 @@ Il receipt `.restore-ok` è creato SOLO dopo un ripristino completo su PostgreSQ
 `DB_CONTAINER='<id_postgres>' EXPECTED_POSTGRES_DB=simplenotes bash infra/t4-audit-note-loss.sh`
 
 Verifica soft delete e storico degli eventi sincronizzati (compreso il gap cursor 25→34). Esegue esclusivamente SELECT/SHOW in sessioni PostgreSQL read-only. Non stampa contenuti delle note o credenziali; non modifica il DB. Vedi `docs/T4-DEVICE-SYNC.md`.
+
+## Reset VOLONTARIO dei dati di test (distruttivo)
+
+Per un solo account di test, `DB_CONTAINER=<container-postgres-simple-notes> EXPECTED_POSTGRES_DB=simplenotes bash infra/reset-test-workspace.sh --preview` mostra le quantità senza scrivere. L'esecuzione reale richiede esplicitamente `--execute`, `CLIENTS_CLOSED=YES`, `ERASE_TEST_WORKSPACE=ERASE_SIMPLE_NOTES_TEST_WORKSPACE`; non elimina utenti, sessioni, Flyway, schema o altri database. **Prima chiudere entrambi i client e dopo azzerare entrambe le SQLite.** Guida completa: [RESET-TEST-DATA.md](../docs/RESET-TEST-DATA.md).

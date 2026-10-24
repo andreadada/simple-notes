@@ -1,3 +1,11 @@
+## Aggiornamento 24/10/2026 — test reali, sicurezza note e futuro P1
+
+**Verificato dall'utente:** Flutter `0.4.1+5` installata via `adb install -r`, login Google e API `taskDueSchema:1` su Windows e Android, entrambi cursor 34 e pending 0. L'audit PostgreSQL **sola lettura** ha individuato 5 note tutte in soft-delete, in particolare eventi 33–34 dal server; i dati sono di test e l'utente sceglie di azzerarli. La sorgente dei DELETE non è attribuibile a un dispositivo dal solo registro: non chiamarla causa risolta.
+
+**Nuovo codice:** Cestino note sincronizzato, ripristino dello stesso ID con verifica della versione, blocco delle vecchie operazioni che tentano di sovrascrivere tombstone ed eventi remoti più vecchi ignorati, capability API `noteRestoreSchema:1`, Flutter `0.4.2+6`. È presente un reset esplicito del solo workspace di test (server PostgreSQL + SQLite Windows/Android), con **anteprime obbligatorie e conferme**; nessun reset/deploy è stato eseguito da questa chat. [Guida operativa](docs/RESET-TEST-DATA.md). La CI prova il codice, non i dati live; verificare prima del deployment.
+
+**Prossimo sviluppo dopo il reset e breve verifica E2E:** P1 calendario giorno/settimana/mese e time blocking. Le funzioni richiedono nuovi incrementi, non sono ancora implementate. T4.2 non è completata finché non si verificano i nuovi flussi offline/cestino su entrambi i dispositivi.
+
 # Simple Notes — Project
 
 ## Stato reale verificato e T4.2 (24 ottobre 2026)
@@ -304,3 +312,4 @@ Esempio: `2026-10-21 14:20 CEST | commit abc1234 | Aggiunto modulo promemoria e 
 - 2026-10-24 | docs(audit) | Audit Markdown sullo stato VPS: PostgreSQL 17.11/Flyway V1–V7, backup `simple-notes-20261024T132857Z-271921.dump` SHA256 e restore isolato PASS. Offsite non effettuata per scelta; API autenticata e T4.2 Windows↔Android ancora da verificare. Flutter CI [40100324302](https://github.com/andreadada/simple-notes/actions/runs/40100324302) PASS. Solo documentazione, nessuna modifica al software o al DB.
 - 2026-10-24 | T4.2 build/hardening | `tools/t4-build-devices.ps1` crea APK Android debug e ZIP Windows con stesso commit e OAuth IDs locali da `.t4-device-build.json` ignorato; nessuna installazione/reset/deploy. Flutter `0.4.1+5`; il controllo `_supportsTypedDue()` ora richiede il contratto completo API prima di inviare data/ora; aggiunto test fail-closed. Verificare CI e prove fisiche, ancora non eseguite.
 - 2026-10-24 | fix(t4.2) | Lo script per build locali permette working tree tracciati modificati senza cancellarli; segnala build non riproducibile da HEAD nel manifest, supporta `-CheckOnly` e `-RequireClean` opzionale, evita rigenerazione piattaforme se già presenti e non usa cancellazione automatica output di build_runner. Nessuna migrazione/deploy/data reset.
+- 2026-10-24 | feat(notes)+tools | Nuovo cestino note, restore versionato tramite backend con controllo capacità, protezione contro delta vecchi, test Flutter/backend; script di reset del SOLO workspace test con conferme e anteprima, locali Windows/Android e dati server. Nessuna cancellazione dati, migrazione o deploy effettuato da ChatGPT. Successivo P1 calendario dopo smoke test.

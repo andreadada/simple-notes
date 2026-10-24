@@ -154,6 +154,13 @@ class CloudSync extends StateNotifier<SyncState> {
     return _typedDueContractMatches(capability);
   }
 
+  /// A new client must not send restores to an older API that would 400
+  /// and block unrelated pending operations.
+  Future<bool> _supportsNoteRestore() async {
+    final capabilities = await _request('GET', '/capabilities');
+    return capabilities['noteRestoreSchema'] == 1;
+  }
+
   /// T4: passive, read-only diagnostics for real Windows/Android acceptance.
   /// Never uploads outbox entries, changes local ownership or logs secrets.
   Future<SyncDiagnostics> inspectSync() async {
@@ -234,6 +241,7 @@ class CloudSync extends StateNotifier<SyncState> {
       }
       int uploaded = 0;
       bool? typedDueSupported;
+      bool? noteRestoreSupported;
       for (final op in mutations) {
         conflicting = op;
         verifyAccount();
@@ -245,6 +253,10 @@ class CloudSync extends StateNotifier<SyncState> {
             due is Map && (due['kind'] == 'date' || due['kind'] == 'datetime')) {
           typedDueSupported ??= await _supportsTypedDue();
           if (!typedDueSupported) throw const SyncUpgradeRequired();
+        }
+        if (op.entityType == 'note' && op.action == 'restore') {
+          noteRestoreSupported ??= await _supportsNoteRestore();
+          if (!noteRestoreSupported) throw const SyncUpgradeRequired();
         }
         if (op.entityType == 'task' && payload['dueAt'] is String) {
           final parsed = DateTime.tryParse(payload['dueAt'] as String);
@@ -295,7 +307,7 @@ class CloudSync extends StateNotifier<SyncState> {
           '$downloaded aggiornamenti ricevuti.');
     } on SyncUpgradeRequired {
       state = const SyncState(upgradeRequired: true, message:
-        'Il server o un client precedente non supporta questa scadenza. '
+        'Il server non supporta ancora questa operazione o scadenza. '
         'Aggiorna il backend e i dispositivi; modifiche offline conservate.');
     } on SyncConflict {
       final op = conflicting;

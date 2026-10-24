@@ -364,7 +364,9 @@ class AppDatabase extends _$AppDatabase {
       final current = await (select(noteEntries)
           ..where((n) => n.id.equals(entityId))).getSingleOrNull();
       if (current?.remoteVersion != null &&
-          current!.remoteVersion! >= version) return;
+          current!.remoteVersion! >= version) {
+        return;
+      }
     }
     if (type == 'list') {
       if (deleted) {

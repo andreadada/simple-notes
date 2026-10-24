@@ -27,6 +27,7 @@ Future<TaskDue?> showTaskDueEditor(BuildContext context, {
   int? selectedOffset = initial.kind == 'datetime'
       ? initial.offsetSeconds : null;
   List<DueOccurrence> choices = [];
+  String? foldSignature;
   final time = TextEditingController(
       text: initial.kind == 'datetime' ? initial.time! : '09:00');
   final zone = TextEditingController(
@@ -65,6 +66,7 @@ Future<TaskDue?> showTaskDueEditor(BuildContext context, {
             void resetOptions() => update(() {
               choices = [];
               selectedOffset = null;
+              foldSignature = null;
               message = null;
             });
             Future<void> save() async {
@@ -86,10 +88,16 @@ Future<TaskDue?> showTaskDueEditor(BuildContext context, {
                   throw const FormatException(
                       'Questo orario non esiste: cambio dell’ora legale.');
                 }
+                // Never reuse a fold choice after editing the date, clock
+                // or zone: the same offset may represent a different instant.
+                final signature =
+                    '${dateIso()}|${time.text.trim()}|${zone.text.trim()}';
                 if (options.length == 2 && (selectedOffset == null ||
+                    foldSignature != signature ||
                     !options.any((o) => o.offsetSeconds == selectedOffset))) {
                   update(() {
                     choices = options;
+                    foldSignature = signature;
                     selectedOffset = null;
                     message = 'Orario ripetuto: scegli la prima '
                         'o la seconda occorrenza.';
@@ -97,7 +105,8 @@ Future<TaskDue?> showTaskDueEditor(BuildContext context, {
                   return;
                 }
                 final due = TaskDueClock.resolve(dateIso(), time.text.trim(),
-                    zone.text.trim(), selectedOffsetSeconds: selectedOffset);
+                    zone.text.trim(), selectedOffsetSeconds:
+                        options.length == 1 ? null : selectedOffset);
                 if (dialogContext.mounted) Navigator.pop(dialogContext, due);
               } on FormatException catch (error) {
                 update(() => message = error.message);
@@ -136,6 +145,7 @@ Future<TaskDue?> showTaskDueEditor(BuildContext context, {
                       onPress: () => update(() {
                         mode = 'date';
                         choices = [];
+                        foldSignature = null;
                         message = null;
                       }),
                       child: const Text('Solo giorno'),
@@ -149,6 +159,7 @@ Future<TaskDue?> showTaskDueEditor(BuildContext context, {
                         mode = 'datetime';
                         choices = [];
                         selectedOffset = null;
+                        foldSignature = null;
                         message = null;
                       }),
                       child: const Text('Data e ora'),

@@ -22,6 +22,7 @@ class InlineQuickAdd extends StatefulWidget {
 
 class _InlineQuickAddState extends State<InlineQuickAdd> {
   final _controller = TextEditingController();
+  final _focusNode = FocusNode();
   bool _busy = false;
 
   Future<void> _submit() async {
@@ -44,6 +45,7 @@ class _InlineQuickAddState extends State<InlineQuickAdd> {
 
   @override
   void dispose() {
+    _focusNode.dispose();
     _controller.dispose();
     super.dispose();
   }
@@ -67,9 +69,13 @@ class _InlineQuickAddState extends State<InlineQuickAdd> {
           const Icon(Icons.add, size: 17,
             color: NotesPalette.secondaryText),
           const SizedBox(width: 7),
-          SizedBox(width: width, child: TextField(
+          SizedBox(width: width, child: InlineGlyphUnderline(
+            glyphWidth: width,
+            focusNode: _focusNode,
+            child: TextField(
             key: const Key('inline-quick-add-input'),
             controller: _controller,
+            focusNode: _focusNode,
             maxLength: widget.maxLength,
             textInputAction: TextInputAction.done,
             onSubmitted: (_) => _submit(),
@@ -83,11 +89,11 @@ class _InlineQuickAddState extends State<InlineQuickAdd> {
               filled: false,
               fillColor: Colors.transparent,
               contentPadding: const EdgeInsets.symmetric(vertical: 9),
-              border: NotesTheme.inlineBorder,
-              enabledBorder: NotesTheme.inlineBorder,
-              focusedBorder: NotesTheme.inlineFocusedBorder,
+              border: NotesTheme.invisibleInlineBorder,
+              enabledBorder: NotesTheme.invisibleInlineBorder,
+              focusedBorder: NotesTheme.invisibleInlineBorder,
             ),
-          )),
+          ))),
           const Spacer(),
           FButton.icon(
             key: const Key('inline-quick-add-submit'),

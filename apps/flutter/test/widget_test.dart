@@ -102,15 +102,22 @@ void main() {
       find.byKey(const Key('long-title'))).width;
     expect(short, lessThan(40));
     expect(long, greaterThan(short * 2));
+    final shortUnderline = tester.getSize(find.descendant(
+      of: find.byKey(const Key('short-title')),
+      matching: find.byKey(const Key('inline-glyph-underline')),
+    )).width;
+    expect(shortUnderline, lessThan(40));
     final body = tester.getSize(find.descendant(
       of: find.byType(InlineEditableBody),
-      matching: find.byType(TextField),
+      matching: find.byKey(const Key('inline-glyph-underline')),
     )).width;
     expect(body, lessThan(120));
     // Even a tight Expanded/SizedBox parent cannot stretch the underline.
     expect(tester.getSize(find.byType(InlineEditableBody)).width, 340);
-    final quick = tester.getSize(
-      find.byKey(const Key('inline-quick-add-input'))).width;
+    final quick = tester.getSize(find.descendant(
+      of: find.byType(InlineQuickAdd),
+      matching: find.byKey(const Key('inline-glyph-underline')),
+    )).width;
     expect(quick, lessThan(200));
     final titleInput = tester.widget<TextField>(find.descendant(
       of: find.byKey(const Key('short-title')),

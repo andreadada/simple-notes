@@ -24,6 +24,11 @@ abstract final class NotesTheme {
   static const inlineFocusedBorder = UnderlineInputBorder(
     borderSide: BorderSide(color: NotesPalette.accent, width: 1.5),
   );
+  // For inline controls the real line is painted to the measured glyph width.
+  // This invisible shape prevents InputDecorator from drawing a full-width line.
+  static const invisibleInlineBorder = UnderlineInputBorder(
+    borderSide: BorderSide.none,
+  );
 
   /// Touch targets on Android; compact controls on Windows/macOS/Linux.
   static FThemeData forPlatform(TargetPlatform platform) {
@@ -78,4 +83,44 @@ abstract final class InlineTextMetrics {
     }
     return (longest + 1).clamp(1.0, available).toDouble();
   }
+}
+
+/// Paints only the visible glyph-width portion of the underline. Flutter
+/// InputDecorator can impose a larger minimum layout width than TextPainter
+/// reports, so a native UnderlineInputBorder cannot guarantee this rule.
+class InlineGlyphUnderline extends StatelessWidget {
+  const InlineGlyphUnderline({
+    super.key,
+    required this.glyphWidth,
+    required this.focusNode,
+    required this.child,
+  });
+
+  final double glyphWidth;
+  final FocusNode focusNode;
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) => AnimatedBuilder(
+    animation: focusNode,
+    builder: (context, _) => Stack(
+      clipBehavior: Clip.none,
+      children: [
+        child,
+        PositionedDirectional(
+          start: 0,
+          bottom: 0,
+          child: IgnorePointer(
+            child: SizedBox(
+              key: const Key('inline-glyph-underline'),
+              width: glyphWidth,
+              height: focusNode.hasFocus ? 1.5 : 1,
+              child: ColoredBox(color: focusNode.hasFocus
+                  ? NotesPalette.accent : NotesPalette.inlineUnderline),
+            ),
+          ),
+        ),
+      ],
+    ),
+  );
 }

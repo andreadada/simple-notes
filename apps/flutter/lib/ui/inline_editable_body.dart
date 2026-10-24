@@ -109,7 +109,10 @@ class _InlineEditableBodyState extends State<InlineEditableBody> {
         widthFactor: 1,
         child: SizedBox(
         width: width,
-        child: Focus(
+        child: InlineGlyphUnderline(
+          glyphWidth: width,
+          focusNode: _focus,
+          child: Focus(
     onKeyEvent: (node, event) {
       if (event is! KeyDownEvent) return KeyEventResult.ignored;
       if (event.logicalKey == LogicalKeyboardKey.escape) {
@@ -148,12 +151,13 @@ class _InlineEditableBodyState extends State<InlineEditableBody> {
           fillColor: Colors.transparent,
           counterText: '',
           contentPadding: const EdgeInsets.symmetric(vertical: 7),
-          border: NotesTheme.inlineBorder,
-          enabledBorder: NotesTheme.inlineBorder,
-          focusedBorder: NotesTheme.inlineFocusedBorder,
+          border: NotesTheme.invisibleInlineBorder,
+          enabledBorder: NotesTheme.invisibleInlineBorder,
+          focusedBorder: NotesTheme.invisibleInlineBorder,
         ),
       ),
     ),
+      ),
       ),
       ),
     );

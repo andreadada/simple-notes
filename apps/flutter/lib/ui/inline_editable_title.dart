@@ -123,7 +123,10 @@ class _InlineEditableTitleState extends State<InlineEditableTitle> {
         widthFactor: 1,
         child: SizedBox(
         width: width,
-        child: Focus(
+        child: InlineGlyphUnderline(
+          glyphWidth: width,
+          focusNode: _focusNode,
+          child: Focus(
           onKeyEvent: (node, event) {
             if (event is KeyDownEvent &&
                 event.logicalKey == LogicalKeyboardKey.escape) {
@@ -155,12 +158,13 @@ class _InlineEditableTitleState extends State<InlineEditableTitle> {
                 hintStyle: widget.style.copyWith(
                   color: NotesPalette.placeholder),
                 contentPadding: const EdgeInsets.symmetric(vertical: 3),
-                border: NotesTheme.inlineBorder,
-                enabledBorder: NotesTheme.inlineBorder,
-                focusedBorder: NotesTheme.inlineFocusedBorder,
+                border: NotesTheme.invisibleInlineBorder,
+                enabledBorder: NotesTheme.invisibleInlineBorder,
+                focusedBorder: NotesTheme.invisibleInlineBorder,
               ),
             ),
           ),
+        ),
         ),
         ),
       );

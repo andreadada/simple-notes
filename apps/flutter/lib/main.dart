@@ -102,10 +102,12 @@ class _NotesHomeState extends ConsumerState<NotesHome> {
   int? priorityFilter;
   String searchQuery = '';
   final newTask = TextEditingController();
+  final newTaskFocus = FocusNode();
   DateTime? dueAt;
 
   @override
   void dispose() {
+    newTaskFocus.dispose();
     newTask.dispose();
     super.dispose();
   }
@@ -521,9 +523,13 @@ class _NotesHomeState extends ConsumerState<NotesHome> {
                           const Icon(Icons.add, size: 20,
                             color: NotesPalette.secondaryText),
                           const SizedBox(width: 8),
-                          SizedBox(width: width, child: TextField(
+                          SizedBox(width: width, child: InlineGlyphUnderline(
+                            glyphWidth: width,
+                            focusNode: newTaskFocus,
+                            child: TextField(
                             key: const Key('task-input'),
                             controller: newTask,
+                            focusNode: newTaskFocus,
                             style: style,
                             textInputAction: TextInputAction.done,
                             onSubmitted: (_) => submitTask(),
@@ -536,11 +542,11 @@ class _NotesHomeState extends ConsumerState<NotesHome> {
                               filled: false,
                               fillColor: Colors.transparent,
                               contentPadding: EdgeInsets.symmetric(vertical: 9),
-                              border: NotesTheme.inlineBorder,
-                              enabledBorder: NotesTheme.inlineBorder,
-                              focusedBorder: NotesTheme.inlineFocusedBorder,
+                              border: NotesTheme.invisibleInlineBorder,
+                              enabledBorder: NotesTheme.invisibleInlineBorder,
+                              focusedBorder: NotesTheme.invisibleInlineBorder,
                             ),
-                          )),
+                          ))),
                           const Spacer(),
                         ]);
                       },

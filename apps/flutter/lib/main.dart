@@ -512,19 +512,22 @@ class _NotesHomeState extends ConsumerState<NotesHome> {
                       valueListenable: newTask,
                       builder: (context, draft, _) {
                         const style = TextStyle(fontSize: 14);
-                        final width = InlineTextMetrics.fieldWidth(
+                        final glyphWidth = InlineTextMetrics.fieldWidth(
                           context,
                           text: draft.text.isEmpty
                               ? 'Aggiungi attività' : draft.text,
                           style: style,
                           maxWidth: bounds.maxWidth - 32,
                         );
+                        final fieldWidth = InlineTextMetrics.inputWidth(
+                          glyphWidth: glyphWidth,
+                          maxWidth: bounds.maxWidth - 32);
                         return Row(children: [
                           const Icon(Icons.add, size: 20,
                             color: NotesPalette.secondaryText),
                           const SizedBox(width: 8),
-                          SizedBox(width: width, child: InlineGlyphUnderline(
-                            glyphWidth: width,
+                          SizedBox(width: fieldWidth, child: InlineGlyphUnderline(
+                            glyphWidth: glyphWidth,
                             focusNode: newTaskFocus,
                             child: TextField(
                             key: const Key('task-input'),

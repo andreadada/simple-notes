@@ -59,18 +59,20 @@ class _InlineQuickAddState extends State<InlineQuickAdd> {
         final available = bounds.maxWidth.isFinite
             ? bounds.maxWidth - 80
             : MediaQuery.sizeOf(context).width * 0.5;
-        final width = InlineTextMetrics.fieldWidth(
+        final glyphWidth = InlineTextMetrics.fieldWidth(
           context,
           text: draft.text.isEmpty ? widget.hint : draft.text,
           style: textStyle,
           maxWidth: available,
         );
+        final fieldWidth = InlineTextMetrics.inputWidth(
+          glyphWidth: glyphWidth, maxWidth: available);
         return Row(children: [
           const Icon(Icons.add, size: 17,
             color: NotesPalette.secondaryText),
           const SizedBox(width: 7),
-          SizedBox(width: width, child: InlineGlyphUnderline(
-            glyphWidth: width,
+          SizedBox(width: fieldWidth, child: InlineGlyphUnderline(
+            glyphWidth: glyphWidth,
             focusNode: _focusNode,
             child: TextField(
             key: const Key('inline-quick-add-input'),

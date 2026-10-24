@@ -68,8 +68,9 @@ abstract final class InlineTextMetrics {
     required TextStyle style,
     required double maxWidth,
   }) {
-    final available = maxWidth.isFinite && maxWidth >= 1
-        ? maxWidth : MediaQuery.sizeOf(context).width * 0.75;
+    final available = maxWidth.isFinite
+        ? (maxWidth >= 1 ? maxWidth : 1.0)
+        : MediaQuery.sizeOf(context).width * 0.75;
     var longest = 0.0;
     for (final line in text.split('\n')) {
       final painter = TextPainter(
@@ -83,11 +84,26 @@ abstract final class InlineTextMetrics {
     }
     return (longest + 1).clamp(1.0, available).toDouble();
   }
+
+  /// The painted underline follows the glyphs. The real editor needs extra
+  /// caret/selection space: making its viewport exactly glyphWidth clipped
+  /// the final letters of titles and wrapped placeholder descriptions.
+  /// This reserve belongs to the *TextField*, not the underline.
+  static double inputWidth({
+    required double glyphWidth,
+    required double maxWidth,
+  }) {
+    const caretAndSelectionReserve = 18.0;
+    if (!maxWidth.isFinite) return glyphWidth + caretAndSelectionReserve;
+    final available = maxWidth >= 1 ? maxWidth : 1.0;
+    return (glyphWidth + caretAndSelectionReserve)
+        .clamp(1.0, available).toDouble();
+  }
 }
 
-/// Paints only the visible glyph-width portion of the underline. Flutter
-/// InputDecorator can impose a larger minimum layout width than TextPainter
-/// reports, so a native UnderlineInputBorder cannot guarantee this rule.
+/// Paints only the glyph-width portion of the underline. The field itself is
+/// deliberately wider to fit the full text and the caret without clipping;
+/// its invisible native border must never determine the line length.
 class InlineGlyphUnderline extends StatelessWidget {
   const InlineGlyphUnderline({
     super.key,

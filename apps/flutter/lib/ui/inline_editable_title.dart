@@ -114,17 +114,19 @@ class _InlineEditableTitleState extends State<InlineEditableTitle> {
       final limit = constraints.maxWidth.isFinite
           ? constraints.maxWidth
           : MediaQuery.sizeOf(context).width * 0.75;
-      final width = InlineTextMetrics.fieldWidth(
+      final glyphWidth = InlineTextMetrics.fieldWidth(
         context, text: text, style: widget.style, maxWidth: limit);
+      final fieldWidth = InlineTextMetrics.inputWidth(
+        glyphWidth: glyphWidth, maxWidth: limit);
       // Align loosens even a tight Expanded/Row constraint for the input.
       // Only the text, not the whole row, owns the underline.
       return Align(
         alignment: AlignmentDirectional.centerStart,
         widthFactor: 1,
         child: SizedBox(
-        width: width,
+        width: fieldWidth,
         child: InlineGlyphUnderline(
-          glyphWidth: width,
+          glyphWidth: glyphWidth,
           focusNode: _focusNode,
           child: Focus(
           onKeyEvent: (node, event) {

@@ -143,6 +143,29 @@ void main() {
       matching: find.byType(TextField)));
     expect(titleInput.decoration!.hintStyle!.color!.a, lessThan(1));
     expect(bodyInput.decoration!.hintStyle!.color!.a, lessThan(1));
+
+    // The actual editable viewport is wider than the painted glyph underline,
+    // so neither the last character nor a cursor is clipped at the right edge.
+    final shortEditor = find.descendant(
+      of: find.byKey(const Key('short-title')),
+      matching: find.byType(TextField));
+    final bodyEditor = find.descendant(
+      of: find.byType(InlineEditableBody),
+      matching: find.byType(TextField));
+    expect(tester.getSize(shortEditor).width, greaterThan(shortUnderline));
+    expect(tester.getSize(bodyEditor).width, greaterThan(body));
+
+    // A value that used to appear as 'test telefonc' has room to show the
+    // complete last character and still keeps its line shorter than the input.
+    await tester.enterText(shortEditor, 'test telefono');
+    await tester.pump();
+    final typedUnderline = tester.getSize(find.descendant(
+      of: find.byKey(const Key('short-title')),
+      matching: find.byKey(const Key('inline-glyph-underline')),
+    )).width;
+    final typedEditorWidth = tester.getSize(shortEditor).width;
+    expect(typedUnderline, greaterThan(shortUnderline));
+    expect(typedEditorWidth, greaterThan(typedUnderline));
   });
 
   testWidgets('Creates task and persists it in SQLite', (tester) async {

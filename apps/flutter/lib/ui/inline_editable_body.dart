@@ -97,20 +97,22 @@ class _InlineEditableBodyState extends State<InlineEditableBody> {
           ? constraints.maxWidth
           : MediaQuery.sizeOf(context).width * 0.75;
       final label = _controller.text.isEmpty ? widget.hint : _controller.text;
-      final width = InlineTextMetrics.fieldWidth(
+      final glyphWidth = InlineTextMetrics.fieldWidth(
         context,
         text: label,
         style: const TextStyle(fontSize: 14, height: 1.45),
         maxWidth: maxWidth,
       );
+      final fieldWidth = InlineTextMetrics.inputWidth(
+        glyphWidth: glyphWidth, maxWidth: maxWidth);
       // A parent may demand full width; the editable child does not.
       return Align(
         alignment: AlignmentDirectional.centerStart,
         widthFactor: 1,
         child: SizedBox(
-        width: width,
+        width: fieldWidth,
         child: InlineGlyphUnderline(
-          glyphWidth: width,
+          glyphWidth: glyphWidth,
           focusNode: _focus,
           child: Focus(
     onKeyEvent: (node, event) {

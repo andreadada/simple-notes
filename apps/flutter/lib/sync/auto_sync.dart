@@ -82,7 +82,9 @@ class _AutoSyncHostState extends ConsumerState<AutoSyncHost>
     final auth = ref.read(cloudAuthProvider);
     if (!auth.authenticated || auth.userId == null) return;
     if (ref.read(cloudSyncProvider).conflict ||
-        ref.read(cloudSyncProvider).upgradeRequired) return;
+        ref.read(cloudSyncProvider).upgradeRequired) {
+      return;
+    }
     if (_inFlight || ref.read(cloudSyncProvider).running) {
       _queued = true;
       return;

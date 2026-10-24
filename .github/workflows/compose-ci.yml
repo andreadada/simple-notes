@@ -7,6 +7,7 @@ on:
       - infra/verify-restore.sh
       - infra/t4-preflight.sh
       - infra/t4-check-api.sh
+      - infra/t4-inspect-db.sh
       - .github/workflows/compose-ci.yml
   pull_request:
     paths:
@@ -16,6 +17,7 @@ on:
       - infra/verify-restore.sh
       - infra/t4-preflight.sh
       - infra/t4-check-api.sh
+      - infra/t4-inspect-db.sh
   workflow_dispatch:
 
 jobs:
@@ -26,7 +28,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Validate backup script syntax (no Docker operations)
-        run: bash -n infra/backup-postgres.sh infra/verify-restore.sh infra/t4-preflight.sh infra/t4-check-api.sh
+        run: bash -n infra/backup-postgres.sh infra/verify-restore.sh infra/t4-preflight.sh infra/t4-check-api.sh infra/t4-inspect-db.sh
       - name: Validate build Compose without runtime secrets
         run: |
           # Coolify uses a build-time.env with no runtime-only credentials.
@@ -78,8 +80,20 @@ jobs:
               CREATE TABLE note(id UUID PRIMARY KEY);
               CREATE TABLE sync_change(id BIGINT PRIMARY KEY);
               CREATE TABLE sync_operation(id UUID PRIMARY KEY);
+              CREATE TABLE flyway_schema_history (
+                installed_rank INTEGER PRIMARY KEY, version VARCHAR(50), success BOOLEAN
+              );
+              INSERT INTO flyway_schema_history VALUES (6, '"'"'6'"'"', TRUE);
               INSERT INTO app_user VALUES ('"'"'00000000-0000-0000-0000-000000000001'"'"');
             '
+          # Read-only inventory must accept this specific synthetic database.
+          DB_CONTAINER="$db_name" EXPECTED_POSTGRES_DB=synthetic \
+            bash infra/t4-inspect-db.sh
+          if DB_CONTAINER="$db_name" EXPECTED_POSTGRES_DB=wrong_database \
+              bash infra/t4-inspect-db.sh; then
+            echo "ERROR: wrong DB identity was accepted" >&2
+            exit 1
+          fi
           # The fixture's DB name is deliberately 'synthetic', not production.
           EXPECTED_POSTGRES_DB=synthetic DB_CONTAINER="$db_name"             BACKUP_DIR="$folder" bash infra/backup-postgres.sh
           archive="$(find "$folder" -maxdepth 1 -name '*.dump' -print -quit)"
@@ -93,6 +107,15 @@ jobs:
             exit 1
           fi
           T4_ARCHIVE="$archive" T4_OFFSITE_CONFIRMED=yes             T4_APPROVED_COMMIT="$(git rev-parse HEAD)" bash infra/t4-preflight.sh
+          # A proof from a long-ago restore must not authorize a deployment.
+          cp "$archive.restore-ok" "$folder/valid-restore-receipt"
+          sed -i 's/^VERIFIED_UTC=.*/VERIFIED_UTC=2000-01-01T00:00:00Z/' "$archive.restore-ok"
+          if T4_ARCHIVE="$archive" T4_OFFSITE_CONFIRMED=yes \
+              T4_APPROVED_COMMIT="$(git rev-parse HEAD)" bash infra/t4-preflight.sh; then
+            echo "ERROR: stale restore receipt accepted" >&2
+            exit 1
+          fi
+          mv "$folder/valid-restore-receipt" "$archive.restore-ok"
           printf 'tampered' >> "$archive"
           if bash infra/verify-restore.sh "$archive"; then
             echo "ERROR: tampered restore accepted" >&2

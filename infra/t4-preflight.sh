@@ -24,6 +24,23 @@ version="$(awk -F= '$1=="T4_RECEIPT_VERSION" {print $2}' "$T4_ARCHIVE.restore-ok
   fail "checksum and restore receipt disagree"
 [[ "$version" == "1" && "$tables" == "app_user,task,note,sync_change,sync_operation" ]] ||
   fail "restore evidence is missing required checks"
+# A stale restore proof must not authorize a future deployment. Re-run the
+# isolated restore shortly before the maintenance window.
+command -v date >/dev/null || fail "missing date"
+T4_MAX_RESTORE_AGE_HOURS="${T4_MAX_RESTORE_AGE_HOURS:-24}"
+[[ "$T4_MAX_RESTORE_AGE_HOURS" =~ ^[0-9]+$ ]] ||
+  fail "max age must be a positive integer"
+(( T4_MAX_RESTORE_AGE_HOURS >= 1 && T4_MAX_RESTORE_AGE_HOURS <= 168 )) ||
+  fail "max age must be 1..168 hours"
+verified_utc="$(awk -F= '$1=="VERIFIED_UTC" {print $2}' "$T4_ARCHIVE.restore-ok")"
+[[ "$verified_utc" =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z$ ]] ||
+  fail "restore proof is missing a valid UTC verification time"
+verified_epoch="$(date -u -d "$verified_utc" +%s 2>/dev/null)" ||
+  fail "could not parse restore time"
+now_epoch="$(date -u +%s)"
+age_seconds=$(( now_epoch - verified_epoch ))
+(( age_seconds >= -120 && age_seconds <= T4_MAX_RESTORE_AGE_HOURS * 3600 )) ||
+  fail "restore proof is stale or dated in the future; repeat restore test"
 for table in app_user task note sync_change sync_operation; do
   rows="$(awk -F= -v key="ROW_COUNT_$table" '$1==key {print $2}' "$T4_ARCHIVE.restore-ok")"
   [[ "$rows" =~ ^[0-9]+$ ]] || fail "missing numeric restored row count: $table"

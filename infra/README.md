@@ -1,5 +1,12 @@
 # Backend — Coolify
 
+## T4 — Gate di rilascio sicuro (24/10/2026)
+
+**Strumenti e CI implementati; backup reale, restore reale, deploy Coolify e prove hardware ancora DA ESEGUIRE.** `infra/backup-postgres.sh` verifica container e schema prima del dump PostgreSQL custom + SHA256; `infra/verify-restore.sh` ripristina in container PostgreSQL 17 **senza rete**, interroga le tabelle e genera un receipt legato al digest del dump. `infra/t4-preflight.sh` rifiuta dump/receipt incoerenti, copia offsite non attestata, commit non approvato o tree sporco; **non avvia deploy**. `infra/t4-check-api.sh` verifica soltanto salute HTTPS e capability autenticata `taskDueSchema:1`.
+
+La CI Compose usa dump **sintetici** e verifica i rifiuti su backup alterati; la CI backend prova una migrazione V6→V7 PostgreSQL Testcontainers con task/note/liste/sync log esistenti. I gate T4 reali richiedono: backup PostgreSQL **esistente e offsite cifrato**, ripristino isolato dello stesso dump, preflight, deploy Flyway V7 in Coolify, health+capability, E2E Windows/Android offline/sync. Non distribuire né ripristinare sulla produzione durante una prova. [Runbook T4](../docs/T4-RELEASE-RUNBOOK.md) · [GitHub Actions](https://github.com/andreadada/simple-notes/actions).
+
+
 ## Coolify (scelta consigliata)
 - Repository: `andreadada/simple-notes`, branch `main`.
 - Build Pack: **Docker Compose**.
@@ -58,7 +65,7 @@ Sul VPS, con repo disponibile e accesso Docker, individuare *esplicitamente* il 
 ```bash
 docker ps --format '{{.ID}} {{.Names}} {{.Image}}'
 # Sostituire <container-id-postgres-simplenotes> con quello corretto.
-DB_CONTAINER=<container-id-postgres-simplenotes> BACKUP_DIR=/percorso/sicuro/backup \\
+DB_CONTAINER='<container-id-postgres-simplenotes>' EXPECTED_POSTGRES_DB=simplenotes BACKUP_DIR=/percorso/sicuro/backup \\
   bash infra/backup-postgres.sh
 # Usare il nome effettivo del file prodotto:
 bash infra/verify-restore.sh /percorso/sicuro/backup/simple-notes-AAAA*.dump
@@ -71,3 +78,7 @@ Dopo verifica backup, distribuire `main` da Coolify, verificare log Flyway V5 e 
 ## Nuove liste e metadati attività — Flyway V6 (23/10/2026)
 
 La nuova versione Flutter usa `entityType:list` e campi `listId/priority/tags/subtasks`. **Prima di installare/avviare questa versione su dati reali**, effettuare backup PostgreSQL verificato con i comandi precedenti, poi redeploy API da `main`. Controllare log Flyway `V5__sync_conflict_latest_index.sql` e `V6__task_organization.sql`, health HTTPS e login. La migrazione V6 aggiunge soltanto colonne/versioni/indice, preservando dati storici. Non rinominare/azzerare volumi o PostgreSQL. I client non aggiornati possono non preservare tutti i metadati nuovi quando modificano una copia vecchia: aggiornare Windows e Android entrambi. Consultare [organizzazione attività](../docs/task-organization.md).
+
+## Promemoria comando T4
+
+Il receipt `.restore-ok` è creato SOLO dopo un ripristino completo su PostgreSQL 17 temporaneo. Conservare il dump e `.sha256` insieme e proteggere la cartella (`0600`). Dopo verifica della copia **cifrata fuori dal VPS** eseguire `T4_ARCHIVE="$ARCHIVE" T4_OFFSITE_CONFIRMED=yes T4_APPROVED_COMMIT="$(git rev-parse HEAD)" bash infra/t4-preflight.sh`. Controllare poi endpoint health e capability con `T4_BEARER_TOKEN` tramite `infra/t4-check-api.sh`. Per un nuovo sistema consultare il runbook completo, non copiare i vecchi comandi senza leggere le condizioni di sicurezza. Non è stato effettuato alcun restore o redeploy sul DB operativo.

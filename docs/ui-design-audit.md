@@ -1,5 +1,12 @@
 # Audit applicazione di design.md — UI condivisa Flutter
 
+## T4 — Gate di rilascio sicuro (24/10/2026)
+
+**Strumenti e CI implementati; backup reale, restore reale, deploy Coolify e prove hardware ancora DA ESEGUIRE.** `infra/backup-postgres.sh` verifica container e schema prima del dump PostgreSQL custom + SHA256; `infra/verify-restore.sh` ripristina in container PostgreSQL 17 **senza rete**, interroga le tabelle e genera un receipt legato al digest del dump. `infra/t4-preflight.sh` rifiuta dump/receipt incoerenti, copia offsite non attestata, commit non approvato o tree sporco; **non avvia deploy**. `infra/t4-check-api.sh` verifica soltanto salute HTTPS e capability autenticata `taskDueSchema:1`.
+
+La CI Compose usa dump **sintetici** e verifica i rifiuti su backup alterati; la CI backend prova una migrazione V6→V7 PostgreSQL Testcontainers con task/note/liste/sync log esistenti. I gate T4 reali richiedono: backup PostgreSQL **esistente e offsite cifrato**, ripristino isolato dello stesso dump, preflight, deploy Flyway V7 in Coolify, health+capability, E2E Windows/Android offline/sync. Non distribuire né ripristinare sulla produzione durante una prova. [Runbook T4](T4-RELEASE-RUNBOOK.md) · [GitHub Actions](https://github.com/andreadada/simple-notes/actions).
+
+
 ## T3 — Editor scadenze Forui e calendario civile (24/10/2026)
 
 Un editor condiviso `task_due_editor.dart` ora gestisce data senza ora, data/ora+IANA, conversione esplicita `legacy` e fold/gap dell'ora legale. `task_due_clock.dart` calcola le possibilità UTC senza arrotondamenti nascosti e tenta di rilevare il fuso OS (in caso di errore richiede una selezione); `task_due_view.dart` centralizza le etichette e i filtri per giorni di calendario. Tutte le scritture T3 utilizzano SQLite/outbox; nessuna migrazione Coolify è stata eseguita. [Specifiche T3](T3-SCADENZE.md).

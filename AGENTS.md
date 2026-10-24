@@ -1,5 +1,12 @@
 # AGENTS.md — Istruzioni di lavoro per assistenti AI
 
+## T4 — Gate di rilascio sicuro (24/10/2026)
+
+**Strumenti e CI implementati; backup reale, restore reale, deploy Coolify e prove hardware ancora DA ESEGUIRE.** `infra/backup-postgres.sh` verifica container e schema prima del dump PostgreSQL custom + SHA256; `infra/verify-restore.sh` ripristina in container PostgreSQL 17 **senza rete**, interroga le tabelle e genera un receipt legato al digest del dump. `infra/t4-preflight.sh` rifiuta dump/receipt incoerenti, copia offsite non attestata, commit non approvato o tree sporco; **non avvia deploy**. `infra/t4-check-api.sh` verifica soltanto salute HTTPS e capability autenticata `taskDueSchema:1`.
+
+La CI Compose usa dump **sintetici** e verifica i rifiuti su backup alterati; la CI backend prova una migrazione V6→V7 PostgreSQL Testcontainers con task/note/liste/sync log esistenti. I gate T4 reali richiedono: backup PostgreSQL **esistente e offsite cifrato**, ripristino isolato dello stesso dump, preflight, deploy Flyway V7 in Coolify, health+capability, E2E Windows/Android offline/sync. Non distribuire né ripristinare sulla produzione durante una prova. [Runbook T4](docs/T4-RELEASE-RUNBOOK.md) · [GitHub Actions](https://github.com/andreadada/simple-notes/actions).
+
+
 ## T3 — Scadenze e fusi orari (24/10/2026)
 
 Il client Flutter ha ora un editor scadenze Forui riutilizzato in creazione rapida, pannello dettagli e editor avanzato (`ui/task_due_editor.dart`). Supporta `date` senza ora, `datetime` con HH:mm + timezone IANA, scelta del fold DST e rifiuto del gap; non converte automaticamente `legacy`. Il rilevamento OS fallibile non produce una UTC inventata: l'utente sceglie un fuso valido. `task_due_view.dart` centralizza l'etichetta (mostra il fuso) e i filtri Oggi/7 giorni in giorni civili; gli aggiornamenti rimangono offline-first.
@@ -73,3 +80,5 @@ Repository: **Simple Notes** — Flutter Windows/Android + Spring Boot/PG su Coo
 - Dialoghi di modifica attività/nota e scadenze usano **FDialog/FCalendar**, con layout in `apps/flutter/lib/ui/notes_dialogs.dart`. Non reintrodurre `showDatePicker`/Material `AlertDialog` nei loro flussi; mantenere test dei picker e date locali.
 
 - Organizzazione P0: le liste sono entità sync `list` vere, non nomi locali; `TaskListEntity`, `LocalTaskList` e task `listId/priority/tags/subtasks` sono obbligatori. Preservare ordine outbox (prima lista, poi task; prima movimento task, poi delete-list) e vincolo owner. Non introdurre delete cascade. Qualsiasi modifica ai modelli richiede migration Flyway/Drift incrementale e test con due client. Leggere `docs/task-organization.md`.
+
+- **T4 OBBLIGATORIO:** nessun agente deve marcare T4 completato per il solo superamento della CI sintetica, né avviare redeploy, import, `pg_restore` verso produzione, `flyway repair`, rimuovere volumi, o attestare una copia S3 mai controllata. `t4-preflight.sh` è di sola lettura e deve fallire se manca receipt o conferma offsite reale.

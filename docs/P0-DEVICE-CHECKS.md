@@ -1,13 +1,20 @@
 # P0 — Checklist operativa Coolify, Windows e Android
 
+## T4 — Gate di rilascio sicuro (24/10/2026)
+
+**Strumenti e CI implementati; backup reale, restore reale, deploy Coolify e prove hardware ancora DA ESEGUIRE.** `infra/backup-postgres.sh` verifica container e schema prima del dump PostgreSQL custom + SHA256; `infra/verify-restore.sh` ripristina in container PostgreSQL 17 **senza rete**, interroga le tabelle e genera un receipt legato al digest del dump. `infra/t4-preflight.sh` rifiuta dump/receipt incoerenti, copia offsite non attestata, commit non approvato o tree sporco; **non avvia deploy**. `infra/t4-check-api.sh` verifica soltanto salute HTTPS e capability autenticata `taskDueSchema:1`.
+
+La CI Compose usa dump **sintetici** e verifica i rifiuti su backup alterati; la CI backend prova una migrazione V6→V7 PostgreSQL Testcontainers con task/note/liste/sync log esistenti. I gate T4 reali richiedono: backup PostgreSQL **esistente e offsite cifrato**, ripristino isolato dello stesso dump, preflight, deploy Flyway V7 in Coolify, health+capability, E2E Windows/Android offline/sync. Non distribuire né ripristinare sulla produzione durante una prova. [Runbook T4](T4-RELEASE-RUNBOOK.md) · [GitHub Actions](https://github.com/andreadada/simple-notes/actions).
+
+
 **Aggiornato: 24 ottobre 2026.** Questa checklist NON certifica alcun deploy. L'obiettivo è raccogliere prove reali distinguendole dai test automatici. Non inserire token/password nei log condivisi.
 
 ## Gate obbligatorio prima del redeploy
 - [ ] Identificare esplicitamente il container PostgreSQL del progetto Simple Notes (NON altri database).
 - [ ] Eseguire un dump consistente con `infra/backup-postgres.sh`, verificare il file SHA256 e la leggibilità dell'archivio.
-- [ ] Eseguire `infra/verify-restore.sh` sul dump **reale** in un PostgreSQL 17 temporaneo e isolato. Controllare dati/tabelle senza scrivere nel DB di produzione.
-- [ ] Conservare una copia del dump cifrata **fuori dal VPS**, con policy di retention.
-- [ ] Solo dopo, distribuire il backend `main` su Coolify senza modificare segreti e senza ricreare volumi. Controllare migrazioni Flyway V5 e V6 dai log (senza errori) e `https://api.notes.ddone.it/actuator/health`.
+- [ ] Copiare dump e `.sha256` su destinazione sicura; eseguire `infra/verify-restore.sh` sul dump **reale**, controllare `.restore-ok` e le tabelle nel PostgreSQL 17 isolato senza rete.
+- [ ] Conservare e controllare una copia del dump cifrata **fuori dal VPS**, con policy di retention; eseguire il gate `infra/t4-preflight.sh` con attestazione offsite esplicita.
+- [ ] Solo dopo preflight, distribuire manualmente il commit approvato in Coolify **senza cambiare segreti o volumi**. Verificare la storia Flyway **V5, V6 e V7** dai log (senza errori), `/actuator/health` e capability autenticata `taskDueSchema:1` con `infra/t4-check-api.sh`.
 - [ ] Verificare login Google / refresh dopo il redeploy, prima di aggiornare i client.
 
 Comandi esatti e precauzioni in [infra/README.md](../infra/README.md). **Non usare mai `docker compose down -v` o disinstallazione dell'app come soluzione ai problemi di sync.**

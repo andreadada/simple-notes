@@ -121,7 +121,7 @@ void main() {
       }
       if (request.url.path == '/api/v1/sync/apply') {
         attemptedApply = true;
-        return http.Response('{}', 200);
+        return http.Response('{"version":0}', 200);
       }
       return http.Response('{}', 404);
     });

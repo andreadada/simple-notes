@@ -102,7 +102,7 @@ Future<void> showNotesSyncDiagnostics(BuildContext context, WidgetRef ref) {
                 onPress: () => Clipboard.setData(
                     ClipboardData(text: safeReport)),
                 prefix: const Icon(Icons.copy_outlined, size: 16),
-                child: const Text('Copia report senza dati personali'),
+                child: const Text('Copia report'),
               ),
             ],
           );

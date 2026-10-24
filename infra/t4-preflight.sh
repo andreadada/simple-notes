@@ -24,6 +24,13 @@ version="$(awk -F= '$1=="T4_RECEIPT_VERSION" {print $2}' "$T4_ARCHIVE.restore-ok
   fail "checksum and restore receipt disagree"
 [[ "$version" == "1" && "$tables" == "app_user,task,note,sync_change,sync_operation" ]] ||
   fail "restore evidence is missing required checks"
+for table in app_user task note sync_change sync_operation; do
+  rows="$(awk -F= -v key="ROW_COUNT_$table" '$1==key {print $2}' "$T4_ARCHIVE.restore-ok")"
+  [[ "$rows" =~ ^[0-9]+$ ]] || fail "missing numeric restored row count: $table"
+  if [[ "$table" == "app_user" ]]; then
+    (( rows >= 1 )) || fail "empty restored user table"
+  fi
+done
 head="$(git rev-parse HEAD)"
 [[ "${T4_APPROVED_COMMIT,,}" == "${head,,}" ]] ||
   fail "approved commit differs from checked-out HEAD"

@@ -49,10 +49,20 @@ fi
 docker exec -i "$name" pg_restore -U postgres -d postgres \
   --exit-on-error --single-transaction --no-owner --no-privileges < "$archive"
 
+declare -A restored_rows
 for table in app_user task note sync_change sync_operation; do
-  docker exec "$name" psql -X -v ON_ERROR_STOP=1 -U postgres -d postgres -Atqc \
-    "SELECT COUNT(*) FROM public.$table;" >/dev/null
+  rows="$(docker exec "$name" psql -X -v ON_ERROR_STOP=1 \
+    -U postgres -d postgres -Atqc "SELECT COUNT(*) FROM public.$table;")"
+  [[ "$rows" =~ ^[0-9]+$ ]] || {
+    echo "REFUSED: restore table count query was not numeric." >&2; exit 1
+  }
+  restored_rows["$table"]="$rows"
 done
+# A seemingly valid empty schema is not enough for a production upgrade.
+# Simple Notes is an existing project with previously synced Google accounts.
+if (( restored_rows[app_user] < 1 )); then
+  echo "REFUSED: restored snapshot has no existing users." >&2; exit 1
+fi
 flyway="absent"
 has_flyway="$(docker exec "$name" psql -X -v ON_ERROR_STOP=1 \
   -U postgres -d postgres -Atqc \
@@ -71,6 +81,9 @@ temp="$(mktemp "$(dirname -- "$archive")/.t4-proof.XXXXXXXX")"
   printf 'ARCHIVE_SHA256=%s\n' "$hash"
   printf 'POSTGRES_IMAGE=postgres:17-alpine\n'
   printf 'CORE_TABLES_VERIFIED=app_user,task,note,sync_change,sync_operation\n'
+  for table in app_user task note sync_change sync_operation; do
+    printf 'ROW_COUNT_%s=%s\n' "$table" "${restored_rows[$table]}"
+  done
   printf 'FLYWAY_MAX_INSTALLED_RANK=%s\n' "$flyway"
   printf 'VERIFIED_UTC=%s\n' "$(date -u +%Y-%m-%dT%H:%M:%SZ)"
 } > "$temp"

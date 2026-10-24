@@ -1,5 +1,16 @@
 # Simple Notes — Design & Product Specification
 
+## Vincolo correttivo: testo completo + sottolineatura aderente (24/10/2026)
+
+**Due larghezze diverse, entrambe necessarie:**
+
+- **Testo/placeholder integralmente visibile**: il `TextField` deve essere largo **almeno quanto il contenuto misurato, più spazio per cursore/selezione** (~18 dp, limitato dalla larghezza realmente disponibile). Il testo non deve essere troncato (es. «test telefono» → «test telefonc») né andare a capo inutilmente («Aggiungi una descrizione...» in un pannello sufficientemente largo). Un campo realmente stretto può andare a capo o scorrere, senza perdita di caratteri.
+- **Linea breve**: la sottolineatura rimane sotto i glifi visibili (valore oppure placeholder) e NON include lo spazio riservato al cursore. Il bordo nativo resta invisibile; disegnare la linea con `InlineGlyphUnderline`, misurandola con `InlineTextMetrics.fieldWidth`. Usare `InlineTextMetrics.inputWidth` per la larghezza effettiva del campo, **non** riutilizzare `fieldWidth` anche per il `TextField`.
+- **Aspetto**: nessun fondo grigio, linea neutra sottile e blu al focus, placeholder più trasparente (`NotesPalette.placeholder`). La larghezza dell'input cresce al digitare e si ferma ai limiti del contenitore disponibile.
+- **Ovunque**: applicare questi componenti condivisi a titoli task/liste/note, descrizioni, tag, sottotask, input di aggiunta rapida e varianti desktop/Android. Nei test controllare *entrambe* le dimensioni: il viewport interno deve essere più largo della linea, e il segmento della linea deve seguire la misura del testo. Includere stringhe lunghe e placeholder, anche nelle sidebar strette.
+
+Riferimento tecnico: `apps/flutter/lib/ui/notes_theme.dart` (`InlineTextMetrics.fieldWidth`, `InlineTextMetrics.inputWidth`, `InlineGlyphUnderline`). **Non ridurre la larghezza del TextField alla sola linea: provoca clipping.** Questa regola prevale sulle note storiche che chiedevano di togliere ogni spazio aggiuntivo dal campo: è la *linea* a dover essere precisa, non il viewport di editing.
+
 > Specifica funzionale/tecnica sintetica. **Non significa che tutto sia implementato.** Stato reale in [project.md](project.md).
 
 ## 1. Obiettivo e principi
@@ -44,7 +55,7 @@
 
 - Esempi prioritari: **titolo della lista nell'header**, titolo task, titolo nota, descrizione breve e altre proprietà testuali semplici. Un click/tap sul valore attiva cursore e selezione senza cambiare pagina.
 - Il componente inline deve avere **stile coerente con il testo originale**, larghezza legata al contenuto, focus visibile ma leggero, semantica accessibile e comportamento adeguato a mouse, tastiera e touch.
-- **Stile input inline obbligatorio — regola esatta:** niente background/grigio né rettangolo. Sottolineatura sottile neutra anche a riposo, blu accent al focus, **larga quanto i glifi effettivamente mostrati**, oppure quanto il testo placeholder se il campo è vuoto; non deve MAI allungarsi fino al margine del contenitore, né avere larghezze minime artificiali (es. 84/120 px) o padding orizzontale superfluo. È tollerabile soltanto ~1 px per il cursore di inserimento. Anche in righe con `Expanded`, il campo deve mantenere larghezza intrinseca: il resto della riga rimane spazio vuoto, NON una linea.
+- **Stile input inline obbligatorio — regola esatta:** niente background/grigio né rettangolo. Sottolineatura sottile neutra anche a riposo, blu accent al focus, **larga quanto i glifi effettivamente mostrati**, oppure quanto il testo placeholder se il campo è vuoto; non deve MAI allungarsi fino al margine del contenitore, né avere larghezze minime artificiali (es. 84/120 px) o padding orizzontale superfluo. La **linea** aggiunge al massimo ~1 px alla larghezza dei glifi; il **campo editabile** invece necessita di spazio ulteriore per mostrare testo e caret. Anche in righe con `Expanded`, il campo deve mantenere larghezza intrinseca: il resto della riga rimane spazio vuoto, NON una linea.
 - **Placeholder più trasparente del testo reale:** il colore `NotesPalette.placeholder` è una versione semi-trasparente di `secondaryText` (~72% di opacità); mantiene dimensione/font del contenuto e resta distinguibile in tema scuro. Non riutilizzare il colore pieno dei dati salvati. Misurare il testo con `InlineTextMetrics.fieldWidth` includendo lo scaling accessibile e i caratteri effettivi. Non simulare la sottolineatura con un bordo full-width sotto un `Expanded`.
 - **Ambito:** titoli task/note/liste/sottotask, tag, descrizioni, corpo nota, aggiunta rapida attività e sottotask nelle schermate Flutter Windows/Android (UI condivisa per il futuro web). Per paragrafi multilinea larghi o che vanno a capo, il campo può usare lo spazio necessario al wrapping, ma non un minimo arbitrario. Ricerca Forui e form multi-campo sono controlli distinti, non input inline.
 - Per campi brevi, **Invio o perdita del focus salva**; **Esc annulla** e ripristina il testo precedente. Non salvare stringhe vuote, rispettare limiti e mostrare errori non distruttivi.

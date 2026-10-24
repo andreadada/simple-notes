@@ -1,11 +1,22 @@
 # Audit applicazione di design.md — UI condivisa Flutter
 
+## Vincolo correttivo: testo completo + sottolineatura aderente (24/10/2026)
+
+**Due larghezze diverse, entrambe necessarie:**
+
+- **Testo/placeholder integralmente visibile**: il `TextField` deve essere largo **almeno quanto il contenuto misurato, più spazio per cursore/selezione** (~18 dp, limitato dalla larghezza realmente disponibile). Il testo non deve essere troncato (es. «test telefono» → «test telefonc») né andare a capo inutilmente («Aggiungi una descrizione...» in un pannello sufficientemente largo). Un campo realmente stretto può andare a capo o scorrere, senza perdita di caratteri.
+- **Linea breve**: la sottolineatura rimane sotto i glifi visibili (valore oppure placeholder) e NON include lo spazio riservato al cursore. Il bordo nativo resta invisibile; disegnare la linea con `InlineGlyphUnderline`, misurandola con `InlineTextMetrics.fieldWidth`. Usare `InlineTextMetrics.inputWidth` per la larghezza effettiva del campo, **non** riutilizzare `fieldWidth` anche per il `TextField`.
+- **Aspetto**: nessun fondo grigio, linea neutra sottile e blu al focus, placeholder più trasparente (`NotesPalette.placeholder`). La larghezza dell'input cresce al digitare e si ferma ai limiti del contenitore disponibile.
+- **Ovunque**: applicare questi componenti condivisi a titoli task/liste/note, descrizioni, tag, sottotask, input di aggiunta rapida e varianti desktop/Android. Nei test controllare *entrambe* le dimensioni: il viewport interno deve essere più largo della linea, e il segmento della linea deve seguire la misura del testo. Includere stringhe lunghe e placeholder, anche nelle sidebar strette.
+
+Riferimento tecnico: `apps/flutter/lib/ui/notes_theme.dart` (`InlineTextMetrics.fieldWidth`, `InlineTextMetrics.inputWidth`, `InlineGlyphUnderline`). **Non ridurre la larghezza del TextField alla sola linea: provoca clipping.** Questa regola prevale sulle note storiche che chiedevano di togliere ogni spazio aggiuntivo dal campo: è la *linea* a dover essere precisa, non il viewport di editing.
+
 > Aggiornato il 24 ottobre 2026. Questo documento separa **codice implementato**, **verifica CI** e **runtime web realmente disponibile**. Il refactoring non introduce modifiche a PostgreSQL, OAuth o formato dei dati.
 
 ## Regola unica su tutte le schermate
 
 - Gli attributi testuali semplici già mostrati si modificano direttamente: tap/click nel contenuto, Enter (campo breve)/perdita del focus per salvare, Esc per annullare. Il corpo multilinea salva al blur oppure Ctrl/Cmd+Enter.
-- Componenti `InlineEditableTitle` per titoli/tag, `InlineEditableBody` per descrizioni/note, `InlineQuickAdd` per sottotask e input task rapido. Niente righe a larghezza pagina: `InlineTextMetrics.fieldWidth` misura il testo o, se assente, il placeholder usando font e text-scaling correnti; evita i vecchi `minWidth 84/120` e aggiunte di 22/26px.
+- Componenti `InlineEditableTitle` per titoli/tag, `InlineEditableBody` per descrizioni/note, `InlineQuickAdd` per sottotask e input task rapido. Niente righe a larghezza pagina: `InlineTextMetrics.fieldWidth` misura il testo o, se assente, il placeholder usando font e text-scaling correnti; evita i vecchi `minWidth 84/120` **per la linea**; il viewport interno conserva spazio ulteriore per caret e testo.
 - **Regola misurabile:** il segmento sottolineato deve seguire **solo** la larghezza dei caratteri, più ~1px di spazio per il cursore; nessun riempimento. Placeholder semitrasparente `NotesPalette.placeholder` (~72%), sotto gli stessi glifi. Alla selezione la linea diventa blu. Una `Row` può essere larga, ma il campo rimane intrinseco e il resto è vuoto. Anche quando il parent passa constraints stretti, `Align(widthFactor:1)` deve mantenere il `TextField` interno corto. Non misurare il wrapper padre durante i widget test: può rimanere largo quanto la sidebar; il `TextField` stesso può essere dilatato da `InputDecorator`. Per la regola visiva **misurare il widget `inline-glyph-underline`**, creato da `InlineGlyphUnderline` sotto il testo. Il bordo nativo è invisibile; focus e sfondo restano invariati.
 - Tutti gli aggiornamenti richiamano `LocalStore` e **scrivono realmente in SQLite/outbox**; non basta aggiornare il widget. I metodi dedicati leggono lo stato task più recente per non sovrascrivere altri attributi della stessa attività.
 - Per dati non testuali usare selettori mirati Forui (priorità, lista, data). Dialog Forui solo per azioni distruttive, creazione di una nuova lista e modifica avanzata multi-campo.

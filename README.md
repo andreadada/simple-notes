@@ -1,5 +1,16 @@
 # Simple Notes
 
+## Vincolo correttivo: testo completo + sottolineatura aderente (24/10/2026)
+
+**Due larghezze diverse, entrambe necessarie:**
+
+- **Testo/placeholder integralmente visibile**: il `TextField` deve essere largo **almeno quanto il contenuto misurato, più spazio per cursore/selezione** (~18 dp, limitato dalla larghezza realmente disponibile). Il testo non deve essere troncato (es. «test telefono» → «test telefonc») né andare a capo inutilmente («Aggiungi una descrizione...» in un pannello sufficientemente largo). Un campo realmente stretto può andare a capo o scorrere, senza perdita di caratteri.
+- **Linea breve**: la sottolineatura rimane sotto i glifi visibili (valore oppure placeholder) e NON include lo spazio riservato al cursore. Il bordo nativo resta invisibile; disegnare la linea con `InlineGlyphUnderline`, misurandola con `InlineTextMetrics.fieldWidth`. Usare `InlineTextMetrics.inputWidth` per la larghezza effettiva del campo, **non** riutilizzare `fieldWidth` anche per il `TextField`.
+- **Aspetto**: nessun fondo grigio, linea neutra sottile e blu al focus, placeholder più trasparente (`NotesPalette.placeholder`). La larghezza dell'input cresce al digitare e si ferma ai limiti del contenitore disponibile.
+- **Ovunque**: applicare questi componenti condivisi a titoli task/liste/note, descrizioni, tag, sottotask, input di aggiunta rapida e varianti desktop/Android. Nei test controllare *entrambe* le dimensioni: il viewport interno deve essere più largo della linea, e il segmento della linea deve seguire la misura del testo. Includere stringhe lunghe e placeholder, anche nelle sidebar strette.
+
+Riferimento tecnico: `apps/flutter/lib/ui/notes_theme.dart` (`InlineTextMetrics.fieldWidth`, `InlineTextMetrics.inputWidth`, `InlineGlyphUnderline`). **Non ridurre la larghezza del TextField alla sola linea: provoca clipping.** Questa regola prevale sulle note storiche che chiedevano di togliere ogni spazio aggiuntivo dal campo: è la *linea* a dover essere precisa, non il viewport di editing.
+
 App Windows 11 + Android per **task, note e produttività**, ispirata alle funzionalità di TickTick con interfaccia originale.
 
 **Stack:** Flutter + **Forui (design system)** + Riverpod + Drift/SQLite (offline-first); Spring Boot Java 21 + PostgreSQL/Flyway; Docker Compose/Coolify; Google OAuth Windows/Android.
@@ -20,7 +31,7 @@ L'auto-sync è foreground; sono stati aggiunti gestione dei conflitti Forui, des
 - [docs/P0-STATUS.md](docs/P0-STATUS.md) — stato P0 verificabile, nuove funzioni e blocchi.
 - [docs/task-organization.md](docs/task-organization.md) — liste, priorità, tag, sottotask e deploy Flyway V6.
 - [docs/due-dates-timezones.md](docs/due-dates-timezones.md) — **prossimo incremento P0 pianificato**: date-only, ora, timezone IANA, migrazioni V7/v5 e test (non implementato).
-**Regola UI aggiornata (24/10):** tutti gli input inline (titoli, descrizioni, tag, note e quick-add) hanno sfondo trasparente e underline **lunga esattamente quanto il testo o l'hint** (non fino al bordo del contenitore), con tolleranza di ~1px per il cursore; placeholder semitrasparente. `InlineTextMetrics.fieldWidth` misura i glifi; `InlineGlyphUnderline` disegna la linea indipendentemente dalle dimensioni minime interne del campo Flutter, evitando qualsiasi bordo eccessivo. Implementazione nel commit [7303d45](https://github.com/andreadada/simple-notes/commit/7303d45c34eda2d38f3442080b0959c69ab1bbf0); [design.md](design.md), [Forui](docs/ui-forui.md), [audit](docs/ui-design-audit.md). UI web futura ancora non operativa. CI dell'incremento in verifica separata.
+**Regola UI aggiornata (24/10):** tutti gli input inline (titoli, descrizioni, tag, note e quick-add) hanno sfondo trasparente e underline **lunga esattamente quanto il testo o l'hint** (non fino al bordo del contenitore), con ~1px di tolleranza della linea e **margine aggiuntivo del campo** (~18dp) che evita la troncatura del testo; placeholder semitrasparente. `InlineTextMetrics.fieldWidth` misura i glifi; `InlineGlyphUnderline` disegna la linea indipendentemente dalle dimensioni minime interne del campo Flutter, evitando qualsiasi bordo eccessivo. Implementazione nel commit [7303d45](https://github.com/andreadada/simple-notes/commit/7303d45c34eda2d38f3442080b0959c69ab1bbf0); [design.md](design.md), [Forui](docs/ui-forui.md), [audit](docs/ui-design-audit.md). UI web futura ancora non operativa. CI dell'incremento in verifica separata.
 
 - [design.md](design.md) — requisiti UI/UX e funzionalità obiettivo; non tutte implementate.
 - [docs/ui-forui.md](docs/ui-forui.md) — Forui come design system di riferimento e stato della migrazione.

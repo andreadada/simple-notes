@@ -270,14 +270,15 @@ class _NotesHomeState extends ConsumerState<NotesHome> {
         ]),
       ],
       menuBuilder: (context, controller, menu) => menu!,
-      builder: (context, controller, child) => child!,
-      child: FButton(
+      builder: (context, controller, child) => FButton(
         variant: FButtonVariant.ghost,
         mainAxisSize: compact ? MainAxisSize.min : MainAxisSize.max,
-        onPress: cloud.busy ? null : () {},
-        // Forui buttons measure their children unconstrained. Give the
-        // profile row a finite width before placing Expanded inside it.
-        child: SizedBox(
+        onPress: cloud.busy ? null : () { controller.toggle(); },
+        child: child!,
+      ),
+      // Forui buttons measure their children unconstrained. Give the
+      // profile row a finite width before placing Expanded inside it.
+      child: SizedBox(
           width: compact ? 42 : 190,
           child: Padding(
           padding: EdgeInsets.symmetric(
@@ -311,7 +312,6 @@ class _NotesHomeState extends ConsumerState<NotesHome> {
           ),
           ),
         ),
-      ),
     );
 
     // One responsive Forui navigation component for Windows and Android.
@@ -693,15 +693,15 @@ class _NotesHomeState extends ConsumerState<NotesHome> {
               ]),
             ],
             menuBuilder: (context, controller, menu) => menu!,
-            builder: (context, controller, child) => child!,
-            child: FButton(
+            builder: (context, controller, child) => FButton(
               key: const Key('inline-task-priority'),
               variant: FButtonVariant.outline,
               mainAxisSize: MainAxisSize.min,
-              onPress: () {},
+              onPress: () { controller.toggle(); },
               prefix: const Icon(Icons.flag_outlined, size: 16),
-              child: Text(task.priority == 0 ? 'Normale' : 'P${task.priority}'),
+              child: child!,
             ),
+            child: Text(task.priority == 0 ? 'Normale' : 'P${task.priority}'),
           ),
           const SizedBox(height: 18),
           const Text('LISTA', style: TextStyle(
@@ -724,17 +724,17 @@ class _NotesHomeState extends ConsumerState<NotesHome> {
               ]),
             ],
             menuBuilder: (context, controller, menu) => menu!,
-            builder: (context, controller, child) => child!,
-            child: FButton(
+            builder: (context, controller, child) => FButton(
               key: const Key('inline-task-list'),
               variant: FButtonVariant.outline,
               mainAxisSize: MainAxisSize.min,
-              onPress: () {},
+              onPress: () { controller.toggle(); },
               prefix: const Icon(Icons.folder_outlined, size: 16),
-              child: Text(ref.read(localStoreProvider).lists
+              child: child!,
+            ),
+            child: Text(ref.read(localStoreProvider).lists
                 .where((list) => list.id == task.listId)
                 .firstOrNull?.title ?? 'Inbox'),
-            ),
           ),
           const SizedBox(height: 18),
           const Text('TAG', style: TextStyle(

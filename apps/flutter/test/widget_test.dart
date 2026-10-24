@@ -409,6 +409,28 @@ void main() {
   });
 
 
+  test('Advanced title-only save preserves date-only due and its outbox', () async {
+    final db = AppDatabase(NativeDatabase.memory());
+    final container = ProviderContainer(overrides: [
+      databaseProvider.overrideWithValue(db),
+      initialDataProvider.overrideWithValue(const LocalData()),
+    ]);
+    addTearDown(() async { container.dispose(); await db.close(); });
+    final store = container.read(localStoreProvider.notifier);
+    await store.addTask('Prima', due: TaskDue.dateOnly('2026-10-26'));
+    final item = container.read(localStoreProvider).tasks.single;
+    await store.editTask(item.id,
+      title: 'Dopo', description: 'Aggiornata',
+      due: item.due, changeDue: true,
+    );
+    final saved = (await db.snapshot()).tasks.single;
+    expect(saved.title, 'Dopo');
+    expect(saved.due.kind, 'date');
+    expect(saved.due.date, '2026-10-26');
+    expect(saved.due.instant, isNull);
+    expect(await db.pendingCount(), 2);
+  });
+
   test('All simple attributes write to SQLite and preserve outbox', () async {
     final database = AppDatabase(NativeDatabase.memory());
     final container = ProviderContainer(overrides: [

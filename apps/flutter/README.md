@@ -4,6 +4,12 @@
 
 Client Flutter Windows/Android con UI dark, task/note, **ricerca e modifica task**, Drift/SQLite e outbox transazionale. Auto-sync foreground sperimentale con delta pull, outbox e retry con backoff; sync manuale ancora disponibile dal menu profilo. **Windows + Google Login Desktop** verificati manualmente (21/10/2026); **Android avviato e segnalato funzionante** dopo il fix JVM del 23/10 (CI JDK 17/21 riuscita). **Note sincronizzate PC↔Android e attività Android→PC confermate manualmente dall'utente il 23/10.** Restano prove conflitti/retry su dispositivi reali. Vedere [handoff](../../docs/HANDOFF.md) e [runbook Android](../../docs/android-troubleshooting.md).
 
+## Design inline-first e stato piattaforme
+
+Le schermate Flutter condivise adottano ora il comportamento descritto in [audit UI](../../docs/ui-design-audit.md): attributi semplici direttamente editabili (liste, attività, sottotask, note, tag, descrizioni), componenti Forui per selezioni/menù/sheet e conferme distruttive. Persistenza invariata SQLite/outbox.
+
+**Web browser non ancora disponibile:** l'app corrente usa `dart:io` + Drift Native e OAuth desktop/Android, quindi questa UI non basta per una build web funzionante. Serve un adattamento separato con Drift web/SQLite WASM e OAuth web; non presentare `flutter run -d chrome` come supportato. Windows/Android restano i target attuali.
+
 ## Build
 ```bash
 cd apps/flutter

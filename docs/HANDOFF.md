@@ -2,6 +2,10 @@
 
 > **Documentazione storica aggiornata al 23 ottobre 2026.** Per lo stato P0 più recente e le conferme di sync hardware usare [P0-STATUS.md](P0-STATUS.md). Documento operativo per sviluppatori e assistenti AI che aprono la repository senza conoscere le chat precedenti. Verificare sempre il codice e gli ultimi workflow, non usare questo testo come sostituto dei test reali.
 
+## Aggiornamento UX shared Flutter (24 ottobre 2026)
+
+Il client ha esteso `InlineEditableTitle` a task/note/sottotask/tag, aggiunto `InlineEditableBody` per descrizioni e note e un quick-add inline dei sottotask. Proprietà lista/priorità sono menu Forui, profilo ora popover Forui e dettaglio mobile sheet Forui; eliminazioni di task/note richiedono conferma. Le modifiche persistono in SQLite/outbox con i metodi `LocalStore`. L'editor avanzato resta per i cambi multi-campo. **Web runtime ancora non operativo**: database nativo e auth platform-specific. Leggere [ui-design-audit.md](ui-design-audit.md).
+
 ## Prossima implementazione progettata (23 ottobre 2026)
 
 Per intervenire su scadenze, SQLite, Flyway o sync leggere **[due-dates-timezones.md](due-dates-timezones.md)**: pianifica il tipo `none/date/datetime/legacy`, la migrazione PostgreSQL V7 e Flutter Drift v5, timezone IANA/DST, protezione dei client precedenti e test. **Non è implementato**. Le CI per l'editor HH:mm già esistente sono verdi ([40011789270](https://github.com/andreadada/simple-notes/actions/runs/40011789270)). Restano gate backup/restore reale, deploy sicuro e prova hardware in [P0-DEVICE-CHECKS.md](P0-DEVICE-CHECKS.md).

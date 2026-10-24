@@ -11,6 +11,13 @@ Repository: **Simple Notes** — Flutter Windows/Android + Spring Boot/PG su Coo
 6. [docs/architecture.md](docs/architecture.md), [docs/api.md](docs/api.md), [docs/sync.md](docs/sync.md).
 7. [apps/flutter/README.md](apps/flutter/README.md), [docs/android-troubleshooting.md](docs/android-troubleshooting.md), [infra/README.md](infra/README.md).
 
+## Regola UI verificabile su tutta l'app
+
+- Applicare `design.md` alle schermate Flutter **desktop e mobile**, usando la stessa struttura responsive; per i campi semplici presenti anche in una riga usare `InlineEditableTitle` / `InlineEditableBody` senza bottone `Modifica`. Per dati non testuali scegliere Forui; eccezione di editor avanzato solo se ci sono più campi correlati.
+- Non riaprire il vecchio dialog `Modifica nota`; il corpo e il titolo della nota sono inline nella card. Non eliminare task/note senza conferma Forui.
+- I metodi `LocalStore.renameTask/setTask*/renameNote/setNoteBody/renameSubtask` devono preservare SQLite/outbox e gli attributi non modificati. Eseguire `flutter analyze`, `flutter test` e build Windows/Android in CI.
+- **Web non è dichiarabile pronto:** il progetto usa ancora `dart:io`/Drift Native/OAuth desktop; UI condivisa ≠ app browser funzionante. Leggere `docs/ui-design-audit.md` prima di affermare supporto web.
+
 ## Criteri di verità
 
 - **La CI non equivale a un test OAuth/sync E2E.** Ultima CI Flutter verificata sull'incremento inline-title: [40001351564](https://github.com/andreadada/simple-notes/actions/runs/40001351564), analyze/test, Windows e Android JDK 17/21 riusciti. I soli commit `.md` non attivano questa CI.

@@ -65,6 +65,10 @@ P1, P2 e P3 rimangono **non avviati** come fasi complete; la presenza di un comp
 
 Checklist operativa con prove da registrare: [P0-DEVICE-CHECKS.md](P0-DEVICE-CHECKS.md).
 
+## Allineamento UI (24/10/2026)
+
+Refactoring inline-first nelle schermate Flutter esistenti: titoli task/note/sottotask e descrizioni direttamente modificabili, tag, priorità e lista senza dialog di modifica generico, Forui account menu/sheet mobile, conferme delete. Tutti i salvataggi passano tramite SQLite/outbox. Stato dell'audit e limitazioni per runtime web: [ui-design-audit.md](ui-design-audit.md). **Le build web e la verifica visuale dei dispositivi non sono implicate dall'adozione dei componenti Forui.**
+
 ## Deploy / sicurezza dati
 
 - Il nuovo client richiede API con supporto `entityType:list` e migrazioni Flyway **V5+V6**: **redeploy del backend su Coolify**. Prima produrre un backup verificabile del database. Mai cancellare dati app/SQLite per risolvere errori di sync.

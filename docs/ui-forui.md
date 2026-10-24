@@ -19,6 +19,12 @@
 - Usare `FDialog`/form Forui per dati complessi o multi-campo, date, conferme esplicite e operazioni potenzialmente distruttive. Non fare inline di qualsiasi campo indiscriminatamente: il principio vale **la maggior parte delle volte** dove il risultato rimane comprensibile.
 - Componente di riferimento: `apps/flutter/lib/ui/inline_editable_title.dart` (`InlineEditableTitle`); è usato sul titolo della lista in header Windows e nella app bar Android. **Non reintrodurre il pulsante Rinomina lista** o una modale per la sola rinomina.
 
+## Applicazione della regola su tutte le schermate esistenti
+
+Il refactoring dell'interfaccia condivisa (24/10/2026) estende il vincolo inline-first oltre i titoli delle liste: titoli task e sottotask, descrizioni, tag, titoli/corpi delle note. `InlineEditableBody` gestisce testo multilinea, `InlineQuickAdd` l'aggiunta di sottotask; metodi `LocalStore` aggiornano SQLite/outbox senza stato grafico fittizio. Le proprietà non testuali (priorità/lista) usano `FPopoverMenu`, il calendario rimane Forui, il menu account è `FPopoverMenu` e i dettagli mobile usano `showFSheet`. Tutti i delete hanno conferma Forui. L'editor avanzato task è riservato a modifica coordinata multi-campo.
+
+**Non dichiarare che web browser è disponibile:** la stessa UI è riutilizzabile sul web, ma backend storage/OAuth del client non sono stati portati; leggere [ui-design-audit.md](ui-design-audit.md). Il resto del Material bridge deve essere rimosso gradualmente, senza regressioni.
+
 ## Implementazione attuale
 
 | Elemento | Implementazione |

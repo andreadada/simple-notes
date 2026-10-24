@@ -51,6 +51,12 @@
 
 Implementazione riusabile: `apps/flutter/lib/ui/inline_editable_title.dart` (`InlineEditableTitle`). Il titolo della lista nella UI corrente ne è il riferimento.
 
+### Applicazione UX effettiva nelle schermate esistenti (24 ottobre 2026)
+
+La UI Flutter ora offre modifica inline di titoli **lista, attività, note e sottotask**, descrizione attività e corpo nota; priorità e lista si selezionano via `FPopoverMenu`, la data via calendario Forui e le conferme distruttive via `FDialog`. Profilo/sync usa menu Forui e il pannello dettagli mobile usa `showFSheet`. La scrittura è offline-first tramite `LocalStore`, SQLite e outbox. L'editor avanzato multi-campo è un'eccezione intenzionale; i componenti Material strutturali/quick-add restano bridge durante la migrazione.
+
+**Web:** la UI è condivisa e responsive ma il runtime browser NON è ancora operativo (database Drift nativo e OAuth Windows/Android). Il gap e la checklist sono documentati in [docs/ui-design-audit.md](docs/ui-design-audit.md).
+
 ## 4. Funzionalità
 **P0 — MVP:** login Google, account/sessioni, task, liste, note, tags, sottotask, scadenze, ricorrenze, reminder, ricerca, SQLite locale, push/pull incrementale, conflitti, Android/Windows.
 **P1 — Produttività:** calendario giorno/settimana/mese, Eisenhower, Kanban, Pomodoro, stopwatch, habit, streak, countdown, sticky notes, shortcuts, tray.

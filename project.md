@@ -139,6 +139,17 @@ Specifica **solo progettuale**: [docs/due-dates-timezones.md](docs/due-dates-tim
 - [ ] T3: UI Forui solo-giorno/data+ora/fuso, scelta DST, filtri Oggi/7 giorni, test widget.
 - [ ] T4: CI, backend-first deploy sicuro ed E2E PC↔Android; solo dopo ricorrenze e notifiche.
 
+## UI cross-platform e regola inline-first (24/10/2026)
+
+- [x] Titoli delle liste, task, note e sottotask con editing diretto; descrizione task e corpo nota inline; aggiornamenti offline-first tramite SQLite/outbox.
+- [x] Proprietà semplici del task con popover Forui per priorità/lista, calendario Forui per data, Forui sheet mobile; profilo con menu Forui.
+- [x] Richiesta conferma Forui prima di eliminare task/nota/lista; editor avanzato multi-campo disponibile come eccezione.
+- [ ] Verifica visuale E2E Windows e Android, focus, DPI, keyboard, outbox e sincronizzazione reale per tutte le modifiche.
+- [ ] **Web browser runtime**: Drift nativo e OAuth `dart:io` sono ancora incompatibili con web. Progettare porting database/auth/CI separato (non fingere web pronto).
+- [ ] Migrazione residui Material del quick-add e layout, tema chiaro, accessibilità completa.
+
+Dettagli e matrice: [docs/ui-design-audit.md](docs/ui-design-audit.md). Aggiornare i checkbox solo dopo verifica reale del relativo comportamento.
+
 ## Handoff e nuova chat
 
 - Partire da [docs/HANDOFF.md](docs/HANDOFF.md), [AGENTS.md](AGENTS.md) e [docs/android-troubleshooting.md](docs/android-troubleshooting.md) per ricostruire lo stato senza cronologia della chat.
@@ -224,3 +235,5 @@ Esempio: `2026-10-21 14:20 CEST | commit abc1234 | Aggiunto modulo promemoria e 
 - 2026-10-23 | docs(plan) | Specifica P0 scadenze date-only/datetime/legacy, timezone IANA/DST, backend Flyway V7, Flutter Drift v5, compatibilità old-client e matrice test in `docs/due-dates-timezones.md`. Nessuna migrazione applicata; commit documentale nella cronologia Git.
 
 - 2026-10-23 | commit 1bafec0 | T1 backend: `TaskDue` con date/ora/fuso e DST, Flyway V7 additiva, sync con payload `due`, protezione HTTP 426 old-client, capabilities e test. **Non deployato; Flutter T2 pendente.**
+
+- 2026-10-24 | feat(ui) | Refactoring inline-first su task, note, descrizioni, sottotask e proprietà Forui; menù account Forui, sheet mobile, conferme delete, test Flutter e matrice UI in `docs/ui-design-audit.md`. Web runtime ancora non supportato; verifiche hardware pendenti.

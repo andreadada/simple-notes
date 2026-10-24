@@ -298,3 +298,5 @@ Esempio: `2026-10-21 14:20 CEST | commit abc1234 | Aggiunto modulo promemoria e 
 - 2026-10-24 | T3 | Editor scadenze Forui condiviso quick/dettagli/advanced, IANA e DST fold/gap, filtri a giorni civili, test widget e unitari; backend V7 Coolify e test hardware ancora da fare. Vedi `docs/T3-SCADENZE.md`.
 
 - 2026-10-24 | T4 strumenti | Script backup SHA256, restore isolato con receipt, preflight fail-closed, check HTTPS e prova migrazione V6→V7 con Testcontainers in CI. Operazioni REALI Coolify e device NON eseguite; vedi `docs/T4-RELEASE-RUNBOOK.md`.
+
+- 2026-10-24 | T4.2 | Client Flutter `0.4.0+4`: diagnostica locale/cloud nel menu Forui, avvisi HTTP 426, ultimo sync riuscito persistito, test read-only e checklist reale Windows/Android. Backup VPS reale e restore isolato confermati dall'utente, Flyway V7 già presente; E2E fisico da eseguire. [Protocollo](docs/T4-DEVICE-SYNC.md).

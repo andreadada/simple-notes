@@ -25,6 +25,9 @@ Se appare **Versione backend incompatibile** o il client riceve HTTP **426**, **
 
 La data di ultima sincronizzazione viene registrata **solo dopo upload e pull entrambi riusciti**. Una GET diagnostica non aggiorna mai quel valore. In caso di 426 la UI segnala l'upgrade e sospende il retry automatico fino a un comando manuale o a una nuova sessione; le modifiche non vengono scartate.
 
+
+**Build di collaudo T4.2:** `0.4.0+4` (versione Flutter in `pubspec.yaml`); installare sul PC e su Android una build ottenuta dallo stesso commit. L'APK CI è di test e non incorpora automaticamente i parametri OAuth; non disinstallare la vecchia applicazione per aggiornare.
+
 ## Compilare i client con la vera configurazione cloud
 
 Nella PowerShell del PC, in `apps/flutter` della repository aggiornata:

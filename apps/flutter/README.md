@@ -119,3 +119,5 @@ Modifica attività, modifica nota e scelta scadenza utilizzano ora `showFDialog`
 ## Organizzazione attività (Drift v4 storico; ora v5 nel codice)
 
 Liste con create/rename/delete nella sidebar Forui, priorità P1–P3, tag, sottotask e filtro/ricerca. Le operazioni locali vengono persistite in SQLite e sincronizzate con `entityType: list` per le liste e `entityType: task` per i metadati. **Richiede server con Flyway V6** prima di usare liste nuove. Nuova migrazione Drift v4, conservare il database locale. Documentazione e test: [task-organization.md](../../docs/task-organization.md) e `test/task_organization_test.dart`.
+
+**T4.2:** versione Flutter `0.4.0+4` destinata al collaudo Windows/Android. Il menu avatar include `Verifica sincronizzazione` e la diagnostica read-only, i test e la procedura sono in [T4-DEVICE-SYNC.md](../../docs/T4-DEVICE-SYNC.md).

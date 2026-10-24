@@ -8,6 +8,8 @@ Client Flutter Windows/Android con UI dark, task/note, **ricerca e modifica task
 
 Le schermate Flutter condivise adottano ora il comportamento descritto in [audit UI](../../docs/ui-design-audit.md): attributi semplici direttamente editabili (liste, attività, sottotask, note, tag, descrizioni), componenti Forui per selezioni/menù/sheet e conferme distruttive. Persistenza invariata SQLite/outbox.
 
+**Regola aggiornata 24/10:** niente sfondi sugli input inline. La sottolineatura segue soltanto i glifi del testo o del placeholder (non tutta la riga), con ~1 px per il cursore; il placeholder usa `NotesPalette.placeholder` semitrasparente. `InlineTextMetrics.fieldWidth` misura in modo coerente titoli, descrizioni, note, sottotask e input rapido task. Restano controlli distinti la ricerca Forui e i form avanzati multi-campo.
+
 **Web browser non ancora disponibile:** l'app corrente usa `dart:io` + Drift Native e OAuth desktop/Android, quindi questa UI non basta per una build web funzionante. Serve un adattamento separato con Drift web/SQLite WASM e OAuth web; non presentare `flutter run -d chrome` come supportato. Windows/Android restano i target attuali.
 
 ## Build

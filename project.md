@@ -12,6 +12,7 @@
 - [ ] Login Google verificato lato server; OAuth PKCE su Windows; credenziali e token in storage sicuro.
 - [ ] Distinguere layout Windows e Android; testare accessibilità, ridimensionamento e dark/light.
 - [x] **Design rule inline-edit first:** se un titolo/nome/attributo semplice è già visibile, renderlo editabile sul posto, senza bottone/modale Rinomina. Invio/blur salva, Esc annulla; validazione e SQLite/outbox sempre obbligatori. Eccezioni per form complessi o distruttivi.
+- [x] **Design rule larghezza esatta:** testo senza sfondo, sottolineatura neutra solo larga quanto valore/placeholder (non il contenitore; ~1px per cursore), blu al focus, placeholder semitrasparente (~72%). Implementazione condivisa `InlineTextMetrics.fieldWidth` in `notes_theme.dart`, utilizzata da titolo, descrizione, note, tag, sottotask e input task rapido; vedi `design.md` / `docs/ui-forui.md`. Il codice è nel commit `7303d45`; CI e test real-device da registrare separatamente.
 - [ ] Gestire i fusi orari, DST, le ricorrenze e la deduplicazione dei promemoria.
 - [ ] Eseguire test unitari, integrazione, offline/online e ripristino backup prima dei rilasci.
 - [ ] Aggiornare **Edit Timespan** in fondo ad ogni commit che modifica il progetto.
@@ -237,3 +238,5 @@ Esempio: `2026-10-21 14:20 CEST | commit abc1234 | Aggiunto modulo promemoria e 
 - 2026-10-23 | commit 1bafec0 | T1 backend: `TaskDue` con date/ora/fuso e DST, Flyway V7 additiva, sync con payload `due`, protezione HTTP 426 old-client, capabilities e test. **Non deployato; Flutter T2 pendente.**
 
 - 2026-10-24 | feat(ui) | Refactoring inline-first su task, note, descrizioni, sottotask e proprietà Forui; menù account Forui, sheet mobile, conferme delete, test Flutter e matrice UI in `docs/ui-design-audit.md`. Web runtime ancora non supportato; verifiche hardware pendenti.
+
+- 2026-10-24 | style(ui) | Commit `7303d45`: rimossi min-width e padding extra dall'underline, larghezza misurata sui glifi di testo o hint anche nei quick-add, placeholder più trasparente e test Flutter dedicati. Regola registrata in `design.md`, audit e guide. Non equivale a rilascio browser.

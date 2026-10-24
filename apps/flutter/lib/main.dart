@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:forui/forui.dart';
 import 'ui/notes_theme.dart';
 import 'ui/inline_editable_title.dart';
+import 'ui/inline_editable_body.dart';
+import 'ui/inline_quick_add.dart';
 import 'ui/notes_dialogs.dart';
 import 'ui/sync_conflict_dialog.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -140,7 +142,8 @@ class _NotesHomeState extends ConsumerState<NotesHome> {
     final data = ref.watch(localStoreProvider);
     final cloud = ref.watch(cloudAuthProvider);
     final sync = ref.watch(cloudSyncProvider);
-    final desktop = MediaQuery.sizeOf(context).width >= 850;
+    final desktop = MediaQuery.sizeOf(context).width >= 950;
+    final wideDetails = MediaQuery.sizeOf(context).width >= 1200;
     final query = searchQuery.trim().toLowerCase();
     final list = visibleTasks(data.tasks)
         .where((task) => (priorityFilter == null ||
@@ -523,23 +526,48 @@ class _NotesHomeState extends ConsumerState<NotesHome> {
             Expanded(child: ListView(
               padding: const EdgeInsets.all(16),
               children: [
-                FButton(
+                Align(alignment: Alignment.centerLeft, child: FButton(
                   key: const Key('new-note'),
                   mainAxisSize: MainAxisSize.min,
                   onPress: () => ref.read(localStoreProvider.notifier).addNote(),
                   prefix: const Icon(Icons.add, size: 18),
                   child: const Text('Nuova nota'),
-                ),
+                )),
                 const SizedBox(height: 12),
                 for (final note in data.notes)
                   Padding(
-                    padding: const EdgeInsets.only(bottom: 8),
-                    child: FCard(child: ListTile(
-                    title: Text(note.title.isEmpty ? 'Senza titolo' : note.title),
-                    subtitle: Text(note.body, maxLines: 2, overflow: TextOverflow.ellipsis),
-                    onTap: () => showNoteEditor(note),
-                    trailing: IconButton(tooltip: 'Elimina', icon: const Icon(Icons.delete_outline),
-                      onPressed: () => ref.read(localStoreProvider.notifier).deleteNote(note.id)),
+                    padding: const EdgeInsets.only(bottom: 10),
+                    child: FCard(child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(children: [
+                          Expanded(child: InlineEditableTitle(
+                            key: Key('inline-note-title-${note.id}'),
+                            value: note.title,
+                            hint: 'Senza titolo',
+                            semanticsLabel: 'Titolo nota modificabile',
+                            style: const TextStyle(
+                              fontSize: 16, fontWeight: FontWeight.w600),
+                            onSave: (text) => ref.read(localStoreProvider.notifier)
+                                .renameNote(note.id, text),
+                          )),
+                          FButton.icon(
+                            key: Key('delete-note-${note.id}'),
+                            variant: FButtonVariant.ghost,
+                            onPress: () => confirmNoteDeletion(note),
+                            child: const Icon(Icons.delete_outline, size: 18),
+                          ),
+                        ]),
+                        const SizedBox(height: 6),
+                        InlineEditableBody(
+                          key: Key('inline-note-body-${note.id}'),
+                          value: note.body,
+                          semanticsLabel: 'Contenuto nota modificabile',
+                          hint: 'Scrivi una nota...',
+                          onSave: (text) => ref.read(localStoreProvider.notifier)
+                              .setNoteBody(note.id, text),
+                        ),
+                      ],
                     )),
                   ),
               ],
@@ -556,26 +584,39 @@ class _NotesHomeState extends ConsumerState<NotesHome> {
                         padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 2),
                         child: ListTile(
                           selected: selectedId == task.id,
-                          leading: Checkbox(
-                            value: task.completed,
-                            onChanged: (_) => ref.read(localStoreProvider.notifier).toggleTask(task.id),
-                          ),
-                          title: Text(task.title, style: TextStyle(
-                            decoration: task.completed ? TextDecoration.lineThrough : null)),
+                          leading: FCheckbox(
+                             value: task.completed,
+                             onChange: (_) => ref.read(localStoreProvider.notifier)
+                                 .toggleTask(task.id),
+                           ),
+                           title: InlineEditableTitle(
+                             key: Key('inline-task-row-${task.id}'),
+                             value: task.title,
+                             semanticsLabel: 'Titolo attività modificabile',
+                             maxLength: 1024,
+                             style: TextStyle(fontSize: 14,
+                               decoration: task.completed ? TextDecoration.lineThrough : null),
+                             onSave: (text) => ref.read(localStoreProvider.notifier)
+                                 .renameTask(task.id, text),
+                             onTap: () {
+                               setState(() => selectedId = task.id);
+                               if (!wideDetails) showTaskDetails(task);
+                             },
+                           ),
                           subtitle: task.dueAt == null ? null : Text(
                             'Scadenza: ${task.dueAt!.day}/${task.dueAt!.month}/${task.dueAt!.year}${task.dueAt!.hour == 0 && task.dueAt!.minute == 0 ? '' : ' ${task.dueAt!.hour.toString().padLeft(2, '0')}:${task.dueAt!.minute.toString().padLeft(2, '0')}'}'),
                           onTap: () {
                             setState(() => selectedId = task.id);
-                            if (!desktop) showTaskDetails(task);
+                            if (!wideDetails) showTaskDetails(task);
                           },
                         ),
                       );
                     },
                   )),
         ])),
-        if (desktop && selectedId != null && section != Section.notes)
-          SizedBox(width: 320, child: ColoredBox(
-            color: const Color(0xff202020),
+        if (wideDetails && selectedId != null && section != Section.notes)
+          SizedBox(width: 350, child: ColoredBox(
+            color: NotesPalette.sidebar,
             child: Builder(builder: (_) {
               final task = data.tasks.where((t) => t.id == selectedId).firstOrNull;
               return task == null ? const SizedBox() : taskDetails(task);
@@ -745,6 +786,59 @@ class _NotesHomeState extends ConsumerState<NotesHome> {
               if (ctx.mounted) Navigator.pop(ctx);
             },
             child: const Text('Elimina lista'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void confirmTaskDeletion(LocalTask task) {
+    showFDialog<void>(
+      context: context,
+      builder: (ctx, style, animation) => NotesDialog(
+        style: style, animation: animation,
+        title: const Text('Eliminare attività?'),
+        body: Text('L’attività "${task.title}" verrà spostata nel cestino sincronizzato.'),
+        actions: [
+          FButton(
+            variant: FButtonVariant.ghost,
+            onPress: () => Navigator.pop(ctx),
+            child: const Text('Annulla'),
+          ),
+          FButton(
+            key: const Key('confirm-delete-task'),
+            onPress: () async {
+              await ref.read(localStoreProvider.notifier).deleteTask(task.id);
+              if (mounted) setState(() => selectedId = null);
+              if (ctx.mounted) Navigator.pop(ctx);
+            },
+            child: const Text('Elimina'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void confirmNoteDeletion(LocalNote note) {
+    showFDialog<void>(
+      context: context,
+      builder: (ctx, style, animation) => NotesDialog(
+        style: style, animation: animation,
+        title: const Text('Eliminare nota?'),
+        body: Text('Vuoi eliminare "${note.title.isEmpty ? 'Senza titolo' : note.title}"?'),
+        actions: [
+          FButton(
+            variant: FButtonVariant.ghost,
+            onPress: () => Navigator.pop(ctx),
+            child: const Text('Annulla'),
+          ),
+          FButton(
+            key: const Key('confirm-delete-note'),
+            onPress: () async {
+              await ref.read(localStoreProvider.notifier).deleteNote(note.id);
+              if (ctx.mounted) Navigator.pop(ctx);
+            },
+            child: const Text('Elimina'),
           ),
         ],
       ),

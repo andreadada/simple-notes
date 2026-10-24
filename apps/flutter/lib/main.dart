@@ -504,14 +504,47 @@ class _NotesHomeState extends ConsumerState<NotesHome> {
             Padding(
               padding: const EdgeInsets.fromLTRB(16, 8, 16, 12),
               child: Row(children: [
-                Expanded(child: TextField(
-                  key: const Key('task-input'),
-                  controller: newTask,
-                  textInputAction: TextInputAction.done,
-                  onSubmitted: (_) => submitTask(),
-                  decoration: const InputDecoration(
-                    hintText: '+ Aggiungi attività', prefixIcon: Icon(Icons.add, size: 20),
-                  ),
+                Expanded(child: LayoutBuilder(
+                  builder: (context, bounds) =>
+                    ValueListenableBuilder<TextEditingValue>(
+                      valueListenable: newTask,
+                      builder: (context, draft, _) {
+                        const style = TextStyle(fontSize: 14);
+                        final width = InlineTextMetrics.fieldWidth(
+                          context,
+                          text: draft.text.isEmpty
+                              ? 'Aggiungi attività' : draft.text,
+                          style: style,
+                          maxWidth: bounds.maxWidth - 32,
+                        );
+                        return Row(children: [
+                          const Icon(Icons.add, size: 20,
+                            color: NotesPalette.secondaryText),
+                          const SizedBox(width: 8),
+                          SizedBox(width: width, child: TextField(
+                            key: const Key('task-input'),
+                            controller: newTask,
+                            style: style,
+                            textInputAction: TextInputAction.done,
+                            onSubmitted: (_) => submitTask(),
+                            decoration: const InputDecoration(
+                              hintText: 'Aggiungi attività',
+                              hintStyle: TextStyle(
+                                fontSize: 14,
+                                color: NotesPalette.placeholder),
+                              isDense: true,
+                              filled: false,
+                              fillColor: Colors.transparent,
+                              contentPadding: EdgeInsets.symmetric(vertical: 9),
+                              border: NotesTheme.inlineBorder,
+                              enabledBorder: NotesTheme.inlineBorder,
+                              focusedBorder: NotesTheme.inlineFocusedBorder,
+                            ),
+                          )),
+                          const Spacer(),
+                        ]);
+                      },
+                    ),
                 )),
                 IconButton(tooltip: 'Imposta data', onPressed: selectDue,
                   icon: Icon(dueAt == null ? Icons.event_outlined : Icons.event_available,

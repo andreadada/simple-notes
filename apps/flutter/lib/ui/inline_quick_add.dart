@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:forui/forui.dart';
 import 'notes_theme.dart';
 
-/// Compact, directly editable creation row. Enter commits to SQLite/outbox
-/// through [onAdd]; a failed write keeps the draft for retry.
+/// One-line inline creator: the underline grows with text/placeholder, not
+/// the available width of the parent Row. The right-hand action stays aligned.
 class InlineQuickAdd extends StatefulWidget {
   const InlineQuickAdd({
     super.key,
@@ -49,32 +49,54 @@ class _InlineQuickAddState extends State<InlineQuickAdd> {
   }
 
   @override
-  Widget build(BuildContext context) => Row(children: [
-    Expanded(child: TextField(
-      key: const Key('inline-quick-add-input'),
-      controller: _controller,
-      maxLength: widget.maxLength,
-      textInputAction: TextInputAction.done,
-      onSubmitted: (_) => _submit(),
-      style: const TextStyle(fontSize: 13),
-      decoration: InputDecoration(
-        hintText: widget.hint,
-        counterText: '',
-        isDense: true,
-        prefixIcon: const Icon(Icons.add, size: 18),
-        filled: false,
-        fillColor: Colors.transparent,
-        contentPadding: const EdgeInsets.symmetric(vertical: 9),
-        border: NotesTheme.inlineBorder,
-        enabledBorder: NotesTheme.inlineBorder,
-        focusedBorder: NotesTheme.inlineFocusedBorder,
-      ),
-    )),
-    FButton.icon(
-      key: const Key('inline-quick-add-submit'),
-      variant: FButtonVariant.ghost,
-      onPress: _busy ? null : _submit,
-      child: const Icon(Icons.add, size: 18),
+  Widget build(BuildContext context) => LayoutBuilder(
+    builder: (context, bounds) => ValueListenableBuilder<TextEditingValue>(
+      valueListenable: _controller,
+      builder: (context, draft, _) {
+        const textStyle = TextStyle(fontSize: 13);
+        final available = bounds.maxWidth.isFinite
+            ? bounds.maxWidth - 80
+            : MediaQuery.sizeOf(context).width * 0.5;
+        final width = InlineTextMetrics.fieldWidth(
+          context,
+          text: draft.text.isEmpty ? widget.hint : draft.text,
+          style: textStyle,
+          maxWidth: available,
+        );
+        return Row(children: [
+          const Icon(Icons.add, size: 17,
+            color: NotesPalette.secondaryText),
+          const SizedBox(width: 7),
+          SizedBox(width: width, child: TextField(
+            key: const Key('inline-quick-add-input'),
+            controller: _controller,
+            maxLength: widget.maxLength,
+            textInputAction: TextInputAction.done,
+            onSubmitted: (_) => _submit(),
+            style: textStyle,
+            decoration: InputDecoration(
+              hintText: widget.hint,
+              hintStyle: const TextStyle(
+                fontSize: 13, color: NotesPalette.placeholder),
+              counterText: '',
+              isDense: true,
+              filled: false,
+              fillColor: Colors.transparent,
+              contentPadding: const EdgeInsets.symmetric(vertical: 9),
+              border: NotesTheme.inlineBorder,
+              enabledBorder: NotesTheme.inlineBorder,
+              focusedBorder: NotesTheme.inlineFocusedBorder,
+            ),
+          )),
+          const Spacer(),
+          FButton.icon(
+            key: const Key('inline-quick-add-submit'),
+            variant: FButtonVariant.ghost,
+            onPress: _busy ? null : _submit,
+            child: const Icon(Icons.add, size: 18),
+          ),
+        ]);
+      },
     ),
-  ]);
+  );
 }

@@ -97,16 +97,12 @@ class _InlineEditableBodyState extends State<InlineEditableBody> {
           ? constraints.maxWidth
           : MediaQuery.sizeOf(context).width * 0.75;
       final label = _controller.text.isEmpty ? widget.hint : _controller.text;
-      final painter = TextPainter(
-        text: TextSpan(text: label,
-          style: const TextStyle(fontSize: 14, height: 1.45)),
-        textDirection: Directionality.of(context),
-        textScaler: MediaQuery.textScalerOf(context),
-      )..layout(maxWidth: maxWidth);
-      final minWidth = maxWidth < 120 ? maxWidth : 120.0;
-      final width = (painter.maxIntrinsicWidth + 22)
-          .clamp(minWidth, maxWidth).toDouble();
-      painter.dispose();
+      final width = InlineTextMetrics.fieldWidth(
+        context,
+        text: label,
+        style: const TextStyle(fontSize: 14, height: 1.45),
+        maxWidth: maxWidth,
+      );
       return SizedBox(
         width: width,
         child: Focus(
@@ -141,6 +137,8 @@ class _InlineEditableBodyState extends State<InlineEditableBody> {
         onChanged: (_) => setState(() {}),
         decoration: InputDecoration(
           hintText: widget.hint,
+          hintStyle: const TextStyle(
+            fontSize: 14, height: 1.45, color: NotesPalette.placeholder),
           isDense: true,
           filled: false,
           fillColor: Colors.transparent,

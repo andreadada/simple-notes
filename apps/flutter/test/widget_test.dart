@@ -12,6 +12,8 @@ import 'package:simple_notes/main.dart';
 import 'package:simple_notes/data/app_database.dart';
 import 'package:simple_notes/data/local_store.dart';
 
+Future<void> _noopInline(String value) async {}
+
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
@@ -59,6 +61,60 @@ void main() {
       expect(decoration.enabledBorder, isA<UnderlineInputBorder>());
       expect(decoration.focusedBorder, isA<UnderlineInputBorder>());
     }
+  });
+
+  testWidgets('Underline follows text and placeholder lengths', (tester) async {
+    await tester.pumpWidget(MaterialApp(
+      home: FTheme(
+        data: NotesTheme.forPlatform(TargetPlatform.windows),
+        child: Scaffold(body: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            InlineEditableTitle(
+              key: const Key('short-title'),
+              value: 'A',
+              style: const TextStyle(fontSize: 18),
+              semanticsLabel: 'Short title',
+              onSave: (text) async {},
+            ),
+            InlineEditableTitle(
+              key: const Key('long-title'),
+              value: 'Una attività lunga',
+              style: const TextStyle(fontSize: 18),
+              semanticsLabel: 'Long title',
+              onSave: (text) async {},
+            ),
+            const SizedBox(width: 340, child: InlineEditableBody(
+              value: '', semanticsLabel: 'Body', hint: 'Scrivi...',
+              onSave: _noopInline,
+            )),
+            const SizedBox(width: 340, child: InlineQuickAdd(
+              onAdd: _noopInline,
+              hint: 'Nuovo sottotask...',
+            )),
+          ],
+        )),
+      ),
+    ));
+    final short = tester.getSize(
+      find.byKey(const Key('short-title'))).width;
+    final long = tester.getSize(
+      find.byKey(const Key('long-title'))).width;
+    expect(short, lessThan(40));
+    expect(long, greaterThan(short * 2));
+    final body = tester.getSize(find.byType(InlineEditableBody)).width;
+    expect(body, lessThan(120));
+    final quick = tester.getSize(
+      find.byKey(const Key('inline-quick-add-input'))).width;
+    expect(quick, lessThan(200));
+    final titleInput = tester.widget<TextField>(find.descendant(
+      of: find.byKey(const Key('short-title')),
+      matching: find.byType(TextField)));
+    final bodyInput = tester.widget<TextField>(find.descendant(
+      of: find.byType(InlineEditableBody),
+      matching: find.byType(TextField)));
+    expect(titleInput.decoration!.hintStyle!.color!.a, lessThan(1));
+    expect(bodyInput.decoration!.hintStyle!.color!.a, lessThan(1));
   });
 
   testWidgets('Creates task and persists it in SQLite', (tester) async {

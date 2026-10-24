@@ -111,16 +111,11 @@ class _InlineEditableTitleState extends State<InlineEditableTitle> {
     builder: (context, constraints) {
       // A heading should look like its own text, not a full-width form row.
       final text = _controller.text.isEmpty ? widget.hint : _controller.text;
-      final painter = TextPainter(
-        text: TextSpan(text: text, style: widget.style),
-        maxLines: 1,
-        textDirection: Directionality.of(context),
-      )..layout();
       final limit = constraints.maxWidth.isFinite
           ? constraints.maxWidth
           : MediaQuery.sizeOf(context).width * 0.75;
-      final width = (painter.width + 26).clamp(84.0, limit < 84 ? 84.0 : limit);
-      painter.dispose();
+      final width = InlineTextMetrics.fieldWidth(
+        context, text: text, style: widget.style, maxWidth: limit);
       return SizedBox(
         width: width,
         child: Focus(
@@ -152,6 +147,8 @@ class _InlineEditableTitleState extends State<InlineEditableTitle> {
                 filled: false,
                 fillColor: Colors.transparent,
                 hintText: widget.hint,
+                hintStyle: widget.style.copyWith(
+                  color: NotesPalette.placeholder),
                 contentPadding: const EdgeInsets.symmetric(vertical: 3),
                 border: NotesTheme.inlineBorder,
                 enabledBorder: NotesTheme.inlineBorder,

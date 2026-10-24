@@ -13,6 +13,8 @@ abstract final class NotesPalette {
   static const secondaryText = Color(0xFFA0A0A0);
   static const border = Color(0xFF343434);
   static const inlineUnderline = Color(0xFF676C76);
+  // Subdued placeholder: 72% opaque, independently of Material theme defaults.
+  static const placeholder = Color(0xB8A0A0A0);
 }
 
 abstract final class NotesTheme {
@@ -49,5 +51,31 @@ abstract final class NotesTheme {
         primaryForeground: Colors.white,
       ),
     );
+  }
+}
+
+/// Keeps the underline tied to *rendered characters*, rather than the available
+/// width of an Expanded row. One pixel is reserved for the insertion caret.
+abstract final class InlineTextMetrics {
+  static double fieldWidth(
+    BuildContext context, {
+    required String text,
+    required TextStyle style,
+    required double maxWidth,
+  }) {
+    final available = maxWidth.isFinite && maxWidth >= 1
+        ? maxWidth : MediaQuery.sizeOf(context).width * 0.75;
+    var longest = 0.0;
+    for (final line in text.split('\n')) {
+      final painter = TextPainter(
+        text: TextSpan(text: line, style: style),
+        maxLines: 1,
+        textDirection: Directionality.of(context),
+        textScaler: MediaQuery.textScalerOf(context),
+      )..layout();
+      if (painter.width > longest) longest = painter.width;
+      painter.dispose();
+    }
+    return (longest + 1).clamp(1.0, available).toDouble();
   }
 }

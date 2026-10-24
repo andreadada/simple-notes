@@ -23,6 +23,12 @@ Le schermate Flutter condivise adottano ora il comportamento descritto in [audit
 
 **Web browser non ancora disponibile:** l'app corrente usa `dart:io` + Drift Native e OAuth desktop/Android, quindi questa UI non basta per una build web funzionante. Serve un adattamento separato con Drift web/SQLite WASM e OAuth web; non presentare `flutter run -d chrome` come supportato. Windows/Android restano i target attuali.
 
+## T2 — aggiornamento Flutter e compatibilità (24/10/2026)
+
+Flutter adotta `TaskDue` (`none/date/datetime/legacy`) e Drift **schema v5**. Una data senza ora resta una data civile; scadenze storiche conservate come `legacy`; `due_at` e outbox rimangono per compatibilità. `CloudSync` controlla il server `GET /api/v1/capabilities` prima di caricare scadenze `date/datetime` e richiede `taskDueSchema=1`; il server obsoleto non riceve aggiornamenti moderni. HTTP **426 CLIENT_UPGRADE_REQUIRED** blocca la sync senza cancellare mutazioni o attivare la risoluzione 409. I payload `dueAt` storici restano leggibili.
+
+Test introdotti per data-only, ora legale, due database, fallback server, outbox e migrazione SQLite v4 già popolato → v5. **Risultati CI e prove real-device vanno verificati**, il codice GitHub non implica deployment. T3 (UI Forui con scelta esplicita, timezone IANA e DST) resta da realizzare. Flyway V7 non è stato distribuito su Coolify, necessario backup/restore reale prima del rollout. Flutter Web non ancora supportato.
+
 ## Build
 ```bash
 cd apps/flutter
@@ -96,6 +102,6 @@ Modifica attività, modifica nota e scelta scadenza utilizzano ora `showFDialog`
 - `data/models.dart` include `LocalTask.description`; `data/app_database.dart` migra Drift a schema v3 con la colonna SQLite non nullable e default vuoto, mantenendo i dati precedenti. Campo descrizione Forui nell'editor task, visualizzazione nel pannello dettagli, sync nel payload già supportato da Spring Boot.
 - Test `test/sync_conflict_test.dart` simulano due SQLite indipendenti, conflitti, scelta utente e rete assente. **Non** sono test hardware. [Stato completo](../../docs/P0-STATUS.md).
 
-## Organizzazione attività (Drift v4, 23/10/2026)
+## Organizzazione attività (Drift v4 storico; ora v5 nel codice)
 
 Liste con create/rename/delete nella sidebar Forui, priorità P1–P3, tag, sottotask e filtro/ricerca. Le operazioni locali vengono persistite in SQLite e sincronizzate con `entityType: list` per le liste e `entityType: task` per i metadati. **Richiede server con Flyway V6** prima di usare liste nuove. Nuova migrazione Drift v4, conservare il database locale. Documentazione e test: [task-organization.md](../../docs/task-organization.md) e `test/task_organization_test.dart`.

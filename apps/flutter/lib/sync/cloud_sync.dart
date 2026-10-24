@@ -69,6 +69,9 @@ class CloudSync extends StateNotifier<SyncState> {
       response = await _client.get(uri, headers: headers)
           .timeout(const Duration(seconds: 20));
     }
+    if (response.statusCode == 426) {
+      throw const SyncUpgradeRequired();
+    }
     if (response.statusCode == 409) {
       throw const SyncConflict();
     }
@@ -76,6 +79,22 @@ class CloudSync extends StateNotifier<SyncState> {
       throw StateError('Server HTTP ${response.statusCode} su $path');
     }
     return jsonDecode(response.body) as Map<String, dynamic>;
+  }
+
+  /// The old Coolify deployment may not yet expose /capabilities. A 404
+  /// means modern date-only/timed writes must remain safely in the outbox.
+  Future<bool> _supportsTypedDue() async {
+    final token = await ref.read(cloudAuthProvider.notifier).validAccessToken();
+    final result = await _client.get(
+      Uri.parse('$_apiBaseUrl/api/v1/capabilities'),
+      headers: {'Authorization': 'Bearer $token'},
+    ).timeout(const Duration(seconds: 20));
+    if (result.statusCode == 404) return false;
+    if (result.statusCode != 200) {
+      throw StateError('Capacità API non verificabili (HTTP ${result.statusCode})');
+    }
+    final capability = jsonDecode(result.body) as Map<String, dynamic>;
+    return capability['taskDueSchema'] == 1;
   }
 
   Future<void> synchronize() async {
@@ -98,10 +117,19 @@ class CloudSync extends StateNotifier<SyncState> {
         }
       }
       int uploaded = 0;
+      bool? typedDueSupported;
       for (final op in mutations) {
         conflicting = op;
         verifyAccount();
         final payload = jsonDecode(op.payload) as Map<String, dynamic>;
+        // An operation with a precise new due kind requires the V7 server.
+        // Never upload a date-only task to a server that silently ignores due.
+        final due = payload['due'];
+        if (op.entityType == 'task' && op.action == 'upsert' &&
+            due is Map && (due['kind'] == 'date' || due['kind'] == 'datetime')) {
+          typedDueSupported ??= await _supportsTypedDue();
+          if (!typedDueSupported) throw const SyncUpgradeRequired();
+        }
         if (op.entityType == 'task' && payload['dueAt'] is String) {
           final parsed = DateTime.tryParse(payload['dueAt'] as String);
           payload['dueAt'] = parsed?.toUtc().toIso8601String();
@@ -145,6 +173,10 @@ class CloudSync extends StateNotifier<SyncState> {
       await ref.read(localStoreProvider.notifier).reload();
       state = SyncState(message: 'Sincronizzazione completata: $uploaded inviate, '
           '$downloaded aggiornamenti ricevuti.');
+    } on SyncUpgradeRequired {
+      state = const SyncState(message:
+        'Il server o un client precedente non supporta questa scadenza. '
+        'Aggiorna il backend e i dispositivi; modifiche offline conservate.');
     } on SyncConflict {
       final op = conflicting;
       ConflictDetails? details;
@@ -230,6 +262,10 @@ class CloudSync extends StateNotifier<SyncState> {
     if (_ownsClient) _client.close();
     super.dispose();
   }
+}
+
+class SyncUpgradeRequired implements Exception {
+  const SyncUpgradeRequired();
 }
 
 class SyncConflict implements Exception {

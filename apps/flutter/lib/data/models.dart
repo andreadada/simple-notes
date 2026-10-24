@@ -55,7 +55,7 @@ class LocalTask {
   final List<String> tags;
   final List<LocalSubtask> subtasks;
 
-  const LocalTask({
+  LocalTask({
     required this.id, required this.title, required this.dueAt,
     required this.completed, required this.createdAt,
     this.description = '',

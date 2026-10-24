@@ -21,6 +21,11 @@ class TaskEntries extends Table {
   TextColumn get tagsJson => text().withDefault(const Constant('[]'))();
   TextColumn get subtasksJson => text().withDefault(const Constant('[]'))();
   DateTimeColumn get dueAt => dateTime().nullable()();
+  TextColumn get dueKind => text().withDefault(const Constant('none'))();
+  TextColumn get dueDate => text().nullable()();
+  TextColumn get dueTime => text().nullable()();
+  TextColumn get dueTimezone => text().nullable()();
+  IntColumn get dueOffsetSeconds => integer().nullable()();
   BoolColumn get completed => boolean().withDefault(const Constant(false))();
   DateTimeColumn get createdAt => dateTime()();
   IntColumn get remoteVersion => integer().nullable()();
@@ -75,7 +80,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase([QueryExecutor? executor]) : super(executor ?? _openDatabase());
 
   @override
-  int get schemaVersion => 4;
+  int get schemaVersion => 5;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -89,6 +94,16 @@ class AppDatabase extends _$AppDatabase {
         await m.addColumn(taskEntries, taskEntries.priority);
         await m.addColumn(taskEntries, taskEntries.tagsJson);
         await m.addColumn(taskEntries, taskEntries.subtasksJson);
+      }
+      if (from < 5) {
+        await m.addColumn(taskEntries, taskEntries.dueKind);
+        await m.addColumn(taskEntries, taskEntries.dueDate);
+        await m.addColumn(taskEntries, taskEntries.dueTime);
+        await m.addColumn(taskEntries, taskEntries.dueTimezone);
+        await m.addColumn(taskEntries, taskEntries.dueOffsetSeconds);
+        // Preserve old timestamps and pending mutations, even at midnight.
+        await customStatement("UPDATE task_entries SET due_kind = "
+            "CASE WHEN due_at IS NULL THEN 'none' ELSE 'legacy' END");
       }
     },
   );
@@ -115,6 +130,11 @@ class AppDatabase extends _$AppDatabase {
       tasks: tasks.map((t) => LocalTask(
         id: t.id, title: t.title, description: t.description,
         dueAt: t.dueAt,
+        due: TaskDue.fromStorage(
+          kind: t.dueKind, date: t.dueDate, time: t.dueTime,
+          timeZone: t.dueTimezone,
+          offsetSeconds: t.dueOffsetSeconds, dueAt: t.dueAt,
+        ),
         listId: t.listId,
         priority: t.priority,
         tags: (jsonDecode(t.tagsJson) as List<dynamic>).cast<String>(),
@@ -141,7 +161,12 @@ class AppDatabase extends _$AppDatabase {
       tagsJson: Value(jsonEncode(task.tags)),
       subtasksJson: Value(jsonEncode(
           task.subtasks.map((item) => item.toJson()).toList())),
-      dueAt: Value(task.dueAt),
+      dueAt: Value(task.due.instant?.toLocal()),
+      dueKind: Value(task.due.kind),
+      dueDate: Value(task.due.date),
+      dueTime: Value(task.due.time),
+      dueTimezone: Value(task.due.timeZone),
+      dueOffsetSeconds: Value(task.due.offsetSeconds),
       completed: Value(task.completed),
       createdAt: task.createdAt,
       remoteVersion: Value(previous?.remoteVersion),
@@ -337,6 +362,10 @@ class AppDatabase extends _$AppDatabase {
         return;
       }
       final raw = payload['dueAt'] as String?;
+      final oldDue = raw == null || raw.isEmpty
+          ? null : DateTime.parse(raw).toLocal();
+      // Reject malformed modern payloads before changing existing rows.
+      final due = TaskDue.fromJson(payload['due'], oldDueAt: oldDue);
       final created = DateTime.tryParse(payload['createdAt'] as String? ?? '');
       await into(taskEntries).insertOnConflictUpdate(TaskEntriesCompanion.insert(
         id: entityId,
@@ -346,7 +375,12 @@ class AppDatabase extends _$AppDatabase {
         priority: Value(payload['priority'] as int? ?? 0),
         tagsJson: Value(jsonEncode(payload['tags'] ?? const [])),
         subtasksJson: Value(jsonEncode(payload['subtasks'] ?? const [])),
-        dueAt: Value(raw == null || raw.isEmpty ? null : DateTime.tryParse(raw)?.toLocal()),
+        dueAt: Value(due.instant?.toLocal()),
+        dueKind: Value(due.kind),
+        dueDate: Value(due.date),
+        dueTime: Value(due.time),
+        dueTimezone: Value(due.timeZone),
+        dueOffsetSeconds: Value(due.offsetSeconds),
         completed: Value(payload['completed'] as bool? ?? false),
         createdAt: created ?? DateTime.now(),
         deletedAt: const Value(null),

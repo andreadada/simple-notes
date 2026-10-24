@@ -119,6 +119,14 @@ class LocalStore extends Notifier<LocalData> {
     }
   }
 
+  /// T2 API: explicit modern semantics, without guessing whether legacy
+  /// midnight is date-only. A future T3 UI will expose the choice.
+  Future<void> setTaskDueSemantics(String id, TaskDue due) async {
+    final task = state.tasks.where((item) => item.id == id).firstOrNull;
+    if (task == null) throw StateError('Attività non disponibile.');
+    await _persistTask(task.copyWith(due: due, changeDue: true));
+  }
+
   Future<void> setTaskDue(String id, DateTime? date) async {
     final task = state.tasks.where((item) => item.id == id).firstOrNull;
     if (task == null) throw StateError('Attività non disponibile.');

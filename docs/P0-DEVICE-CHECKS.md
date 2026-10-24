@@ -12,7 +12,7 @@ La CI Compose usa dump **sintetici** e verifica i rifiuti su backup alterati; la
 ## Gate obbligatorio prima del redeploy
 - [ ] Identificare esplicitamente il container PostgreSQL del progetto Simple Notes (NON altri database).
 - [ ] Eseguire un dump consistente con `infra/backup-postgres.sh`, verificare il file SHA256 e la leggibilità dell'archivio.
-- [ ] Copiare dump e `.sha256` su destinazione sicura; eseguire `infra/verify-restore.sh` sul dump **reale**, controllare `.restore-ok` e le tabelle nel PostgreSQL 17 isolato senza rete.
+- [ ] Copiare dump e `.sha256` su destinazione sicura; eseguire `infra/verify-restore.sh` sul dump **reale**, controllare `.restore-ok`, conteggi `ROW_COUNT_*` e almeno un utente nel PostgreSQL 17 isolato senza rete.
 - [ ] Conservare e controllare una copia del dump cifrata **fuori dal VPS**, con policy di retention; eseguire il gate `infra/t4-preflight.sh` con attestazione offsite esplicita.
 - [ ] Solo dopo preflight, distribuire manualmente il commit approvato in Coolify **senza cambiare segreti o volumi**. Verificare la storia Flyway **V5, V6 e V7** dai log (senza errori), `/actuator/health` e capability autenticata `taskDueSchema:1` con `infra/t4-check-api.sh`.
 - [ ] Verificare login Google / refresh dopo il redeploy, prima di aggiornare i client.

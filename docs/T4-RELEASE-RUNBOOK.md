@@ -60,7 +60,7 @@ bash infra/verify-restore.sh "$ARCHIVE"
 test -s "$ARCHIVE.restore-ok"
 ```
 
-Il nome nel manifest è relativo alla cartella che contiene il dump: in caso di spostamento, usare `(cd "$(dirname "$ARCHIVE")" && sha256sum -c "$(basename "$ARCHIVE").sha256")`. Il restore usa un container PostgreSQL **nuovo e temporaneo**, rete disabilitata, senza porte, volumi condivisi o collegamenti al DB originale. Verifica almeno `app_user`, `task`, `note`, `sync_change`, `sync_operation`; salva solo SHA256 e metadati strutturali nel receipt. Se il restore fallisce, **NON procedere**.
+Il nome nel manifest è relativo alla cartella che contiene il dump: in caso di spostamento, usare `(cd "$(dirname "$ARCHIVE")" && sha256sum -c "$(basename "$ARCHIVE").sha256")`. Il restore usa un container PostgreSQL **nuovo e temporaneo**, rete disabilitata, senza porte, volumi condivisi o collegamenti al DB originale. Verifica almeno `app_user`, `task`, `note`, `sync_change`, `sync_operation`; scrive nel receipt SHA256, identificativi delle tabelle e **conteggi numerici ripristinati** (non dati personali), e rifiuta un archivio con `app_user` vuoto. I conteggi sono evidenza strutturale, non confronto transazionale con dati nel frattempo cambiati sul server. Se il restore fallisce, **NON procedere**.
 
 ## 3. Preflight bloccante (senza deployment)
 

@@ -45,6 +45,8 @@
 
 ## Miglioramento client: Cestino
 
+La diagnostica segnala separatamente le **note visibili** e le **note nel cestino**, evitando che un semplice valore `Note locali: 0` venga scambiato per cancellazione fisica. Il report non espone titoli o corpi delle note.
+
 Il codice Flutter `0.4.2+6` include sezione **Cestino** per le note con soft-delete, e pulsante **Ripristina**. Il ripristino mantiene l'identità della nota, usa un'azione di sync `restore` con `expectedVersion` e il backend restituisce il contenuto archiviato. Il backend espone `noteRestoreSchema:1` fra le capabilities; client vecchi o API non aggiornate **non** devono ricevere operazioni restore. Le modifiche in coda sono preservate se la capability manca.
 
 **Importante:** questa funzione richiede l'aggiornamento sia del backend Coolify sia dei due client. Non dichiarare che il deploy è stato eseguito solo perché la CI è verde. Prima di usarla con dati reali, verificare nota creata → cestino → altro dispositivo → ripristino → sync, e i casi offline/409. Non è un cestino per i task; quello è un incremento successivo.

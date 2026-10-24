@@ -54,6 +54,7 @@ class SyncDiagnostics {
     required this.pending,
     required this.localTasks,
     required this.localNotes,
+    required this.trashedNotes,
     required this.localLists,
     required this.cursor,
     required this.lastSuccessUtc,
@@ -66,6 +67,7 @@ class SyncDiagnostics {
   final int pending;
   final int localTasks;
   final int localNotes;
+  final int trashedNotes;
   final int localLists;
   final int cursor;
   final DateTime? lastSuccessUtc;
@@ -213,6 +215,7 @@ class CloudSync extends StateNotifier<SyncState> {
       pending: pending,
       localTasks: snapshot.tasks.length,
       localNotes: snapshot.notes.length,
+      trashedNotes: snapshot.trashedNotes.length,
       localLists: snapshot.lists.length,
       cursor: cursor,
       lastSuccessUtc: last?.toUtc(),

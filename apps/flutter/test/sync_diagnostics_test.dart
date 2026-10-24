@@ -69,6 +69,7 @@ void main() {
     expect(report.pending, pendingBefore);
     expect(report.localTasks, 1);
     expect(report.localNotes, 0);
+    expect(report.trashedNotes, 0);
     expect(report.cursor, 0);
     expect(report.lastSuccessUtc, isNull);
     expect(await db.pendingCount(), pendingBefore);

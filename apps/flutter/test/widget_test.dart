@@ -190,9 +190,20 @@ void main() {
     ], child: const SimpleNotesApp()));
     await tester.pumpAndSettle();
 
-    await tester.tap(find.text('Attività originale'));
+    await tester.tap(find.byKey(const Key('inline-task-row-modal-test-task')));
     await tester.pumpAndSettle();
-    await tester.tap(find.text('Modifica'));
+    final inlineTitle = find.descendant(
+      of: find.byKey(const Key('inline-task-title-modal-test-task')),
+      matching: find.byType(TextField),
+    );
+    expect(inlineTitle, findsOneWidget);
+    await tester.enterText(inlineTitle, 'Aggiornata direttamente');
+    await tester.testTextInput.receiveAction(TextInputAction.done);
+    await tester.pumpAndSettle();
+    expect((await database.snapshot()).tasks.single.title,
+        'Aggiornata direttamente');
+
+    await tester.tap(find.byKey(const Key('advanced-task-editor')));
     await tester.pumpAndSettle();
     expect(find.byType(FDialog), findsOneWidget);
     expect(find.byType(AlertDialog), findsNothing);
@@ -208,6 +219,67 @@ void main() {
     await database.close();
   });
 
+
+  test('All simple attributes write to SQLite and preserve outbox', () async {
+    final database = AppDatabase(NativeDatabase.memory());
+    final container = ProviderContainer(overrides: [
+      databaseProvider.overrideWithValue(database),
+      initialDataProvider.overrideWithValue(const LocalData()),
+    ]);
+    addTearDown(() async {
+      container.dispose();
+      await database.close();
+    });
+    final store = container.read(localStoreProvider.notifier);
+    await store.addTask('Test inline');
+    final task = container.read(localStoreProvider).tasks.single;
+    await store.renameTask(task.id, 'Nome modificato direttamente');
+    await store.setTaskDescription(task.id, 'Descrizione locale');
+    await store.setTaskPriority(task.id, 3);
+    await store.setTaskTags(task.id, 'università, urgente');
+    await store.addSubtask(task.id, 'Preparare');
+    final sub = container.read(localStoreProvider).tasks.single.subtasks.single;
+    await store.renameSubtask(task.id, sub.id, 'Ripassare');
+    await store.addNote();
+    final note = container.read(localStoreProvider).notes.single;
+    await store.renameNote(note.id, 'Nota modificata direttamente');
+    await store.setNoteBody(note.id, 'Corpo modificato inline');
+    await store.reload();
+
+    final data = await database.snapshot();
+    expect(data.tasks.single.title, 'Nome modificato direttamente');
+    expect(data.tasks.single.description, 'Descrizione locale');
+    expect(data.tasks.single.priority, 3);
+    expect(data.tasks.single.tags, ['università', 'urgente']);
+    expect(data.tasks.single.subtasks.single.title, 'Ripassare');
+    expect(data.notes.single.title, 'Nota modificata direttamente');
+    expect(data.notes.single.body, 'Corpo modificato inline');
+    expect(await database.pendingCount(), greaterThanOrEqualTo(10));
+  });
+
+  testWidgets('Notes expose inline title and body, without edit dialog',
+      (tester) async {
+    final db = AppDatabase(NativeDatabase.memory());
+    await db.upsertNote(LocalNote(
+      id: 'inline-note-test', title: 'Nota iniziale', body: 'Testo',
+      createdAt: DateTime.utc(2026, 10, 24),
+    ));
+    await tester.pumpWidget(ProviderScope(overrides: [
+      databaseProvider.overrideWithValue(db),
+      initialDataProvider.overrideWithValue(await db.snapshot()),
+    ], child: const SimpleNotesApp()));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('nav-notes')));
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(const Key('inline-note-title-inline-note-test')),
+        findsOneWidget);
+    expect(find.byKey(const Key('inline-note-body-inline-note-test')),
+        findsOneWidget);
+    expect(find.text('Modifica nota'), findsNothing);
+    await tester.pumpWidget(const SizedBox.shrink());
+    await db.close();
+  });
 
   test('Task description persists offline and survives a DB reload', () async {
     final database = AppDatabase(NativeDatabase.memory());

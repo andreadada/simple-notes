@@ -627,90 +627,213 @@ class _NotesHomeState extends ConsumerState<NotesHome> {
   }
 
   Widget taskDetails(LocalTask task) => Padding(
-    padding: const EdgeInsets.all(20),
+    padding: const EdgeInsets.all(18),
     child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       const Text('DETTAGLI', style: TextStyle(
-        color: NotesPalette.secondaryText, fontSize: 12)),
-      const SizedBox(height: 18),
+        color: NotesPalette.secondaryText, fontSize: 11,
+        fontWeight: FontWeight.w600)),
+      const SizedBox(height: 16),
       Expanded(child: SingleChildScrollView(
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Text(task.title, style: const TextStyle(
-            fontSize: 20, fontWeight: FontWeight.w600)),
-          const SizedBox(height: 12),
-          Text(task.dueAt == null ? 'Nessuna scadenza'
-            : 'Scadenza: ${task.dueAt!.day}/${task.dueAt!.month}/${task.dueAt!.year}'),
-          const SizedBox(height: 10),
-          Text(task.priority == 0 ? 'Priorità normale'
-            : 'Priorità P${task.priority}',
-            style: TextStyle(
-              color: task.priority > 0
-                ? Colors.orangeAccent : NotesPalette.secondaryText,
-            )),
-          if (task.listId != null) ...[
-            const SizedBox(height: 10),
-            Text('Lista: ${ref.read(localStoreProvider).lists
-                .where((list) => list.id == task.listId)
-                .firstOrNull?.title ?? 'Non disponibile'}'),
-          ],
-          if (task.tags.isNotEmpty) ...[
-            const SizedBox(height: 14),
-            Wrap(spacing: 7, runSpacing: 7, children: [
-              for (final tag in task.tags)
-                Chip(label: Text('#$tag')),
-            ]),
-          ],
-          if (task.description.isNotEmpty) ...[
-            const SizedBox(height: 20),
-            const Text('DESCRIZIONE', style: TextStyle(
-              color: NotesPalette.secondaryText, fontSize: 11)),
-            const SizedBox(height: 8),
-            SelectableText(task.description),
-          ],
-          if (task.subtasks.isNotEmpty) ...[
-            const SizedBox(height: 20),
-            Text('SOTTOTASK  ·  '
-              '${task.subtasks.where((item) => item.completed).length}/'
-              '${task.subtasks.length}',
-              style: const TextStyle(color: NotesPalette.secondaryText,
-                fontSize: 11, fontWeight: FontWeight.w700)),
-            for (final item in task.subtasks)
-              CheckboxListTile(
-                key: Key('subtask-${item.id}'),
-                dense: true,
-                contentPadding: EdgeInsets.zero,
-                controlAffinity: ListTileControlAffinity.leading,
-                title: Text(item.title, style: TextStyle(
-                  decoration: item.completed
-                      ? TextDecoration.lineThrough : null)),
-                value: item.completed,
-                onChanged: (_) => ref.read(localStoreProvider.notifier)
-                  .toggleSubtask(task.id, item.id),
+          InlineEditableTitle(
+            key: Key('inline-task-title-${task.id}'),
+            value: task.title,
+            maxLength: 1024,
+            semanticsLabel: 'Titolo attività modificabile',
+            style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
+            onSave: (text) => ref.read(localStoreProvider.notifier)
+                .renameTask(task.id, text),
+          ),
+          const SizedBox(height: 20),
+          const Text('SCADENZA', style: TextStyle(
+            color: NotesPalette.secondaryText, fontSize: 11)),
+          const SizedBox(height: 8),
+          Wrap(spacing: 8, runSpacing: 8, children: [
+            FButton(
+              key: const Key('inline-task-due'),
+              variant: FButtonVariant.outline,
+              mainAxisSize: MainAxisSize.min,
+              onPress: () async {
+                final selected = await showNotesDatePicker(context,
+                  initialDate: task.dueAt);
+                if (selected != null) {
+                  final previous = task.dueAt;
+                  await ref.read(localStoreProvider.notifier).setTaskDue(
+                    task.id, DateTime(selected.year, selected.month, selected.day,
+                      previous?.hour ?? 0, previous?.minute ?? 0));
+                }
+              },
+              prefix: const Icon(Icons.calendar_today_outlined, size: 16),
+              child: Text(task.dueAt == null ? 'Imposta data' :
+                '${task.dueAt!.day.toString().padLeft(2, '0')}/'
+                '${task.dueAt!.month.toString().padLeft(2, '0')}/'
+                '${task.dueAt!.year}'
+                '${task.dueAt!.hour == 0 && task.dueAt!.minute == 0 ? '' :
+                ' · ${task.dueAt!.hour.toString().padLeft(2, '0')}:${task.dueAt!.minute.toString().padLeft(2, '0')}'}'),
+            ),
+            if (task.dueAt != null)
+              FButton.icon(
+                key: const Key('inline-clear-due'),
+                variant: FButtonVariant.ghost,
+                onPress: () => ref.read(localStoreProvider.notifier)
+                    .setTaskDue(task.id, null),
+                child: const Icon(Icons.close, size: 17),
               ),
-          ],
+          ]),
+          const SizedBox(height: 18),
+          const Text('PRIORITÀ', style: TextStyle(
+            color: NotesPalette.secondaryText, fontSize: 11)),
+          const SizedBox(height: 8),
+          FPopoverMenu(
+            menu: [
+              .group(children: [
+                for (var priority = 0; priority <= 3; priority++)
+                  .item(
+                    title: Text(priority == 0 ? 'Normale' : 'P$priority'),
+                    onPress: () => ref.read(localStoreProvider.notifier)
+                        .setTaskPriority(task.id, priority),
+                  ),
+              ]),
+            ],
+            menuBuilder: (context, controller, menu) => menu!,
+            builder: (context, controller, child) => child!,
+            child: FButton(
+              key: const Key('inline-task-priority'),
+              variant: FButtonVariant.outline,
+              mainAxisSize: MainAxisSize.min,
+              onPress: () {},
+              prefix: const Icon(Icons.flag_outlined, size: 16),
+              child: Text(task.priority == 0 ? 'Normale' : 'P${task.priority}'),
+            ),
+          ),
+          const SizedBox(height: 18),
+          const Text('LISTA', style: TextStyle(
+            color: NotesPalette.secondaryText, fontSize: 11)),
+          const SizedBox(height: 8),
+          FPopoverMenu(
+            menu: [
+              .group(children: [
+                .item(
+                  title: const Text('Inbox'),
+                  onPress: () => ref.read(localStoreProvider.notifier)
+                      .setTaskList(task.id, null),
+                ),
+                for (final list in ref.read(localStoreProvider).lists)
+                  .item(
+                    title: Text(list.title),
+                    onPress: () => ref.read(localStoreProvider.notifier)
+                        .setTaskList(task.id, list.id),
+                  ),
+              ]),
+            ],
+            menuBuilder: (context, controller, menu) => menu!,
+            builder: (context, controller, child) => child!,
+            child: FButton(
+              key: const Key('inline-task-list'),
+              variant: FButtonVariant.outline,
+              mainAxisSize: MainAxisSize.min,
+              onPress: () {},
+              prefix: const Icon(Icons.folder_outlined, size: 16),
+              child: Text(ref.read(localStoreProvider).lists
+                .where((list) => list.id == task.listId)
+                .firstOrNull?.title ?? 'Inbox'),
+            ),
+          ),
+          const SizedBox(height: 18),
+          const Text('TAG', style: TextStyle(
+            color: NotesPalette.secondaryText, fontSize: 11)),
+          const SizedBox(height: 6),
+          InlineEditableTitle(
+            key: Key('inline-task-tags-${task.id}'),
+            value: task.tags.join(', '),
+            hint: 'Aggiungi tag...',
+            allowEmpty: true,
+            maxLength: 700,
+            semanticsLabel: 'Modifica tag separati da virgola',
+            style: const TextStyle(fontSize: 13),
+            onSave: (text) => ref.read(localStoreProvider.notifier)
+                .setTaskTags(task.id, text),
+          ),
+          const SizedBox(height: 18),
+          const Text('DESCRIZIONE', style: TextStyle(
+            color: NotesPalette.secondaryText, fontSize: 11)),
+          const SizedBox(height: 6),
+          InlineEditableBody(
+            key: Key('inline-task-description-${task.id}'),
+            value: task.description,
+            semanticsLabel: 'Descrizione attività modificabile',
+            hint: 'Aggiungi una descrizione...',
+            onSave: (text) => ref.read(localStoreProvider.notifier)
+                .setTaskDescription(task.id, text),
+          ),
+          const SizedBox(height: 18),
+          Text('SOTTOTASK · '
+            '${task.subtasks.where((item) => item.completed).length}/'
+            '${task.subtasks.length}',
+            style: const TextStyle(color: NotesPalette.secondaryText,
+              fontSize: 11, fontWeight: FontWeight.w600)),
+          const SizedBox(height: 8),
+          for (final item in task.subtasks)
+            Padding(
+              padding: const EdgeInsets.only(bottom: 5),
+              child: Row(children: [
+                FCheckbox(
+                  key: Key('subtask-${item.id}'),
+                  value: item.completed,
+                  onChange: (_) => ref.read(localStoreProvider.notifier)
+                      .toggleSubtask(task.id, item.id),
+                ),
+                const SizedBox(width: 8),
+                Expanded(child: InlineEditableTitle(
+                  key: Key('inline-subtask-${item.id}'),
+                  value: item.title,
+                  maxLength: 255,
+                  semanticsLabel: 'Titolo sottotask modificabile',
+                  style: TextStyle(fontSize: 13,
+                    decoration: item.completed ? TextDecoration.lineThrough : null),
+                  onSave: (text) => ref.read(localStoreProvider.notifier)
+                      .renameSubtask(task.id, item.id, text),
+                )),
+                FButton.icon(
+                  key: Key('remove-subtask-${item.id}'),
+                  variant: FButtonVariant.ghost,
+                  onPress: () => ref.read(localStoreProvider.notifier)
+                      .removeSubtask(task.id, item.id),
+                  child: const Icon(Icons.close, size: 16),
+                ),
+              ]),
+            ),
+          InlineQuickAdd(
+            key: Key('inline-add-subtask-${task.id}'),
+            hint: 'Aggiungi sottotask...',
+            onAdd: (text) => ref.read(localStoreProvider.notifier)
+                .addSubtask(task.id, text),
+          ),
         ]),
       )),
-      const SizedBox(height: 12),
-      FButton(
-        variant: FButtonVariant.outline,
-        mainAxisSize: MainAxisSize.min,
-        onPress: () => showTaskEditor(task),
-        prefix: const Icon(Icons.edit_outlined, size: 18),
-        child: const Text('Modifica'),
-      ),
-      TextButton.icon(
-        onPressed: () {
-          ref.read(localStoreProvider.notifier).deleteTask(task.id);
-          setState(() => selectedId = null);
-          Navigator.maybePop(context);
-        },
-        icon: const Icon(Icons.delete_outline),
-        label: const Text('Elimina attività'),
-      ),
+      const SizedBox(height: 10),
+      Row(children: [
+        FButton(
+          key: const Key('advanced-task-editor'),
+          variant: FButtonVariant.ghost,
+          mainAxisSize: MainAxisSize.min,
+          onPress: () => showTaskEditor(task),
+          child: const Text('Altre opzioni'),
+        ),
+        const Spacer(),
+        FButton.icon(
+          key: const Key('delete-task'),
+          variant: FButtonVariant.ghost,
+          onPress: () => confirmTaskDeletion(task),
+          child: const Icon(Icons.delete_outline, size: 18),
+        ),
+      ]),
     ]),
   );
 
-  void showTaskDetails(LocalTask task) => showModalBottomSheet<void>(
-    context: context, isScrollControlled: true,
+  void showTaskDetails(LocalTask task) => showFSheet<void>(
+    context: context,
+    side: FLayout.btt,
     builder: (sheetContext) => SizedBox(
       height: MediaQuery.sizeOf(sheetContext).height * 0.75,
       child: Consumer(builder: (context, watcher, _) {

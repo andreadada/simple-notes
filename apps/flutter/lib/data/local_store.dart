@@ -69,7 +69,7 @@ class LocalStore extends Notifier<LocalData> {
       if (task.id == id) {
         final changed = task.copyWith(
           title: trimmed, description: description,
-          dueAt: dueAt, changeDueAt: true,
+          dueAt: dueAt, changeDueAt: dueAt != task.dueAt,
           listId: listId, changeListId: changeListId,
           priority: priority,
           tags: tags?.map((tag) => tag.trim()).toSet().toList(),

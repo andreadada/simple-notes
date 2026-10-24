@@ -14,6 +14,9 @@ class InlineEditableTitle extends StatefulWidget {
     required this.style,
     required this.semanticsLabel,
     this.hint = 'Senza titolo',
+    this.onTap,
+    this.allowEmpty = false,
+    this.maxLength = 255,
   });
 
   final String value;
@@ -21,6 +24,9 @@ class InlineEditableTitle extends StatefulWidget {
   final TextStyle style;
   final String semanticsLabel;
   final String hint;
+  final VoidCallback? onTap;
+  final bool allowEmpty;
+  final int maxLength;
 
   @override
   State<InlineEditableTitle> createState() => _InlineEditableTitleState();
@@ -65,8 +71,8 @@ class _InlineEditableTitleState extends State<InlineEditableTitle> {
   Future<void> _save() async {
     if (_saving || !mounted) return;
     final next = _controller.text.trim();
-    if (next.isEmpty || next == widget.value) {
-      if (next.isEmpty) _controller.text = widget.value;
+    if ((!widget.allowEmpty && next.isEmpty) || next == widget.value) {
+      if (next.isEmpty && !widget.allowEmpty) _controller.text = widget.value;
       return;
     }
     _saving = true;
@@ -136,7 +142,8 @@ class _InlineEditableTitleState extends State<InlineEditableTitle> {
               cursorColor: NotesPalette.accent,
               textInputAction: TextInputAction.done,
               maxLines: 1,
-              inputFormatters: [LengthLimitingTextInputFormatter(255)],
+              inputFormatters: [LengthLimitingTextInputFormatter(widget.maxLength)],
+              onTap: widget.onTap,
               onChanged: (_) => setState(() {}),
               onSubmitted: (_) => _focusNode.unfocus(),
               onTapOutside: (_) => _focusNode.unfocus(),

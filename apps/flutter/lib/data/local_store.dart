@@ -90,6 +90,98 @@ class LocalStore extends Notifier<LocalData> {
     _changed();
   }
 
+  // Property-level writes use the newest in-memory task rather than a stale
+  // editor snapshot. Every edit still goes through SQLite + the sync outbox.
+  Future<void> renameTask(String id, String title) async {
+    final text = title.trim();
+    if (text.isEmpty || text.length > 1024) {
+      throw StateError('Il titolo deve contenere da 1 a 1024 caratteri.');
+    }
+    final task = state.tasks.where((item) => item.id == id).firstOrNull;
+    if (task == null) throw StateError('Attività non disponibile.');
+    if (task.title != text) await _persistTask(task.copyWith(title: text));
+  }
+
+  Future<void> setTaskDescription(String id, String description) async {
+    final task = state.tasks.where((item) => item.id == id).firstOrNull;
+    if (task == null) throw StateError('Attività non disponibile.');
+    if (task.description != description) {
+      await _persistTask(task.copyWith(description: description));
+    }
+  }
+
+  Future<void> setTaskPriority(String id, int priority) async {
+    if (priority < 0 || priority > 3) throw StateError('Priorità non valida.');
+    final task = state.tasks.where((item) => item.id == id).firstOrNull;
+    if (task == null) throw StateError('Attività non disponibile.');
+    if (task.priority != priority) {
+      await _persistTask(task.copyWith(priority: priority));
+    }
+  }
+
+  Future<void> setTaskDue(String id, DateTime? date) async {
+    final task = state.tasks.where((item) => item.id == id).firstOrNull;
+    if (task == null) throw StateError('Attività non disponibile.');
+    await _persistTask(task.copyWith(dueAt: date, changeDueAt: true));
+  }
+
+  Future<void> setTaskList(String id, String? listId) async {
+    if (listId != null && !state.lists.any((item) => item.id == listId)) {
+      throw StateError('La lista selezionata non esiste.');
+    }
+    final task = state.tasks.where((item) => item.id == id).firstOrNull;
+    if (task == null) throw StateError('Attività non disponibile.');
+    if (task.listId != listId) {
+      await _persistTask(task.copyWith(listId: listId, changeListId: true));
+    }
+  }
+
+  Future<void> setTaskTags(String id, String raw) async {
+    final tags = raw.split(',').map((item) => item.trim())
+        .where((item) => item.isNotEmpty).toSet().toList();
+    if (tags.length > 16 || tags.any((item) => item.length > 40)) {
+      throw StateError('Massimo 16 tag, fino a 40 caratteri ciascuno.');
+    }
+    final task = state.tasks.where((item) => item.id == id).firstOrNull;
+    if (task == null) throw StateError('Attività non disponibile.');
+    await _persistTask(task.copyWith(tags: tags));
+  }
+
+  Future<void> renameSubtask(String taskId, String subtaskId, String value) async {
+    final text = value.trim();
+    if (text.isEmpty || text.length > 255) {
+      throw StateError('Il sottotask deve contenere da 1 a 255 caratteri.');
+    }
+    final task = state.tasks.where((item) => item.id == taskId).firstOrNull;
+    if (task == null || !task.subtasks.any((item) => item.id == subtaskId)) {
+      throw StateError('Sottotask non disponibile.');
+    }
+    await _persistTask(task.copyWith(subtasks: [
+      for (final item in task.subtasks)
+        item.id == subtaskId ? item.copyWith(title: text) : item,
+    ]));
+  }
+
+  Future<void> addSubtask(String taskId, String value) async {
+    final text = value.trim();
+    final task = state.tasks.where((item) => item.id == taskId).firstOrNull;
+    if (task == null) throw StateError('Attività non disponibile.');
+    if (text.isEmpty || text.length > 255 || task.subtasks.length >= 50) {
+      throw StateError('Massimo 50 sottotask, fino a 255 caratteri.');
+    }
+    await _persistTask(task.copyWith(subtasks: [
+      ...task.subtasks, LocalSubtask(id: const Uuid().v4(), title: text),
+    ]));
+  }
+
+  Future<void> removeSubtask(String taskId, String subtaskId) async {
+    final task = state.tasks.where((item) => item.id == taskId).firstOrNull;
+    if (task == null) throw StateError('Attività non disponibile.');
+    await _persistTask(task.copyWith(subtasks: [
+      for (final item in task.subtasks) if (item.id != subtaskId) item,
+    ]));
+  }
+
   Future<void> toggleTask(String id) async {
     for (final task in state.tasks) {
       if (task.id == id) {
@@ -186,6 +278,18 @@ class LocalStore extends Notifier<LocalData> {
         return;
       }
     }
+  }
+
+  Future<void> renameNote(String id, String title) async {
+    final value = title.trim();
+    if (value.isEmpty || value.length > 255) {
+      throw StateError('Il titolo deve contenere da 1 a 255 caratteri.');
+    }
+    await editNote(id, title: value);
+  }
+
+  Future<void> setNoteBody(String id, String body) async {
+    await editNote(id, body: body);
   }
 
   Future<void> deleteNote(String id) async {

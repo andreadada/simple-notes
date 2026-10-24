@@ -30,6 +30,14 @@ Repository: **Simple Notes** — Flutter Windows/Android + Spring Boot/PG su Coo
 - I metodi `LocalStore.renameTask/setTask*/renameNote/setNoteBody/renameSubtask` devono preservare SQLite/outbox e gli attributi non modificati. Eseguire `flutter analyze`, `flutter test` e build Windows/Android in CI.
 - **Web non è dichiarabile pronto:** il progetto usa ancora `dart:io`/Drift Native/OAuth desktop; UI condivisa ≠ app browser funzionante. Leggere `docs/ui-design-audit.md` prima di affermare supporto web.
 
+## T2 — Flutter e SQLite v5 (implementato nel repository, non distribuito)
+
+- **Modello canonico**: `apps/flutter/lib/data/task_due.dart` distingue `none/date/datetime/legacy`. Una data senza orario è una stringa civile ISO, mai una mezzanotte UTC inventata; la modalità `legacy` conserva lo storico senza inferenze.
+- **Persistenza**: `AppDatabase` usa Drift **schemaVersion 5** con 5 colonne aggiuntive (kind, date, time, timezone, offset) e backfill `due_at != NULL → legacy`, altrimenti `none`. Le tabelle sync/outbox, il cursore e i remoteVersion non vengono cancellati.
+- **Sincronizzazione**: i task moderni inviano l'oggetto `due` al backend; prima di inviare `date/datetime` il client controlla `GET /api/v1/capabilities` autenticato e richiede `taskDueSchema=1`. Se assente conserva la mutazione offline; **HTTP 426** non è trattato come un normale 409, quindi non viene ribasato e l'outbox resta intatta. I payload legacy già accodati sono mantenuti.
+- **Test creati**: `task_due_test.dart`, `task_due_sync_test.dart`, `task_due_migration_test.dart`; includono due database simulati, fold DST, mezzanotte esplicita, server obsoleto, 426, e upgrade di SQLite v4 popolato con versioni e operazioni in coda. Verificare l'esito CI effettivo prima di considerarli convalidati.
+- **Perimetro**: T2 è codice e test, **non** rilascio. T3 editor Forui solo-giorno/ora e timezone IANA ancora da completare; notifiche/ricorrenze successive. Backend Flyway V7 ancora **non deployato su Coolify**; prima del rollout completare il backup PostgreSQL e restore isolato. Il runtime Flutter Web resta non supportato.
+
 ## Criteri di verità
 
 - **La CI non equivale a un test OAuth/sync E2E.** Ultima CI Flutter verificata sull'incremento inline-title: [40001351564](https://github.com/andreadada/simple-notes/actions/runs/40001351564), analyze/test, Windows e Android JDK 17/21 riusciti. I soli commit `.md` non attivano questa CI.
@@ -50,7 +58,7 @@ Repository: **Simple Notes** — Flutter Windows/Android + Spring Boot/PG su Coo
 - Package Android OAuth: **`it.andreadada.simplenotes`**; Web Client ID per `google_sign_in` su Android, Desktop Client ID per OAuth Windows. Mai committare secret, file credenziali, token o keystore.
 - La build Android con JDK 21 richiede la configurazione JVM del modulo in `android/app/build.gradle.kts`; **non ripristinare target Java 17 fisso** senza considerare Kotlin 21.
 - Per modifiche a scadenze e timezone seguire [docs/due-dates-timezones.md](docs/due-dates-timezones.md): value object `none/date/datetime/legacy`, Flyway V7/Drift v5, DST/ambiguità 00:00 e protezione dei vecchi client. È un **piano**, non codice pronto.
-- T1 backend `TaskDue`/Flyway V7/protezione 426/capabilities aggiunto nel commit `1bafec0`; **non distribuito**. In T2 il Flutter client deve leggere `/api/v1/capabilities`, gestire 426 senza perdita di outbox e migrare Drift v4→v5. Prima del deploy backup/restore reale.
+- T1 backend `TaskDue`/Flyway V7/protezione 426/capabilities aggiunto nel commit `1bafec0`; **non distribuito**. T2 Flutter ora legge `/api/v1/capabilities`, gestisce 426 senza cancellare l'outbox e migra Drift v4→v5. Convalidare CI ed E2E prima del rollout. Prima del deploy backup/restore reale.
 - Prossima priorità: **prima** backup PostgreSQL reale e restore isolato/offsite, **poi** deploy backend V5+V6 e verifica PC↔Android (liste, tag, sottotask, conflitti/offline e sessioni). Solo dopo, scadenze con orario e fusi, ricorrenze e reminder nativi. Vedere `docs/P0-DEVICE-CHECKS.md`; non presupporre che Coolify abbia già applicato V6. Avatar Google (claim picture) richiede il backend con migration Flyway V4.
 
 **Su qualsiasi incongruenza tra handoff e codice/CI più recente, verificare e aggiornare la documentazione invece di inventare uno stato.**

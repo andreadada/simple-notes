@@ -37,7 +37,10 @@ void main() {
     final changes = <Map<String, dynamic>>[];
     final api = MockClient((request) async {
       if (request.url.path == '/api/v1/capabilities') {
-        return http.Response('{"taskDueSchema":1}', 200);
+        return http.Response(
+          '{"taskDueSchema":1,'
+          '"taskDueKinds":["none","date","datetime","legacy"],'
+          '"requiresExplicitDueForModernTasks":true}', 200);
       }
       if (request.url.path == '/api/v1/sync/apply') {
         final op = jsonDecode(request.body) as Map<String, dynamic>;

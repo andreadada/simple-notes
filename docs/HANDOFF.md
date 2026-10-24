@@ -11,7 +11,7 @@ La V7 è **già applicata** sul database reale: non ripetere migrazioni o fare R
 
 ## Prossima sessione: collaudo T4.2 Windows ↔ Android
 
-1. Compilare stessa revisione Flutter `0.4.0+4` per Windows e Android senza cancellare dati.
+1. Compilare stessa revisione Flutter `0.4.1+5` per Windows e Android senza cancellare dati.
 2. Accedere allo stesso account e aprire avatar → **Verifica sincronizzazione**, controllando API `taskDueSchema:1` e pending.
 3. Completare [T4-DEVICE-SYNC.md](T4-DEVICE-SYNC.md): PC→Android, Android→PC, offline e DST.
 4. Non ripetere backup/restore né migrare V7 o ridistribuire automaticamente; copia offsite non effettuata per scelta.

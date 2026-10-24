@@ -95,7 +95,7 @@ Riferimento tecnico: `apps/flutter/lib/ui/notes_theme.dart` (`InlineTextMetrics.
 
 ## Rimane da fare per dichiarare P0 completo
 
-- **Prove hardware:** con build `0.4.0+4` verificare account Google/sessioni, attività/note PC↔Android, offline→online, conflitti Forui, date/ora/DST e riavvii; verificare prima capability API.
+- **Prove hardware:** con build `0.4.1+5` verificare account Google/sessioni, attività/note PC↔Android, offline→online, conflitti Forui, date/ora/DST e riavvii; verificare prima capability API.
 - **Organizzazione delle attività**: liste, tag, sottotask e priorità implementati e testati in CI (vedi `task-organization.md`); restano verifica su device e filtri avanzati.
 - **Ricorrenze e promemoria**: date e ore, timezone IANA, cambio ora DST, snooze, notifiche Android e Windows verificate anche con app in background; evitare notifiche duplicate. Nessuna promessa di reminder a PC spento.
 - **Sync avanzata**: risoluzione delle cancellazioni remote con recupero/duplicazione; test cambio account; strategia di rebootstrap e integrazione degli endpoint REST legacy nel change log. Background sync se previsto.

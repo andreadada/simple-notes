@@ -89,7 +89,7 @@ Repository: **Simple Notes** — Flutter Windows/Android + Spring Boot/PG su Coo
 - La build Android con JDK 21 richiede la configurazione JVM del modulo in `android/app/build.gradle.kts`; **non ripristinare target Java 17 fisso** senza considerare Kotlin 21.
 - Per modifiche a scadenze e timezone seguire [docs/due-dates-timezones.md](docs/due-dates-timezones.md): value object `none/date/datetime/legacy`, Flyway V7/Drift v5, DST/ambiguità 00:00 e protezione dei vecchi client. È un **piano**, non codice pronto.
 - T1 backend `TaskDue`/Flyway V7/protezione 426/capabilities aggiunto nel commit `1bafec0`; **non distribuito**. T2 Flutter ora legge `/api/v1/capabilities`, gestisce 426 senza cancellare l'outbox e migra Drift v4→v5. Convalidare CI ed E2E prima del rollout. Prima del deploy backup/restore reale.
-- Prossima priorità: **T4.2** con build `0.4.0+4` Windows↔Android, capability `taskDueSchema:1`, sync in entrambi i sensi, offline e DST. Non riavviare backup/restore o migrazioni V7 già eseguite; offsite non eseguita per scelta.
+- Prossima priorità: **T4.2** con build `0.4.1+5` Windows↔Android, capability `taskDueSchema:1`, sync in entrambi i sensi, offline e DST. Non riavviare backup/restore o migrazioni V7 già eseguite; offsite non eseguita per scelta.
 
 **Su qualsiasi incongruenza tra handoff e codice/CI più recente, verificare e aggiornare la documentazione invece di inventare uno stato.**
 

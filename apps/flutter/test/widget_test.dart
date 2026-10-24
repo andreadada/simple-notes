@@ -102,7 +102,10 @@ void main() {
       find.byKey(const Key('long-title'))).width;
     expect(short, lessThan(40));
     expect(long, greaterThan(short * 2));
-    final body = tester.getSize(find.byType(InlineEditableBody)).width;
+    final body = tester.getSize(find.descendant(
+      of: find.byType(InlineEditableBody),
+      matching: find.byType(TextField),
+    )).width;
     expect(body, lessThan(120));
     final quick = tester.getSize(
       find.byKey(const Key('inline-quick-add-input'))).width;

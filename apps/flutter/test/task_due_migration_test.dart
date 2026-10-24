@@ -72,7 +72,7 @@ void main() {
         VALUES ('syncCursor', '88'), ('boundOwnerId', 'same-account');
     """);
 
-    final db = AppDatabase(NativeDatabase(sqlite));
+    final db = AppDatabase(NativeDatabase.opened(sqlite));
     addTearDown(db.close);
     final snapshot = await db.snapshot();
     expect(snapshot.tasks.length, 2);

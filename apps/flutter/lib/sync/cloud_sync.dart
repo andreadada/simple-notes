@@ -32,10 +32,56 @@ class ConflictDetails {
 class SyncState {
   final bool running;
   final bool conflict;
+  final bool upgradeRequired;
   final String? message;
   final ConflictDetails? details;
-  const SyncState({this.running = false, this.conflict = false,
-      this.message, this.details});
+  const SyncState({
+    this.running = false,
+    this.conflict = false,
+    this.upgradeRequired = false,
+    this.message,
+    this.details,
+  });
+}
+
+/// A deliberately non-sensitive local/cloud health summary.
+/// Does not include tokens, account IDs, note text or task contents.
+class SyncDiagnostics {
+  const SyncDiagnostics({
+    required this.authenticated,
+    required this.apiConfigured,
+    required this.accountMatchesLocal,
+    required this.pending,
+    required this.localTasks,
+    required this.localNotes,
+    required this.localLists,
+    required this.cursor,
+    required this.lastSuccessUtc,
+    required this.backendStatus,
+  });
+
+  final bool authenticated;
+  final bool apiConfigured;
+  final bool accountMatchesLocal;
+  final int pending;
+  final int localTasks;
+  final int localNotes;
+  final int localLists;
+  final int cursor;
+  final DateTime? lastSuccessUtc;
+  /// 'compatible', 'outdated', 'offline', 'signed-out', 'unconfigured'
+  /// or 'account-mismatch' — no raw server errors or sensitive data.
+  final String backendStatus;
+
+  String get backendLabel => switch (backendStatus) {
+    'compatible' => 'Compatibile (taskDueSchema 1)',
+    'outdated' => 'Versione backend incompatibile',
+    'offline' => 'API non raggiungibile o non verificabile',
+    'signed-out' => 'Accedi con Google',
+    'unconfigured' => 'API_BASE_URL non configurata',
+    'account-mismatch' => 'Archivio locale associato a un altro account',
+    _ => 'Stato non disponibile',
+  };
 }
 
 final cloudSyncProvider = StateNotifierProvider<CloudSync, SyncState>(
@@ -95,6 +141,69 @@ class CloudSync extends StateNotifier<SyncState> {
     }
     final capability = jsonDecode(result.body) as Map<String, dynamic>;
     return capability['taskDueSchema'] == 1;
+  }
+
+  /// T4: passive, read-only diagnostics for real Windows/Android acceptance.
+  /// Never uploads outbox entries, changes local ownership or logs secrets.
+  Future<SyncDiagnostics> inspectSync() async {
+    final db = ref.read(databaseProvider);
+    final session = ref.read(cloudAuthProvider);
+    final pending = await db.pendingCount();
+    final snapshot = await db.snapshot();
+    final owner = await db.setting('boundOwnerId');
+    final cursor = int.tryParse(await db.setting('syncCursor') ?? '') ?? 0;
+    final lastRaw = await db.setting('lastSyncSuccessUtc');
+    final last = lastRaw == null ? null : DateTime.tryParse(lastRaw);
+    final matches = owner == null ||
+        (session.userId != null && owner == session.userId);
+    String backend;
+    if (!CloudConfig.enabled) {
+      // Injected test clients can point at mock servers even without dart-defines.
+      backend = _apiBaseUrl.startsWith('https://')
+          ? 'signed-out' : 'unconfigured';
+    } else {
+      backend = 'signed-out';
+    }
+    if (!session.authenticated || session.userId == null) {
+      backend = 'signed-out';
+    } else if (!matches) {
+      backend = 'account-mismatch';
+    } else if (!_apiBaseUrl.startsWith('https://') &&
+        !_apiBaseUrl.startsWith('http://localhost:') &&
+        !_apiBaseUrl.startsWith('http://127.0.0.1:') &&
+        !_apiBaseUrl.startsWith('http://10.0.2.2:')) {
+      backend = 'unconfigured';
+    } else {
+      try {
+        final result = await _request('GET', '/capabilities');
+        backend = result['taskDueSchema'] == 1 &&
+            result['requiresExplicitDueForModernTasks'] == true &&
+            result['taskDueKinds'] is List &&
+            {'none', 'date', 'datetime', 'legacy'}.every(
+              (kind) => (result['taskDueKinds'] as List).contains(kind))
+            ? 'compatible' : 'outdated';
+      } on SyncUpgradeRequired {
+        backend = 'outdated';
+      } on StateError catch (error) {
+        backend = error.toString().contains('HTTP 404') ||
+            error.toString().contains('HTTP 426')
+            ? 'outdated' : 'offline';
+      } catch (_) {
+        backend = 'offline';
+      }
+    }
+    return SyncDiagnostics(
+      authenticated: session.authenticated,
+      apiConfigured: _apiBaseUrl.isNotEmpty,
+      accountMatchesLocal: matches,
+      pending: pending,
+      localTasks: snapshot.tasks.length,
+      localNotes: snapshot.notes.length,
+      localLists: snapshot.lists.length,
+      cursor: cursor,
+      lastSuccessUtc: last?.toUtc(),
+      backendStatus: backend,
+    );
   }
 
   Future<void> synchronize() async {
@@ -171,10 +280,14 @@ class CloudSync extends StateNotifier<SyncState> {
         if (result['hasMore'] != true) break;
       }
       await ref.read(localStoreProvider.notifier).reload();
+      // Commit a local-only success marker after both upload and pull succeed.
+      // Do not update it for HTTP 426, 409, offline or partial sync failures.
+      await db.putSetting('lastSyncSuccessUtc',
+          DateTime.now().toUtc().toIso8601String());
       state = SyncState(message: 'Sincronizzazione completata: $uploaded inviate, '
           '$downloaded aggiornamenti ricevuti.');
     } on SyncUpgradeRequired {
-      state = const SyncState(message:
+      state = const SyncState(upgradeRequired: true, message:
         'Il server o un client precedente non supporta questa scadenza. '
         'Aggiorna il backend e i dispositivi; modifiche offline conservate.');
     } on SyncConflict {

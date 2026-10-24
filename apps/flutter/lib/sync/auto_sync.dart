@@ -81,7 +81,8 @@ class _AutoSyncHostState extends ConsumerState<AutoSyncHost>
     if (!mounted || !_active) return;
     final auth = ref.read(cloudAuthProvider);
     if (!auth.authenticated || auth.userId == null) return;
-    if (ref.read(cloudSyncProvider).conflict) return;
+    if (ref.read(cloudSyncProvider).conflict ||
+        ref.read(cloudSyncProvider).upgradeRequired) return;
     if (_inFlight || ref.read(cloudSyncProvider).running) {
       _queued = true;
       return;
@@ -101,7 +102,8 @@ class _AutoSyncHostState extends ConsumerState<AutoSyncHost>
     }
     final cloud = ref.read(cloudAuthProvider);
     if (!cloud.authenticated || cloud.userId == null ||
-        ref.read(cloudSyncProvider).conflict) {
+        (ref.read(cloudSyncProvider).conflict ||
+          ref.read(cloudSyncProvider).upgradeRequired)) {
       return;
     }
     _inFlight = true;
@@ -109,7 +111,7 @@ class _AutoSyncHostState extends ConsumerState<AutoSyncHost>
       await ref.read(cloudSyncProvider.notifier).synchronize();
       if (!mounted) return;
       final result = ref.read(cloudSyncProvider);
-      if (result.conflict) {
+      if (result.conflict || result.upgradeRequired) {
         _retry?.cancel();
         _failures = 0;
         return;

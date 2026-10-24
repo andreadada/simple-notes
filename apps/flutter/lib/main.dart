@@ -8,6 +8,7 @@ import 'ui/notes_dialogs.dart';
 import 'ui/task_due_editor.dart';
 import 'data/task_due_view.dart';
 import 'ui/sync_conflict_dialog.dart';
+import 'ui/sync_diagnostics_dialog.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uuid/uuid.dart';
@@ -182,7 +183,7 @@ class _NotesHomeState extends ConsumerState<NotesHome> {
                     const Icon(Icons.person, color: Colors.white70))
             : const Icon(Icons.person, color: Colors.white70)),
           ),
-          if (sync.conflict ||
+          if (sync.conflict || sync.upgradeRequired ||
               sync.message?.startsWith('Sync non riuscita') == true)
             const Positioned(
               right: -2, bottom: -2,
@@ -195,6 +196,8 @@ class _NotesHomeState extends ConsumerState<NotesHome> {
     Future<void> accountAction(String value) async {
       if (value == 'sync') {
         await ref.read(cloudSyncProvider.notifier).synchronize();
+      } else if (value == 'diagnostics') {
+        await showNotesSyncDiagnostics(context, ref);
       } else if (value == 'resolve') {
         final details = ref.read(cloudSyncProvider).details;
         if (details != null && context.mounted) {
@@ -254,6 +257,11 @@ class _NotesHomeState extends ConsumerState<NotesHome> {
               onPress: () => accountAction('resolve'),
             ),
           if (cloud.authenticated) ...[
+            .item(
+              title: const Text('Verifica sincronizzazione'),
+              prefix: const Icon(Icons.fact_check_outlined, size: 18),
+              onPress: () => accountAction('diagnostics'),
+            ),
             .item(
               title: const Text('Sincronizza ora'),
               prefix: const Icon(Icons.sync, size: 18),
@@ -343,13 +351,14 @@ class _NotesHomeState extends ConsumerState<NotesHome> {
             ]),
           ),
         if (sync.message != null &&
-            (sync.conflict ||
+            (sync.conflict || sync.upgradeRequired ||
                 sync.message!.startsWith('Sync non riuscita')))
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
             child: Text(sync.message!, maxLines: 3,
               style: TextStyle(fontSize: 12,
-                color: sync.conflict ? Colors.orangeAccent : Colors.grey)),
+                color: sync.conflict || sync.upgradeRequired
+                    ? Colors.orangeAccent : Colors.grey)),
           ),
         if (cloud.error != null)
           Padding(

@@ -242,3 +242,5 @@ Esempio: `2026-10-21 14:20 CEST | commit abc1234 | Aggiunto modulo promemoria e 
 - 2026-10-24 | style(ui) | Commit `7303d45`: rimossi min-width e padding extra dall'underline, larghezza misurata sui glifi di testo o hint anche nei quick-add, placeholder più trasparente e test Flutter dedicati. Regola registrata in `design.md`, audit e guide. Non equivale a rilascio browser.
 
 - 2026-10-24 | fix(ui) | Correzione del parent tight/Expanded: Align libera la larghezza interna del TextField nonostante il contenitore grande; verifica su TextField effettivo, non wrapper. Commit `5f14fce` successivo allo stile `7303d45`. Verifiche CI e native separate.
+
+- 2026-10-24 | fix(ui) | Commit `e55c87b`: la sottolineatura è ora disegnata separatamente dal bordo interno Material con `InlineGlyphUnderline`, seguendo i glifi (anche quando `InputDecorator` impone larghezza minima). Focus blu, default grigio; input border nativo invisibile. Test dedicati su `inline-glyph-underline`; UI web runtime non ancora portato.

@@ -11,8 +11,11 @@ import 'notes_theme.dart';
 Future<TaskDue?> showTaskDueEditor(BuildContext context, {
   TaskDue initial = TaskDue.none,
 }) async {
-  final detectedZone = await TaskDueClock.deviceZone();
-  if (!context.mounted) return null;
+  // Present the dialog immediately. Platform timezone discovery can be slow
+  // or unavailable (notably in widget tests and desktop integration).
+  final detectedZoneFuture = TaskDueClock.deviceZone();
+  String? detectedZone;
+  bool zoneDiscoveryStarted = false;
 
   final initialDay = initial.kind == 'datetime' && initial.date != null
       ? DateTime.parse(initial.date!)
@@ -28,7 +31,7 @@ Future<TaskDue?> showTaskDueEditor(BuildContext context, {
       text: initial.kind == 'datetime' ? initial.time! : '09:00');
   final zone = TextEditingController(
       text: initial.kind == 'datetime'
-          ? initial.timeZone! : detectedZone ?? '');
+          ? initial.timeZone! : '');
   bool busy = false;
 
   String dateIso() =>
@@ -46,6 +49,19 @@ Future<TaskDue?> showTaskDueEditor(BuildContext context, {
         controllers: [time, zone],
         child: StatefulBuilder(
           builder: (dialogContext, update) {
+            if (!zoneDiscoveryStarted) {
+              zoneDiscoveryStarted = true;
+              detectedZoneFuture.then((value) {
+                if (dialogContext.mounted) {
+                  update(() {
+                    detectedZone = value;
+                    if (value != null && zone.text.trim().isEmpty) {
+                      zone.text = value;
+                    }
+                  });
+                }
+              });
+            }
             void resetOptions() => update(() {
               choices = [];
               selectedOffset = null;

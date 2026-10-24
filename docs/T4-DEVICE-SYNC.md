@@ -19,7 +19,7 @@ Dopo aver installato su entrambi i dispositivi una build Flutter aggiornata:
 2. Aprire l'avatar → **Verifica sincronizzazione** (menu Forui disponibile su Windows e Android).
 3. L'app esegue **solo** una GET autenticata di `/api/v1/capabilities` e letture del proprio database SQLite. **Non crea, invia, modifica o elimina task e note.**
 4. Verificare `Backend scadenze: Compatibile (taskDueSchema 1)`, `Archivio/account: Coerente`, `Modifiche in attesa: 0` e `Ultima sincronizzazione` non vuota **dopo** una sincronizzazione riuscita.
-5. Premere **Copia report senza dati personali** per condividere solo stato backend, conteggi, cursor e ultimo sync. **Non** contiene token, ID account, titoli, corpi delle note o URL segreti.
+5. Premere **Copia report** per condividere solo stato backend, conteggi, cursor e ultimo sync. **Non** contiene token, ID account, titoli, corpi delle note o URL segreti.
 
 Se appare **Versione backend incompatibile** o il client riceve HTTP **426**, **non cancellare dati e non reinstallare l'app**: la coda locale rimane salvata; controllare che il backend API sia aggiornato. Se appare **API non raggiungibile**, verificare rete e login. Se appare **Archivio locale associato a un altro account**, non forzare la sincronizzazione.
 

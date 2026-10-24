@@ -46,15 +46,23 @@ Riferimento tecnico: `apps/flutter/lib/ui/notes_theme.dart` (`InlineTextMetrics.
 - **Limitazione importante:** mezzanotte e una scadenza «solo giorno» non sono ancora distinguibili nel modello. La separazione esplicita `dueDate` / `dueTime` / `timezone` con migrazioni incrementali e test DST resta da realizzare **prima** di ricorrenze e notifiche. Il campo HH:mm è il primo incremento UI, non il completamento del sottoprogetto promemoria.
 - La build CI di questo incremento va controllata; non dichiarare test hardware superati senza prova.
 
+## T2 — Flutter e SQLite v5 (implementato nel repository, non distribuito)
+
+- **Modello canonico**: `apps/flutter/lib/data/task_due.dart` distingue `none/date/datetime/legacy`. Una data senza orario è una stringa civile ISO, mai una mezzanotte UTC inventata; la modalità `legacy` conserva lo storico senza inferenze.
+- **Persistenza**: `AppDatabase` usa Drift **schemaVersion 5** con 5 colonne aggiuntive (kind, date, time, timezone, offset) e backfill `due_at != NULL → legacy`, altrimenti `none`. Le tabelle sync/outbox, il cursore e i remoteVersion non vengono cancellati.
+- **Sincronizzazione**: i task moderni inviano l'oggetto `due` al backend; prima di inviare `date/datetime` il client controlla `GET /api/v1/capabilities` autenticato e richiede `taskDueSchema=1`. Se assente conserva la mutazione offline; **HTTP 426** non è trattato come un normale 409, quindi non viene ribasato e l'outbox resta intatta. I payload legacy già accodati sono mantenuti.
+- **Test creati**: `task_due_test.dart`, `task_due_sync_test.dart`, `task_due_migration_test.dart`; includono due database simulati, fold DST, mezzanotte esplicita, server obsoleto, 426, e upgrade di SQLite v4 popolato con versioni e operazioni in coda. Verificare l'esito CI effettivo prima di considerarli convalidati.
+- **Perimetro**: T2 è codice e test, **non** rilascio. T3 editor Forui solo-giorno/ora e timezone IANA ancora da completare; notifiche/ricorrenze successive. Backend Flyway V7 ancora **non deployato su Coolify**; prima del rollout completare il backup PostgreSQL e restore isolato. Il runtime Flutter Web resta non supportato.
+
 ## Prossima implementazione progettata, non sviluppata
 
-- Piano dettagliato: [due-dates-timezones.md](due-dates-timezones.md). T1 backend + Flyway V7 **introdotti nel repository**, non deployati. Il prossimo incremento **T2 Flutter** introduce Drift v5 e poi la UI T3; test hardware e gestione 426 ancora necessari. L'attuale UI HH:mm ha superato le CI Flutter [40011701417](https://github.com/andreadada/simple-notes/actions/runs/40011701417) e [40011789270](https://github.com/andreadada/simple-notes/actions/runs/40011789270): non equivale a test real-device.
+- Piano dettagliato: [due-dates-timezones.md](due-dates-timezones.md). T1 backend + Flyway V7 **introdotti nel repository**, non deployati. T2 Flutter include Drift v5 e gestione 426; la UI T3 e i test hardware sono ancora necessari. L'attuale UI HH:mm ha superato le CI Flutter [40011701417](https://github.com/andreadada/simple-notes/actions/runs/40011701417) e [40011789270](https://github.com/andreadada/simple-notes/actions/runs/40011789270): non equivale a test real-device.
 - Gate preliminare immutato: backup PostgreSQL reale e restore isolato/offsite, deploy V5+V6 se non già effettuato, poi verifica fisica dei flussi attuali.
 
 ## Avanzamento T1 backend (solo repository)
 
 - Nel commit [1bafec0](https://github.com/andreadada/simple-notes/commit/1bafec046dd0cbd3f18b8933873da7381fc28a26) sono stati introdotti `TaskDue`, `V7__task_due_semantics.sql`, capability backend e protezione 426 vecchi client, con test Java. La [CI backend 40019181083](https://github.com/andreadada/simple-notes/actions/runs/40019181083) è **riuscita** e **Coolify non è stato aggiornato**.
-- Flutter continua a usare Drift v4 / `dueAt`; T2 e T3 ancora da fare. Non installare un nuovo client che scriva `due` senza prima verificare che il backend aggiornato supporti `taskDueSchema=1` dopo un backup PostgreSQL verificato.
+- Flutter usa Drift v5 e `TaskDue` nel codice; T3 e deploy hardware ancora da fare. Non installare un nuovo client che scriva `due` senza prima verificare che il backend aggiornato supporti `taskDueSchema=1` dopo un backup PostgreSQL verificato.
 
 ## Rimane da fare per dichiarare P0 completo
 

@@ -21,13 +21,19 @@ Nel commit [7303d45](https://github.com/andreadada/simple-notes/commit/7303d45c3
 
 Il client ha esteso `InlineEditableTitle` a task/note/sottotask/tag, aggiunto `InlineEditableBody` per descrizioni e note e un quick-add inline dei sottotask. Proprietà lista/priorità sono menu Forui, profilo ora popover Forui e dettaglio mobile sheet Forui; eliminazioni di task/note richiedono conferma. Le modifiche persistono in SQLite/outbox con i metodi `LocalStore`. L'editor avanzato resta per i cambi multi-campo. **Web runtime ancora non operativo**: database nativo e auth platform-specific. Leggere [ui-design-audit.md](ui-design-audit.md).
 
+## T2 — aggiornamento Flutter e compatibilità (24/10/2026)
+
+Flutter adotta `TaskDue` (`none/date/datetime/legacy`) e Drift **schema v5**. Una data senza ora resta una data civile; scadenze storiche conservate come `legacy`; `due_at` e outbox rimangono per compatibilità. `CloudSync` controlla il server `GET /api/v1/capabilities` prima di caricare scadenze `date/datetime` e richiede `taskDueSchema=1`; il server obsoleto non riceve aggiornamenti moderni. HTTP **426 CLIENT_UPGRADE_REQUIRED** blocca la sync senza cancellare mutazioni o attivare la risoluzione 409. I payload `dueAt` storici restano leggibili.
+
+Test introdotti per data-only, ora legale, due database, fallback server, outbox e migrazione SQLite v4 già popolato → v5. **Risultati CI e prove real-device vanno verificati**, il codice GitHub non implica deployment. T3 (UI Forui con scelta esplicita, timezone IANA e DST) resta da realizzare. Flyway V7 non è stato distribuito su Coolify, necessario backup/restore reale prima del rollout. Flutter Web non ancora supportato.
+
 ## Prossima implementazione progettata (23 ottobre 2026)
 
 Per intervenire su scadenze, SQLite, Flyway o sync leggere **[due-dates-timezones.md](due-dates-timezones.md)**: pianifica il tipo `none/date/datetime/legacy`, la migrazione PostgreSQL V7 e Flutter Drift v5, timezone IANA/DST, protezione dei client precedenti e test. **Non è implementato**. Le CI per l'editor HH:mm già esistente sono verdi ([40011789270](https://github.com/andreadada/simple-notes/actions/runs/40011789270)). Restano gate backup/restore reale, deploy sicuro e prova hardware in [P0-DEVICE-CHECKS.md](P0-DEVICE-CHECKS.md).
 
 ## T1 backend introdotto nel repository (23 ottobre 2026)
 
-Commit [1bafec0](https://github.com/andreadada/simple-notes/commit/1bafec046dd0cbd3f18b8933873da7381fc28a26): aggiunti migrazione Flyway V7, validazione `TaskDue` incl. DST, `GET /api/v1/capabilities` autenticato e blocco HTTP 426 `CLIENT_UPGRADE_REQUIRED` per vecchi client che tentano di sovrascrivere nuove scadenze. **Non deployato su Coolify**; Flutter ancora Drift v4 e senza `TaskDue`/gestione 426. Leggere [due-dates-timezones.md](due-dates-timezones.md) per T2, T3 e procedure di backup.
+Commit [1bafec0](https://github.com/andreadada/simple-notes/commit/1bafec046dd0cbd3f18b8933873da7381fc28a26): aggiunti migrazione Flyway V7, validazione `TaskDue` incl. DST, `GET /api/v1/capabilities` autenticato e blocco HTTP 426 `CLIENT_UPGRADE_REQUIRED` per vecchi client che tentano di sovrascrivere nuove scadenze. **Non deployato su Coolify**; Flutter T2 include Drift v5, `TaskDue` e gestione 426 nel codice. CI ed E2E distinti. Leggere [due-dates-timezones.md](due-dates-timezones.md) per T2, T3 e procedure di backup.
 
 ## TL;DR: che cos'è e a che punto siamo
 

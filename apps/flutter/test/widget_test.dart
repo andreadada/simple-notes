@@ -111,14 +111,30 @@ void main() {
       of: find.byType(InlineEditableBody),
       matching: find.byKey(const Key('inline-glyph-underline')),
     )).width;
-    expect(body, lessThan(120));
-    // Even a tight Expanded/SizedBox parent cannot stretch the underline.
+    // Flutter's test font is Ahem (wide glyphs). Compare with the actual
+    // text measurement, not an arbitrary width that assumes a production font.
+    final expectedBody = InlineTextMetrics.fieldWidth(
+      tester.element(find.byType(InlineEditableBody)),
+      text: 'Scrivi...',
+      style: const TextStyle(fontSize: 14, height: 1.45),
+      maxWidth: 340,
+    );
+    expect(body, closeTo(expectedBody, 0.01));
+    // Even a tight parent cannot stretch the underline to its 340 px width.
     expect(tester.getSize(find.byType(InlineEditableBody)).width, 340);
+    expect(body, lessThan(340));
     final quick = tester.getSize(find.descendant(
       of: find.byType(InlineQuickAdd),
       matching: find.byKey(const Key('inline-glyph-underline')),
     )).width;
-    expect(quick, lessThan(200));
+    final expectedQuick = InlineTextMetrics.fieldWidth(
+      tester.element(find.byType(InlineQuickAdd)),
+      text: 'Nuovo sottotask...',
+      style: const TextStyle(fontSize: 13),
+      maxWidth: 260,
+    );
+    expect(quick, closeTo(expectedQuick, 0.01));
+    expect(quick, lessThan(340));
     final titleInput = tester.widget<TextField>(find.descendant(
       of: find.byKey(const Key('short-title')),
       matching: find.byType(TextField)));

@@ -275,7 +275,11 @@ class _NotesHomeState extends ConsumerState<NotesHome> {
         variant: FButtonVariant.ghost,
         mainAxisSize: compact ? MainAxisSize.min : MainAxisSize.max,
         onPress: cloud.busy ? null : () {},
-        child: Padding(
+        // Forui buttons measure their children unconstrained. Give the
+        // profile row a finite width before placing Expanded inside it.
+        child: SizedBox(
+          width: compact ? 42 : 190,
+          child: Padding(
           padding: EdgeInsets.symmetric(
             horizontal: compact ? 2 : 6, vertical: 5),
           child: Row(
@@ -304,6 +308,7 @@ class _NotesHomeState extends ConsumerState<NotesHome> {
                   color: NotesPalette.secondaryText, size: 17),
               ],
             ],
+          ),
           ),
         ),
       ),

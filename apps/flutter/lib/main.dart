@@ -71,7 +71,7 @@ class SimpleNotesApp extends StatelessWidget {
       );
 }
 
-enum Section { today, next7, inbox, everything, completed, notes }
+enum Section { today, next7, inbox, everything, completed, notes, trash }
 
 extension SectionLabel on Section {
   String get label => switch (this) {
@@ -81,6 +81,7 @@ extension SectionLabel on Section {
         Section.everything => 'Tutto',
         Section.completed => 'Completati',
         Section.notes => 'Note',
+        Section.trash => 'Cestino',
       };
   IconData get icon => switch (this) {
         Section.today => Icons.today_outlined,
@@ -89,6 +90,7 @@ extension SectionLabel on Section {
         Section.everything => Icons.list_alt,
         Section.completed => Icons.check_circle_outline,
         Section.notes => Icons.sticky_note_2_outlined,
+        Section.trash => Icons.restore_from_trash_outlined,
       };
 }
 
@@ -133,7 +135,7 @@ class _NotesHomeState extends ConsumerState<NotesHome> {
           Section.completed => t.completed,
           Section.inbox => !t.completed && t.listId == null,
           Section.everything => !t.completed,
-          Section.notes => false,
+          Section.notes || Section.trash => false,
         }).toList()..sort((a, b) => a.createdAt.compareTo(b.createdAt));
   }
 
@@ -465,7 +467,7 @@ class _NotesHomeState extends ConsumerState<NotesHome> {
                           .renameList(activeList.id, title),
                     )),
             ),
-          if (section != Section.notes)
+          if (section != Section.notes && section != Section.trash)
             Padding(
               padding: const EdgeInsets.fromLTRB(16, 0, 16, 4),
               child: FTextField(
@@ -480,7 +482,7 @@ class _NotesHomeState extends ConsumerState<NotesHome> {
 
               ),
             ),
-          if (section != Section.notes)
+          if (section != Section.notes && section != Section.trash)
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 5),
               child: Row(children: [
@@ -508,7 +510,7 @@ class _NotesHomeState extends ConsumerState<NotesHome> {
                 ],
               ]),
             ),
-          if (section != Section.notes)
+          if (section != Section.notes && section != Section.trash)
             Padding(
               padding: const EdgeInsets.fromLTRB(16, 8, 16, 12),
               child: Row(children: [
@@ -572,7 +574,50 @@ class _NotesHomeState extends ConsumerState<NotesHome> {
                       ? null : NotesPalette.accent)),
               ]),
             ),
-          if (section == Section.notes)
+          if (section == Section.trash)
+            Expanded(child: ListView(
+              padding: const EdgeInsets.all(16),
+              children: [
+                const Padding(
+                  padding: EdgeInsets.only(bottom: 12),
+                  child: Text('Note eliminate · ripristinabili sullo stesso account',
+                    style: TextStyle(color: NotesPalette.secondaryText)),
+                ),
+                if (data.trashedNotes.isEmpty)
+                  const Center(child: Text('Cestino vuoto',
+                    style: TextStyle(color: NotesPalette.secondaryText))),
+                for (final note in data.trashedNotes)
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 10),
+                    child: FCard(child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(children: [
+                          Expanded(child: Text(note.title.isEmpty
+                              ? 'Senza titolo' : note.title,
+                            style: const TextStyle(fontWeight: FontWeight.w600))),
+                          FButton(
+                            key: Key('restore-note-${note.id}'),
+                            variant: FButtonVariant.outline,
+                            mainAxisSize: MainAxisSize.min,
+                            onPress: () async {
+                              await ref.read(localStoreProvider.notifier)
+                                  .restoreNote(note.id);
+                            },
+                            child: const Text('Ripristina'),
+                          ),
+                        ]),
+                        if (note.body.isNotEmpty)
+                          Padding(
+                            padding: const EdgeInsets.only(top: 8),
+                            child: Text(note.body),
+                          ),
+                      ],
+                    )),
+                  ),
+              ],
+            ))
+          else if (section == Section.notes)
             Expanded(child: ListView(
               padding: const EdgeInsets.all(16),
               children: [
@@ -1025,7 +1070,7 @@ class _NotesHomeState extends ConsumerState<NotesHome> {
       builder: (ctx, style, animation) => NotesDialog(
         style: style, animation: animation,
         title: const Text('Eliminare nota?'),
-        body: Text('Vuoi eliminare "${note.title.isEmpty ? 'Senza titolo' : note.title}"?'),
+        body: Text('Spostare "${note.title.isEmpty ? 'Senza titolo' : note.title}" nel cestino? Potrai ripristinarla.'),
         actions: [
           FButton(
             variant: FButtonVariant.ghost,
@@ -1038,7 +1083,7 @@ class _NotesHomeState extends ConsumerState<NotesHome> {
               await ref.read(localStoreProvider.notifier).deleteNote(note.id);
               if (ctx.mounted) Navigator.pop(ctx);
             },
-            child: const Text('Elimina'),
+            child: const Text('Sposta nel cestino'),
           ),
         ],
       ),

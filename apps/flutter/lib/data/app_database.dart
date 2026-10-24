@@ -121,6 +121,9 @@ class AppDatabase extends _$AppDatabase {
     final notes = await (select(noteEntries)
           ..where((n) => n.deletedAt.isNull()))
         .get();
+    final trashedNotes = await (select(noteEntries)
+          ..where((n) => n.deletedAt.isNotNull()))
+        .get();
     final lists = await (select(taskListEntries)
           ..where((l) => l.deletedAt.isNull())).get();
     return LocalData(
@@ -144,6 +147,9 @@ class AppDatabase extends _$AppDatabase {
         completed: t.completed, createdAt: t.createdAt,
       )).toList(),
       notes: notes.map((n) => LocalNote(
+        id: n.id, title: n.title, body: n.body, createdAt: n.createdAt,
+      )).toList(),
+      trashedNotes: trashedNotes.map((n) => LocalNote(
         id: n.id, title: n.title, body: n.body, createdAt: n.createdAt,
       )).toList(),
     );
@@ -212,9 +218,25 @@ class AppDatabase extends _$AppDatabase {
   });
 
   Future<void> removeNote(String id) => transaction(() async {
+    // Never enqueue a deletion for a missing or already deleted note.
+    final active = await (select(noteEntries)
+        ..where((n) => n.id.equals(id) & n.deletedAt.isNull()))
+        .getSingleOrNull();
+    if (active == null) throw StateError('Nota non disponibile.');
     await (update(noteEntries)..where((n) => n.id.equals(id)))
         .write(NoteEntriesCompanion(deletedAt: Value(DateTime.now())));
     await _enqueue('note', id, 'delete', '{}');
+  });
+
+  Future<void> restoreNote(String id) => transaction(() async {
+    final trashed = await (select(noteEntries)
+        ..where((n) => n.id.equals(id) & n.deletedAt.isNotNull()))
+        .getSingleOrNull();
+    if (trashed == null) throw StateError('La nota non è nel cestino.');
+    await (update(noteEntries)..where((n) => n.id.equals(id)))
+        .write(const NoteEntriesCompanion(deletedAt: Value(null)));
+    // Dedicated, version-checked restore; never upsert over a server tombstone.
+    await _enqueue('note', id, 'restore', '{}');
   });
 
   Future<void> _enqueue(String type, String id, String action, String body) async {
@@ -337,6 +359,13 @@ class AppDatabase extends _$AppDatabase {
     final pending = await (select(pendingMutations)
         ..where((p) => p.entityId.equals(entityId))).get();
     if (pending.isNotEmpty) return;
+    // Older pages/events must not overwrite a newer acknowledged note state.
+    if (type == 'note') {
+      final current = await (select(noteEntries)
+          ..where((n) => n.id.equals(entityId))).getSingleOrNull();
+      if (current?.remoteVersion != null &&
+          current!.remoteVersion! >= version) return;
+    }
     if (type == 'list') {
       if (deleted) {
         await (update(taskListEntries)..where((l) => l.id.equals(entityId)))

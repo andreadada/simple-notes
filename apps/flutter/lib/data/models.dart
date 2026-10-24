@@ -147,10 +147,12 @@ class LocalNote {
 class LocalData {
   final List<LocalTask> tasks;
   final List<LocalNote> notes;
+  final List<LocalNote> trashedNotes;
   final List<LocalTaskList> lists;
   const LocalData({
     this.tasks = const [],
     this.notes = const [],
+    this.trashedNotes = const [],
     this.lists = const [],
   });
 
@@ -159,16 +161,19 @@ class LocalData {
       .map((item) => LocalTask.fromJson(item as Map<String, dynamic>)).toList(),
     notes: (value['notes'] as List<dynamic>? ?? const [])
       .map((item) => LocalNote.fromJson(item as Map<String, dynamic>)).toList(),
+    trashedNotes: (value['trashedNotes'] as List<dynamic>? ?? const [])
+      .map((item) => LocalNote.fromJson(item as Map<String, dynamic>)).toList(),
     lists: (value['lists'] as List<dynamic>? ?? const [])
       .map((item) => LocalTaskList.fromJson(item as Map<String, dynamic>)).toList(),
   );
 
   LocalData copyWith({
     List<LocalTask>? tasks, List<LocalNote>? notes,
-    List<LocalTaskList>? lists,
+    List<LocalNote>? trashedNotes, List<LocalTaskList>? lists,
   }) => LocalData(
     tasks: tasks ?? this.tasks,
     notes: notes ?? this.notes,
+    trashedNotes: trashedNotes ?? this.trashedNotes,
     lists: lists ?? this.lists,
   );
 }

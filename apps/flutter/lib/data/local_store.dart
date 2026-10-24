@@ -303,9 +303,23 @@ class LocalStore extends Notifier<LocalData> {
   }
 
   Future<void> deleteNote(String id) async {
+    final note = state.notes.where((item) => item.id == id).firstOrNull;
+    if (note == null) throw StateError('Nota non disponibile.');
     await ref.read(databaseProvider).removeNote(id);
     state = state.copyWith(
-      notes: state.notes.where((note) => note.id != id).toList(),
+      notes: state.notes.where((item) => item.id != id).toList(),
+      trashedNotes: [...state.trashedNotes, note],
+    );
+    _changed();
+  }
+
+  Future<void> restoreNote(String id) async {
+    final note = state.trashedNotes.where((item) => item.id == id).firstOrNull;
+    if (note == null) throw StateError('Nota non presente nel cestino.');
+    await ref.read(databaseProvider).restoreNote(id);
+    state = state.copyWith(
+      notes: [...state.notes, note],
+      trashedNotes: state.trashedNotes.where((item) => item.id != id).toList(),
     );
     _changed();
   }

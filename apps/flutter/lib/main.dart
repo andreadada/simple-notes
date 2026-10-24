@@ -5,6 +5,8 @@ import 'ui/inline_editable_title.dart';
 import 'ui/inline_editable_body.dart';
 import 'ui/inline_quick_add.dart';
 import 'ui/notes_dialogs.dart';
+import 'ui/task_due_editor.dart';
+import 'data/task_due_view.dart';
 import 'ui/sync_conflict_dialog.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -103,7 +105,7 @@ class _NotesHomeState extends ConsumerState<NotesHome> {
   String searchQuery = '';
   final newTask = TextEditingController();
   final newTaskFocus = FocusNode();
-  DateTime? dueAt;
+  TaskDue quickDue = TaskDue.none;
 
   @override
   void dispose() {
@@ -116,19 +118,17 @@ class _NotesHomeState extends ConsumerState<NotesHome> {
     final text = newTask.text.trim();
     if (text.isEmpty) return;
     await ref.read(localStoreProvider.notifier)
-        .addTask(text, dueAt: dueAt, listId: activeListId);
+        .addTask(text, due: quickDue, listId: activeListId);
     newTask.clear();
-    setState(() => dueAt = null);
+    setState(() => quickDue = TaskDue.none);
   }
 
   List<LocalTask> visibleTasks(List<LocalTask> tasks) {
     final now = DateTime.now();
-    final today = DateTime(now.year, now.month, now.day);
-    final next = today.add(const Duration(days: 7));
     return tasks.where((t) => (activeListId == null ||
         t.listId == activeListId) && switch (section) {
-          Section.today => !t.completed && t.dueAt != null && t.dueAt!.isBefore(today.add(const Duration(days: 1))),
-          Section.next7 => !t.completed && t.dueAt != null && t.dueAt!.isBefore(next),
+          Section.today => taskInToday(t, now),
+          Section.next7 => taskInNextSevenDays(t, now),
           Section.completed => t.completed,
           Section.inbox => !t.completed && t.listId == null,
           Section.everything => !t.completed,
@@ -137,11 +137,8 @@ class _NotesHomeState extends ConsumerState<NotesHome> {
   }
 
   Future<void> selectDue() async {
-    final date = await showNotesDatePicker(
-      context,
-      initialDate: dueAt,
-    );
-    if (date != null && mounted) setState(() => dueAt = date);
+    final selected = await showTaskDueEditor(context, initial: quickDue);
+    if (selected != null && mounted) setState(() => quickDue = selected);
   }
 
   @override
@@ -555,9 +552,15 @@ class _NotesHomeState extends ConsumerState<NotesHome> {
                       },
                     ),
                 )),
-                IconButton(tooltip: 'Imposta data', onPressed: selectDue,
-                  icon: Icon(dueAt == null ? Icons.event_outlined : Icons.event_available,
-                    color: dueAt == null ? null : const Color(0xff547aff))),
+                IconButton(
+                  key: const Key('quick-due-editor'),
+                  tooltip: quickDue.kind == 'none'
+                      ? 'Imposta data' : taskDueLabel(quickDue),
+                  onPressed: selectDue,
+                  icon: Icon(quickDue.kind == 'none'
+                      ? Icons.event_outlined : Icons.event_available,
+                    color: quickDue.kind == 'none'
+                      ? null : NotesPalette.accent)),
               ]),
             ),
           if (section == Section.notes)
@@ -647,8 +650,8 @@ class _NotesHomeState extends ConsumerState<NotesHome> {
                              },
                              child: const Icon(Icons.chevron_right, size: 18),
                            ),
-                           subtitle: task.dueAt == null ? null : Text(
-                            'Scadenza: ${task.dueAt!.day}/${task.dueAt!.month}/${task.dueAt!.year}${task.dueAt!.hour == 0 && task.dueAt!.minute == 0 ? '' : ' ${task.dueAt!.hour.toString().padLeft(2, '0')}:${task.dueAt!.minute.toString().padLeft(2, '0')}'}'),
+                           subtitle: task.due.kind == 'none'
+                              ? null : Text('Scadenza: ${taskDueLabel(task.due)}'),
                           onTap: () {
                             setState(() => selectedId = task.id);
                             if (!wideDetails) showTaskDetails(task);
@@ -698,29 +701,22 @@ class _NotesHomeState extends ConsumerState<NotesHome> {
               variant: FButtonVariant.outline,
               mainAxisSize: MainAxisSize.min,
               onPress: () async {
-                final selected = await showNotesDatePicker(context,
-                  initialDate: task.dueAt);
-                if (selected != null) {
-                  final previous = task.dueAt;
-                  await ref.read(localStoreProvider.notifier).setTaskDue(
-                    task.id, DateTime(selected.year, selected.month, selected.day,
-                      previous?.hour ?? 0, previous?.minute ?? 0));
+                final chosen = await showTaskDueEditor(context,
+                    initial: task.due);
+                if (chosen != null) {
+                  await ref.read(localStoreProvider.notifier)
+                      .setTaskDueSemantics(task.id, chosen);
                 }
               },
               prefix: const Icon(Icons.calendar_today_outlined, size: 16),
-              child: Text(task.dueAt == null ? 'Imposta data' :
-                '${task.dueAt!.day.toString().padLeft(2, '0')}/'
-                '${task.dueAt!.month.toString().padLeft(2, '0')}/'
-                '${task.dueAt!.year}'
-                '${task.dueAt!.hour == 0 && task.dueAt!.minute == 0 ? '' :
-                ' · ${task.dueAt!.hour.toString().padLeft(2, '0')}:${task.dueAt!.minute.toString().padLeft(2, '0')}'}'),
+              child: Text(taskDueLabel(task.due)),
             ),
-            if (task.dueAt != null)
+            if (task.due.kind != 'none')
               FButton.icon(
                 key: const Key('inline-clear-due'),
                 variant: FButtonVariant.ghost,
                 onPress: () => ref.read(localStoreProvider.notifier)
-                    .setTaskDue(task.id, null),
+                    .setTaskDueSemantics(task.id, TaskDue.none),
                 child: const Icon(Icons.close, size: 17),
               ),
           ]),
@@ -1044,19 +1040,15 @@ class _NotesHomeState extends ConsumerState<NotesHome> {
     final title = TextEditingController(text: task.title);
     final description = TextEditingController(text: task.description);
     final tags = TextEditingController(text: task.tags.join(', '));
-    final dueTime = TextEditingController(text: task.dueAt == null ||
-      (task.dueAt!.hour == 0 && task.dueAt!.minute == 0)
-      ? '' : '${task.dueAt!.hour.toString().padLeft(2, '0')}:'
-        '${task.dueAt!.minute.toString().padLeft(2, '0')}');
     final subtaskInput = TextEditingController();
     var selectedList = task.listId;
     var selectedPriority = task.priority;
     var editedSubtasks = [...task.subtasks];
-    DateTime? selectedDue = task.dueAt;
+    TaskDue selectedDue = task.due;
     showFDialog<void>(
       context: context,
       builder: (dialogContext, style, animation) => NotesEditorControllerScope(
-        controllers: [title, description, tags, subtaskInput, dueTime],
+        controllers: [title, description, tags, subtaskInput],
         child: StatefulBuilder(
           builder: (dialogContext, updateDialog) => NotesDialog(
           style: style,
@@ -1209,37 +1201,26 @@ class _NotesHomeState extends ConsumerState<NotesHome> {
                   key: const Key('edit-task-due'),
                   variant: FButtonVariant.outline,
                   onPress: () async {
-                    final picked = await showNotesDatePicker(
-                      dialogContext, initialDate: selectedDue,
-                    );
-                    if (picked != null && dialogContext.mounted) {
-                      updateDialog(() => selectedDue = picked);
+                    final chosen = await showTaskDueEditor(dialogContext,
+                        initial: selectedDue);
+                    if (chosen != null && dialogContext.mounted) {
+                      updateDialog(() => selectedDue = chosen);
                     }
                   },
                   prefix: const Icon(Icons.calendar_today_outlined, size: 17),
-                  child: Text(selectedDue == null
-                      ? 'Nessuna scadenza'
-                      : '${selectedDue!.day.toString().padLeft(2, '0')}/'
-                        '${selectedDue!.month.toString().padLeft(2, '0')}/'
-                        '${selectedDue!.year}'),
+                  child: Text(taskDueLabel(selectedDue)),
                 )),
-                if (selectedDue != null) ...[
+                if (selectedDue.kind != 'none') ...[
                   const SizedBox(width: 8),
                   FButton.icon(
                     key: const Key('clear-task-due'),
                     variant: FButtonVariant.outline,
-                    onPress: () => updateDialog(() => selectedDue = null),
+                    onPress: () => updateDialog(
+                        () => selectedDue = TaskDue.none),
                     child: const Icon(Icons.close, size: 17),
                   ),
                 ],
               ]),
-              const SizedBox(height: 12),
-              FTextField(
-                key: const Key('edit-task-due-time'),
-                control: FTextFieldControl.managed(controller: dueTime),
-                label: const Text('Orario opzionale (HH:mm)'),
-                hint: 'Es. 18:30 — vuoto = solo giorno',
-              ),
             ],
           ),
           actions: [
@@ -1263,34 +1244,12 @@ class _NotesHomeState extends ConsumerState<NotesHome> {
                     content: Text('Massimo 16 tag, 40 caratteri ciascuno.')));
                   return;
                 }
-                DateTime? resolvedDue = selectedDue;
-                 final clock = dueTime.text.trim();
-                 if (clock.isNotEmpty) {
-                   final match = RegExp(r'^(\d{1,2}):(\d{2})$').firstMatch(clock);
-                   final hour = match == null ? null : int.tryParse(match.group(1)!);
-                   final minute = match == null ? null : int.tryParse(match.group(2)!);
-                   if (resolvedDue == null || hour == null || minute == null ||
-                       hour > 23 || minute > 59) {
-                     ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                       content: Text('Seleziona una data e usa un orario HH:mm valido.')));
-                     return;
-                   }
-                   resolvedDue = DateTime(resolvedDue.year, resolvedDue.month,
-                     resolvedDue.day, hour, minute);
-                   if (resolvedDue.hour != hour || resolvedDue.minute != minute) {
-                     ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                       content: Text('Orario inesistente per il cambio di ora.')));
-                     return;
-                   }
-                 } else if (resolvedDue != null) {
-                   resolvedDue = DateTime(resolvedDue.year, resolvedDue.month,
-                     resolvedDue.day);
-                 }
-                 await ref.read(localStoreProvider.notifier).editTask(
+                await ref.read(localStoreProvider.notifier).editTask(
                   task.id,
                   title: title.text,
                   description: description.text,
-                  dueAt: resolvedDue,
+                  due: selectedDue,
+                  changeDue: !identical(selectedDue, task.due),
                   listId: selectedList,
                   changeListId: true,
                   priority: selectedPriority,

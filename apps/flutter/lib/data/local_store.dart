@@ -27,14 +27,14 @@ class LocalStore extends Notifier<LocalData> {
 
   void _changed() => ref.read(localMutationRevisionProvider.notifier).state++;
 
-  Future<void> addTask(String title, {DateTime? dueAt, String? listId}) async {
+  Future<void> addTask(String title, {DateTime? dueAt, TaskDue? due, String? listId}) async {
     final trimmed = title.trim();
     if (trimmed.isEmpty) return;
     if (listId != null && !state.lists.any((list) => list.id == listId)) {
       throw StateError('La lista selezionata non esiste.');
     }
     final task = LocalTask(
-      id: const Uuid().v4(), title: trimmed, dueAt: dueAt,
+      id: const Uuid().v4(), title: trimmed, dueAt: dueAt, due: due,
       completed: false, createdAt: DateTime.now(), listId: listId,
     );
     await ref.read(databaseProvider).upsertTask(task);
@@ -44,6 +44,7 @@ class LocalStore extends Notifier<LocalData> {
 
   Future<void> editTask(String id, {
     required String title, String? description, DateTime? dueAt,
+    TaskDue? due, bool changeDue = false,
     String? listId, bool changeListId = false, int? priority,
     List<String>? tags, List<LocalSubtask>? subtasks,
   }) async {
@@ -69,7 +70,8 @@ class LocalStore extends Notifier<LocalData> {
       if (task.id == id) {
         final changed = task.copyWith(
           title: trimmed, description: description,
-          dueAt: dueAt, changeDueAt: dueAt != task.dueAt,
+          dueAt: dueAt, changeDueAt: !changeDue && dueAt != task.dueAt,
+          due: due, changeDue: changeDue,
           listId: listId, changeListId: changeListId,
           priority: priority,
           tags: tags?.map((tag) => tag.trim()).toSet().toList(),

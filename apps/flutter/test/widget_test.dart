@@ -305,23 +305,56 @@ void main() {
 
     await tester.tap(find.byTooltip('Imposta data'));
     await tester.pumpAndSettle();
+    expect(find.byKey(const Key('task-due-editor')), findsOneWidget);
+    expect(find.byKey(const Key('due-mode-date')), findsOneWidget);
+    await tester.tap(find.byKey(const Key('due-pick-day')));
+    await tester.pumpAndSettle();
     expect(find.byKey(const Key('forui-date-dialog')), findsOneWidget);
-    expect(find.byType(FDialog), findsOneWidget);
     expect(find.byType(FCalendar), findsOneWidget);
     expect(find.byType(DatePickerDialog), findsNothing);
-
-    // The chosen calendar day must be retained for a newly created task.
     await tester.tap(find.byKey(const Key('confirm-due-date')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('due-save')));
     await tester.pumpAndSettle();
     await tester.enterText(find.byKey(const Key('task-input')),
         'Attività con scadenza');
     await tester.testTextInput.receiveAction(TextInputAction.done);
     await tester.pumpAndSettle();
     final task = (await database.snapshot()).tasks.single;
-    expect(task.dueAt, isNotNull);
+    expect(task.due.kind, 'date');
+    expect(task.due.date, isNotNull);
+    expect(task.due.instant, isNull);
 
     await tester.pumpWidget(const SizedBox.shrink());
     await database.close();
+  });
+
+  testWidgets('Timed quick due retains IANA zone and explicit clock',
+      (tester) async {
+    final db = AppDatabase(NativeDatabase.memory());
+    await tester.pumpWidget(ProviderScope(overrides: [
+      databaseProvider.overrideWithValue(db),
+      initialDataProvider.overrideWithValue(const LocalData()),
+    ], child: const SimpleNotesApp()));
+    await tester.tap(find.byKey(const Key('quick-due-editor')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('due-mode-datetime')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('due-zone-Europe-Rome')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('due-save')));
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byKey(const Key('task-input')),
+        'Appuntamento alle nove');
+    await tester.testTextInput.receiveAction(TextInputAction.done);
+    await tester.pumpAndSettle();
+    final saved = (await db.snapshot()).tasks.single;
+    expect(saved.due.kind, 'datetime');
+    expect(saved.due.time, '09:00');
+    expect(saved.due.timeZone, 'Europe/Rome');
+    expect(saved.due.instant, isNotNull);
+    await tester.pumpWidget(const SizedBox.shrink());
+    await db.close();
   });
 
   testWidgets('Task editor is a Forui dialog with editable title',

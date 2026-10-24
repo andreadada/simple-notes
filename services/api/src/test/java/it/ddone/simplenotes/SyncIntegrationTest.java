@@ -121,6 +121,57 @@ class SyncIntegrationTest {
     }
 
     @Test
+    void deletedNoteCanBeExplicitlyRestoredWithOriginalIdentityAndVersion() throws Exception {
+        var owner = users.save(new AppUser("restore-note-" + UUID.randomUUID(),
+            "restore@example.com", "Restore"));
+        var other = users.save(new AppUser("restore-other-" + UUID.randomUUID(),
+            "other@example.com", "Other"));
+        String bearer = "Bearer " + jwt(owner.id);
+        String entity = UUID.randomUUID().toString();
+        String endpoint = "/api/v1/sync/apply";
+
+        String create = """
+            {"operationId":"%s","entityId":"%s","entityType":"note",
+             "action":"upsert","payload":{"title":"Da recuperare","body":"Testo integro"}}
+            """.formatted(UUID.randomUUID(), entity);
+        mvc.perform(post(endpoint).header("Authorization", bearer)
+                .contentType(MediaType.APPLICATION_JSON).content(create))
+            .andExpect(status().isOk()).andExpect(jsonPath("$.version").value(0));
+
+        String delete = """
+            {"operationId":"%s","entityId":"%s","entityType":"note",
+             "action":"delete","expectedVersion":0}
+            """.formatted(UUID.randomUUID(), entity);
+        mvc.perform(post(endpoint).header("Authorization", bearer)
+                .contentType(MediaType.APPLICATION_JSON).content(delete))
+            .andExpect(status().isOk()).andExpect(jsonPath("$.version").value(1));
+
+        String restore = """
+            {"operationId":"%s","entityId":"%s","entityType":"note",
+             "action":"restore","expectedVersion":1}
+            """.formatted(UUID.randomUUID(), entity);
+        mvc.perform(post(endpoint).header("Authorization", "Bearer " + jwt(other.id))
+                .contentType(MediaType.APPLICATION_JSON).content(restore))
+            .andExpect(status().isConflict());
+        mvc.perform(post(endpoint).header("Authorization", bearer)
+                .contentType(MediaType.APPLICATION_JSON).content(restore.replace(
+                    "\"expectedVersion\":1", "\"expectedVersion\":0")))
+            .andExpect(status().isConflict());
+        mvc.perform(post(endpoint).header("Authorization", bearer)
+                .contentType(MediaType.APPLICATION_JSON).content(restore))
+            .andExpect(status().isOk()).andExpect(jsonPath("$.version").value(2));
+
+        mvc.perform(get("/api/v1/sync/changes").header("Authorization", bearer)
+                .param("cursor", "0"))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.changes.length()").value(3))
+            .andExpect(jsonPath("$.changes[1].deleted").value(true))
+            .andExpect(jsonPath("$.changes[2].deleted").value(false))
+            .andExpect(jsonPath("$.changes[2].version").value(2))
+            .andExpect(jsonPath("$.changes[2].payload.body").value("Testo integro"));
+    }
+
+    @Test
     void latestConflictSnapshotIsOwnerScopedAndIncludesTombstones() throws Exception {
         var a = users.save(new AppUser("latest-a-" + UUID.randomUUID(), "latest-a@example.com", "A"));
         var b = users.save(new AppUser("latest-b-" + UUID.randomUUID(), "latest-b@example.com", "B"));

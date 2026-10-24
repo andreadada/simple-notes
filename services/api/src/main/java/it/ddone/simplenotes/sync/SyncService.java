@@ -43,9 +43,12 @@ public class SyncService {
             .setParameter("owner", owner.toString()).getSingleResult();
 
         if (!Set.of("task", "note", "list").contains(req.entityType()) ||
-                !Set.of("upsert", "delete").contains(req.action()))
+                !Set.of("upsert", "delete", "restore").contains(req.action()))
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Unsupported sync operation");
 
+        if ("restore".equals(req.action()) && !"note".equals(req.entityType()))
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                "Only notes can be restored");
         Optional<SyncOperation> previous = operations.findById(req.operationId());
         if (previous.isPresent()) {
             SyncOperation old = previous.get();
@@ -226,8 +229,23 @@ public class SyncService {
     }
 
     private Mutation applyNote(UUID owner, SyncController.ApplyRequest req) {
-        NoteEntity existing = notes.findByIdAndOwnerIdAndDeletedAtIsNull(req.entityId(), owner)
-            .orElse(null);
+        // Keep tombstones addressable by the owning user for explicit restoration.
+        // A regular upsert must NEVER silently resurrect a deleted note.
+        NoteEntity stored = notes.findById(req.entityId())
+            .filter(note -> note.ownerId.equals(owner)).orElse(null);
+        NoteEntity existing = stored != null && stored.deletedAt == null ? stored : null;
+        if ("restore".equals(req.action())) {
+            if (stored == null || stored.deletedAt == null)
+                throw new ResponseStatusException(HttpStatus.CONFLICT,
+                    "Note is not in the trash");
+            requireVersion(req.expectedVersion(), stored.version);
+            stored.deletedAt = null;
+            stored.updatedAt = Instant.now();
+            notes.saveAndFlush(stored);
+            return new Mutation(stored.version, false, encode(Map.of(
+                "title", stored.title, "body", stored.body,
+                "createdAt", stored.createdAt.toString())));
+        }
         if ("delete".equals(req.action())) {
             if (existing == null) return new Mutation(0, true, "{}");
             requireVersion(req.expectedVersion(), existing.version);
@@ -246,7 +264,7 @@ public class SyncService {
         String body = requiredTextAllowEmpty(value, "body");
         NoteEntity entity;
         if (existing == null) {
-            if (req.expectedVersion() != null)
+            if (stored != null || req.expectedVersion() != null)
                 throw new ResponseStatusException(HttpStatus.CONFLICT, "Note deleted or missing on server");
             entity = new NoteEntity(owner, title, body);
             entity.id = req.entityId();

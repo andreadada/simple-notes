@@ -1249,7 +1249,7 @@ class _NotesHomeState extends ConsumerState<NotesHome> {
                   title: title.text,
                   description: description.text,
                   due: selectedDue,
-                  changeDue: !identical(selectedDue, task.due),
+                  changeDue: true, // Preserve typed due even on title-only edits.
                   listId: selectedList,
                   changeListId: true,
                   priority: selectedPriority,

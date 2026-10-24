@@ -30,7 +30,7 @@ La data di ultima sincronizzazione viene registrata **solo dopo upload e pull en
 
 ## Build T4.2 in un comando (Windows, senza reinstallazione)
 
-È disponibile `tools/t4-build-devices.ps1`. Il comando genera **APK debug Android e ZIP Windows dalla stessa revisione Git** con i client ID Google già in uso, annota SHA256 e commit e **non installa né cancella nulla**. La configurazione locale è esclusa da Git.
+È disponibile `tools/t4-build-devices.ps1`. Il comando genera **APK debug Android e ZIP Windows dallo stesso checkout locale** con i client ID Google già in uso, annota SHA256 e commit e **non installa né cancella nulla**. La configurazione locale è esclusa da Git. Se sono presenti modifiche tracciate non ancora committate, la build prosegue con un avviso e viene etichettata come **non riproducibile dal solo commit**; nessun `stash`, `reset` o ripristino automatico.
 
 Dal terminale PowerShell nella radice del progetto:
 
@@ -38,10 +38,13 @@ Dal terminale PowerShell nella radice del progetto:
 Copy-Item tools/t4-device-build.example.json .t4-device-build.json
 # Compilare i due ID Google OAuth pubblici nel JSON locale, senza Client Secret.
 ./tools/t4-build-devices.ps1 -ValidateOnly
+./tools/t4-build-devices.ps1 -CheckOnly
 ./tools/t4-build-devices.ps1 -Target both
 ```
 
 I risultati sono in `build/t4-device-acceptance/` (APK, ZIP Windows e `MANIFEST.txt`). Si può usare `-Target android` o `-Target windows`. **Non è un installer**: non esegue `adb install`, `flutter run`, `pg_restore` o redeploy. La build Android debug usa la **keystore locale**; se la firma dell'app già installata è diversa, un normale aggiornamento sarà rifiutato. In quel caso **non disinstallare l'app**: conservare SQLite/outbox e usare una build con la firma corretta. Una build CI generica può avere una firma diversa da quella locale.
+
+Se sul PC sono presenti file modificati, **non eseguire `git reset --hard`, `git clean`, `stash` o reinstallazioni** per sbloccare lo script. `-CheckOnly` verifica ora il checkout senza modificare file; `-RequireClean` resta disponibile per un controllo rigoroso facoltativo. La build salta `flutter create` quando lo scaffold richiesto esiste già e non usa `--delete-conflicting-outputs` di build_runner. Se uno scaffold manca, Flutter può generare i file mancanti: controllare con `git status --short` dopo l'esecuzione.
 
 La versione di collaudo dopo l'hardening è **Flutter `0.4.1+5`**. Annotare lo SHA contenuto nel manifest e verificare sul secondo dispositivo lo stesso commit. La CI automatica controlla anche la struttura del comando senza usare credenziali reali. I test reali T4.2 restano indispensabili.
 

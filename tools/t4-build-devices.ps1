@@ -6,7 +6,9 @@ param(
   [ValidateSet('both', 'windows', 'android')]
   [string]$Target = 'both',
   [string]$ConfigPath,
-  [switch]$ValidateOnly
+  [switch]$ValidateOnly,
+  [switch]$CheckOnly,
+  [switch]$RequireClean
 )
 
 Set-StrictMode -Version Latest
@@ -40,15 +42,25 @@ if ($ValidateOnly) {
   return
 }
 
-# Refuse to claim a reproducible device build from a modified tracked tree.
+# Local changes belong to the developer. Never stash, reset or discard them.
+# A dirty build is allowed for T4.2, but must be marked non-reproducible.
 $changes = @(& git -C $repo status --porcelain --untracked-files=no)
 if ($LASTEXITCODE -ne 0) { throw 'Unable to inspect local Git status.' }
-if ($changes.Count -gt 0) {
-  throw 'Tracked files changed locally. Commit or stash your work first; this tool never discards it.'
+$dirtyAtStart = $changes.Count -gt 0
+if ($dirtyAtStart) {
+  if ($RequireClean) {
+    throw 'Local tracked files have changes. -RequireClean was requested; no build performed. Local changes were preserved.'
+  }
+  Write-Warning ("{0} tracked file(s) have local changes. Building the LOCAL working tree without stash/reset. The result cannot be reproduced from the commit alone." -f $changes.Count)
 }
 $commit = (& git -C $repo rev-parse HEAD).Trim()
 if ($LASTEXITCODE -ne 0 -or $commit -notmatch '^[0-9a-f]{40}$') {
   throw 'Unable to determine the source commit.'
+}
+if ($CheckOnly) {
+  Write-Host "PASS: T4.2 preflight checked (commit $commit; local changes: $dirtyAtStart)."
+  Write-Host 'No builds, installs, stash/reset or changes to app data were performed.'
+  return
 }
 $buildDir = Join-Path $repo 'build/t4-device-acceptance'
 New-Item -ItemType Directory -Force -Path $buildDir | Out-Null
@@ -75,9 +87,14 @@ $artifacts = @()
 Push-Location $app
 try {
   Invoke-Checked 'flutter' @('pub', 'get')
-  Invoke-Checked 'dart' @('run', 'build_runner', 'build', '--delete-conflicting-outputs')
+  # Avoid --delete-conflicting-outputs: never silently remove local generated edits.
+  Invoke-Checked 'dart' @('run', 'build_runner', 'build')
   if ($Target -in @('both', 'android')) {
-    Invoke-Checked 'flutter' @('create', '--platforms=android', '--project-name', 'simple_notes', '.')
+    # Only generate missing scaffolding; do not regenerate existing platform files.
+    if (-not (Test-Path -LiteralPath 'android/gradlew' -PathType Leaf) -or
+        -not (Test-Path -LiteralPath 'android/settings.gradle.kts' -PathType Leaf)) {
+      Invoke-Checked 'flutter' @('create', '--platforms=android', '--project-name', 'simple_notes', '.')
+    }
     $buildGradle = Get-Content -LiteralPath 'android/app/build.gradle.kts' -Raw
     if ($buildGradle -notmatch 'applicationId = "it[.]andreadada[.]simplenotes"') {
       throw 'REFUSED: Android applicationId changed. No APK built.'
@@ -93,7 +110,10 @@ try {
     if ([Environment]::OSVersion.Platform -ne [PlatformID]::Win32NT) {
       throw 'Windows executable requires a Windows host.'
     }
-    Invoke-Checked 'flutter' @('create', '--platforms=windows', '--project-name', 'simple_notes', '.')
+    if (-not (Test-Path -LiteralPath 'windows/CMakeLists.txt' -PathType Leaf) -or
+        -not (Test-Path -LiteralPath 'windows/runner/CMakeLists.txt' -PathType Leaf)) {
+      Invoke-Checked 'flutter' @('create', '--platforms=windows', '--project-name', 'simple_notes', '.')
+    }
     Invoke-Checked 'flutter' @('build', 'windows', '--release', "--dart-define-from-file=$definesFile")
     $releaseDir = Join-Path $app 'build/windows/x64/runner/Release'
     if (-not (Test-Path -LiteralPath $releaseDir)) { throw 'Windows release directory missing.' }
@@ -106,10 +126,20 @@ try {
   Pop-Location
 }
 
+# Flutter tooling may update tracked/generated files; report this honestly.
+$changesAtEnd = @(& git -C $repo status --porcelain --untracked-files=no)
+if ($LASTEXITCODE -ne 0) { throw 'Unable to inspect final local Git status.' }
+$dirtyAtEnd = $changesAtEnd.Count -gt 0
+if ($dirtyAtEnd) {
+  Write-Warning 'Build completed with tracked local changes. Review git status before committing; no automatic restore was performed.'
+}
 # Manifest includes no account, token, note content or OAuth client ID.
 $receipt = @(
   'T4.2 Local Acceptance Build'
-  "Source commit: $commit"
+  "Source HEAD: $commit"
+  "Local tracked changes at start: $dirtyAtStart ($($changes.Count) file(s))"
+  "Local tracked changes at end: $dirtyAtEnd ($($changesAtEnd.Count) file(s))"
+  'Source reproducibility: only clean local working trees can be reproduced from HEAD'
   'API origin: https://api.notes.ddone.it'
   "Generated UTC: $([DateTime]::UtcNow.ToString('o'))"
   'Installation: NOT performed; SQLite/outbox NOT altered'
@@ -122,6 +152,6 @@ foreach ($file in $artifacts) {
 }
 $receiptFile = Join-Path $buildDir 'MANIFEST.txt'
 [System.IO.File]::WriteAllLines($receiptFile, [string[]]$receipt)
-Write-Host "PASS: local acceptance builds from commit $commit"
+Write-Host "PASS: local acceptance builds from checkout at $commit (local changes at start: $dirtyAtStart)"
 Write-Host "Artifacts and checksums: $buildDir"
 Write-Host 'No installation, app reset, backend deployment or database action performed.'

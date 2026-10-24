@@ -101,6 +101,7 @@ jobs:
              GOOGLE_WEB_CLIENT_ID = '12345-fake.apps.googleusercontent.com' } |
             ConvertTo-Json | Set-Content -LiteralPath $config
           ./tools/t4-build-devices.ps1 -Target both -ConfigPath $config -ValidateOnly
+          ./tools/t4-build-devices.ps1 -Target both -ConfigPath $config -CheckOnly
       - name: Generate Windows scaffold
         working-directory: apps/flutter
         run: flutter create --platforms=windows --project-name simple_notes .

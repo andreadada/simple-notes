@@ -27,5 +27,6 @@ dev_dependencies:
   flutter_lints: ^5.0.0
   drift_dev: ^2.28.1
   build_runner: ^2.4.15
+  sqlite3: ^2.7.5 # V4 -> V5 migration fixtures using the native SQLite engine
 flutter:
   uses-material-design: true

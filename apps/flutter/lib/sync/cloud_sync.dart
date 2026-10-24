@@ -307,7 +307,7 @@ class CloudSync extends StateNotifier<SyncState> {
           '$downloaded aggiornamenti ricevuti.');
     } on SyncUpgradeRequired {
       state = const SyncState(upgradeRequired: true, message:
-        'Il server non supporta ancora questa operazione o scadenza. '
+        'Il server o un client precedente non supporta questa operazione o scadenza. '
         'Aggiorna il backend e i dispositivi; modifiche offline conservate.');
     } on SyncConflict {
       final op = conflicting;

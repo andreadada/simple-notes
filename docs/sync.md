@@ -47,9 +47,15 @@ Quando una mutazione riceve 409, il client conserva **tutte** le modifiche in co
 
 Per i test: `apps/flutter/test/sync_conflict_test.dart` copre note concorrenti PC/telefono simulati, retry offline, entrambe le risoluzioni. `SyncIntegrationTest` verifica query latest e isolamento per account. Il protocollo mantiene limitazioni per la risoluzione di delete-vs-edit, da trattare con copia/recupero in una nuova UUID.
 
+## T2 — aggiornamento Flutter e compatibilità (24/10/2026)
+
+Flutter adotta `TaskDue` (`none/date/datetime/legacy`) e Drift **schema v5**. Una data senza ora resta una data civile; scadenze storiche conservate come `legacy`; `due_at` e outbox rimangono per compatibilità. `CloudSync` controlla il server `GET /api/v1/capabilities` prima di caricare scadenze `date/datetime` e richiede `taskDueSchema=1`; il server obsoleto non riceve aggiornamenti moderni. HTTP **426 CLIENT_UPGRADE_REQUIRED** blocca la sync senza cancellare mutazioni o attivare la risoluzione 409. I payload `dueAt` storici restano leggibili.
+
+Test introdotti per data-only, ora legale, due database, fallback server, outbox e migrazione SQLite v4 già popolato → v5. **Risultati CI e prove real-device vanno verificati**, il codice GitHub non implica deployment. T3 (UI Forui con scelta esplicita, timezone IANA e DST) resta da realizzare. Flyway V7 non è stato distribuito su Coolify, necessario backup/restore reale prima del rollout. Flutter Web non ancora supportato.
+
 ## Estensione date-only / timezone (T1 nel codice backend, non deployato)
 
-Il campo `due` è ora supportato nel **codice backend**: `{kind:none}`, `{kind:date,date:YYYY-MM-DD}`, `{kind:datetime,date,time,timeZone,instant,offsetSeconds}`, `{kind:legacy,instant}`. Viene validato contro le regole IANA e restituito come payload canonico anche nei delta e nel latest. `dueAt` è conservato per gli istanti legacy e timed, ed è nullo/vuoto per date-only. Vecchi client senza `due` non possono sovrascrivere date/datetime: HTTP 426 con `CLIENT_UPGRADE_REQUIRED`, **non** un normale 409. `GET /api/v1/capabilities` richiede JWT e presenta `taskDueSchema: 1`. **Drift v5, gestione 426/capability nel client, migrazione PostgreSQL reale e deploy Coolify non ancora eseguiti.** Vedere [due-dates-timezones.md](due-dates-timezones.md).
+Il campo `due` è ora supportato nel **codice backend**: `{kind:none}`, `{kind:date,date:YYYY-MM-DD}`, `{kind:datetime,date,time,timeZone,instant,offsetSeconds}`, `{kind:legacy,instant}`. Viene validato contro le regole IANA e restituito come payload canonico anche nei delta e nel latest. `dueAt` è conservato per gli istanti legacy e timed, ed è nullo/vuoto per date-only. Vecchi client senza `due` non possono sovrascrivere date/datetime: HTTP 426 con `CLIENT_UPGRADE_REQUIRED`, **non** un normale 409. `GET /api/v1/capabilities` richiede JWT e presenta `taskDueSchema: 1`. **Drift v5 e gestione 426/capability presenti nel client; migrazione PostgreSQL reale e deploy Coolify non ancora eseguiti.** Vedere [due-dates-timezones.md](due-dates-timezones.md).
 
 ## Organizzazione attività — sync v1 estesa
 

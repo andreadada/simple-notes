@@ -834,6 +834,8 @@ class _NotesHomeState extends ConsumerState<NotesHome> {
   void showTaskDetails(LocalTask task) => showFSheet<void>(
     context: context,
     side: FLayout.btt,
+    mainAxisMaxRatio: 0.85,
+    useSafeArea: true,
     builder: (sheetContext) => SizedBox(
       height: MediaQuery.sizeOf(sheetContext).height * 0.75,
       child: Consumer(builder: (context, watcher, _) {
@@ -1223,62 +1225,4 @@ class _NotesHomeState extends ConsumerState<NotesHome> {
     );
   }
 
-  void showNoteEditor(LocalNote note) {
-    final title = TextEditingController(text: note.title);
-    final body = TextEditingController(text: note.body);
-    showFDialog<void>(
-      context: context,
-      builder: (dialogContext, style, animation) => NotesEditorControllerScope(
-        controllers: [title, body],
-        child: NotesDialog(
-          style: style,
-        animation: animation,
-        maxWidth: 540,
-        title: const Text('Modifica nota'),
-        body: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            FTextField(
-              key: const Key('edit-note-title'),
-              control: FTextFieldControl.managed(controller: title),
-              label: const Text('Titolo'),
-              hint: 'Senza titolo',
-              autofocus: true,
-            ),
-            const SizedBox(height: 16),
-            FTextField.multiline(
-              key: const Key('edit-note-body'),
-              control: FTextFieldControl.managed(controller: body),
-              label: const Text('Contenuto'),
-              hint: 'Scrivi qualcosa...',
-              minLines: 4,
-              maxLines: 10,
-            ),
-          ],
-        ),
-        actions: [
-          FButton(
-            variant: FButtonVariant.ghost,
-            mainAxisSize: MainAxisSize.min,
-            onPress: () => Navigator.pop(dialogContext),
-            child: const Text('Annulla'),
-          ),
-          FButton(
-            key: const Key('save-note'),
-            mainAxisSize: MainAxisSize.min,
-            onPress: () async {
-              await ref.read(localStoreProvider.notifier).editNote(
-                note.id,
-                title: title.text,
-                body: body.text,
-              );
-              if (dialogContext.mounted) Navigator.pop(dialogContext);
-            },
-            child: const Text('Salva'),
-          ),
-        ],
-        ),
-      ),
-    );
-  }
 }

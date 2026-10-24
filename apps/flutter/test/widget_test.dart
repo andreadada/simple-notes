@@ -259,6 +259,12 @@ void main() {
 
   testWidgets('Notes expose inline title and body, without edit dialog',
       (tester) async {
+    tester.view.physicalSize = const Size(1300, 900);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(() {
+      tester.view.resetPhysicalSize();
+      tester.view.resetDevicePixelRatio();
+    });
     final db = AppDatabase(NativeDatabase.memory());
     await db.upsertNote(LocalNote(
       id: 'inline-note-test', title: 'Nota iniziale', body: 'Testo',

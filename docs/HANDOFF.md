@@ -9,27 +9,25 @@
 La V7 è **già applicata** sul database reale: non ripetere migrazioni o fare Redeploy per questo motivo. La compatibilità **API** e la nuova sync bidirezionale sono ancora da provare. Procedura breve in [T4-DEVICE-SYNC.md](T4-DEVICE-SYNC.md).
 
 
-## Prossimo operatore T4 — cosa eseguire realmente
+## Prossima sessione: collaudo T4.2 Windows ↔ Android
 
-1. Accedere al VPS/Coolify con una sessione autorizzata e identificare esattamente il DB Simple Notes.
-2. Eseguire **solo** `infra/t4-inspect-db.sh` e conservare l'output senza credenziali.
-3. Produrre un dump reale con `infra/backup-postgres.sh`, verificare copia cifrata offsite e restore isolato; receipt massimo 24 ore.
-4. Superare `infra/t4-preflight.sh`, quindi pianificare deploy Flyway V7 e test PC↔Android.
-
-Gli strumenti sono già nella repository; il modello non ha ancora avuto accesso a un VPS autenticato, quindi **nessuno di questi passi sul DB reale è stato compiuto**. [Runbook](T4-RELEASE-RUNBOOK.md).
+1. Compilare stessa revisione Flutter `0.4.0+4` per Windows e Android senza cancellare dati.
+2. Accedere allo stesso account e aprire avatar → **Verifica sincronizzazione**, controllando API `taskDueSchema:1` e pending.
+3. Completare [T4-DEVICE-SYNC.md](T4-DEVICE-SYNC.md): PC→Android, Android→PC, offline e DST.
+4. Non ripetere backup/restore né migrare V7 o ridistribuire automaticamente; copia offsite non effettuata per scelta.
 
 ## T4 — Gate di rilascio sicuro (24/10/2026)
 
-**Strumenti e CI implementati; backup reale, restore reale, deploy Coolify e prove hardware ancora DA ESEGUIRE.** `infra/backup-postgres.sh` verifica container e schema prima del dump PostgreSQL custom + SHA256; `infra/verify-restore.sh` ripristina in container PostgreSQL 17 **senza rete**, interroga le tabelle e genera un receipt legato al digest del dump. `infra/t4-preflight.sh` rifiuta dump/receipt incoerenti, copia offsite non attestata, commit non approvato o tree sporco; **non avvia deploy**. `infra/t4-check-api.sh` verifica soltanto salute HTTPS e capability autenticata `taskDueSchema:1`.
+**Strumenti e CI implementati; inventario reale del DB, backup SHA256 e restore isolato PASS il 24/10/2026.** Flyway V7 è presente nel database. **Copia offsite non eseguita per scelta dell'utente; contratto API e prove T4.2 Windows↔Android ancora da verificare.** `infra/backup-postgres.sh` verifica container e schema prima del dump PostgreSQL custom + SHA256; `infra/verify-restore.sh` ripristina in container PostgreSQL 17 **senza rete**, interroga le tabelle e genera un receipt legato al digest del dump. `infra/t4-preflight.sh` rifiuta dump/receipt incoerenti, copia offsite non attestata, commit non approvato o tree sporco; **non avvia deploy**. `infra/t4-check-api.sh` verifica soltanto salute HTTPS e capability autenticata `taskDueSchema:1`.
 
-La CI Compose usa dump **sintetici** e verifica i rifiuti su backup alterati; la CI backend prova una migrazione V6→V7 PostgreSQL Testcontainers con task/note/liste/sync log esistenti. I gate T4 reali richiedono: backup PostgreSQL **esistente e offsite cifrato**, ripristino isolato dello stesso dump, preflight, deploy Flyway V7 in Coolify, health+capability, E2E Windows/Android offline/sync. Non distribuire né ripristinare sulla produzione durante una prova. [Runbook T4](T4-RELEASE-RUNBOOK.md) · [GitHub Actions](https://github.com/andreadada/simple-notes/actions).
+La CI Compose usa dump **sintetici** e verifica i rifiuti su backup alterati; la CI backend prova una migrazione V6→V7 PostgreSQL Testcontainers con task/note/liste/sync log esistenti. **Gate reali al 24/10:** PostgreSQL V7, backup SHA256 e restore isolato già verificati. Offsite non effettuata per scelta dell'utente e distinta dal collaudo T4.2. Il prossimo controllo è su API autenticata e Windows/Android E2E; per una release formale restano anche hardening/offsite e preflight. Non avviare un redeploy solo perché V7 è citata. Non distribuire né ripristinare sulla produzione durante una prova. [Runbook T4](T4-RELEASE-RUNBOOK.md) · [GitHub Actions](https://github.com/andreadada/simple-notes/actions).
 
 
 ## T3 — Scadenze e fusi orari (24/10/2026)
 
 Il client Flutter ha ora un editor scadenze Forui riutilizzato in creazione rapida, pannello dettagli e editor avanzato (`ui/task_due_editor.dart`). Supporta `date` senza ora, `datetime` con HH:mm + timezone IANA, scelta del fold DST e rifiuto del gap; non converte automaticamente `legacy`. Il rilevamento OS fallibile non produce una UTC inventata: l'utente sceglie un fuso valido. `task_due_view.dart` centralizza l'etichetta (mostra il fuso) e i filtri Oggi/7 giorni in giorni civili; gli aggiornamenti rimangono offline-first.
 
-**Solo codice:** backend Flyway V7 e deploy Coolify non eseguiti; servono backup/restore reale e test hardware Windows↔Android. Esecuzione web, ricorrenze e notifiche non sono supportate in T3. Leggere [T3-SCADENZE.md](T3-SCADENZE.md) e verificare le [CI Flutter](https://github.com/andreadada/simple-notes/actions/workflows/flutter-ci.yml) per l'esito esatto.
+**Stato aggiornato:** T3 implementato nel codice, Flyway V7 già nel DB reale, backup SHA256 e restore isolato riusciti. Rimangono verifica API autenticata e test hardware Windows↔Android. Esecuzione web, ricorrenze e notifiche non sono supportate in T3. Leggere [T3-SCADENZE.md](T3-SCADENZE.md) e verificare le [CI Flutter](https://github.com/andreadada/simple-notes/actions/workflows/flutter-ci.yml) per l'esito esatto.
 
 
 ## Vincolo correttivo: testo completo + sottolineatura aderente (24/10/2026)
@@ -57,15 +55,15 @@ Il client ha esteso `InlineEditableTitle` a task/note/sottotask/tag, aggiunto `I
 
 Flutter adotta `TaskDue` (`none/date/datetime/legacy`) e Drift **schema v5**. Una data senza ora resta una data civile; scadenze storiche conservate come `legacy`; `due_at` e outbox rimangono per compatibilità. `CloudSync` controlla il server `GET /api/v1/capabilities` prima di caricare scadenze `date/datetime` e richiede `taskDueSchema=1`; il server obsoleto non riceve aggiornamenti moderni. HTTP **426 CLIENT_UPGRADE_REQUIRED** blocca la sync senza cancellare mutazioni o attivare la risoluzione 409. I payload `dueAt` storici restano leggibili.
 
-Test introdotti per data-only, ora legale, due database, fallback server, outbox e migrazione SQLite v4 già popolato → v5. **Risultati CI e prove real-device vanno verificati**, il codice GitHub non implica deployment. T3 (UI Forui con scelta esplicita, timezone IANA e DST) resta da realizzare. Flyway V7 non è stato distribuito su Coolify, necessario backup/restore reale prima del rollout. Flutter Web non ancora supportato.
+Test automatici T2/T3 per data-only, DST, doppio SQLite, outbox, Drift v4→v5 ed editor Forui. [Flutter CI 40100324302](https://github.com/andreadada/simple-notes/actions/runs/40100324302) PASS sul commit `5a0e6b6`. Il DB reale ha V7 e restore isolato verificato; capability API e hardware T4.2 ancora da provare. Flutter Web non supportato.
 
 ## Prossima implementazione progettata (23 ottobre 2026)
 
-Per intervenire su scadenze, SQLite, Flyway o sync leggere **[due-dates-timezones.md](due-dates-timezones.md)**: pianifica il tipo `none/date/datetime/legacy`, la migrazione PostgreSQL V7 e Flutter Drift v5, timezone IANA/DST, protezione dei client precedenti e test. **T1/T2/T3 implementati nel codice**, ma non deployati e non verificati sui dispositivi reali. Le CI per l'editor HH:mm già esistente sono verdi ([40011789270](https://github.com/andreadada/simple-notes/actions/runs/40011789270)). Restano gate backup/restore reale, deploy sicuro e prova hardware in [P0-DEVICE-CHECKS.md](P0-DEVICE-CHECKS.md).
+Per intervenire su scadenze, SQLite, Flyway o sync leggere **[due-dates-timezones.md](due-dates-timezones.md)**: pianifica il tipo `none/date/datetime/legacy`, la migrazione PostgreSQL V7 e Flutter Drift v5, timezone IANA/DST, protezione dei client precedenti e test. **T1/T2/T3 implementati nel codice** e Flyway V7 confermata nel DB reale; API e dispositivi ancora da collaudare. Le CI per l'editor HH:mm già esistente sono verdi ([40011789270](https://github.com/andreadada/simple-notes/actions/runs/40011789270)). Backup/restore reale già riusciti; restano verifica API e prova hardware in [P0-DEVICE-CHECKS.md](P0-DEVICE-CHECKS.md).
 
 ## T1 backend introdotto nel repository (23 ottobre 2026)
 
-Commit [1bafec0](https://github.com/andreadada/simple-notes/commit/1bafec046dd0cbd3f18b8933873da7381fc28a26): aggiunti migrazione Flyway V7, validazione `TaskDue` incl. DST, `GET /api/v1/capabilities` autenticato e blocco HTTP 426 `CLIENT_UPGRADE_REQUIRED` per vecchi client che tentano di sovrascrivere nuove scadenze. **Non deployato su Coolify**; Flutter T2 include Drift v5, `TaskDue` e gestione 426 nel codice. CI ed E2E distinti. Leggere [due-dates-timezones.md](due-dates-timezones.md) per T2, T3 e procedure di backup.
+Commit [1bafec0](https://github.com/andreadada/simple-notes/commit/1bafec046dd0cbd3f18b8933873da7381fc28a26): aggiunti migrazione Flyway V7, validazione `TaskDue` incl. DST, `GET /api/v1/capabilities` autenticato e blocco HTTP 426 `CLIENT_UPGRADE_REQUIRED` per vecchi client che tentano di sovrascrivere nuove scadenze. **Flyway V7 verificata sul DB reale, API da controllare**; Flutter T2 include Drift v5, `TaskDue` e gestione 426 nel codice. CI ed E2E distinti. Leggere [due-dates-timezones.md](due-dates-timezones.md) per T2, T3 e procedure di backup.
 
 ## TL;DR: che cos'è e a che punto siamo
 
@@ -75,7 +73,7 @@ Commit [1bafec0](https://github.com/andreadada/simple-notes/commit/1bafec046dd0c
 - **Windows:** compilazione ed esecuzione reali, login Google Desktop completato manualmente (21/10/2026).
 - **Android:** dispositivo fisico rilevato (`2412DPC0AG`), installazione e avvio iniziali verificati; dopo la correzione finale Gradle/JVM (23/10) l'utente riferisce **«funziona»**. Non è stato però confermato esplicitamente, dopo quest'ultima correzione, **se funziona anche il login Google Android**: richiedere/effettuare quella verifica prima di considerarlo completato.
 - **CI della configurazione Android precedente:** [Flutter CI run 39955667440](https://github.com/andreadada/simple-notes/actions/runs/39955667440) riuscita: analisi e test Flutter, build Windows, build Android con **JDK 17 e JDK 21**. Sono build tecniche, non prove di autenticazione/sync reali.
-- **Sync:** auto-sync foreground; l'utente ha successivamente confermato note PC↔Android e attività Android→Windows. Conflitti e restore reale sono ancora aperti (vedere P0-STATUS.md).
+- **Sync:** auto-sync foreground; l'utente ha successivamente confermato note PC↔Android e attività Android→Windows. Conflitti real-device ancora aperti; restore del DB reale riuscito il 24/10 (vedere P0-STATUS.md).
 - **Account:** avatar Google (claim opzionale `picture`) e menu compatto al posto dei due pulsanti; backend Flyway V4 conserva la foto. **Richiede redeploy Coolify** e nuovo login per valorizzare la foto di utenti preesistenti.
 - **Stato del prodotto:** **P0 IN CORSO, non pronto per release pubblica**. La roadmap e i criteri di completamento sono in [../project.md](../project.md).
 
@@ -180,13 +178,13 @@ Per istruzioni dettagliate e controlli SHA-1 consultare [android-troubleshooting
 | Creazione task/note locali | Codice e test Flutter | Implementato, test E2E da estendere |
 | Auto-sync foreground + manuale | `AutoSyncHost` + `CloudSync.synchronize()`, outbox/REST delta | Implementato, test PC↔Android mancante |
 | Sync automatica e UI conflitti | Non implementati | Da fare |
-| Backup/ripristino, rate limit, notifiche, release firmata | Non verificati o mancanti | Da fare |
+| Backup/ripristino, rate limit, notifiche, release firmata | Backup/restore reale PASS; offsite, rate limit, notifiche e release firmata ancora aperti | Da fare per release |
 
 ## Prossima sessione: ordine di lavoro (storico, sostituito da P0-STATUS)
 
 > Non eseguire questa sequenza alla lettera: include test e sviluppi ora già conclusi. Per le nuove sessioni seguire la checklist corrente.
 
-1. **Redeploy Coolify** per la migrazione opzionale V4 della foto profilo (non cambiare segreti), poi **accertare login Android** sul dispositivo fisico con Google (dopo il fix package/gradle) e testare restore sessione dopo riavvio. Se fallisce, usare [android-troubleshooting.md](android-troubleshooting.md), non modificare alla cieca Coolify.
+1. **Nota storica 23/10 (non comando attuale di redeploy):** verificare la migrazione V4 per foto profilo (non cambiare segreti), poi **accertare login Android** sul dispositivo fisico con Google (dopo il fix package/gradle) e testare restore sessione dopo riavvio. Se fallisce, usare [android-troubleshooting.md](android-troubleshooting.md), non modificare alla cieca Coolify.
 2. **Test manuale sync a due device** con lo stesso account (menu avatar mostra esito e operazioni in coda su Android e Windows): creare `Test PC → Android` in Windows → `Sincronizza ora` Windows → sync Android e verificare; creare `Test Android → PC` sul telefono, sync Android → sync Windows; ripetere con una nota.
 3. **Verificare offline/retry e conflitti**: creare item offline e sincronizzare al ritorno della rete; una collisione deve **preservare l'outbox**, non sovrascrivere contenuti silenziosamente. Controllare isolamento dati al cambio account.
 4. L'**auto-sync foreground è ora implementata**: verificarne il comportamento a due dispositivi, gestione di errori e conflitti, poi introdurre eventuale background sync e reminder/notifiche secondo [../project.md](../project.md).
@@ -222,7 +220,7 @@ I vecchi `AlertDialog` Material di modifica attività/nota e `showDatePicker` pe
 Per la nuova sessione consultare **[P0-STATUS.md](P0-STATUS.md)**: backend latest con scope utente e Flyway V5; scelta conflitti in Forui senza cancellazioni automatiche; descrizione attività con Drift schema V3; script dump + restore isolato, verificati con database sintetico. I precedenti paragrafi su mancanza della UI di conflitto sono storici e sostituiti dal documento P0.
 
 ## Organizzazione attività — prossimo blocco implementato (23/10/2026)
-Nuova guida [task-organization.md](task-organization.md): liste sincronizzate con versione e owner, priorità/tag/sottotask, editor Forui, ricerca/filtro e cancellazione sicura della lista. Drift v4 e Flyway V6. Backend CI e analyze/test Flutter automatici riusciti; prove Coolify e dispositivi fisici ancora aperte. **Leggere P0-STATUS.md**, fare backup e redeploy backend V6 *prima* di eseguire nuove operazioni lista su client aggiornati.
+Nuova guida [task-organization.md](task-organization.md): liste sincronizzate con versione e owner, priorità/tag/sottotask, editor Forui, ricerca/filtro e cancellazione sicura della lista. Drift v4 e Flyway V6. Backend CI e analyze/test Flutter automatici riusciti; prove Coolify e dispositivi fisici ancora aperte. **Aggiornamento 24/10:** Flyway V6 e V7 già presenti nel database; verificare API e sync hardware. Leggere [P0-STATUS.md](P0-STATUS.md).
 
 ## Vincolo UI deciso il 23 ottobre 2026 — inline editing first
 Per titoli e altri valori testuali semplici, **preferire la modifica direttamente sul testo** a pulsanti `Rinomina`/dialog. Il titolo lista è editabile in header grazie a `InlineEditableTitle`; Invio/blur salvano, Esc annulla, SQLite/outbox invariati. Non reintrodurre la rinomina tramite modal salvo necessità motivata. Specifiche aggiornate in `design.md`, `docs/ui-forui.md`, `AGENTS.md`.

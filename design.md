@@ -1,10 +1,12 @@
 # Simple Notes — Design & Product Specification
 
+> **Stato reale 24/10/2026:** PostgreSQL `simplenotes` 17.11, Flyway V1–V7 riuscite, backup `simple-notes-20261024T132857Z-271921.dump` con SHA256 valido e restore isolato PASS. Copia offsite non effettuata per scelta dell'utente. Restano da verificare l'API autenticata (`taskDueSchema:1`) e il collaudo T4.2 Windows↔Android con Flutter `0.4.0+4`. Non ripetere backup, migrazioni o deploy automaticamente. [T4.2](docs/T4-DEVICE-SYNC.md).
+
 ## T3 — Scadenze Forui, IANA e DST (24/10/2026)
 
 **Implementato nel codice su main, non distribuito.** Un unico editor `ui/task_due_editor.dart` gestisce scadenze solo-giorno e data/ora, calendario Forui, HH:mm, fuso IANA e scelta esplicita delle due occorrenze in un cambio d'ora. Gli orari inesistenti sono rifiutati, la mezzanotte scelta rimane `datetime`, e le scadenze `legacy` non sono reinterpretate in automatico. Il fuso OS viene rilevato se disponibile, altrimenti richiesto esplicitamente.
 
-`data/task_due_clock.dart` usa `timezone ^0.11.2` e `flutter_timezone ^5.1.0`; `data/task_due_view.dart` presenta label e filtri Oggi/7 giorni secondo **giorni civili**, evitando il calcolo sbagliato di 168 ore attorno all'ora legale. Aggiunta rapida, dettagli ed editor avanzato salvano `TaskDue` con SQLite/outbox; una rinomina non muta `date/datetime` in `legacy`. Test per gap/fold, visualizzazione, filtri e modifica avanzata. **Backend Flyway V7 non deployato**: prima del rilascio effettuare backup+restore PostgreSQL reale, verifica capability `taskDueSchema:1` e prove reali Windows/Android. Ricorrenze, notifiche e browser web restano fuori da T3.
+`data/task_due_clock.dart` usa `timezone ^0.11.2` e `flutter_timezone ^5.1.0`; `data/task_due_view.dart` presenta label e filtri Oggi/7 giorni secondo **giorni civili**, evitando il calcolo sbagliato di 168 ore attorno all'ora legale. Aggiunta rapida, dettagli ed editor avanzato salvano `TaskDue` con SQLite/outbox; una rinomina non muta `date/datetime` in `legacy`. Test per gap/fold, visualizzazione, filtri e modifica avanzata. **V7 già verificata sul database reale**, backup SHA256 e restore isolato PASS. Mancano capability API `taskDueSchema:1` e prove Windows/Android; non ripetere deploy senza un'incompatibilità accertata. Ricorrenze, notifiche e browser web restano fuori da T3.
 
 Dettagli e checklist: [specifica T3](docs/T3-SCADENZE.md). CI: [Flutter Actions](https://github.com/andreadada/simple-notes/actions/workflows/flutter-ci.yml).
 
@@ -118,7 +120,7 @@ Il futuro modello distingue `none`/`date` (giorno civile, nessuna ora) / `dateti
 
 Flutter adotta `TaskDue` (`none/date/datetime/legacy`) e Drift **schema v5**. Una data senza ora resta una data civile; scadenze storiche conservate come `legacy`; `due_at` e outbox rimangono per compatibilità. `CloudSync` controlla il server `GET /api/v1/capabilities` prima di caricare scadenze `date/datetime` e richiede `taskDueSchema=1`; il server obsoleto non riceve aggiornamenti moderni. HTTP **426 CLIENT_UPGRADE_REQUIRED** blocca la sync senza cancellare mutazioni o attivare la risoluzione 409. I payload `dueAt` storici restano leggibili.
 
-Test introdotti per data-only, ora legale, due database, fallback server, outbox e migrazione SQLite v4 già popolato → v5. **Risultati CI e prove real-device vanno verificati**, il codice GitHub non implica deployment. T3 (UI Forui con scelta esplicita, timezone IANA e DST) resta da realizzare. Flyway V7 non è stato distribuito su Coolify, necessario backup/restore reale prima del rollout. Flutter Web non ancora supportato.
+Test automatici T2/T3 per data-only, DST, doppio SQLite, outbox, Drift v4→v5 ed editor Forui. [Flutter CI 40100324302](https://github.com/andreadada/simple-notes/actions/runs/40100324302) PASS sul commit `5a0e6b6`. Il DB reale ha V7 e restore isolato verificato; capability API e hardware T4.2 ancora da provare. Flutter Web non supportato.
 
 ## 8. Promemoria e calendari
 - Android: notifiche locali prenotate + FCM per invalidazione/sync; gestione POST_NOTIFICATIONS, reboot e restrizioni exact alarms.

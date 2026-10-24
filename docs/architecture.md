@@ -1,5 +1,7 @@
 # Architettura — stato reale (23 ottobre 2026)
 
+> **Stato reale 24/10/2026:** PostgreSQL `simplenotes` 17.11, Flyway V1–V7 riuscite, backup `simple-notes-20261024T132857Z-271921.dump` con SHA256 valido e restore isolato PASS. Copia offsite non effettuata per scelta dell'utente. Restano da verificare l'API autenticata (`taskDueSchema:1`) e il collaudo T4.2 Windows↔Android con Flutter `0.4.0+4`. Non ripetere backup, migrazioni o deploy automaticamente. [T4.2](T4-DEVICE-SYNC.md).
+
 ## Vincolo correttivo: testo completo + sottolineatura aderente (24/10/2026)
 
 **Due larghezze diverse, entrambe necessarie:**
@@ -17,11 +19,11 @@ Riferimento tecnico: `apps/flutter/lib/ui/notes_theme.dart` (`InlineTextMetrics.
 
 Flutter adotta `TaskDue` (`none/date/datetime/legacy`) e Drift **schema v5**. Una data senza ora resta una data civile; scadenze storiche conservate come `legacy`; `due_at` e outbox rimangono per compatibilità. `CloudSync` controlla il server `GET /api/v1/capabilities` prima di caricare scadenze `date/datetime` e richiede `taskDueSchema=1`; il server obsoleto non riceve aggiornamenti moderni. HTTP **426 CLIENT_UPGRADE_REQUIRED** blocca la sync senza cancellare mutazioni o attivare la risoluzione 409. I payload `dueAt` storici restano leggibili.
 
-Test introdotti per data-only, ora legale, due database, fallback server, outbox e migrazione SQLite v4 già popolato → v5. **Risultati CI e prove real-device vanno verificati**, il codice GitHub non implica deployment. T3 (UI Forui con scelta esplicita, timezone IANA e DST) resta da realizzare. Flyway V7 non è stato distribuito su Coolify, necessario backup/restore reale prima del rollout. Flutter Web non ancora supportato.
+Test automatici T2/T3 per data-only, DST, doppio SQLite, outbox, Drift v4→v5 ed editor Forui. [Flutter CI 40100324302](https://github.com/andreadada/simple-notes/actions/runs/40100324302) PASS sul commit `5a0e6b6`. Il DB reale ha V7 e restore isolato verificato; capability API e hardware T4.2 ancora da provare. Flutter Web non supportato.
 
 ## Client
 - Flutter Windows 11 e Android con **Forui** come design system principale; alcuni widget Material rimangono come bridge.
-- Stato Riverpod; SQLite/Drift **schema v4** per task, note, liste, priorità, tag, sottotask, descrizioni, revisioni e coda outbox.
+- Stato Riverpod; SQLite/Drift **schema v5** per task, note, liste, priorità, tag, sottotask, descrizioni, revisioni e coda outbox.
 - Ogni mutazione viene salvata prima localmente; l'outbox persistente invia operazioni idempotenti a `/api/v1/sync/apply` e scarica i delta da `/api/v1/sync/changes`.
 - **Auto-sync foreground**: modifiche, login/ripristino, ritorno online, resume e pull periodico (60 s), con backoff; comando di sync manuale nel menu avatar.
 - UI Forui per i conflitti 409: confronto locale/server e scelta esplicita, doppia conferma per usare la versione server. Il recupero edit-vs-delete non è ancora completo.
@@ -40,7 +42,7 @@ I widget `InlineEditableTitle`, `InlineEditableBody`, `InlineQuickAdd` e l'input
 ## Verifiche e limiti
 - Login Windows e note PC↔Android confermati dall'utente; task Android→Windows osservati.
 - CI backend e Flutter (inclusi APK debug Android JDK 17/21 e build Windows) riuscite sugli incrementi descritti; nessuna CI equivale a test reali su due dispositivi.
-- Script dump e restore isolato PostgreSQL verificati in CI con dati sintetici; backup reale, offsite e restore isolato del database Coolify ancora pendenti.
+- Test CI sintetici e prove reali distinti: backup SHA256 e restore isolato PASS sul DB reale il 24/10. Offsite non effettuata per scelta; API/hardware da controllare.
 - P0 non pronta per rilascio: mancano prove di conflitti/retry reali, scadenze con ora/timezone, ricorrenze, notifiche Android/Windows, rate limiting, release signing, monitoraggio e UX/accessibilità complete.
 - Non cancellare SQLite/outbox per forzare la sync e non redeployare prima del backup.
 

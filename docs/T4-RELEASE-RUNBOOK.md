@@ -9,7 +9,7 @@
 La V7 è **già applicata** sul database reale: non ripetere migrazioni o fare Redeploy per questo motivo. La compatibilità **API** e la nuova sync bidirezionale sono ancora da provare. Procedura breve in [T4-DEVICE-SYNC.md](T4-DEVICE-SYNC.md).
 
 
-**Ultimo aggiornamento: 24 ottobre 2026. Stato: strumenti e test nel repository, rollout reale NON eseguito.**
+**Ultimo aggiornamento: 24 ottobre 2026. DB reale V7, backup SHA256 e restore isolato PASS; copia offsite non eseguita per scelta; API e test hardware da verificare.**
 
 Questo runbook è un gate per la migrazione Flyway V7 delle scadenze T1–T3, non un comando per fare deploy. Le prove in CI utilizzano **soltanto dati sintetici**. Non usare il loro esito come attestazione che il database reale è recuperabile. Backend API di test già su Coolify, stato operativo attuale non verificato da questa procedura.
 
@@ -24,7 +24,7 @@ EXPECTED_POSTGRES_DB='simplenotes' \
   bash infra/t4-inspect-db.sh
 ```
 
-**Passo successivo necessario, non eseguito qui:** copiare il dump reale in una destinazione cifrata offsite, eseguire il restore isolato e ottenere la ricevuta `.restore-ok`. Il gate `t4-preflight.sh` ora richiede una verifica di restore **recente (24 ore)**, controlla data UTC non futura e rifiuta ricevute scadute. Per finestre più lunghe è possibile `T4_MAX_RESTORE_AGE_HOURS` da 1 a 168; non usarlo per eludere il restore. Questi controlli sono verificati in CI con **dati sintetici**, non rappresentano la prova del VPS.
+**Stato 24/10:** backup SHA256 e restore isolato con ricevuta `.restore-ok` già eseguiti. Offsite non effettuata per scelta: resta requisito distinto della release formale, non condizione per iniziare T4.2. Il gate `t4-preflight.sh` ora richiede una verifica di restore **recente (24 ore)**, controlla data UTC non futura e rifiuta ricevute scadute. Per finestre più lunghe è possibile `T4_MAX_RESTORE_AGE_HOURS` da 1 a 168; non usarlo per eludere il restore. Questi controlli sono verificati in CI con **dati sintetici**, non rappresentano la prova del VPS.
 
 ## Fonti tecniche verificate
 
@@ -119,4 +119,4 @@ Usare `yes` **solo** se hai controllato una copia offsite distinta e sicura. La 
 
 Eseguire [checklist operativa](P0-DEVICE-CHECKS.md) con due dispositivi aggiornati e stesso account: data-only, `00:00`, DST gap/fold Europe/Rome, filtri Oggi/7 giorni, modifica titolo e sottotask, avvio offline/online, outbox, conflitto 409, backend incompatibile 426. Registrare data, commit, versione client, esito, screenshot/log senza dati sensibili.
 
-**Criterio di chiusura T4:** (1) dump reale esistente e offsite, (2) restore reale isolato PASS, (3) preflight PASS al commit approvato, (4) Flyway V7/health/capability verificati sul server, (5) test Windows/Android reali PASS. Fino ad allora **T4 IN CORSO** anche se tutte le CI sintetiche sono verdi.
+**Criterio di chiusura T4:** (1) dump SHA256 e restore reale PASS, (2) Flyway V7 nel DB PASS, (3) offsite/preflight quando si pianifica una release formale ancora non completati, (4) API health/capability da verificare, (5) test Windows/Android reali da eseguire. **T4 IN CORSO**; T4.2 non richiede ripetere backup o migrazioni.

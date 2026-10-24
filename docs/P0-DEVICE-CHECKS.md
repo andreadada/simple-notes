@@ -11,9 +11,9 @@ La V7 è **già applicata** sul database reale: non ripetere migrazioni o fare R
 
 ## T4 — Gate di rilascio sicuro (24/10/2026)
 
-**Strumenti e CI implementati; backup reale, restore reale, deploy Coolify e prove hardware ancora DA ESEGUIRE.** `infra/backup-postgres.sh` verifica container e schema prima del dump PostgreSQL custom + SHA256; `infra/verify-restore.sh` ripristina in container PostgreSQL 17 **senza rete**, interroga le tabelle e genera un receipt legato al digest del dump. `infra/t4-preflight.sh` rifiuta dump/receipt incoerenti, copia offsite non attestata, commit non approvato o tree sporco; **non avvia deploy**. `infra/t4-check-api.sh` verifica soltanto salute HTTPS e capability autenticata `taskDueSchema:1`.
+**Strumenti e CI implementati; inventario reale del DB, backup SHA256 e restore isolato PASS il 24/10/2026.** Flyway V7 è presente nel database. **Copia offsite non eseguita per scelta dell'utente; contratto API e prove T4.2 Windows↔Android ancora da verificare.** `infra/backup-postgres.sh` verifica container e schema prima del dump PostgreSQL custom + SHA256; `infra/verify-restore.sh` ripristina in container PostgreSQL 17 **senza rete**, interroga le tabelle e genera un receipt legato al digest del dump. `infra/t4-preflight.sh` rifiuta dump/receipt incoerenti, copia offsite non attestata, commit non approvato o tree sporco; **non avvia deploy**. `infra/t4-check-api.sh` verifica soltanto salute HTTPS e capability autenticata `taskDueSchema:1`.
 
-La CI Compose usa dump **sintetici** e verifica i rifiuti su backup alterati; la CI backend prova una migrazione V6→V7 PostgreSQL Testcontainers con task/note/liste/sync log esistenti. I gate T4 reali richiedono: backup PostgreSQL **esistente e offsite cifrato**, ripristino isolato dello stesso dump, preflight, deploy Flyway V7 in Coolify, health+capability, E2E Windows/Android offline/sync. Non distribuire né ripristinare sulla produzione durante una prova. [Runbook T4](T4-RELEASE-RUNBOOK.md) · [GitHub Actions](https://github.com/andreadada/simple-notes/actions).
+La CI Compose usa dump **sintetici** e verifica i rifiuti su backup alterati; la CI backend prova una migrazione V6→V7 PostgreSQL Testcontainers con task/note/liste/sync log esistenti. **Gate reali al 24/10:** PostgreSQL V7, backup SHA256 e restore isolato già verificati. Offsite non effettuata per scelta dell'utente e distinta dal collaudo T4.2. Il prossimo controllo è su API autenticata e Windows/Android E2E; per una release formale restano anche hardening/offsite e preflight. Non avviare un redeploy solo perché V7 è citata. Non distribuire né ripristinare sulla produzione durante una prova. [Runbook T4](T4-RELEASE-RUNBOOK.md) · [GitHub Actions](https://github.com/andreadada/simple-notes/actions).
 
 
 **Aggiornato: 24 ottobre 2026.** Questa checklist NON certifica alcun deploy. L'obiettivo è raccogliere prove reali distinguendole dai test automatici. Non inserire token/password nei log condivisi.
@@ -22,7 +22,7 @@ La CI Compose usa dump **sintetici** e verifica i rifiuti su backup alterati; la
 
 - [x] **Verificato sul VPS (24/10)**: identificato e controllato il DB reale; comando `DB_CONTAINER='<ID>' EXPECTED_POSTGRES_DB=simplenotes bash infra/t4-inspect-db.sh`.
 - [x] Registrato l'esito read-only: PostgreSQL 17.11, Flyway V7 riuscita, 5 colonne scadenza e conteggi senza contenuti personali.
-- [ ] Dopo backup reale e restore isolato, verificare che `.restore-ok` sia ancora recente (24 ore predefinite) eseguendo `infra/t4-preflight.sh`.
+- [ ] Solo per un futuro rilascio formale, verificare di nuovo la validità temporale della ricevuta `.restore-ok` e i gate preflight. Non rifare il backup per la verifica T4.2.
 - [ ] Confermare che CI sintetiche e strumenti in repository NON certificano il database Coolify.
 
 ## Gate obbligatorio prima del redeploy
@@ -32,7 +32,7 @@ La CI Compose usa dump **sintetici** e verifica i rifiuti su backup alterati; la
 - [ ] Conservare e controllare una copia del dump cifrata **fuori dal VPS**, con policy di retention; eseguire il gate `infra/t4-preflight.sh` con attestazione offsite esplicita.
 - [x] Flyway V1–V7 **già presente e riuscita** nel database reale; non è necessario ripeterla.
 - [ ] Verificare API autenticata `taskDueSchema:1` da Windows e Android con la nuova diagnostica; confermare health e sync reale, senza un nuovo redeploy.
-- [ ] Verificare login Google / refresh dopo il redeploy, prima di aggiornare i client.
+- [ ] Verificare login Google/refresh sulle nuove build senza presupporre un redeploy.
 
 Comandi esatti e precauzioni in [infra/README.md](../infra/README.md). **Non usare mai `docker compose down -v` o disinstallazione dell'app come soluzione ai problemi di sync.**
 

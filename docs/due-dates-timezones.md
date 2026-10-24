@@ -1,22 +1,24 @@
 # P0 — Scadenze, date-only e fusi orari
 
+> **Stato reale 24/10/2026:** PostgreSQL `simplenotes` 17.11, Flyway V1–V7 riuscite, backup `simple-notes-20261024T132857Z-271921.dump` con SHA256 valido e restore isolato PASS. Copia offsite non effettuata per scelta dell'utente. Restano da verificare l'API autenticata (`taskDueSchema:1`) e il collaudo T4.2 Windows↔Android con Flutter `0.4.0+4`. Non ripetere backup, migrazioni o deploy automaticamente. [T4.2](T4-DEVICE-SYNC.md).
+
 ## T4 — Gate di rilascio sicuro (24/10/2026)
 
-**Strumenti e CI implementati; backup reale, restore reale, deploy Coolify e prove hardware ancora DA ESEGUIRE.** `infra/backup-postgres.sh` verifica container e schema prima del dump PostgreSQL custom + SHA256; `infra/verify-restore.sh` ripristina in container PostgreSQL 17 **senza rete**, interroga le tabelle e genera un receipt legato al digest del dump. `infra/t4-preflight.sh` rifiuta dump/receipt incoerenti, copia offsite non attestata, commit non approvato o tree sporco; **non avvia deploy**. `infra/t4-check-api.sh` verifica soltanto salute HTTPS e capability autenticata `taskDueSchema:1`.
+**Strumenti e CI implementati; inventario reale del DB, backup SHA256 e restore isolato PASS il 24/10/2026.** Flyway V7 è presente nel database. **Copia offsite non eseguita per scelta dell'utente; contratto API e prove T4.2 Windows↔Android ancora da verificare.** `infra/backup-postgres.sh` verifica container e schema prima del dump PostgreSQL custom + SHA256; `infra/verify-restore.sh` ripristina in container PostgreSQL 17 **senza rete**, interroga le tabelle e genera un receipt legato al digest del dump. `infra/t4-preflight.sh` rifiuta dump/receipt incoerenti, copia offsite non attestata, commit non approvato o tree sporco; **non avvia deploy**. `infra/t4-check-api.sh` verifica soltanto salute HTTPS e capability autenticata `taskDueSchema:1`.
 
-La CI Compose usa dump **sintetici** e verifica i rifiuti su backup alterati; la CI backend prova una migrazione V6→V7 PostgreSQL Testcontainers con task/note/liste/sync log esistenti. I gate T4 reali richiedono: backup PostgreSQL **esistente e offsite cifrato**, ripristino isolato dello stesso dump, preflight, deploy Flyway V7 in Coolify, health+capability, E2E Windows/Android offline/sync. Non distribuire né ripristinare sulla produzione durante una prova. [Runbook T4](T4-RELEASE-RUNBOOK.md) · [GitHub Actions](https://github.com/andreadada/simple-notes/actions).
+La CI Compose usa dump **sintetici** e verifica i rifiuti su backup alterati; la CI backend prova una migrazione V6→V7 PostgreSQL Testcontainers con task/note/liste/sync log esistenti. **Gate reali al 24/10:** PostgreSQL V7, backup SHA256 e restore isolato già verificati. Offsite non effettuata per scelta dell'utente e distinta dal collaudo T4.2. Il prossimo controllo è su API autenticata e Windows/Android E2E; per una release formale restano anche hardening/offsite e preflight. Non avviare un redeploy solo perché V7 è citata. Non distribuire né ripristinare sulla produzione durante una prova. [Runbook T4](T4-RELEASE-RUNBOOK.md) · [GitHub Actions](https://github.com/andreadada/simple-notes/actions).
 
 
 ## T3 — Scadenze Forui, IANA e DST (24/10/2026)
 
 **Implementato nel codice su main, non distribuito.** Un unico editor `ui/task_due_editor.dart` gestisce scadenze solo-giorno e data/ora, calendario Forui, HH:mm, fuso IANA e scelta esplicita delle due occorrenze in un cambio d'ora. Gli orari inesistenti sono rifiutati, la mezzanotte scelta rimane `datetime`, e le scadenze `legacy` non sono reinterpretate in automatico. Il fuso OS viene rilevato se disponibile, altrimenti richiesto esplicitamente.
 
-`data/task_due_clock.dart` usa `timezone ^0.11.2` e `flutter_timezone ^5.1.0`; `data/task_due_view.dart` presenta label e filtri Oggi/7 giorni secondo **giorni civili**, evitando il calcolo sbagliato di 168 ore attorno all'ora legale. Aggiunta rapida, dettagli ed editor avanzato salvano `TaskDue` con SQLite/outbox; una rinomina non muta `date/datetime` in `legacy`. Test per gap/fold, visualizzazione, filtri e modifica avanzata. **Backend Flyway V7 non deployato**: prima del rilascio effettuare backup+restore PostgreSQL reale, verifica capability `taskDueSchema:1` e prove reali Windows/Android. Ricorrenze, notifiche e browser web restano fuori da T3.
+`data/task_due_clock.dart` usa `timezone ^0.11.2` e `flutter_timezone ^5.1.0`; `data/task_due_view.dart` presenta label e filtri Oggi/7 giorni secondo **giorni civili**, evitando il calcolo sbagliato di 168 ore attorno all'ora legale. Aggiunta rapida, dettagli ed editor avanzato salvano `TaskDue` con SQLite/outbox; una rinomina non muta `date/datetime` in `legacy`. Test per gap/fold, visualizzazione, filtri e modifica avanzata. **V7 già verificata sul database reale**, backup SHA256 e restore isolato PASS. Mancano capability API `taskDueSchema:1` e prove Windows/Android; non ripetere deploy senza un'incompatibilità accertata. Ricorrenze, notifiche e browser web restano fuori da T3.
 
 Dettagli e checklist: [specifica T3](T3-SCADENZE.md). CI: [Flutter Actions](https://github.com/andreadada/simple-notes/actions/workflows/flutter-ci.yml).
 
 
-> **Stato del 23 ottobre 2026 — T1 BACKEND IMPLEMENTATO SU GITHUB, NON DEPLOYATO.** Il primo input orario HH:mm è già su main e ha superato le CI Flutter [40011701417](https://github.com/andreadada/simple-notes/actions/runs/40011701417) e [40011789270](https://github.com/andreadada/simple-notes/actions/runs/40011789270). Questo documento definisce l'intero incremento: **T1 backend e T2 client Flutter sono presenti nel codice** (commit [`1bafec0`](https://github.com/andreadada/simple-notes/commit/1bafec046dd0cbd3f18b8933873da7381fc28a26)). La CI backend [40019181083](https://github.com/andreadada/simple-notes/actions/runs/40019181083) è **riuscita** (Gradle test e bootJar) e il database Coolify **NON è stato migrato**. T0 e T4 ancora aperti; T2 e T3 presenti nel codice, ma non rilasciati sul backend e dispositivi reali.
+> **Cronologia del 23/10, poi superata per il database:** T1 backend era inizialmente solo su GitHub. Il primo input orario HH:mm è già su main e ha superato le CI Flutter [40011701417](https://github.com/andreadada/simple-notes/actions/runs/40011701417) e [40011789270](https://github.com/andreadada/simple-notes/actions/runs/40011789270). Questo documento definisce l'intero incremento: **T1 backend e T2 client Flutter sono presenti nel codice** (commit [`1bafec0`](https://github.com/andreadada/simple-notes/commit/1bafec046dd0cbd3f18b8933873da7381fc28a26)). La CI backend [40019181083](https://github.com/andreadada/simple-notes/actions/runs/40019181083) è **riuscita** (Gradle test e bootJar) e il database reale è stato successivamente verificato con Flyway **V7 applicata**. T4.2 e gate di release ancora aperti; T2 e T3 presenti nel codice, ma non rilasciati sul backend e dispositivi reali.
 
 ## T2 — Flutter e SQLite v5 (implementato nel repository, non distribuito)
 
@@ -24,7 +26,7 @@ Dettagli e checklist: [specifica T3](T3-SCADENZE.md). CI: [Flutter Actions](http
 - **Persistenza**: `AppDatabase` usa Drift **schemaVersion 5** con 5 colonne aggiuntive (kind, date, time, timezone, offset) e backfill `due_at != NULL → legacy`, altrimenti `none`. Le tabelle sync/outbox, il cursore e i remoteVersion non vengono cancellati.
 - **Sincronizzazione**: i task moderni inviano l'oggetto `due` al backend; prima di inviare `date/datetime` il client controlla `GET /api/v1/capabilities` autenticato e richiede `taskDueSchema=1`. Se assente conserva la mutazione offline; **HTTP 426** non è trattato come un normale 409, quindi non viene ribasato e l'outbox resta intatta. I payload legacy già accodati sono mantenuti.
 - **Test creati**: `task_due_test.dart`, `task_due_sync_test.dart`, `task_due_migration_test.dart`; includono due database simulati, fold DST, mezzanotte esplicita, server obsoleto, 426, e upgrade di SQLite v4 popolato con versioni e operazioni in coda. Verificare l'esito CI effettivo prima di considerarli convalidati.
-- **Perimetro**: T2 è codice e test, **non** rilascio. T3 editor Forui solo-giorno/ora e timezone IANA ancora da completare; notifiche/ricorrenze successive. Backend Flyway V7 ancora **non deployato su Coolify**; prima del rollout completare il backup PostgreSQL e restore isolato. Il runtime Flutter Web resta non supportato.
+- **Stato aggiornato:** T2 (Drift v5, `TaskDue`, capability/426) e T3 (editor Forui date-only/ora e IANA/DST) sono implementati nel codice, non ancora collaudati sui due dispositivi. Flyway V7 e restore reale PASS, ma contratto API da verificare. Flutter Web, ricorrenze e notifiche non ancora supportati.
 
 ## Implementazione disponibile nel repository — backend T1
 
@@ -33,14 +35,14 @@ Dettagli e checklist: [specifica T3](T3-SCADENZE.md). CI: [Flutter Actions](http
 - `SyncService` riconosce il campo `due`, lo salva nel DB e nel change log. Le vecchie scritture `dueAt` continuano a funzionare su task `none/legacy`.
 - Una modifica priva di `due` a un task `date/datetime` produce **426** con `code: CLIENT_UPGRADE_REQUIRED`; stessa protezione sul vecchio `PUT /tasks/{id}`. Preservare l'outbox lato client: la gestione HTTP 426 è presente nel client Flutter T2, con outbox conservata.
 - `GET /api/v1/capabilities` (richiede autenticazione) dichiara `taskDueSchema: 1`. Il client Flutter T2 verifica questa capability **prima** di creare task con formato moderno.
-- Test Java: validazione date-only/00:00/DST gap/fold, sync+privacy/idempotenza/upgrade e prova di migrazione PostgreSQL popolato V6→V7. **CI backend 40019181083 riuscita**; test hardware e deploy ancora mancanti.
+- Test Java: validazione date-only/00:00/DST gap/fold, sync+privacy/idempotenza/upgrade e prova di migrazione PostgreSQL popolato V6→V7. **CI backend 40019181083 riuscita**; V7 già presente nel DB reale, API/hardware ancora da testare.
 
 ## Problema effettivo nel codice
 
 - `LocalTask.dueAt` (`apps/flutter/lib/data/models.dart`) rappresenta sia una scadenza solo-giorno che una scadenza con ora. `00:00` immessa esplicitamente è indistinguibile da un orario non specificato.
 - `showNotesDatePicker()` restituisce mezzanotte locale; `cloud_sync.dart` converte `dueAt` in UTC; il server usa `Instant`; `app_database.dart` lo rilegge con `toLocal()`. Un task «entro il 26 ottobre» rischia di apparire in un altro giorno cambiando fuso.
 - Le sezioni Oggi / Prossimi 7 giorni confrontano timestamp. Il dettaglio task ancora non mostra l'ora, e non esiste timezone IANA persistente.
-- Stato precedente a T2/T3: Flutter **Drift v4** e UI HH:mm senza semantica date-only; backend **Flyway V7 ora nel repository**, ma Coolify potrebbe ancora usare una versione precedente. Non dedurre deploy dal codice.
+- Stato precedente a T2/T3: Flutter **Drift v4** e UI HH:mm senza semantica date-only; backend **Flyway V7 ora nel repository**, e il database reale ha già V7. Il DB non attesta da solo la versione API.
 
 ## Decisione architetturale
 
@@ -72,7 +74,7 @@ Il backend deve verificare che `instant` concordi con data/ora/`timeZone`/`offse
 
 ## Migrazioni incrementali — da sviluppare
 
-**Backend: `V7__task_due_semantics.sql` — presente nel codice, verifica CI/deploy ancora distinta**
+**Backend: `V7__task_due_semantics.sql` — presente nel codice e verificata sul DB reale, API ancora da collaudare**
 - Conservare `task.due_at TIMESTAMPTZ`, aggiungere `due_kind`, `due_date DATE`, `due_time TIME` (precisione minuti), `due_timezone VARCHAR(128)`, `due_offset_seconds INTEGER`; vincoli `CHECK` per combinazioni ammesse.
 - Backfill: `due_at IS NULL -> none` e `due_at IS NOT NULL -> legacy`, senza reinterpretare date già archiviate.
 - Spring Boot: introdurre `TaskDue` e validazione `LocalDate`/`LocalTime`/`ZoneId`/`ZoneRules`; serializzare i campi canonici nel change log, preservando compatibilità. Test con PostgreSQL/Testcontainers e dati provenienti da V6.
@@ -82,7 +84,7 @@ Il backend deve verificare che `instant` concordi con data/ora/`timeZone`/`offse
 - `onUpgrade(from < 5)`: backfill `legacy/none` senza azzerare task, `remoteVersion`, tombstone, `pendingMutations`, cursor o account. Le operazioni già in coda, anche se in formato precedente, devono essere inviate senza inferenze e senza riordinamento.
 - `LocalTask`, `LocalStore`, `AppDatabase.snapshot/upsertTask/applyRemote`, `CloudSync` e confronto conflitti si devono basare sul value object; non mantenere due fonti di verità.
 
-**Rollout:** prima backup PostgreSQL reale verificato con restore isolato e copia offsite, poi backend V5/V6 attuale se non già distribuito, successivamente V7 compatibile; infine entrambi i client aggiornati con Drift v5. Non aggiornare un client a V7 prima del supporto server. Vietato eliminare SQLite, outbox o volumi per risolvere problemi.
+**Rollout aggiornato:** PostgreSQL V7, SHA256 e restore isolato PASS; offsite non eseguita per scelta. Verificare API e build client Drift v5; redeploy solo per necessità accertata. Non aggiornare un client a V7 prima del supporto server. Vietato eliminare SQLite, outbox o volumi per risolvere problemi.
 
 ## Fusi orari e ora legale
 
@@ -103,10 +105,10 @@ Il backend deve verificare che `instant` concordi con data/ora/`timeZone`/`offse
 
 ## Piano eseguibile, in piccoli commit
 
-1. **T0 – Gate operativo:** completare [P0-DEVICE-CHECKS.md](P0-DEVICE-CHECKS.md): backup/recovery reale, Coolify V5+V6 e test E2E delle attuali liste, tag, sottotask, offline e 409.
+1. **T0 – Gate operativo:** backup/restore reali e V1–V7 verificati; E2E liste/tag/sottotask/offline e 409 restano. [Checklist](P0-DEVICE-CHECKS.md).
 2. **T1 – Backend-first:** codice e test aggiunti su `main` con commit `1bafec0`; [Backend CI 40019181083](https://github.com/andreadada/simple-notes/actions/runs/40019181083) **success** (test e bootJar). **Mai considerare il deploy automatico**. T2 Flutter è ora presente nel codice; rimangono verifiche e rilascio.
 3. **T2 – Flutter core:** `TaskDue` + Drift v5; migrazione/snapshot/outbox/push-pull/risoluzione conflitti; test doppio SQLite, versioni e dati legacy.
-4. **T3 – UI:** codice aggiunto: editor Forui, date-only, timed, timezone/fold e filtri oggi/7 giorni; verifiche manuali e backend Coolify ancora da completare.
+4. **T3 – UI:** codice aggiunto: editor Forui, date-only, timed, timezone/fold e filtri oggi/7 giorni; verifiche manuali e API autenticata ancora da completare.
 5. **T4 – Compatibilità e release:** verificare backend aggiornato, capability, upgrade senza reset, test Windows↔Android reali in entrambi i versi, offline/restart/conflict/DST. Aggiornare checklist soltanto dopo prova.
 6. **T5 – Lavoro successivo:** ricorrenze e solo poi notifiche Android/Windows, snooze, deduplica per occorrenza/device, reboot, restrizioni sistema. **Non incluso** nel presente incremento.
 
@@ -129,11 +131,11 @@ Il backend deve verificare che `instant` concordi con data/ora/`timeZone`/`offse
 ## Definition of Done
 
 - [ ] Contratto nuovo stabile e retrocompatibilità *dimostrata*, non solo dichiarata.
-- [ ] Migrazioni V7/v5 additive e test su DB precedenti; nessuna perdita outbox.
+- [x] Migrazioni V7 PostgreSQL e v5 Drift implementate con test automatici. [ ] Verificare SQLite/outbox su device senza perdita.
 - [ ] DST gap/fold, fusi IANA e mezzanotte esplicita validati.
 - [ ] UI Forui e filtri coerenti; date-only non varia fra dispositivi.
 - [ ] CI backend/Flutter, build Windows+Android ed E2E fisico riusciti.
-- [ ] Deploy Coolify effettuato solo dopo backup reale+restore isolato; documentare commit/build/server.
+- [ ] Verificare capability API autenticata e annotare build/server; non avviare automaticamente il redeploy.
 - [ ] P0 aggiornata e edit timespan registrato; ricorrenze/notifiche non spacciate per completate.
 
 **File target:** `apps/flutter/lib/data/{models.dart,app_database.dart,local_store.dart}`, `apps/flutter/lib/sync/cloud_sync.dart`, `apps/flutter/lib/ui/notes_dialogs.dart`, `apps/flutter/lib/main.dart`, test Flutter; `services/api/.../task/TaskEntity.java`, `services/api/.../sync/SyncService.java`, nuovi value object e migrazione V7, test Java; documenti API/sync. Nessun file di codice è cambiato con questo documento.

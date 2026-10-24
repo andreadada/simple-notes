@@ -1,6 +1,6 @@
 # T3 — Scadenze Forui, fusi IANA e calendario civile
 
-> Stato: implementato su `main` il 24 ottobre 2026. **Codice ≠ deploy**: il backend Flyway V7 su Coolify e i test fisici Windows↔Android non sono confermati. Verificare gli esiti più recenti in [GitHub Actions](https://github.com/andreadada/simple-notes/actions/workflows/flutter-ci.yml).
+> Stato al 24/10: codice T3 implementato; **Flyway V7 verificata sul DB reale e dump/restore isolato PASS**. API autenticata e prove fisiche Windows↔Android ancora non confermate. Verificare gli esiti più recenti in [GitHub Actions](https://github.com/andreadada/simple-notes/actions/workflows/flutter-ci.yml).
 
 ## Cosa è stato sviluppato
 
@@ -28,12 +28,12 @@
 ## Validazione
 
 - Test unitari e widget Flutter inclusi nella CI; controllare risultato dopo ciascun commit.
-- Prima del rollout: backup PostgreSQL reale, restore su DB isolato, ispezione V5/V6/V7, poi backend Coolify in modo non distruttivo; verificare `/actuator/health` e `/api/v1/capabilities` autenticato.
+- Inventario V1–V7, dump e restore reale verificati il 24/10; controllare `/actuator/health` e `/api/v1/capabilities` autenticato senza redeploy non necessario.
 - Verificare fisicamente Windows e Android con **stesso account**, date-only tra diversi fusi, fold/gap, avvio offline, riavvio, 409 e upload dopo upgrade backend.
 - La sincronizzazione non è stata deployata ora; `flutter run -d chrome` continua a non essere un runtime supportato.
 - `timezone` client e Java ZoneRules server possono avere versioni tzdata differenti: il server resta autorevole e un errore di validazione non deve riscrivere una scadenza senza consenso.
 
 ## Escluso da T3
 
-Ricorrenze, notifiche pianificate Android/Windows, calendari avanzati, import/export e rilascio web. Prossimo gate operativo: **T4 backup→restore→deploy sicuro→test real-device**. Non cancellare mai SQLite, outbox o volumi per risolvere difetti di upgrade.
+Ricorrenze, notifiche pianificate Android/Windows, calendari avanzati, import/export e rilascio web. Prossimo gate operativo: **T4.2 API + test real-device**, non ripetere backup/restore o V7. Non cancellare mai SQLite, outbox o volumi per risolvere difetti di upgrade.
 

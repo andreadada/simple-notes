@@ -1,6 +1,8 @@
 <!-- Vincolo UI aggiornato 24/10/2026: tutti i titoli di liste, task e subtasks usano la stessa logica inline-first. La sottolineatura non deve eccedere la larghezza del valore (o dell'hint) +~1px, nessun grigio di riempimento; placeholder semitrasparente (~72%). Utilizzare InlineTextMetrics.fieldWidth in notes_theme.dart, non minWidth artificiale o Expanded TextField full-width. Regole: ../design.md, ui-forui.md e ui-design-audit.md. -->
 # Organizzazione attività (P0) — liste, priorità, tag e sottotask
 
+> **Stato reale 24/10/2026:** PostgreSQL `simplenotes` 17.11, Flyway V1–V7 riuscite, backup `simple-notes-20261024T132857Z-271921.dump` con SHA256 valido e restore isolato PASS. Copia offsite non effettuata per scelta dell'utente. Restano da verificare l'API autenticata (`taskDueSchema:1`) e il collaudo T4.2 Windows↔Android con Flutter `0.4.0+4`. Non ripetere backup, migrazioni o deploy automaticamente. [T4.2](T4-DEVICE-SYNC.md).
+
 **Implementato nel codice del branch `main` il 23 ottobre 2026.** Test automatici backend + Flutter riusciti; **non è ancora stato testato con Coolify aggiornato e due dispositivi reali**.
 
 ## Comportamento
@@ -31,7 +33,7 @@ SQLite Drift registra i timestamp con risoluzione al secondo. L'outbox assegna t
 La migrazione schema v4 è incrementale e usa default: priorità 0, tag e sottotask `[]`, lista null. Il payload backend accetta l'assenza di questi campi per compatibilità con app vecchie. **Un client vecchio non conserva necessariamente la nuova organizzazione quando sovrascrive una vecchia copia dello stesso task:** aggiornare tutti i dispositivi.
 
 **Ordine obbligatorio per provare su dati reali:**
-1. Eseguire backup PostgreSQL su Coolify/VPS e testarne il restore isolato; conservare copia offsite.
+1. Backup e restore reale già riusciti 24/10, V6 presente nel DB. Offsite non effettuata per scelta; collaudo T4.2 deve partire dalla verifica API, non dal redeploy.
 2. Redeploy API da `main`, attendere Flyway **V5+V6**, controllare `/actuator/health`, errori e test login già funzionante.
 3. Aggiornare Flutter Windows e Android (con generazione Drift), senza cancellare SQLite né disinstallare.
 4. Testare lista vuota, task dentro la lista, priorità/tag/sottotask, modifica su secondo device, riavvio, eliminazione della lista senza perdita del task.

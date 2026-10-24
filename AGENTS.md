@@ -14,20 +14,20 @@ La V7 è **già applicata** sul database reale: non ripetere migrazioni o fare R
 - Eseguire `infra/t4-inspect-db.sh` solo su container specificamente identificato; è un controllo di sola lettura.
 - Non dichiarare un restore ancora valido se `.restore-ok` è più vecchio di 24 ore senza esplicita giustificazione operativa, e non superare la soglia massima di 168 ore.
 - Non confondere CI sintetica con accesso VPS/Coolify, identità del database o prova della copia cifrata offsite.
-- Nessun deploy del backend Flyway V7 prima di inventario reale, backup effettivo, restore isolato e verifica del commit approvato.
+- Per ogni futuro deploy verificare commit approvato e gate attuale; inventario DB, V7, backup SHA256 e restore isolato reali sono già stati verificati il 24/10.
 
 ## T4 — Gate di rilascio sicuro (24/10/2026)
 
-**Strumenti e CI implementati; backup reale, restore reale, deploy Coolify e prove hardware ancora DA ESEGUIRE.** `infra/backup-postgres.sh` verifica container e schema prima del dump PostgreSQL custom + SHA256; `infra/verify-restore.sh` ripristina in container PostgreSQL 17 **senza rete**, interroga le tabelle e genera un receipt legato al digest del dump. `infra/t4-preflight.sh` rifiuta dump/receipt incoerenti, copia offsite non attestata, commit non approvato o tree sporco; **non avvia deploy**. `infra/t4-check-api.sh` verifica soltanto salute HTTPS e capability autenticata `taskDueSchema:1`.
+**Strumenti e CI implementati; inventario reale del DB, backup SHA256 e restore isolato PASS il 24/10/2026.** Flyway V7 è presente nel database. **Copia offsite non eseguita per scelta dell'utente; contratto API e prove T4.2 Windows↔Android ancora da verificare.** `infra/backup-postgres.sh` verifica container e schema prima del dump PostgreSQL custom + SHA256; `infra/verify-restore.sh` ripristina in container PostgreSQL 17 **senza rete**, interroga le tabelle e genera un receipt legato al digest del dump. `infra/t4-preflight.sh` rifiuta dump/receipt incoerenti, copia offsite non attestata, commit non approvato o tree sporco; **non avvia deploy**. `infra/t4-check-api.sh` verifica soltanto salute HTTPS e capability autenticata `taskDueSchema:1`.
 
-La CI Compose usa dump **sintetici** e verifica i rifiuti su backup alterati; la CI backend prova una migrazione V6→V7 PostgreSQL Testcontainers con task/note/liste/sync log esistenti. I gate T4 reali richiedono: backup PostgreSQL **esistente e offsite cifrato**, ripristino isolato dello stesso dump, preflight, deploy Flyway V7 in Coolify, health+capability, E2E Windows/Android offline/sync. Non distribuire né ripristinare sulla produzione durante una prova. [Runbook T4](docs/T4-RELEASE-RUNBOOK.md) · [GitHub Actions](https://github.com/andreadada/simple-notes/actions).
+La CI Compose usa dump **sintetici** e verifica i rifiuti su backup alterati; la CI backend prova una migrazione V6→V7 PostgreSQL Testcontainers con task/note/liste/sync log esistenti. **Gate reali al 24/10:** PostgreSQL V7, backup SHA256 e restore isolato già verificati. Offsite non effettuata per scelta dell'utente e distinta dal collaudo T4.2. Il prossimo controllo è su API autenticata e Windows/Android E2E; per una release formale restano anche hardening/offsite e preflight. Non avviare un redeploy solo perché V7 è citata. Non distribuire né ripristinare sulla produzione durante una prova. [Runbook T4](docs/T4-RELEASE-RUNBOOK.md) · [GitHub Actions](https://github.com/andreadada/simple-notes/actions).
 
 
 ## T3 — Scadenze e fusi orari (24/10/2026)
 
 Il client Flutter ha ora un editor scadenze Forui riutilizzato in creazione rapida, pannello dettagli e editor avanzato (`ui/task_due_editor.dart`). Supporta `date` senza ora, `datetime` con HH:mm + timezone IANA, scelta del fold DST e rifiuto del gap; non converte automaticamente `legacy`. Il rilevamento OS fallibile non produce una UTC inventata: l'utente sceglie un fuso valido. `task_due_view.dart` centralizza l'etichetta (mostra il fuso) e i filtri Oggi/7 giorni in giorni civili; gli aggiornamenti rimangono offline-first.
 
-**Solo codice:** backend Flyway V7 e deploy Coolify non eseguiti; servono backup/restore reale e test hardware Windows↔Android. Esecuzione web, ricorrenze e notifiche non sono supportate in T3. Leggere [T3-SCADENZE.md](docs/T3-SCADENZE.md) e verificare le [CI Flutter](https://github.com/andreadada/simple-notes/actions/workflows/flutter-ci.yml) per l'esito esatto.
+**Stato aggiornato:** T3 implementato nel codice, Flyway V7 già nel DB reale, backup SHA256 e restore isolato riusciti. Rimangono verifica API autenticata e test hardware Windows↔Android. Esecuzione web, ricorrenze e notifiche non sono supportate in T3. Leggere [T3-SCADENZE.md](docs/T3-SCADENZE.md) e verificare le [CI Flutter](https://github.com/andreadada/simple-notes/actions/workflows/flutter-ci.yml) per l'esito esatto.
 
 
 ## Vincolo correttivo: testo completo + sottolineatura aderente (24/10/2026)
@@ -66,7 +66,7 @@ Repository: **Simple Notes** — Flutter Windows/Android + Spring Boot/PG su Coo
 - **Persistenza**: `AppDatabase` usa Drift **schemaVersion 5** con 5 colonne aggiuntive (kind, date, time, timezone, offset) e backfill `due_at != NULL → legacy`, altrimenti `none`. Le tabelle sync/outbox, il cursore e i remoteVersion non vengono cancellati.
 - **Sincronizzazione**: i task moderni inviano l'oggetto `due` al backend; prima di inviare `date/datetime` il client controlla `GET /api/v1/capabilities` autenticato e richiede `taskDueSchema=1`. Se assente conserva la mutazione offline; **HTTP 426** non è trattato come un normale 409, quindi non viene ribasato e l'outbox resta intatta. I payload legacy già accodati sono mantenuti.
 - **Test creati**: `task_due_test.dart`, `task_due_sync_test.dart`, `task_due_migration_test.dart`; includono due database simulati, fold DST, mezzanotte esplicita, server obsoleto, 426, e upgrade di SQLite v4 popolato con versioni e operazioni in coda. Verificare l'esito CI effettivo prima di considerarli convalidati.
-- **Perimetro**: T2 è codice e test, **non** rilascio. T3 editor Forui solo-giorno/ora e timezone IANA ancora da completare; notifiche/ricorrenze successive. Backend Flyway V7 ancora **non deployato su Coolify**; prima del rollout completare il backup PostgreSQL e restore isolato. Il runtime Flutter Web resta non supportato.
+- **Stato aggiornato:** T2 (Drift v5, `TaskDue`, capability/426) e T3 (editor Forui date-only/ora e IANA/DST) sono implementati nel codice, non ancora collaudati sui due dispositivi. Flyway V7 e restore reale PASS, ma contratto API da verificare. Flutter Web, ricorrenze e notifiche non ancora supportati.
 
 ## Criteri di verità
 
@@ -89,7 +89,7 @@ Repository: **Simple Notes** — Flutter Windows/Android + Spring Boot/PG su Coo
 - La build Android con JDK 21 richiede la configurazione JVM del modulo in `android/app/build.gradle.kts`; **non ripristinare target Java 17 fisso** senza considerare Kotlin 21.
 - Per modifiche a scadenze e timezone seguire [docs/due-dates-timezones.md](docs/due-dates-timezones.md): value object `none/date/datetime/legacy`, Flyway V7/Drift v5, DST/ambiguità 00:00 e protezione dei vecchi client. È un **piano**, non codice pronto.
 - T1 backend `TaskDue`/Flyway V7/protezione 426/capabilities aggiunto nel commit `1bafec0`; **non distribuito**. T2 Flutter ora legge `/api/v1/capabilities`, gestisce 426 senza cancellare l'outbox e migra Drift v4→v5. Convalidare CI ed E2E prima del rollout. Prima del deploy backup/restore reale.
-- Prossima priorità: **prima** backup PostgreSQL reale e restore isolato/offsite, **poi** deploy backend V5+V6 e verifica PC↔Android (liste, tag, sottotask, conflitti/offline e sessioni). Solo dopo, scadenze con orario e fusi, ricorrenze e reminder nativi. Vedere `docs/P0-DEVICE-CHECKS.md`; non presupporre che Coolify abbia già applicato V6. Avatar Google (claim picture) richiede il backend con migration Flyway V4.
+- Prossima priorità: **T4.2** con build `0.4.0+4` Windows↔Android, capability `taskDueSchema:1`, sync in entrambi i sensi, offline e DST. Non riavviare backup/restore o migrazioni V7 già eseguite; offsite non eseguita per scelta.
 
 **Su qualsiasi incongruenza tra handoff e codice/CI più recente, verificare e aggiornare la documentazione invece di inventare uno stato.**
 

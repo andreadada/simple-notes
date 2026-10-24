@@ -11,7 +11,7 @@ La V7 è **già applicata** sul database reale: non ripetere migrazioni o fare R
 
 ## T3 — Editor scadenze Forui e calendario civile (24/10/2026)
 
-Un editor condiviso `task_due_editor.dart` ora gestisce data senza ora, data/ora+IANA, conversione esplicita `legacy` e fold/gap dell'ora legale. `task_due_clock.dart` calcola le possibilità UTC senza arrotondamenti nascosti e tenta di rilevare il fuso OS (in caso di errore richiede una selezione); `task_due_view.dart` centralizza le etichette e i filtri per giorni di calendario. Tutte le scritture T3 utilizzano SQLite/outbox; nessuna migrazione Coolify è stata eseguita. [Specifiche T3](../../docs/T3-SCADENZE.md).
+Un editor condiviso `task_due_editor.dart` ora gestisce data senza ora, data/ora+IANA, conversione esplicita `legacy` e fold/gap dell'ora legale. `task_due_clock.dart` calcola le possibilità UTC senza arrotondamenti nascosti e tenta di rilevare il fuso OS (in caso di errore richiede una selezione); `task_due_view.dart` centralizza le etichette e i filtri per giorni di calendario. Tutte le scritture T3 utilizzano SQLite/outbox; Flyway V7 risulta già applicata al DB reale, contratto API da provare. [Specifiche T3](../../docs/T3-SCADENZE.md).
 
 
 ## Vincolo correttivo: testo completo + sottolineatura aderente (24/10/2026)
@@ -41,7 +41,7 @@ Le schermate Flutter condivise adottano ora il comportamento descritto in [audit
 
 Flutter adotta `TaskDue` (`none/date/datetime/legacy`) e Drift **schema v5**. Una data senza ora resta una data civile; scadenze storiche conservate come `legacy`; `due_at` e outbox rimangono per compatibilità. `CloudSync` controlla il server `GET /api/v1/capabilities` prima di caricare scadenze `date/datetime` e richiede `taskDueSchema=1`; il server obsoleto non riceve aggiornamenti moderni. HTTP **426 CLIENT_UPGRADE_REQUIRED** blocca la sync senza cancellare mutazioni o attivare la risoluzione 409. I payload `dueAt` storici restano leggibili.
 
-Test introdotti per data-only, ora legale, due database, fallback server, outbox e migrazione SQLite v4 già popolato → v5. **Risultati CI e prove real-device vanno verificati**, il codice GitHub non implica deployment. T3 (UI Forui con scelta esplicita, timezone IANA e DST) resta da realizzare. Flyway V7 non è stato distribuito su Coolify, necessario backup/restore reale prima del rollout. Flutter Web non ancora supportato.
+Test automatici T2/T3 per data-only, DST, doppio SQLite, outbox, Drift v4→v5 ed editor Forui. [Flutter CI 40100324302](https://github.com/andreadada/simple-notes/actions/runs/40100324302) PASS sul commit `5a0e6b6`. Il DB reale ha V7 e restore isolato verificato; capability API e hardware T4.2 ancora da provare. Flutter Web non supportato.
 
 ## Build
 ```bash
@@ -118,6 +118,6 @@ Modifica attività, modifica nota e scelta scadenza utilizzano ora `showFDialog`
 
 ## Organizzazione attività (Drift v4 storico; ora v5 nel codice)
 
-Liste con create/rename/delete nella sidebar Forui, priorità P1–P3, tag, sottotask e filtro/ricerca. Le operazioni locali vengono persistite in SQLite e sincronizzate con `entityType: list` per le liste e `entityType: task` per i metadati. **Richiede server con Flyway V6** prima di usare liste nuove. Nuova migrazione Drift v4, conservare il database locale. Documentazione e test: [task-organization.md](../../docs/task-organization.md) e `test/task_organization_test.dart`.
+Liste con create/rename/delete, priorità P1–P3, tag, sottotask, filtri e ricerca; SQLite/outbox e sync implementate. V6 già presente nel database reale (V1–V7 verificate); funzionalità sui due client aggiornati da collaudare.
 
 **T4.2:** versione Flutter `0.4.0+4` destinata al collaudo Windows/Android. Il menu avatar include `Verifica sincronizzazione` e la diagnostica read-only, i test e la procedura sono in [T4-DEVICE-SYNC.md](../../docs/T4-DEVICE-SYNC.md).

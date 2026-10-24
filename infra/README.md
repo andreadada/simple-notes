@@ -1,10 +1,12 @@
 # Backend — Coolify
 
+> **Stato reale 24/10/2026:** PostgreSQL `simplenotes` 17.11, Flyway V1–V7 riuscite, backup `simple-notes-20261024T132857Z-271921.dump` con SHA256 valido e restore isolato PASS. Copia offsite non effettuata per scelta dell'utente. Restano da verificare l'API autenticata (`taskDueSchema:1`) e il collaudo T4.2 Windows↔Android con Flutter `0.4.0+4`. Non ripetere backup, migrazioni o deploy automaticamente. [T4.2](../docs/T4-DEVICE-SYNC.md).
+
 ## T4 — Gate di rilascio sicuro (24/10/2026)
 
-**Strumenti e CI implementati; backup reale, restore reale, deploy Coolify e prove hardware ancora DA ESEGUIRE.** `infra/backup-postgres.sh` verifica container e schema prima del dump PostgreSQL custom + SHA256; `infra/verify-restore.sh` ripristina in container PostgreSQL 17 **senza rete**, interroga le tabelle e genera un receipt legato al digest del dump. `infra/t4-preflight.sh` rifiuta dump/receipt incoerenti, copia offsite non attestata, commit non approvato o tree sporco; **non avvia deploy**. `infra/t4-check-api.sh` verifica soltanto salute HTTPS e capability autenticata `taskDueSchema:1`.
+**Strumenti e CI implementati; inventario reale del DB, backup SHA256 e restore isolato PASS il 24/10/2026.** Flyway V7 è presente nel database. **Copia offsite non eseguita per scelta dell'utente; contratto API e prove T4.2 Windows↔Android ancora da verificare.** `infra/backup-postgres.sh` verifica container e schema prima del dump PostgreSQL custom + SHA256; `infra/verify-restore.sh` ripristina in container PostgreSQL 17 **senza rete**, interroga le tabelle e genera un receipt legato al digest del dump. `infra/t4-preflight.sh` rifiuta dump/receipt incoerenti, copia offsite non attestata, commit non approvato o tree sporco; **non avvia deploy**. `infra/t4-check-api.sh` verifica soltanto salute HTTPS e capability autenticata `taskDueSchema:1`.
 
-La CI Compose usa dump **sintetici** e verifica i rifiuti su backup alterati; la CI backend prova una migrazione V6→V7 PostgreSQL Testcontainers con task/note/liste/sync log esistenti. I gate T4 reali richiedono: backup PostgreSQL **esistente e offsite cifrato**, ripristino isolato dello stesso dump, preflight, deploy Flyway V7 in Coolify, health+capability, E2E Windows/Android offline/sync. Non distribuire né ripristinare sulla produzione durante una prova. [Runbook T4](../docs/T4-RELEASE-RUNBOOK.md) · [GitHub Actions](https://github.com/andreadada/simple-notes/actions).
+La CI Compose usa dump **sintetici** e verifica i rifiuti su backup alterati; la CI backend prova una migrazione V6→V7 PostgreSQL Testcontainers con task/note/liste/sync log esistenti. **Gate reali al 24/10:** PostgreSQL V7, backup SHA256 e restore isolato già verificati. Offsite non effettuata per scelta dell'utente e distinta dal collaudo T4.2. Il prossimo controllo è su API autenticata e Windows/Android E2E; per una release formale restano anche hardening/offsite e preflight. Non avviare un redeploy solo perché V7 è citata. Non distribuire né ripristinare sulla produzione durante una prova. [Runbook T4](../docs/T4-RELEASE-RUNBOOK.md) · [GitHub Actions](https://github.com/andreadada/simple-notes/actions).
 
 
 ## T4.1 — Read-only DB inspection e restore recente
@@ -18,7 +20,7 @@ EXPECTED_POSTGRES_DB='simplenotes' \
   bash infra/t4-inspect-db.sh
 ```
 
-**Passo successivo necessario, non eseguito qui:** copiare il dump reale in una destinazione cifrata offsite, eseguire il restore isolato e ottenere la ricevuta `.restore-ok`. Il gate `t4-preflight.sh` ora richiede una verifica di restore **recente (24 ore)**, controlla data UTC non futura e rifiuta ricevute scadute. Per finestre più lunghe è possibile `T4_MAX_RESTORE_AGE_HOURS` da 1 a 168; non usarlo per eludere il restore. Questi controlli sono verificati in CI con **dati sintetici**, non rappresentano la prova del VPS.
+**Stato attuale:** dump SHA256 e restore isolato con `.restore-ok` già riusciti. Offsite non effettuata per scelta; non ripetere automaticamente backup per T4.2. Il gate `t4-preflight.sh` ora richiede una verifica di restore **recente (24 ore)**, controlla data UTC non futura e rifiuta ricevute scadute. Per finestre più lunghe è possibile `T4_MAX_RESTORE_AGE_HOURS` da 1 a 168; non usarlo per eludere il restore. Questi controlli sono verificati in CI con **dati sintetici**, non rappresentano la prova del VPS.
 
 ## Coolify (scelta consigliata)
 - Repository: `andreadada/simple-notes`, branch `main`.
@@ -86,11 +88,11 @@ bash infra/verify-restore.sh /percorso/sicuro/backup/simple-notes-AAAA*.dump
 
 **Importante:** backup e restore-check **non scrivono nel DB originale**; il restore-check usa un container PostgreSQL 17 **temporaneo e isolato**, poi lo elimina. Sono stati testati automaticamente con dati sintetici in GitHub Actions ([Compose CI](https://github.com/andreadada/simple-notes/actions)). Occorre ancora testare il dump **reale** e conservarne una copia cifrata **fuori dal VPS** con policy di retention (il dump include dati personali). Le due operazioni sono da eseguire esplicitamente sul VPS, non sono un backup automatico già configurato.
 
-Dopo verifica backup, distribuire `main` da Coolify, verificare log Flyway V5 e `/actuator/health`. Se l'API non risponde, non modificare il database manualmente. Confronto conflitti Forui nel nuovo client richiede l'endpoint latest nel server aggiornato.
+**Storico, non ordine di redeploy:** V1–V7 già verificate sul DB reale; controllare health e capability API prima di qualsiasi aggiornamento motivato. Se l'API non risponde, non modificare il database manualmente. Confronto conflitti Forui nel nuovo client richiede l'endpoint latest nel server aggiornato.
 
 ## Nuove liste e metadati attività — Flyway V6 (23/10/2026)
 
-La nuova versione Flutter usa `entityType:list` e campi `listId/priority/tags/subtasks`. **Prima di installare/avviare questa versione su dati reali**, effettuare backup PostgreSQL verificato con i comandi precedenti, poi redeploy API da `main`. Controllare log Flyway `V5__sync_conflict_latest_index.sql` e `V6__task_organization.sql`, health HTTPS e login. La migrazione V6 aggiunge soltanto colonne/versioni/indice, preservando dati storici. Non rinominare/azzerare volumi o PostgreSQL. I client non aggiornati possono non preservare tutti i metadati nuovi quando modificano una copia vecchia: aggiornare Windows e Android entrambi. Consultare [organizzazione attività](../docs/task-organization.md).
+La nuova versione Flutter usa `entityType:list` e campi `listId/priority/tags/subtasks`. **Al 24/10:** backup/restore reale e V1–V7 già verificati; controllare prima API, senza redeploy automatico. Controllare log Flyway `V5__sync_conflict_latest_index.sql` e `V6__task_organization.sql`, health HTTPS e login. La migrazione V6 aggiunge soltanto colonne/versioni/indice, preservando dati storici. Non rinominare/azzerare volumi o PostgreSQL. I client non aggiornati possono non preservare tutti i metadati nuovi quando modificano una copia vecchia: aggiornare Windows e Android entrambi. Consultare [organizzazione attività](../docs/task-organization.md).
 
 ## Promemoria comando T4
 

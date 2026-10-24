@@ -63,12 +63,11 @@ class _InlineQuickAddState extends State<InlineQuickAdd> {
         isDense: true,
         prefixIcon: const Icon(Icons.add, size: 18),
         filled: false,
+        fillColor: Colors.transparent,
         contentPadding: const EdgeInsets.symmetric(vertical: 9),
-        border: InputBorder.none,
-        enabledBorder: InputBorder.none,
-        focusedBorder: const UnderlineInputBorder(
-          borderSide: BorderSide(color: NotesPalette.accent),
-        ),
+        border: NotesTheme.inlineBorder,
+        enabledBorder: NotesTheme.inlineBorder,
+        focusedBorder: NotesTheme.inlineFocusedBorder,
       ),
     )),
     FButton.icon(

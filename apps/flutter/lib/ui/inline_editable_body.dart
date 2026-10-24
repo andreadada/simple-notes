@@ -90,7 +90,26 @@ class _InlineEditableBodyState extends State<InlineEditableBody> {
   }
 
   @override
-  Widget build(BuildContext context) => Focus(
+  Widget build(BuildContext context) => LayoutBuilder(
+    builder: (context, constraints) {
+      // Align the underline to the text, not to the whole detail panel.
+      final maxWidth = constraints.maxWidth.isFinite
+          ? constraints.maxWidth
+          : MediaQuery.sizeOf(context).width * 0.75;
+      final label = _controller.text.isEmpty ? widget.hint : _controller.text;
+      final painter = TextPainter(
+        text: TextSpan(text: label,
+          style: const TextStyle(fontSize: 14, height: 1.45)),
+        textDirection: Directionality.of(context),
+        textScaler: MediaQuery.textScalerOf(context),
+      )..layout(maxWidth: maxWidth);
+      final minWidth = maxWidth < 120 ? maxWidth : 120.0;
+      final width = (painter.maxIntrinsicWidth + 22)
+          .clamp(minWidth, maxWidth).toDouble();
+      painter.dispose();
+      return SizedBox(
+        width: width,
+        child: Focus(
     onKeyEvent: (node, event) {
       if (event is! KeyDownEvent) return KeyEventResult.ignored;
       if (event.logicalKey == LogicalKeyboardKey.escape) {
@@ -119,18 +138,22 @@ class _InlineEditableBodyState extends State<InlineEditableBody> {
         style: const TextStyle(fontSize: 14, height: 1.45),
         cursorColor: NotesPalette.accent,
         onTapOutside: (_) => _focus.unfocus(),
+        onChanged: (_) => setState(() {}),
         decoration: InputDecoration(
           hintText: widget.hint,
           isDense: true,
+          filled: false,
+          fillColor: Colors.transparent,
           counterText: '',
           contentPadding: const EdgeInsets.symmetric(vertical: 7),
-          border: InputBorder.none,
-          enabledBorder: InputBorder.none,
-          focusedBorder: const UnderlineInputBorder(
-            borderSide: BorderSide(color: NotesPalette.accent, width: 1.5),
-          ),
+          border: NotesTheme.inlineBorder,
+          enabledBorder: NotesTheme.inlineBorder,
+          focusedBorder: NotesTheme.inlineFocusedBorder,
         ),
       ),
     ),
+      ),
+    );
+    },
   );
 }

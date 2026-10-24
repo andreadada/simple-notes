@@ -149,14 +149,13 @@ class _InlineEditableTitleState extends State<InlineEditableTitle> {
               onTapOutside: (_) => _focusNode.unfocus(),
               decoration: InputDecoration(
                 isDense: true,
+                filled: false,
+                fillColor: Colors.transparent,
                 hintText: widget.hint,
                 contentPadding: const EdgeInsets.symmetric(vertical: 3),
-                border: InputBorder.none,
-                enabledBorder: InputBorder.none,
-                focusedBorder: const UnderlineInputBorder(
-                  borderSide: BorderSide(
-                    color: NotesPalette.accent, width: 1.5),
-                ),
+                border: NotesTheme.inlineBorder,
+                enabledBorder: NotesTheme.inlineBorder,
+                focusedBorder: NotesTheme.inlineFocusedBorder,
               ),
             ),
           ),

@@ -12,9 +12,17 @@ abstract final class NotesPalette {
   static const foreground = Color(0xFFF5F5F5);
   static const secondaryText = Color(0xFFA0A0A0);
   static const border = Color(0xFF343434);
+  static const inlineUnderline = Color(0xFF676C76);
 }
 
 abstract final class NotesTheme {
+  static const inlineBorder = UnderlineInputBorder(
+    borderSide: BorderSide(color: NotesPalette.inlineUnderline, width: 1),
+  );
+  static const inlineFocusedBorder = UnderlineInputBorder(
+    borderSide: BorderSide(color: NotesPalette.accent, width: 1.5),
+  );
+
   /// Touch targets on Android; compact controls on Windows/macOS/Linux.
   static FThemeData forPlatform(TargetPlatform platform) {
     final touch = switch (platform) {

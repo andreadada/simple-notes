@@ -794,8 +794,7 @@ class _NotesHomeState extends ConsumerState<NotesHome> {
                 FButton.icon(
                   key: Key('remove-subtask-${item.id}'),
                   variant: FButtonVariant.ghost,
-                  onPress: () => ref.read(localStoreProvider.notifier)
-                      .removeSubtask(task.id, item.id),
+                  onPress: () => confirmSubtaskDeletion(task, item),
                   child: const Icon(Icons.close, size: 16),
                 ),
               ]),
@@ -914,13 +913,40 @@ class _NotesHomeState extends ConsumerState<NotesHome> {
     );
   }
 
+  void confirmSubtaskDeletion(LocalTask task, LocalSubtask subtask) {
+    showFDialog<void>(
+      context: context,
+      builder: (ctx, style, animation) => NotesDialog(
+        style: style, animation: animation,
+        title: const Text('Eliminare sottotask?'),
+        body: Text('Vuoi eliminare "${subtask.title}"?'),
+        actions: [
+          FButton(
+            variant: FButtonVariant.ghost,
+            onPress: () => Navigator.pop(ctx),
+            child: const Text('Annulla'),
+          ),
+          FButton(
+            key: const Key('confirm-delete-subtask'),
+            onPress: () async {
+              await ref.read(localStoreProvider.notifier)
+                  .removeSubtask(task.id, subtask.id);
+              if (ctx.mounted) Navigator.pop(ctx);
+            },
+            child: const Text('Elimina'),
+          ),
+        ],
+      ),
+    );
+  }
+
   void confirmTaskDeletion(LocalTask task) {
     showFDialog<void>(
       context: context,
       builder: (ctx, style, animation) => NotesDialog(
         style: style, animation: animation,
         title: const Text('Eliminare attività?'),
-        body: Text('L’attività "${task.title}" verrà spostata nel cestino sincronizzato.'),
+        body: Text('Eliminare "${task.title}"? La modifica sarà sincronizzata.'),
         actions: [
           FButton(
             variant: FButtonVariant.ghost,

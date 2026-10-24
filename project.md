@@ -140,6 +140,14 @@ Riferimento tecnico: `apps/flutter/lib/ui/notes_theme.dart` (`InlineTextMetrics.
 - [ ] Scadenze: primo editor opzionale HH:mm implementato con campo `dueAt` esistente; **ancora pendenti** modello date-only distinto, timezone IANA/DST e test reali. A seguire ricorrenze e notifiche native.
 - [ ] Correggere residui di documentazione storica prima dei rilasci, preservando attestazioni e prove precedenti.
 
+## T2 — Flutter e SQLite v5 (implementato nel repository, non distribuito)
+
+- **Modello canonico**: `apps/flutter/lib/data/task_due.dart` distingue `none/date/datetime/legacy`. Una data senza orario è una stringa civile ISO, mai una mezzanotte UTC inventata; la modalità `legacy` conserva lo storico senza inferenze.
+- **Persistenza**: `AppDatabase` usa Drift **schemaVersion 5** con 5 colonne aggiuntive (kind, date, time, timezone, offset) e backfill `due_at != NULL → legacy`, altrimenti `none`. Le tabelle sync/outbox, il cursore e i remoteVersion non vengono cancellati.
+- **Sincronizzazione**: i task moderni inviano l'oggetto `due` al backend; prima di inviare `date/datetime` il client controlla `GET /api/v1/capabilities` autenticato e richiede `taskDueSchema=1`. Se assente conserva la mutazione offline; **HTTP 426** non è trattato come un normale 409, quindi non viene ribasato e l'outbox resta intatta. I payload legacy già accodati sono mantenuti.
+- **Test creati**: `task_due_test.dart`, `task_due_sync_test.dart`, `task_due_migration_test.dart`; includono due database simulati, fold DST, mezzanotte esplicita, server obsoleto, 426, e upgrade di SQLite v4 popolato con versioni e operazioni in coda. Verificare l'esito CI effettivo prima di considerarli convalidati.
+- **Perimetro**: T2 è codice e test, **non** rilascio. T3 editor Forui solo-giorno/ora e timezone IANA ancora da completare; notifiche/ricorrenze successive. Backend Flyway V7 ancora **non deployato su Coolify**; prima del rollout completare il backup PostgreSQL e restore isolato. Il runtime Flutter Web resta non supportato.
+
 ## Prossimo incremento pianificato — date-only e timezone (23 ottobre 2026)
 
 Specifica **solo progettuale**: [docs/due-dates-timezones.md](docs/due-dates-timezones.md). L'editor HH:mm esistente ha CI Flutter verde; NON distingue ancora mezzanotte esplicita da «solo giorno».
@@ -147,7 +155,7 @@ Specifica **solo progettuale**: [docs/due-dates-timezones.md](docs/due-dates-tim
 - [ ] T0: backup reale, ripristino isolato, copia offsite, Coolify V5+V6 e test E2E del P0 attuale.
 - [x] T1 backend: **codice, test e bootJar verificati nella [CI 40019181083](https://github.com/andreadada/simple-notes/actions/runs/40019181083)** (commit `1bafec0`), Flyway V7/capabilities/protezione 426. **Non deployato.**
 - [ ] Deploy T1 backend solo dopo backup/restore Coolify verificati; capability e protezione 426 lato Flutter in T2 ancora da implementare.
-- [ ] T2: value object Flutter `TaskDue`, Drift v5 e migrazione senza perdita di SQLite/outbox, sync multi-device.
+- [ ] T2: **implementato nel codice**, con value object Flutter `TaskDue`, Drift v5, migrazione SQLite v4→v5, sync capability/426 e test multi-device; convalidare CI e prove fisiche.
 - [ ] T3: UI Forui solo-giorno/data+ora/fuso, scelta DST, filtri Oggi/7 giorni, test widget.
 - [ ] T4: CI, backend-first deploy sicuro ed E2E PC↔Android; solo dopo ricorrenze e notifiche.
 
@@ -255,3 +263,5 @@ Esempio: `2026-10-21 14:20 CEST | commit abc1234 | Aggiunto modulo promemoria e 
 - 2026-10-24 | fix(ui) | Correzione del parent tight/Expanded: Align libera la larghezza interna del TextField nonostante il contenitore grande; verifica su TextField effettivo, non wrapper. Commit `5f14fce` successivo allo stile `7303d45`. Verifiche CI e native separate.
 
 - 2026-10-24 | fix(ui) | Commit `e55c87b`: la sottolineatura è ora disegnata separatamente dal bordo interno Material con `InlineGlyphUnderline`, seguendo i glifi (anche quando `InputDecorator` impone larghezza minima). Focus blu, default grigio; input border nativo invisibile. Test dedicati su `inline-glyph-underline`; UI web runtime non ancora portato.
+
+- 2026-10-24 | T2 Flutter | TaskDue, Drift v5, sync capability e HTTP 426 senza perdita outbox, test unit/sync/migrazione SQLite popolata. Nessun deploy Coolify; T3 UX e verifiche hardware pendenti.

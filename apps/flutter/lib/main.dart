@@ -47,10 +47,15 @@ class SimpleNotesApp extends StatelessWidget {
           useMaterial3: true,
           scaffoldBackgroundColor: const Color(0xff181818),
           cardColor: const Color(0xff252525),
+          // The Material bridge must not put grey backgrounds behind
+          // editable text. Forui controls keep their own distinct styling.
           inputDecorationTheme: const InputDecorationTheme(
-            border: OutlineInputBorder(borderSide: BorderSide.none),
-            filled: true, fillColor: Color(0xff242424),
-            contentPadding: EdgeInsets.symmetric(horizontal: 14, vertical: 13),
+            filled: false,
+            fillColor: Colors.transparent,
+            border: NotesTheme.inlineBorder,
+            enabledBorder: NotesTheme.inlineBorder,
+            focusedBorder: NotesTheme.inlineFocusedBorder,
+            contentPadding: EdgeInsets.symmetric(vertical: 8),
           ),
         ),
         // Forui is our primary widget system. Material remains only as a

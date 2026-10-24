@@ -13,7 +13,8 @@
 
 **Inline-edit first:** per titoli, nomi, descrizioni brevi e altri attributi testuali già visibili, rendere il **testo direttamente modificabile in loco** invece di aggiungere pulsanti `Rinomina`/`Modifica` che aprono modali dedicati. L'utente deve poter cliccare sul testo, digitare e continuare senza attraversare un secondo flusso.
 
-- In modalità lettura, l'input deve somigliare alla tipografia già usata, senza box o bordi superflui; al focus mostrare un indicatore sottile. La larghezza deve seguire il testo, senza occupare tutta la riga quando il titolo è corto.
+- **Nessuno sfondo grigio negli input inline:** testo direttamente sulla superficie; una sottolineatura sottile neutra sotto i caratteri segnala che il valore è modificabile, blu al focus. L'underline segue il testo quando possibile; niente barre grigie né rettangoli a larghezza piena.
+- I widget Material di transizione usano `NotesTheme.inlineBorder` e `inlineFocusedBorder` con `InputDecoration(filled:false, fillColor:Colors.transparent)`; il tema Material generale è anch'esso privo di riempimento. FTextField Forui nei dialog complessi/ricerca conserva lo stile Forui dedicato.
 - Su campi testuali brevi: **Invio / perdita focus → salva**; **Esc → annulla**; se vuoto o invalido ripristinare l'ultimo valore valido. Mantenere selezione, keyboard focus, semantics, supporto touch, feedback errore.
 - Il salvataggio deve andare in SQLite/outbox e poi nella sync; non manipolare soltanto lo stato visuale. Non perdere bozze durante refresh remoto mentre l'utente scrive.
 - Usare `FDialog`/form Forui per dati complessi o multi-campo, date, conferme esplicite e operazioni potenzialmente distruttive. Non fare inline di qualsiasi campo indiscriminatamente: il principio vale **la maggior parte delle volte** dove il risultato rimane comprensibile.

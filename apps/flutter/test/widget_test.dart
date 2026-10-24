@@ -2,6 +2,9 @@ import 'package:drift/native.dart';
 import 'package:flutter/material.dart';
 import 'package:forui/forui.dart';
 import 'package:simple_notes/ui/notes_theme.dart';
+import 'package:simple_notes/ui/inline_editable_title.dart';
+import 'package:simple_notes/ui/inline_editable_body.dart';
+import 'package:simple_notes/ui/inline_quick_add.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -11,6 +14,52 @@ import 'package:simple_notes/data/local_store.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
+
+  testWidgets('Inline fields are transparent and show an underline',
+      (tester) async {
+    await tester.pumpWidget(MaterialApp(
+      theme: ThemeData(
+        brightness: Brightness.dark,
+        inputDecorationTheme: const InputDecorationTheme(
+          filled: true, fillColor: Color(0xFF242424),
+        ),
+      ),
+      home: FTheme(
+        data: NotesTheme.forPlatform(TargetPlatform.windows),
+        child: Scaffold(body: Column(children: [
+          InlineEditableTitle(
+            value: 'Attività',
+            style: const TextStyle(fontSize: 18),
+            semanticsLabel: 'Titolo',
+            onSave: (value) async {},
+          ),
+          InlineEditableBody(
+            value: 'Una descrizione',
+            semanticsLabel: 'Descrizione',
+            onSave: (value) async {},
+          ),
+          InlineQuickAdd(onAdd: (value) async {}),
+        ])),
+      ),
+    ));
+    final titleField = tester.widget<TextField>(find.descendant(
+      of: find.byType(InlineEditableTitle),
+      matching: find.byType(TextField),
+    ));
+    final bodyField = tester.widget<TextField>(find.descendant(
+      of: find.byType(InlineEditableBody),
+      matching: find.byType(TextField),
+    ));
+    final quickField = tester.widget<TextField>(
+        find.byKey(const Key('inline-quick-add-input')));
+    for (final field in [titleField, bodyField, quickField]) {
+      final decoration = field.decoration!;
+      expect(decoration.filled, isFalse);
+      expect(decoration.fillColor, Colors.transparent);
+      expect(decoration.enabledBorder, isA<UnderlineInputBorder>());
+      expect(decoration.focusedBorder, isA<UnderlineInputBorder>());
+    }
+  });
 
   testWidgets('Creates task and persists it in SQLite', (tester) async {
     final database = AppDatabase(NativeDatabase.memory());

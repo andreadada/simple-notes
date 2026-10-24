@@ -44,6 +44,7 @@
 
 - Esempi prioritari: **titolo della lista nell'header**, titolo task, titolo nota, descrizione breve e altre proprietà testuali semplici. Un click/tap sul valore attiva cursore e selezione senza cambiare pagina.
 - Il componente inline deve avere **stile coerente con il testo originale**, larghezza legata al contenuto, focus visibile ma leggero, semantica accessibile e comportamento adeguato a mouse, tastiera e touch.
+- **Stile input inline obbligatorio:** nessun rettangolo o riempimento grigio dietro i campi; testo direttamente sulla superficie della pagina/card, con **solo una sottolineatura sottile visibile anche a riposo**, che diventa blu accent al focus. L'underline deve seguire la larghezza del contenuto (titoli, descrizioni brevi, note) per evitare barre a larghezza piena. Applicare il principio in tutte le schermate Flutter desktop/mobile e nella futura UI web, senza compromettere contrasto e accessibilità.
 - Per campi brevi, **Invio o perdita del focus salva**; **Esc annulla** e ripristina il testo precedente. Non salvare stringhe vuote, rispettare limiti e mostrare errori non distruttivi.
 - Ogni modifica deve passare per gli stessi metodi di persistenza offline-first e outbox/sync, **mai essere solo un cambiamento grafico**. Non creare stati in cui il testo appare aggiornato ma non è stato salvato.
 - Usare form/dialog Forui quando servono **più campi correlati, conferme, validazioni complesse o azioni distruttive**, non per una semplice rinomina. Preferire un controllo mirato (es. calendario, selettore) quando il dato non è testo libero.

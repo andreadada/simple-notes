@@ -76,6 +76,39 @@ void main() {
     expect(getCount, 1);
   });
 
+
+  test('Incomplete capability rejects typed due before upload and keeps outbox',
+      () async {
+    var uploads = 0;
+    final client = MockClient((request) async {
+      if (request.method == 'GET' &&
+          request.url.path == '/api/v1/capabilities') {
+        // Schema number alone must not authorize modern writes.
+        return http.Response('{"taskDueSchema":1,"taskDueKinds":["date"]}', 200);
+      }
+      if (request.method == 'POST') uploads++;
+      return http.Response('{}', 404);
+    });
+    final db = AppDatabase(NativeDatabase.memory());
+    final container = device(db, client);
+    addTearDown(() async {
+      container.dispose();
+      client.close();
+      await db.close();
+    });
+
+    await container.read(localStoreProvider.notifier).addTask(
+        'Keep typed due offline', due: TaskDue.dateOnly('2026-10-27'));
+    final diagnosis =
+        await container.read(cloudSyncProvider.notifier).inspectSync();
+    expect(diagnosis.backendStatus, 'outdated');
+    await container.read(cloudSyncProvider.notifier).synchronize();
+    expect(container.read(cloudSyncProvider).upgradeRequired, isTrue);
+    expect(await db.pendingCount(), 1);
+    expect(await db.setting('lastSyncSuccessUtc'), isNull);
+    expect(uploads, 0);
+  });
+
   test('HTTP 426 retains pending edits and signals user visibly',
       () async {
     final client = MockClient((request) async {

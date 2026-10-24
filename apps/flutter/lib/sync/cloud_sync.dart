@@ -127,6 +127,17 @@ class CloudSync extends StateNotifier<SyncState> {
     return jsonDecode(response.body) as Map<String, dynamic>;
   }
 
+  /// Require the complete advertised contract, not just a matching schema
+  /// number. An incomplete server must never receive date/datetime writes.
+  bool _typedDueContractMatches(Map<String, dynamic> capability) {
+    final kinds = capability['taskDueKinds'];
+    return capability['taskDueSchema'] == 1 &&
+        capability['requiresExplicitDueForModernTasks'] == true &&
+        kinds is List &&
+        const {'none', 'date', 'datetime', 'legacy'}
+            .every((kind) => kinds.contains(kind));
+  }
+
   /// The old Coolify deployment may not yet expose /capabilities. A 404
   /// means modern date-only/timed writes must remain safely in the outbox.
   Future<bool> _supportsTypedDue() async {
@@ -140,7 +151,7 @@ class CloudSync extends StateNotifier<SyncState> {
       throw StateError('Capacità API non verificabili (HTTP ${result.statusCode})');
     }
     final capability = jsonDecode(result.body) as Map<String, dynamic>;
-    return capability['taskDueSchema'] == 1;
+    return _typedDueContractMatches(capability);
   }
 
   /// T4: passive, read-only diagnostics for real Windows/Android acceptance.
@@ -176,11 +187,7 @@ class CloudSync extends StateNotifier<SyncState> {
     } else {
       try {
         final result = await _request('GET', '/capabilities');
-        backend = result['taskDueSchema'] == 1 &&
-            result['requiresExplicitDueForModernTasks'] == true &&
-            result['taskDueKinds'] is List &&
-            {'none', 'date', 'datetime', 'legacy'}.every(
-              (kind) => (result['taskDueKinds'] as List).contains(kind))
+        backend = _typedDueContractMatches(result)
             ? 'compatible' : 'outdated';
       } on SyncUpgradeRequired {
         backend = 'outdated';

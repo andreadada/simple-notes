@@ -1,4 +1,5 @@
 # Environment and credentials
+/.t4-device-build.json
 .env
 .env.*
 !.env.example

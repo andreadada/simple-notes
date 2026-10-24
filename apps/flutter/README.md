@@ -121,3 +121,5 @@ Modifica attività, modifica nota e scelta scadenza utilizzano ora `showFDialog`
 Liste con create/rename/delete, priorità P1–P3, tag, sottotask, filtri e ricerca; SQLite/outbox e sync implementate. V6 già presente nel database reale (V1–V7 verificate); funzionalità sui due client aggiornati da collaudare.
 
 **T4.2:** versione Flutter `0.4.0+4` destinata al collaudo Windows/Android. Il menu avatar include `Verifica sincronizzazione` e la diagnostica read-only, i test e la procedura sono in [T4-DEVICE-SYNC.md](../../docs/T4-DEVICE-SYNC.md).
+
+**T4.2 build `0.4.1+5`:** per build Windows + Android dalla stessa revisione senza esporre ID OAuth nei commit usare [`tools/t4-build-devices.ps1`](../../tools/t4-build-devices.ps1) e la procedura in [`docs/T4-DEVICE-SYNC.md`](../../docs/T4-DEVICE-SYNC.md). La verifica completa di `taskDueSchema:1` prima dell'upload delle nuove scadenze preserva l'outbox con server parzialmente compatibili. Nessuna installazione o prova hardware è stata eseguita dalla CI.

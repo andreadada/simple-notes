@@ -1,6 +1,6 @@
 # T4.2 — Verifica reale della sincronizzazione Windows ↔ Android
 
-**Stato:** strumenti diagnostici implementati nel client Flutter. Prova fisica **non ancora eseguita** da questa chat.
+**Stato:** strumenti diagnostici e build locali riproducibili implementati nel client Flutter. Prova fisica **non ancora eseguita** da questa chat.
 
 ## Evidenze già raccolte dall'utente (24 ottobre 2026)
 
@@ -26,9 +26,26 @@ Se appare **Versione backend incompatibile** o il client riceve HTTP **426**, **
 La data di ultima sincronizzazione viene registrata **solo dopo upload e pull entrambi riusciti**. Una GET diagnostica non aggiorna mai quel valore. In caso di 426 la UI segnala l'upgrade e sospende il retry automatico fino a un comando manuale o a una nuova sessione; le modifiche non vengono scartate.
 
 
-**Build di collaudo T4.2:** `0.4.0+4` (versione Flutter in `pubspec.yaml`); installare sul PC e su Android una build ottenuta dallo stesso commit. L'APK CI è di test e non incorpora automaticamente i parametri OAuth; non disinstallare la vecchia applicazione per aggiornare.
+**Build precedente T4.2:** `0.4.0+4`; **nuova build di collaudo:** `0.4.1+5` (versione Flutter in `pubspec.yaml`); installare sul PC e su Android una build ottenuta dallo stesso commit. L'APK CI è di test e non incorpora automaticamente i parametri OAuth; non disinstallare la vecchia applicazione per aggiornare.
 
-## Compilare i client con la vera configurazione cloud
+## Build T4.2 in un comando (Windows, senza reinstallazione)
+
+È disponibile `tools/t4-build-devices.ps1`. Il comando genera **APK debug Android e ZIP Windows dalla stessa revisione Git** con i client ID Google già in uso, annota SHA256 e commit e **non installa né cancella nulla**. La configurazione locale è esclusa da Git.
+
+Dal terminale PowerShell nella radice del progetto:
+
+```powershell
+Copy-Item tools/t4-device-build.example.json .t4-device-build.json
+# Compilare i due ID Google OAuth pubblici nel JSON locale, senza Client Secret.
+./tools/t4-build-devices.ps1 -ValidateOnly
+./tools/t4-build-devices.ps1 -Target both
+```
+
+I risultati sono in `build/t4-device-acceptance/` (APK, ZIP Windows e `MANIFEST.txt`). Si può usare `-Target android` o `-Target windows`. **Non è un installer**: non esegue `adb install`, `flutter run`, `pg_restore` o redeploy. La build Android debug usa la **keystore locale**; se la firma dell'app già installata è diversa, un normale aggiornamento sarà rifiutato. In quel caso **non disinstallare l'app**: conservare SQLite/outbox e usare una build con la firma corretta. Una build CI generica può avere una firma diversa da quella locale.
+
+La versione di collaudo dopo l'hardening è **Flutter `0.4.1+5`**. Annotare lo SHA contenuto nel manifest e verificare sul secondo dispositivo lo stesso commit. La CI automatica controlla anche la struttura del comando senza usare credenziali reali. I test reali T4.2 restano indispensabili.
+
+## Compilare i client con la vera configurazione cloud (alternativa manuale)
 
 Nella PowerShell del PC, in `apps/flutter` della repository aggiornata:
 

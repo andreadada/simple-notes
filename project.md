@@ -1,5 +1,7 @@
 # Simple Notes — Progetto e roadmap
 
+> **Incremento in verifica (26/10/2026, branch `feature/p1-7-windows-msix-reminders`):** Flutter `0.12.0+14` aggiunge notifiche Windows solo con identità MSIX (EXE/ZIP escluso), opt-in locale e annullamento tramite ledger; configurazione pacchetto MSIX e job CI di packaging. **Non mergiato, non distribuito, CI e test Windows reali ancora da verificare**. Lo stato su `main` resta P1.7 Android `0.11.0+13`; Coolify non modificato. Vedere [specifica Windows](docs/P1-WINDOWS-MSIX.md).
+
 <!-- CURRENT-STATUS-REF -->
 > **Stato del codice 25/10/2026:** P1.1–P1.6 e P1.7 Android integrate su `main` (Flutter `0.11.0+13`, Drift V8, Flyway V10). P1.7 Android ha opt-in, permessi e scheduler locale inexact, **non collaudato su telefono reale**; Windows non notifica senza MSIX. Ultimo server Coolify verificato V8; V9/V10 e batch E2E non attestati. **Fonte unica:** [docs/CURRENT-STATUS.md](docs/CURRENT-STATUS.md).
 
@@ -21,7 +23,7 @@
 - [ ] Distinguere layout Windows e Android; testare accessibilità, ridimensionamento e dark/light.
 - [x] **Design rule inline-edit first:** se un titolo/nome/attributo semplice è già visibile, renderlo editabile sul posto, senza bottone/modale Rinomina. Invio/blur salva, Esc annulla; validazione e SQLite/outbox sempre obbligatori. Eccezioni per form complessi o distruttivi.
 - [x] **Design rule larghezza esatta:** testo senza sfondo, sottolineatura neutra solo larga quanto valore/placeholder (non il contenitore; ~1px per cursore), blu al focus, placeholder semitrasparente (~72%). Implementazione condivisa `InlineTextMetrics.fieldWidth` in `notes_theme.dart`, utilizzata da titolo, descrizione, note, tag, sottotask e input task rapido; vedi `design.md` / `docs/ui-forui.md`. Il codice è nel commit `7303d45`; CI e test real-device da registrare separatamente.
-- [ ] **Completamento promemoria:** fusi IANA/DST e ricorrenze sono implementati nel codice (T3/P1.6); restano deduplicazione e delivery nativa P1.7.
+- [x] **Fondamenta promemoria:** fusi IANA/DST, ricorrenze, deduplicazione e delivery Android P1.7 implementate; prove hardware ancora pendenti. Windows MSIX sviluppato nel branch P1.7 Windows, CI e installazione reali da verificare.
 - [ ] Eseguire test unitari, integrazione, offline/online e ripristino backup prima dei rilasci.
 - [ ] Aggiornare **Edit Timespan** in fondo ad ogni commit che modifica il progetto.
 
@@ -285,3 +287,5 @@ Esempio: `2026-10-21 14:20 CEST | commit abc1234 | Aggiunto modulo promemoria e 
 - 2026-10-25 | feat(p1.4–p1.6) | PR #3–#5 fuse su main: multi-blocco Flyway V9/Drift V7, pianificazione rapida, ricorrenze Flyway V10/Drift V8, Flutter 0.10. CI verdi; server verificato soltanto a V8 e collaudo hardware non attestato.
 - 2026-10-25 | feat(p1.7) | PR #6 (merge `df40b93e`): Flutter 0.11.0+13, planner promemoria, ledger e reconciler, opt-in Android con permessi e alarm inexact, cancellazione prima del logout, receiver reboot. CI [40231569864](https://github.com/andreadada/simple-notes/actions/runs/40231569864) verde su analyze/test, Android JDK17/21 e Windows release. Windows reminder disabilitati fino a MSIX; nessun E2E fisico o deploy.
 - 2026-10-25 | docs(p1.7) | Allineati i 31 file Markdown, `CURRENT-STATUS.md` e runbook V10: distinguere codice, CI e distribuzione reale; prossimo gate Windows MSIX e Android E2E finale. Nessun reset o deploy.
+
+- 2026-10-26 | feat(p1.7-windows) | Branch Windows MSIX: opt-in limitato a package identity, scheduler/ledger condiviso con Android, packaging MSIX CI; nessun dato cancellato, nessun deploy, verifica CI e test Windows reali ancora aperti.

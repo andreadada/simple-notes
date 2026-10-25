@@ -171,7 +171,7 @@ class _InteractiveBlockState extends State<_InteractiveBlock> {
       );
     }
     return Draggable<CalendarBlockDrag>(
-      data: CalendarBlockDrag(widget.geometry.task.id),
+      data: CalendarBlockDrag(widget.geometry.task.id, widget.geometry.slot.id),
       feedback: feedback, childWhenDragging: Opacity(opacity: 0.4, child: icon),
       child: icon,
     );

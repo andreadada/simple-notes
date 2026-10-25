@@ -1,52 +1,8 @@
 # Delta Sync v1 (P0 in sviluppo)
 
-## Stato P1.4 dopo il merge — 25/10/2026
+<!-- CURRENT-STATUS-REF -->
+> **Stato verificabile:** P1.5 è integrata su `main` (Flutter 0.9, backend Flyway V9 nel codice); P1.6 ricorrenze su branch (V10/Drift V8), non distribuita. Ultima VPS controllata: V8. Per roadmap, versioni e gate aggiornati leggere [CURRENT-STATUS.md](CURRENT-STATUS.md). Le sezioni più vecchie mantengono valore storico/architetturale e non attestano deploy.
 
-**P1.4 è integrata su `main`** (PR #3, merge `ab4cd441`, Flutter `0.8.0+10`, Flyway **V9** e Drift **V7**). Backend, Flutter e Compose CI della PR sono **verdi**. L'installazione effettiva sui dispositivi e la migrazione Flyway V9 sulla VPS **non sono state verificate**; non confondere il merge con il deploy. Le descrizioni sotto etichettate «branch in sviluppo» si riferiscono allo stato storico precedente al merge. Collezioni multi-blocco, editor e riepilogo focus sono documentati in [P1-MULTI-BLOCKS.md](P1-MULTI-BLOCKS.md). **Niente reset né modifiche ai dati reali da questa operazione.**
-
-
-## P1.4 — Multi-block e riepilogo focus (25/10/2026)
-
-**Branch in sviluppo `feature/p1-4-multi-blocks-batch`, NON ancora su `main`, NON deployato su Coolify.** Flutter `0.8.0+10`; backend Flyway V9, Drift V7, fino a 12 slot per attività con ID stabili; CRUD/pannello Forui, copia slot, drag mirato e riepilogo pianificate/completate. Compatibilità protetta con `timeBlocksSchema:1` / 426 su client V8 incapaci di salvare il multi-block. Il server attualmente installato dall'utente rimane Flyway V8 e il client effettivo non è stato aggiornato a V0.8. Niente reset/dati persi e **collaudo dispositivi rimandato a fine batch**. [Specifiche](P1-MULTI-BLOCKS.md).
-
-
-> **Stato reale 24/10/2026:** PostgreSQL `simplenotes` 17.11, Flyway V1–V7 riuscite, backup `simple-notes-20261024T132857Z-271921.dump` con SHA256 valido e restore isolato PASS. Copia offsite non effettuata per scelta dell'utente. Restano da verificare l'API autenticata (`taskDueSchema:1`) e il collaudo T4.2 Windows↔Android con Flutter `0.4.0+4`. Non ripetere backup, migrazioni o deploy automaticamente. [T4.2](T4-DEVICE-SYNC.md).
-
-**Autenticazione:** Bearer JWT Simple Notes.
-
-### Write
-`POST /api/v1/sync/apply`
-
-```json
-{
-  "operationId": "UUID-stabile-per-retry",
-  "entityType": "task",
-  "entityId": "UUID-scelto-dal-client",
-  "action": "upsert",
-  "expectedVersion": null,
-  "payload": {"title":"Comprare pane", "completed":false, "dueAt":null}
-}
-```
-
-Per note: `entityType:note`, payload `{"title":"...", "body":"..."}`.
-Per cancellare: `action:delete`, `expectedVersion` dalla versione remota nota.
-
-Risposta `{"operationId":"...","version":0,"changeId":1}`. Retry con lo stesso `operationId` non duplica l'operazione. `409` per conflitto di versione. Non usare endpoint REST legacy per sync.
-
-### Read
-`GET /api/v1/sync/changes?cursor=0&limit=100` (limit 1..200).
-Ritorna `changes[]` con `changeId,entityType,entityId,payload,deleted,version`, più `nextCursor,hasMore`.
-
-**Concorrenza:** advisory lock PostgreSQL per account serializza le mutazioni sync e garantisce ordine stabile degli identificativi di change per singolo utente. Tutte le scritture devono passare da questo percorso affinché il delta sia completo.
-
-**Stato attuale:** il client Flutter implementa invio sequenziale dell'outbox, ack e pull delta per cursor in `apps/flutter/lib/sync/cloud_sync.dart`; `app_database.dart` gestisce owner e versioni locali. È **auto-sync foreground**, con sync manuale di fallback: l'utente ha confermato note PC↔Android e attività Android→Windows. I 409 preservano l'outbox; ora esiste una UI di risoluzione Forui, ma va provata su due dispositivi reali. Rimangono integrazione endpoint REST legacy/change log, conflitti su cancellazioni, rebootstrap, background e compattazione.
-
-### Diagnostica note multi-device (23/10/2026)
-
-- Verificare che **entrambi** i client siano aggiornati e autenticati con lo stesso ID utente dell'API, non solo con la stessa etichetta visualizzata.
-- Per una nota con titolo vuoto, il backend accetta il valore e la UI mostra `Senza titolo`: prima la richiesta poteva restituire HTTP 400 e bloccare l'outbox.
-- Usare lo stato sincronizzazione dal menu account anche su Android: dettagli upload/download, operazioni ancora in coda, messaggi HTTP. Un `409` non cancella la coda.
-- Test backend `noteCreatedOnDeviceAIsVisibleToDeviceBAndCanBeEdited`: create blank title → delta pull → update → delta pull. **Non sostituisce un test con 2 telefoni/PC reali.**
 
 ## Ultima versione di un elemento / risoluzione conflitto (P0)
 

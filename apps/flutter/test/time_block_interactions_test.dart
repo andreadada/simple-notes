@@ -153,7 +153,9 @@ void main() {
     expect(changes.first.duration, block.duration);
 
     await tester.ensureVisible(resizeKey);
-    await tester.drag(resizeKey, const Offset(0, 13.5));
+    // Flutter's vertical-drag recognizer has a touch slop; 20 physical
+    // logical pixels crosses it while still snapping to one 15-minute slot.
+    await tester.drag(resizeKey, const Offset(0, 20));
     await tester.pumpAndSettle();
     expect(changes.length, 2);
     expect(changes.last.start, block.start);

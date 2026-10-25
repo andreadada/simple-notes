@@ -115,7 +115,9 @@ class TimeBlockSyncIntegrationTest {
             "{\"kind\":\"range\",\"start\":\"2026-10-26T08:00:00Z\","
                + "\"end\":\"2026-10-28T08:00:00Z\",\"timeZone\":\"Europe/Rome\"}",
             "{\"kind\":\"range\",\"start\":\"2026-10-26T08:00:00Z\","
-               + "\"end\":\"2026-10-26T09:00:00Z\",\"timeZone\":\"Bad/Zone\"}"
+               + "\"end\":\"2026-10-26T09:00:00Z\",\"timeZone\":\"Bad/Zone\"}",
+            "{\"kind\":\"range\",\"start\":\"2026-10-26T08:00:30Z\","
+               + "\"end\":\"2026-10-26T09:00:00Z\",\"timeZone\":\"Europe/Rome\"}"
         )) {
             String request = """
                 {"operationId":"%s","entityId":"%s","entityType":"task",

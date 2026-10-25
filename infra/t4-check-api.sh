@@ -4,6 +4,12 @@ set -euo pipefail
 # API_BASE_URL=https://api.notes.ddone.it T4_BEARER_TOKEN=<short-lived token> \
 #   bash infra/t4-check-api.sh
 API_BASE_URL="${API_BASE_URL:-https://api.notes.ddone.it}"
+# Keep the T4/V7 probe useful before the release, but allow an explicit
+# strict V8 assertion after Coolify is upgraded.
+REQUIRE_TIME_BLOCK_SCHEMA="${REQUIRE_TIME_BLOCK_SCHEMA:-0}"
+[[ "$REQUIRE_TIME_BLOCK_SCHEMA" == 0 || "$REQUIRE_TIME_BLOCK_SCHEMA" == 1 ]] || {
+  echo "REFUSED: REQUIRE_TIME_BLOCK_SCHEMA must be 0 or 1" >&2; exit 2
+}
 : "${T4_BEARER_TOKEN:?A real authenticated user access token is required}"
 for command in curl python3; do
   command -v "$command" >/dev/null || { echo "Missing $command" >&2; exit 2; }
@@ -28,13 +34,16 @@ capabilities="$(
       --proto '=https' --tlsv1.2 --connect-timeout 5 --max-time 20 \
       "$base/api/v1/capabilities"
 )"
-printf '%s' "$capabilities" | python3 -c '
-import json,sys
+printf '%s' "$capabilities" | REQUIRE_TIME_BLOCK_SCHEMA="$REQUIRE_TIME_BLOCK_SCHEMA" python3 -c '
+import json,sys,os
 obj=json.load(sys.stdin)
 assert obj.get("taskDueSchema") == 1, "backend missing taskDueSchema:1"
 kinds=set(obj.get("taskDueKinds",[]))
 assert {"none","date","datetime","legacy"}.issubset(kinds), "missing due kinds"
 assert obj.get("requiresExplicitDueForModernTasks") is True, "missing upgrade protection"
+if os.environ["REQUIRE_TIME_BLOCK_SCHEMA"] == "1":
+    assert obj.get("timeBlockSchema") == 1, "backend missing timeBlockSchema:1"
+    assert obj.get("noteRestoreSchema") == 1, "backend missing noteRestoreSchema:1"
 ' || { echo "REFUSED: backend capability contract is incompatible." >&2; exit 1; }
-echo "PASS: HTTPS health UP and authenticated taskDueSchema=1 capability validated."
+echo "PASS: HTTPS health UP and authenticated taskDueSchema=1 validated (require time blocks: $REQUIRE_TIME_BLOCK_SCHEMA)."
 echo "This does NOT prove the client sync round-trip or real backup readiness."

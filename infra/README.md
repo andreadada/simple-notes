@@ -113,3 +113,9 @@ Per un solo account di test, `DB_CONTAINER=<container-postgres-simple-notes> EXP
 ## P1.2 — Deploy controllato backend V8 (solo quando approvato)
 
 Il branch `feature/p1-2-time-blocking` contiene `V8__task_time_blocks.sql` (3 colonne nullable su `task`, CHECK, indice). La migrazione **non** è stata applicata da questa sessione. Non effettuare reset o restore del database di produzione. Prima della nuova app Flutter `0.6.0+8`, il backend deve esporre `timeBlockSchema:1`, altrimenti la nuova outbox task si conserva offline. La checklist di rollout separata è in [P1-TIME-BLOCKING.md](../docs/P1-TIME-BLOCKING.md).
+
+## P1.2/P1.3 — rilascio coordinato (25/10/2026)
+
+Dopo il merge di P1.2 e P1.3 in `main`, **la presenza del codice non dimostra un deploy Coolify**. Verificare la versione Flyway con `infra/t4-inspect-db.sh`: ora riconosce sia V7 pre-deploy sia V8 dopo il rollout e verifica la presenza delle 3 colonne opzionali del time blocking. Per controllare la capability HTTPS post deploy occorre un token JWT reale e `REQUIRE_TIME_BLOCK_SCHEMA=1 API_BASE_URL=https://api.notes.ddone.it T4_BEARER_TOKEN='TOKEN' bash infra/t4-check-api.sh`. Non pubblicare il token nei log.
+
+Sul VPS, identificare il container PostgreSQL da `docker ps`, mai assumere l'ID storico. Il deploy consigliato usa l'app esistente Coolify Docker Compose (root `docker-compose.yml`, servizi `api` e `db`), senza rimuovere/reinizializzare il volume PostgreSQL. Flyway V8 viene applicato automaticamente al boot della nuova API: controllare log Flyway e health. **Eseguire un backup verificato prima della migrazione**, conservare i segreti Coolify invariati, poi fare smoke test di creazione, spostamento, modifica, sync, Cestino note e scadenze. Nessun reset dati richiesto.

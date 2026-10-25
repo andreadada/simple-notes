@@ -48,3 +48,7 @@
 - Il drag tra giorni preserva l'ora di partenza nel fuso dell'evento, mentre il drag verticale agisce sulla durata UTC: sull'ora del DST possono esserci salti visivi coerenti con il tempo reale.
 
 **Gate di rilascio:** merge del PR P1.3 solo dopo CI e approvazione, poi rollout backend P1.2 e installazione coordinata app. Nessun reset dei dati di test richiesto.
+
+### Promozione del codice ≠ distribuzione
+
+L'integrazione GitHub di P1.2 e P1.3 è distinta dal rollout su Coolify e dall'installazione Windows/Android. Il gate di uscita richiede Flyway V8 e `timeBlockSchema:1` confermati sul server prima di utilizzare il nuovo client; dopo il collaudo reale aggiornare checklist e stato in `project.md`.

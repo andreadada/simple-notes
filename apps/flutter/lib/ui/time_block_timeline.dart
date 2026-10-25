@@ -288,7 +288,8 @@ class CalendarDayDropZone extends StatelessWidget {
     super.key, required this.day, required this.onDrop, required this.child,
   });
   final DateTime day;
-  final Future<void> Function(String id, DateTime targetDay) onDrop;
+  final Future<void> Function(
+      String taskId, String slotId, DateTime targetDay) onDrop;
   final Widget child;
 
   @override
@@ -296,7 +297,7 @@ class CalendarDayDropZone extends StatelessWidget {
       DragTarget<CalendarBlockDrag>(
         onWillAcceptWithDetails: (_) => true,
         onAcceptWithDetails: (details) =>
-            onDrop(details.data.taskId, day),
+            onDrop(details.data.taskId, details.data.slotId, day),
         builder: (context, candidates, rejects) => DecoratedBox(
           decoration: BoxDecoration(
             border: candidates.isEmpty ? null : Border.all(

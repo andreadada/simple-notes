@@ -289,7 +289,7 @@ class _CalendarBoardState extends ConsumerState<CalendarBoard> {
           const SizedBox(height: 10),
           TimeBlockTimeline(
             key: Key('calendar-day-timeline-${calendarDateKey(day)}'),
-            day: day, tasks: blocks, onChange: _saveBlock,
+            day: day, tasks: tasks, onChange: _saveBlock,
           ),
         ],
       ],

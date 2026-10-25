@@ -45,7 +45,7 @@ Le CI verificano il codice e producono artefatti, **non** dimostrano un deploy. 
 - [Regole prodotto](../design.md), [regole agenti](../AGENTS.md)
 - [P1.4 multi-block](P1-MULTI-BLOCKS.md), [P1.5 quick planning](P1-QUICK-PLANNING.md), [P1.6 recurrence](P1-RECURRENCE.md)
 - [Protocollo sync](sync.md), [API](api.md), [database e VPS](../infra/README.md)
-- [Rilascio storico V8](P1-RELEASE-0.7.0.md) e [test su dispositivi](T4-DEVICE-SYNC.md)
+- [Runbook deploy batch P1.6 V10](P1-RELEASE-BATCH.md), [rilascio storico V8](P1-RELEASE-0.7.0.md) e [test su dispositivi](T4-DEVICE-SYNC.md)
 
 ## Compiti aperti prima del prossimo rilascio
 

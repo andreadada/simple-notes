@@ -92,6 +92,7 @@ class _InteractiveBlockState extends State<_InteractiveBlock> {
   double resize = 0;
   double? moveStartDy;
   double? resizeStartDy;
+  int? resizePointer;
   bool busy = false;
 
   Future<void> _commit(TimeBlock Function(TimeBlock) update) async {
@@ -226,29 +227,50 @@ class _InteractiveBlockState extends State<_InteractiveBlock> {
                 ]),
             ),
           )),
-          GestureDetector(
+          Listener(
             key: Key('calendar-block-resize-${task.id}'),
             behavior: HitTestBehavior.opaque,
-            onVerticalDragDown: busy ? null : (details) {
-              resizeStartDy = details.globalPosition.dy;
+            // Raw pointer events are intentional here. The resize handle
+            // is 11dp tall: small, precise drags must not be swallowed by
+            // Flutter's standard vertical-gesture touch slop.
+            onPointerDown: busy ? null : (event) {
+              if (resizePointer != null) return;
+              resizePointer = event.pointer;
+              resizeStartDy = event.position.dy;
+              setState(() => resize = 0);
             },
-            onVerticalDragStart: busy ? null : (_) => setState(() => resize = 0),
-            onVerticalDragUpdate: busy ? null : (details) => setState(() {
-              resize = details.globalPosition.dy -
-                  (resizeStartDy ?? details.globalPosition.dy);
-            }),
-            onVerticalDragEnd: busy ? null : (_) => _finishResize(),
-            onVerticalDragCancel: () => setState(() => resize = 0),
+            onPointerMove: busy ? null : (event) {
+              if (resizePointer != event.pointer || resizeStartDy == null) {
+                return;
+              }
+              setState(() => resize = event.position.dy - resizeStartDy!);
+            },
+            onPointerUp: (event) {
+              if (resizePointer != event.pointer) return;
+              resizePointer = null;
+              _finishResize();
+            },
+            onPointerCancel: (event) {
+              if (resizePointer != event.pointer) return;
+              resizePointer = null;
+              setState(() {
+                resize = 0;
+                resizeStartDy = null;
+              });
+            },
             child: MouseRegion(
               cursor: SystemMouseCursors.resizeUpDown,
-              child: SizedBox(
-                height: 11, width: double.infinity,
-                child: Center(child: Container(
-                  width: 28, height: 3,
-                  decoration: BoxDecoration(
-                    color: NotesPalette.accent.withValues(alpha: 0.8),
-                    borderRadius: BorderRadius.circular(2)),
-                )),
+              child: Tooltip(
+                message: 'Trascina per ridimensionare il blocco',
+                child: SizedBox(
+                  height: 11, width: double.infinity,
+                  child: Center(child: Container(
+                    width: 28, height: 3,
+                    decoration: BoxDecoration(
+                      color: NotesPalette.accent.withValues(alpha: 0.8),
+                      borderRadius: BorderRadius.circular(2)),
+                  )),
+                ),
               ),
             ),
           ),

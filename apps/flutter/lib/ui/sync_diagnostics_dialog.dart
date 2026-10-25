@@ -75,7 +75,7 @@ Future<void> showNotesSyncDiagnostics(BuildContext context, WidgetRef ref) {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              detail('Backend scadenze', info.backendLabel,
+              detail('Backend scadenze e blocchi', info.backendLabel,
                   color: statusColor),
               detail('Account Google',
                   info.authenticated ? 'Connesso' : 'Non connesso'),

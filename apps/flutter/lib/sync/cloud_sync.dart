@@ -76,7 +76,7 @@ class SyncDiagnostics {
   final String backendStatus;
 
   String get backendLabel => switch (backendStatus) {
-    'compatible' => 'Compatibile (taskDueSchema 1)',
+    'compatible' => 'Compatibile (scadenze 1 + blocchi 1)',
     'outdated' => 'Versione backend incompatibile',
     'offline' => 'API non raggiungibile o non verificabile',
     'signed-out' => 'Accedi con Google',
@@ -212,7 +212,8 @@ class CloudSync extends StateNotifier<SyncState> {
     } else {
       try {
         final result = await _request('GET', '/capabilities');
-        backend = _typedDueContractMatches(result)
+        backend = _typedDueContractMatches(result) &&
+                result['timeBlockSchema'] == 1
             ? 'compatible' : 'outdated';
       } on SyncUpgradeRequired {
         backend = 'outdated';

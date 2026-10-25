@@ -134,7 +134,8 @@ class LocalTask {
     due: changeDue ? (due ?? TaskDue.none) :
       changeDueAt ? TaskDue.legacy(dueAt) : this.due,
     recurrence: changeRecurrence ? (recurrence ?? TaskRecurrence.none) :
-        this.recurrence,
+        ((changeDue && (due == null || !due.modern)) || changeDueAt)
+            ? TaskRecurrence.none : this.recurrence,
     timeBlocks: changeTimeBlocks ? timeBlocks :
         changeTimeBlock ? (timeBlock == null ? <TimeSlot>[] :
           [TimeSlot(id: this.timeBlocks.isEmpty

@@ -1,5 +1,5 @@
 <!-- CURRENT-STATUS-REF -->
-> **Stato:** `main` = P1.5 / Flutter 0.9 (CI verde); P1.6 ricorrenze / Flutter 0.10 in sviluppo, **non deployato**. Ultima verifica server V8; V9/V10 non verificati. Questo documento è tecnico/storico; per le fasi effettive usare [CURRENT-STATUS.md](CURRENT-STATUS.md).
+> **Codice corrente:** P1.6 ricorrenze integrata su `main`, Flutter `0.10.0+12`, Flyway V10/Drift V8. P1.7 promemoria su branch senza delivery nativa. Ultimo server controllato V8; V9/V10 e dispositivi reali da verificare. Questa specifica contiene anche note storiche: consultare [CURRENT-STATUS.md](CURRENT-STATUS.md) per la versione effettiva e i gate.
 
 > **Stato 25/10/2026:** tutti i dati di test Simple Notes server/Windows/Android sono stati azzerati e il server confermato con contatori 0. Non riavviare un reset. P1.1 su main `0.5.0+7`; P1.2 su branch `feature/p1-2-time-blocking` `0.6.0+8`, non rilasciato. **Prima di client P1.2** eseguire rollout backend V8 controllato e controllare capabilities `timeBlockSchema:1`; poi due dispositivi offline/online, blocco inizio-fine, DST e cancellazione blocco indipendente dalla scadenza. Vedi [P1-TIME-BLOCKING.md](P1-TIME-BLOCKING.md). I check storici più sotto rimangono come riferimento per P0, non come invito a ricancellare dati. 
 

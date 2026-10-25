@@ -1,7 +1,7 @@
 # P1.4 — Multi-block, duplicate e riepilogo focus
 
 <!-- CURRENT-STATUS-REF -->
-> **Stato:** `main` = P1.5 / Flutter 0.9 (CI verde); P1.6 ricorrenze / Flutter 0.10 in sviluppo, **non deployato**. Ultima verifica server V8; V9/V10 non verificati. Questo documento è tecnico/storico; per le fasi effettive usare [CURRENT-STATUS.md](CURRENT-STATUS.md).
+> **Codice corrente:** P1.6 ricorrenze integrata su `main`, Flutter `0.10.0+12`, Flyway V10/Drift V8. P1.7 promemoria su branch senza delivery nativa. Ultimo server controllato V8; V9/V10 e dispositivi reali da verificare. Questa specifica contiene anche note storiche: consultare [CURRENT-STATUS.md](CURRENT-STATUS.md) per la versione effettiva e i gate.
 
 
 ## Funzioni implementate

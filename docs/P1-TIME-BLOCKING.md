@@ -1,5 +1,8 @@
 # P1.2 — Time blocking sincronizzato (prima implementazione)
 
+> **Aggiornamento dopo merge:** P1.2 e P1.3 sono ora su `main` in Flutter `0.7.0+9`; **non significa deploy Coolify**. Procedura di rilascio e gate: [P1-RELEASE-0.7.0.md](P1-RELEASE-0.7.0.md). Le etichette “in sviluppo” sotto sono cronologia del branch.
+
+
 **Data:** 25 ottobre 2026 · **Branch di sviluppo:** `feature/p1-2-time-blocking` · Flutter `0.6.0+8`.
 
 > Stato: implementazione del contratto e delle interfacce nella repository; **non ancora rilasciata/deployata su Coolify né installata sui dispositivi fisici**. Le verifiche CI e quelle real-device sono gate distinti. Questo documento è un riferimento corrente rispetto agli appunti storici pre-reset.

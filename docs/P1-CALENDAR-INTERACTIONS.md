@@ -1,5 +1,8 @@
 # P1.3 — Interazioni dirette nel calendario (trascina e ridimensiona)
 
+> **Aggiornamento dopo merge:** P1.2 e P1.3 sono ora su `main` in Flutter `0.7.0+9`; **non significa deploy Coolify**. Procedura di rilascio e gate: [P1-RELEASE-0.7.0.md](P1-RELEASE-0.7.0.md). Le etichette “in sviluppo” sotto sono cronologia del branch.
+
+
 **25 ottobre 2026 · Branch `feature/p1-3-calendar-interactions` · Flutter `0.7.0+9`**
 
 > Stato: codice di sviluppo su branch dedicato, creato dal P1.2 con CI verde. Non è su `main`, non è installato sui dispositivi, non è stato deployato su Coolify e non ha modificato il database reale. Non usare questa pagina per dedurre che P1.2 sia già distribuito.

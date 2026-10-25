@@ -1,5 +1,12 @@
 # Flutter client — P0 e P1
 
+## Stato corrente — rilascio 0.7.0+9 (25/10/2026)
+
+**Codice integrato su `main`**: PR #1 P1.2 (time blocking + Flyway V8 + Drift V6) e PR #2 P1.3 (drag/resize e timeline) unite con successo. La CI dei branch è verde; le build automatiche successive al merge sono da controllare separatamente. **Coolify e PostgreSQL reali NON sono stati aggiornati/verificati da questa chat; non dichiarare Flyway V8 già applicata, né l'app installata su Windows/Android.** Per il rollout serve verificare backend `timeBlockSchema:1` e Flyway V8 prima di aggiornare i client. Non eseguire reset degli archivi: l'utente ha già concluso il reset dei soli dati di test. **Runbook attuale:** [P1-RELEASE-0.7.0.md](../../docs/P1-RELEASE-0.7.0.md).
+
+> I passaggi più in basso che parlano di PR «bozza» o di `main` `0.5.0+7` sono cronologia precedente al merge. Prevale lo stato appena indicato.
+
+
 > **P1.3 (`0.7.0+9`, solo branch):** timeline drag/resize, snap di 15 minuti, drop tra giorni, gestione DST e test. Non richiede nuove migrazioni rispetto a P1.2. Nessun deploy e nessun reset dati; [specifica P1.3](../../docs/P1-CALENDAR-INTERACTIONS.md).
 
 > **P1.2 su branch dedicato (25/10):** Flutter `0.6.0+8`, editor blocchi temporali e calendario, migration Drift V6, `timeBlockSchema:1` prima dell'upload. Ancora NON rilasciato. [Specifica](../../docs/P1-TIME-BLOCKING.md).

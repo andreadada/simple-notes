@@ -38,8 +38,8 @@ due_columns="$(query "SELECT COUNT(*) FROM information_schema.columns WHERE tabl
 [[ "$due_columns" == "0" || "$due_columns" == "5" ]] || {
   echo "REFUSED: partially migrated task due columns" >&2; exit 2
 }
-if [[ "$latest" == "7" && "$due_columns" != "5" ]]; then
-  echo "REFUSED: V7 is in Flyway history but columns are missing" >&2; exit 2
+if [[ "$latest" -ge 7 && "$due_columns" != "5" ]]; then
+  echo "REFUSED: Flyway V7+ present but due columns are missing" >&2; exit 2
 fi
 if [[ "$latest" -lt 7 && "$due_columns" != "0" ]]; then
   echo "REFUSED: typed due columns exist before Flyway V7" >&2; exit 2
@@ -48,8 +48,8 @@ block_columns="$(query "SELECT COUNT(*) FROM information_schema.columns WHERE ta
 [[ "$block_columns" == "0" || "$block_columns" == "3" ]] || {
   echo "REFUSED: incomplete time-block migration columns" >&2; exit 2
 }
-if [[ "$latest" == "8" && "$block_columns" != "3" ]]; then
-  echo "REFUSED: Flyway V8 present but time-block columns missing" >&2; exit 2
+if [[ "$latest" -ge 8 && "$block_columns" != "3" ]]; then
+  echo "REFUSED: Flyway V8+ present but time-block columns missing" >&2; exit 2
 fi
 if [[ "$latest" -lt 8 && "$block_columns" != "0" ]]; then
   echo "REFUSED: V8 columns present before successful Flyway V8" >&2; exit 2

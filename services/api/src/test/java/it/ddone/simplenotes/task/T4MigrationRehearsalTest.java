@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test;
 import org.testcontainers.containers.PostgreSQLContainer;
 
 /**
- * T4 staging rehearsal: upgrade a populated V6 PostgreSQL to V7 and prove
+ * T4 staging rehearsal: upgrade a populated V6 PostgreSQL through V7 and V8 and prove
  * that user, task, note, list and sync logs survive with identifiers intact.
  * A disposable Testcontainers database is used; never connects to Coolify.
  */
@@ -104,13 +104,13 @@ class T4MigrationRehearsalTest {
                 postgres.getPassword()).load();
             migrated.migrate();
             migrated.validate();
-            assertEquals("7", migrated.info().current().getVersion().toString());
+            assertEquals("8", migrated.info().current().getVersion().toString());
 
             try (Connection db = DriverManager.getConnection(
                     postgres.getJdbcUrl(), postgres.getUsername(),
                     postgres.getPassword())) {
                 try (PreparedStatement ps = db.prepareStatement(
-                    "SELECT due_kind,due_at,version,tags_json,list_id "
+                    "SELECT due_kind,due_at,version,tags_json,list_id,block_start_at,block_end_at,block_timezone "
                     + "FROM task WHERE id=?")) {
                     ps.setObject(1, task);
                     try (ResultSet rs = ps.executeQuery()) {
@@ -121,6 +121,9 @@ class T4MigrationRehearsalTest {
                         assertEquals(4, rs.getLong(3));
                         assertEquals("[\"important\"]", rs.getString(4));
                         assertEquals(list, rs.getObject(5, UUID.class));
+                        assertNull(rs.getTimestamp(6));
+                        assertNull(rs.getTimestamp(7));
+                        assertNull(rs.getString(8));
                     }
                 }
                 try (PreparedStatement ps = db.prepareStatement(

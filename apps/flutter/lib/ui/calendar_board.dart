@@ -490,7 +490,8 @@ class _CalendarBoardState extends ConsumerState<CalendarBoard> {
         importantOnly: importantOnly);
     final summary = calendarPlanSummary(tasks, selected, mode);
     final unscheduled = tasks.where((task) =>
-        task.timeBlocks.isEmpty && !task.completed).length;
+        task.due.kind == 'none' && task.timeBlocks.isEmpty &&
+        !task.completed).length;
     return Column(children: [
       Padding(
         padding: const EdgeInsets.fromLTRB(14, 5, 14, 10),
@@ -633,6 +634,7 @@ class _CalendarBoardState extends ConsumerState<CalendarBoard> {
                 ]),
                 const SizedBox(height: 5),
                 for (final task in tasks.where((task) =>
+                    task.due.kind == 'none' &&
                     task.timeBlocks.isEmpty && !task.completed))
                   Padding(
                     padding: const EdgeInsets.only(top: 5),

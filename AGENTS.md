@@ -1,5 +1,7 @@
 # AGENTS.md — Istruzioni di lavoro per assistenti AI
 
+> **Stato aggiornato 25/10/2026:** il reset dei dati di test è completato per server, SQLite Windows e Android (utente: «tutto 0»). Non ripetere reset. Su `main` è presente P1.1 calendario `0.5.0+7`, CI verde. Sul branch `feature/p1-2-time-blocking` è in sviluppo P1.2 (`0.6.0+8`): periodo UTC + fuso IANA indipendente dalla deadline, Flyway V8, Drift V6, editor Forui, sync capability `timeBlockSchema:1`, test. **Non applicare V8 o fare deploy automatici al DB Coolify**: controllare CI e rollout esplicitamente. La documentazione corrente è [docs/P1-TIME-BLOCKING.md](docs/P1-TIME-BLOCKING.md), che prevale sulle istruzioni storiche qui sotto.
+
 ## Stato reale verificato e T4.2 (24 ottobre 2026)
 
 **PostgreSQL Simple Notes sulla VPS:** l'utente ha verificato direttamente `simplenotes` (PostgreSQL **17.11**), Flyway **V1–V7 tutte riuscite**, colonne V7 presenti e conteggi in quel momento: **1 utente, 5 task, 4 note, 25 sync_change, 25 sync_operation**. Il dump PostgreSQL reale `simple-notes-20261024T132857Z-271921.dump` ha superato **SHA256 e restore isolato**; il restore non ha toccato produzione. **Copia offsite non eseguita per scelta dell'utente**: non marcarla completata e non riaprire automaticamente la procedura backup.

@@ -64,7 +64,7 @@ class ReminderController extends StateNotifier<ReminderStatus> {
   Future<void> _initialize() async {
     if (_pluginInitialized) return;
     time_zone_data.initializeTimeZones();
-    await _plugin.initialize(const InitializationSettings(
+    await _plugin.initialize(settings: const InitializationSettings(
       android: AndroidInitializationSettings('@mipmap/ic_launcher'),
     ));
     _pluginInitialized = true;
@@ -195,7 +195,7 @@ class ReminderController extends StateNotifier<ReminderStatus> {
     }
     await _initialize();
     for (final id in changes.cancelIds) {
-      await _plugin.cancel(id);
+      await _plugin.cancel(id: id);
       ledger.removeWhere((_, value) => value == id);
       await prefs.setString(_ledgerKey, jsonEncode(ledger));
     }
@@ -203,10 +203,11 @@ class ReminderController extends StateNotifier<ReminderStatus> {
       // Deliberately inexact: do not request restricted Android exact alarms.
       // No personal titles displayed on a locked screen.
       await _plugin.zonedSchedule(
-        plan.notificationId, 'Simple Notes',
-        'Hai un’attività in programma.',
-        tz.TZDateTime.from(plan.fireAtUtc, tz.UTC),
-        const NotificationDetails(android: AndroidNotificationDetails(
+        id: plan.notificationId,
+        title: 'Simple Notes',
+        body: 'Hai un’attività in programma.',
+        scheduledDate: tz.TZDateTime.from(plan.fireAtUtc, tz.UTC),
+        notificationDetails: const NotificationDetails(android: AndroidNotificationDetails(
           'simple_notes_tasks_v1', 'Promemoria attività',
           channelDescription: 'Scadenze e blocchi orari di Simple Notes',
           importance: Importance.defaultImportance,

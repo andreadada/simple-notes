@@ -12,7 +12,7 @@ android {
     // possible. Some Flutter/plugin versions still register a Kotlin task.
     enableKotlin = false
     namespace = "it.andreadada.simplenotes"
-    compileSdk = flutter.compileSdkVersion
+    compileSdk = 36
     ndkVersion = flutter.ndkVersion
 
     // Flutter/Gradle runs with JDK 17 or 21 depending on the developer
@@ -27,7 +27,7 @@ android {
 
     defaultConfig {
         applicationId = "it.andreadada.simplenotes"
-        minSdk = flutter.minSdkVersion
+        minSdk = 24
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName

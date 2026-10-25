@@ -1,5 +1,5 @@
 <!-- CURRENT-STATUS-REF -->
-> **Stato verificabile:** P1.5 è integrata su `main` (Flutter 0.9, backend Flyway V9 nel codice); P1.6 ricorrenze su branch (V10/Drift V8), non distribuita. Ultima VPS controllata: V8. Per roadmap, versioni e gate aggiornati leggere [CURRENT-STATUS.md](CURRENT-STATUS.md). Le sezioni più vecchie mantengono valore storico/architetturale e non attestano deploy.
+> **Stato coerente con repository:** P1.6 (ricorrenze, Flyway V10/Drift V8) integrata in `main`; P1.7 promemoria solo foundation su branch, **senza OS scheduler operativo**. Ultimo server verificato V8, V9/V10 da verificare prima di aggiornare i client. [Versioni e gate attuali](CURRENT-STATUS.md). I riferimenti precedenti nel documento costituiscono storico.
 
 <!-- Vincolo UI aggiornato 24/10/2026: tutti i titoli di liste, task e subtasks usano la stessa logica inline-first. La sottolineatura non deve eccedere la larghezza del valore (o dell'hint) +~1px, nessun grigio di riempimento; placeholder semitrasparente (~72%). Utilizzare InlineTextMetrics.fieldWidth in notes_theme.dart, non minWidth artificiale o Expanded TextField full-width. Regole: ../design.md, ui-forui.md e ui-design-audit.md. -->
 # Organizzazione attività (P0) — liste, priorità, tag e sottotask

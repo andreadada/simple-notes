@@ -1,7 +1,7 @@
 # Delta Sync v1 (P0 in sviluppo)
 
 <!-- CURRENT-STATUS-REF -->
-> **Stato verificabile:** P1.5 è integrata su `main` (Flutter 0.9, backend Flyway V9 nel codice); P1.6 ricorrenze su branch (V10/Drift V8), non distribuita. Ultima VPS controllata: V8. Per roadmap, versioni e gate aggiornati leggere [CURRENT-STATUS.md](CURRENT-STATUS.md). Le sezioni più vecchie mantengono valore storico/architetturale e non attestano deploy.
+> **Stato coerente con repository:** P1.6 (ricorrenze, Flyway V10/Drift V8) integrata in `main`; P1.7 promemoria solo foundation su branch, **senza OS scheduler operativo**. Ultimo server verificato V8, V9/V10 da verificare prima di aggiornare i client. [Versioni e gate attuali](CURRENT-STATUS.md). I riferimenti precedenti nel documento costituiscono storico.
 
 
 ## Ultima versione di un elemento / risoluzione conflitto (P0)

@@ -1,5 +1,10 @@
 ## Stato operativo aggiornato — 25 ottobre 2026 (fonte corrente)
 
+## P1.3 — Calendar drag/resize (25/10/2026)
+
+**Su branch `feature/p1-3-calendar-interactions` (non su `main`): Flutter `0.7.0+9`, timeline interattiva giorno/settimana, move/resize a step 15 minuti, drag su intestazioni giornaliere e celle del mese, supporto DST e corsie sovrapposizioni; test dedicati.** Non richiede nuove tabelle oltre Flyway V8 di P1.2 e Drift V6. *CI e test hardware da verificare; nessun deploy/merge di P1.2 e P1.3 né modifica ai dati reali*. P1.2 `feature/p1-2-time-blocking` ha CI backend e Flutter completamente verde ma resta draft, non distribuito. P1.3 è documentato in [P1-CALENDAR-INTERACTIONS.md](docs/P1-CALENDAR-INTERACTIONS.md). Multi-blocco per task resta fuori ambito, per successiva revisione di modello.
+
+
 ## P1.2 — Time blocking in sviluppo (25 ottobre 2026)
 
 **Branch `feature/p1-2-time-blocking`, Flutter `0.6.0+8`.** Introdotto intervallo `timeBlock` indipendente dalla scadenza, con editor Forui, blocchi nel calendario e percorso di sincronizzazione versionato. **Backend V8/Drift V6 sono solo codice: nessun deploy Coolify, migrazione reale, nuova pulizia dati o installazione sui dispositivi effettuata.** `timeBlockSchema:1` è un gate obbligatorio prima di inviare nuovi task. I test CI automatici e l'accettazione PC↔Android sono ancora da verificare. Non confondere codice implementato con feature già rilasciata. Specifica e piano: [P1-TIME-BLOCKING.md](docs/P1-TIME-BLOCKING.md). La versione su `main` resta `0.5.0+7` fino a merge autorizzato/dopo verifiche.
@@ -163,6 +168,7 @@ Riferimento tecnico: `apps/flutter/lib/ui/notes_theme.dart` (`InlineTextMetrics.
 ## P1 — Produttività completa
 - [ ] **P1.1 Calendario giorno/settimana/mese** implementato nel codice Flutter `0.5.0+7`, in attesa di CI e verifica hardware; [specifica](docs/P1-CALENDAR.md). 
 - [ ] **P1.2 Time blocking**: modello start/end, backend Flyway V8, Flutter Drift V6, editor e sincronizzazione implementati sul branch `feature/p1-2-time-blocking`; CI/hardware/deploy ancora da verificare. [Specifica](docs/P1-TIME-BLOCKING.md).
+- [ ] **P1.3 Interazioni calendario**: timeline drag/resize, cambio giorno, snap 15', DST e test implementati sul branch `feature/p1-3-calendar-interactions`; CI/hardware/deploy ancora da verificare. [Specifica](docs/P1-CALENDAR-INTERACTIONS.md).
 - [ ] Eisenhower Matrix a quattro quadranti.
 - [ ] Kanban con drag & drop.
 - [ ] Pomodoro/cronometro e statistiche.
@@ -331,3 +337,4 @@ Esempio: `2026-10-21 14:20 CEST | commit abc1234 | Aggiunto modulo promemoria e 
 - 2026-10-24 | feat(notes)+tools | Nuovo cestino note, restore versionato tramite backend con controllo capacità, protezione contro delta vecchi, test Flutter/backend; script di reset del SOLO workspace test con conferme e anteprima, locali Windows/Android e dati server. Nessuna cancellazione dati, migrazione o deploy effettuato da ChatGPT. Successivo P1 calendario dopo smoke test.
 - 2026-10-25 | feat(p1.1) | Implementato Calendario giorno/settimana/mese su Flutter (TaskDue civili/IANA esistenti, navigazione, task inline, quick-add e test). Reset dati di test confermato dall'utente su server/Windows/Android; nessun deploy o modifica DB svolta dall'assistente. P1.2 time blocking ancora da fare.
 - 2026-10-25 | feat(p1.2) | Sviluppo branch P1.2: TimeBlock UTC/IANA come periodo distinto dalla scadenza, PostgreSQL V8, Drift V6, sync capability fail-closed, calendario/editor e test. Non applicato su Coolify né sui device. Dopo CI restano rollout e test reali.
+- 2026-10-25 | feat(p1.3) | Branch separato P1.3 per trascinamento e resize della timeline, drop su altri giorni, DST e test; senza migrazioni aggiuntive. Non deployato né integrato su main; P1.2 resta prerequisito di rollout.

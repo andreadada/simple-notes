@@ -1,5 +1,7 @@
 # Flutter client — P0 e P1
 
+> **P1.3 (`0.7.0+9`, solo branch):** timeline drag/resize, snap di 15 minuti, drop tra giorni, gestione DST e test. Non richiede nuove migrazioni rispetto a P1.2. Nessun deploy e nessun reset dati; [specifica P1.3](../../docs/P1-CALENDAR-INTERACTIONS.md).
+
 > **P1.2 su branch dedicato (25/10):** Flutter `0.6.0+8`, editor blocchi temporali e calendario, migration Drift V6, `timeBlockSchema:1` prima dell'upload. Ancora NON rilasciato. [Specifica](../../docs/P1-TIME-BLOCKING.md).
 
 

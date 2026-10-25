@@ -1,34 +1,33 @@
-# P1.7 — Promemoria, fase fondativa
+# P1.7 — Promemoria Android e pianificazione cross-platform
 
-**Stato:** branch `feature/p1-7-reminders-foundation` **dipendente da P1.6**. Nessuna notifica è ancora programmata o mostrata dal sistema operativo; codice di pianificazione puro e test. Non integrare su `main` prima della PR P1.6. **Nessun deploy eseguito.**
+**Stato del branch (25 ottobre 2026):** integrazione Android in PR #6, ancora da validare in CI e su dispositivo. P1.6 è già integrata su `main`. Non equivale a un deploy, a una release Windows né a notifiche E2E verificate.
 
-## Implementato nel codice
+## Implementato in questo incremento
 
-- `apps/flutter/lib/ui/reminder_planner.dart`: proiezione deterministica di `TaskDue.datetime` e `TimeSlot.start` in un futuro istante UTC; opzioni 0/5/15/30/60/1440 minuti prima.
-- Date-only senza ora **non** generano una notifica a mezzanotte, né vengono convertite silenziosamente; servirebbe scelta esplicita dell'orario.
-- Identità della notifica = `ownerId|taskId|due|UTC occurrence|leadMinutes` oppure `ownerId|taskId|block:slotId|UTC occurrence|leadMinutes`; ID numerico stabile FNV-1a 31bit. Ciò prepara la **deduplica per occorrenza** e il cancel/reschedule quando mutano scadenze, slot, account o ricorrenza.
-- Solo attività non completate e notifiche future; l'algoritmo limita orizzonte a 14 giorni e massimo 100 richieste per dispositivo, con limiti configurabili per i futuri scheduler nativi.
-- Il planner opera solo in memoria e non contatta il server né SQLite né chiede permessi OS. Non afferma consegna se il desktop è spento e non crea notifiche su altri account.
-- Unit test per time zone, scadenza date-only, promemoria passati, chiavi distinte su multi-block, ricorrenze e horizon.
+- `ReminderPlanner` puro per scadenze **con ora esplicita** e blocchi temporali, lead a 15 minuti, chiavi deterministiche account/task/occorrenza/slot, limite di 14 giorni e 100 allarmi.
+- `ReminderReconciler` confronta lo schedule desiderato con il ledger locale; rimuove richieste obsolete prima di registrare quelle nuove. Test unitari per deduplica, cancellazione, cambio account e collisioni.
+- Android: `flutter_local_notifications` con `zonedSchedule` e alarm **inesatti** (nessun permesso esatto), `POST_NOTIFICATIONS` richiesto **solo dopo tocco esplicito** nel menu account; registro persistente tramite `SharedPreferences`. Receiver per ripristinare pianificazioni dopo reboot/aggiornamento.
+- Default **spento**. Il menu account mostra «Attiva/Disattiva promemoria Android». Lo spegnimento annulla gli allarmi registrati; il logout tenta la cancellazione **prima** di chiudere la sessione e si ferma se fallisce.
+- Ricalcolo dopo modifiche locali, delta remoto, login e resume; i dati SQLite devono essere associati allo stesso `boundOwnerId` dell'utente prima di schedulare. Non altera outbox, migrazioni, payload o backend.
+- Privacy: il testo della notifica è generico (nessun titolo/nota sullo schermo bloccato). `TaskDue.date` non produce orari inventati; task completati e passati vengono esclusi. Ricorrenze seguono l'istanza *corrente* salvata, senza duplicare task.
+- Versione Flutter prevista `0.11.0+13`, nessuna nuova migrazione Drift/Flyway.
 
-## Da implementare prima di dichiarare P1.7 operativa
+## Cosa NON è ancora completo
 
-1. **UI Forui:** consenso esplicito alle notifiche, selezione tipo/scadenza/blocco, anticipi e snooze; nessuna richiesta di permessi all'avvio senza scelta.
-2. **Persistenza/configurazione:** definire la semantica device-local vs sincronizzata delle preferenze, con migrazioni additive solo se necessarie; mai perdere pending outbox.
-3. **Android:** scheduling nativo con autorizzazioni di notifica Android 13+, ricezione reboot, exact alarm se indispensabile (preferire inexact dove accettabile), fallback se OEM limita i background alarm. Non pianificare il singolo reminder con poll foreground come soluzione di produzione.
-4. **Windows:** supporto toast con package identity / MSIX per garantire cancellazione/aggiornamento di notifiche già programmate. L'EXE Windows ZIP non confezionato attualmente non offre garanzia di cancel; prima confezionare o progettare un adapter Windows separato con ledger persistente e modalità degradante trasparente.
-5. **Scheduler reconciliation:** ledger locale `key → notificationId, fireAt`; diff del desired schedule con l'effettivo e annullamento dei vecchi ID quando cambia un task, blocco, account o ricorrenza, includendo reboot e reinstallazione.
-6. **Privacy:** contenuto notifiche minimo se schermo bloccato, opzione per nascondere titolo, non loggare token OAuth, identificatori Google o dati personali.
-7. **Test e accettazione:** Windows app chiusa/riavvio macchina, Android permessi negati/consentiti, DST, due date-only, cambio account, modifica offline→online, deduplica, tap-to-open e assenza di notifiche spurie.
+- **Windows:** ZIP/EXE non possiede la package identity necessaria per annullare affidabilmente toast schedulati; scheduling disattivato su Windows. Serve MSIX o adapter verificato prima di abilitarlo.
+- Nessuna precisione al minuto promessa su Android: modalità `inexactAllowWhileIdle` e limiti OEM/Doze. Testare permessi Android 13+, riavvio del dispositivo, battery optimization e comportamento a schermo spento.
+- Nessun reminder per una sola data civile senza orario. Nessuno snooze, deep link tap-to-open, scelta del lead per task o opzione di privacy configurabile.
+- Preferenza **device-local**, non sincronizzata fra dispositivi; la registrazione su un telefono non crea automaticamente notifiche sull'altro.
+- Se lo stesso dispositivo resta offline con app mai riaperta, i promemoria già schedulati possono arrivare, ma il piano non può conoscere modifiche effettuate su altri dispositivi fino alla prossima sync.
+- Un ledger corrotto o un'API OS che rifiuta l'operazione deve produrre errore visibile; non cancellare il ledger né dichiarare successo. Installazioni interrotte nel breve intervallo tra chiamata OS e persistenza del registro richiedono ancora audit delle pending native.
 
-## Scelta librerie da verificare
+## Gate di verifica
 
-`flutter_local_notifications` pubblica il supporto Windows (WinRT toast) e Android; tuttavia, **Windows** richiede package identity per cancellazione/recupero affidabile dei toast precedenti, e la ripetizione OS con `periodicallyShow` non è supportata su Windows. Le ricorrenze devono quindi essere espanse e pianificate come singole occorrenze versionate. Riferimenti: [documentazione plugin](https://pub.dev/documentation/flutter_local_notifications/latest/) e [Windows implementation](https://pub.dev/packages/flutter_local_notifications_windows). Non aggiungere a `pubspec.yaml` una dipendenza senza testarla sulle versioni Flutter reali Windows/Android e senza correggere manifest/Gradle/package identity.
+1. CI Flutter analyze/test, Windows release, APK Android JDK17/JDK21: verdi **sullo SHA finale**.
+2. Su Android autentica Google, verifica `boundOwnerId`, attiva dal menu, accetta permesso; conferma pending schedulati e ricezione reale con app chiusa.
+3. Task data-only (nessun allarme), con orario, più time block, ricorrenza avanzata, DST fold/gap, modifica/cancellazione/completamento e assenza di duplicati.
+4. Disattiva e verifica annullamento; riattiva e cambia account, verifica nessuna notifica del precedente; nega il permesso e conferma che lo stato non diventa «attivo».
+5. Effettua E2E Windows↔Android **insieme** al batch finale P1.6, non in ogni commit. Su Windows il menu reminder non deve offrire attivazione non supportata.
+6. Server Coolify **prima dei client**: ultima Flyway verificata V8; V9/V10 e capability `recurrenceSchema:1` devono essere confermate dall'utente, seguendo [P1-RELEASE-BATCH.md](P1-RELEASE-BATCH.md).
 
-## Gate
-
-- PR #5 P1.6: CI verde e merge in `main` prima di integrare P1.7.
-- Branch P1.7: solo **foundation**; i suoi test verificano la correttezza del piano, non il comportamento OS.
-- Deploy backend successivo come batch soltanto dopo l'intero ciclo P1.7, non adesso.
-
-**Da non dichiarare:** «notifiche funzionano su Android e Windows», «il telefono notifica a schermo spento», «promemoria sincronizzati», «snooze disponibile», fino alla verifica nativa reale.
+**Divieti:** non effettuare deploy o reset; non pubblicizzare P1.7 come notifiche Windows, esatte Android o test su device superati. Stato operativo prevalente: [CURRENT-STATUS.md](CURRENT-STATUS.md).

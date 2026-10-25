@@ -20,6 +20,7 @@ android {
     // compatibility aligned with the actual Gradle JDK so KGP's strict JVM
     // target validation never sees Java 17 vs Kotlin 21. CI builds both.
     compileOptions {
+        isCoreLibraryDesugaringEnabled = true
         sourceCompatibility = JavaVersion.current()
         targetCompatibility = JavaVersion.current()
     }
@@ -43,4 +44,9 @@ android {
 
 flutter {
     source = "../.."
+}
+
+// Flutter local notifications uses java.time when scheduling Android alarms.
+dependencies {
+    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.4")
 }

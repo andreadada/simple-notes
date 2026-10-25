@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../auth/cloud_auth.dart';
 import '../data/local_store.dart';
+import '../ui/reminder_controller.dart';
 import 'cloud_sync.dart';
 
 /// Foreground-only auto-sync: offline edits remain in the persistent SQLite
@@ -57,6 +58,7 @@ class _AutoSyncHostState extends ConsumerState<AutoSyncHost>
     if (_active) {
       _retryOfflineSession();
       _schedule(delay: const Duration(seconds: 1));
+      ref.read(reminderControllerProvider.notifier).reconcile();
     }
   }
 
@@ -148,6 +150,7 @@ class _AutoSyncHostState extends ConsumerState<AutoSyncHost>
         _retry?.cancel();
         _retry = null;
         _schedule(delay: Duration.zero);
+        ref.read(reminderControllerProvider.notifier).reconcile();
       } else if (!next.authenticated) {
         _debounce?.cancel();
         _retry?.cancel();
@@ -158,6 +161,12 @@ class _AutoSyncHostState extends ConsumerState<AutoSyncHost>
     });
     ref.listen<int>(localMutationRevisionProvider, (previous, next) {
       _schedule();
+      ref.read(reminderControllerProvider.notifier).reconcile();
+    });
+    // Remote pulls update the local snapshot without increasing the local
+    // mutation revision. Reconcile native reminders after either source.
+    ref.listen<LocalData>(localStoreProvider, (previous, next) {
+      ref.read(reminderControllerProvider.notifier).reconcile();
     });
     return widget.child;
   }

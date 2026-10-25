@@ -9,6 +9,7 @@ import 'ui/task_due_editor.dart';
 import 'ui/calendar_board.dart';
 import 'ui/task_blocks_panel.dart';
 import 'ui/task_recurrence_panel.dart';
+import 'ui/reminder_controller.dart';
 import 'data/task_due_view.dart';
 import 'ui/sync_conflict_dialog.dart';
 import 'ui/sync_diagnostics_dialog.dart';
@@ -154,6 +155,7 @@ class _NotesHomeState extends ConsumerState<NotesHome> {
     final data = ref.watch(localStoreProvider);
     final cloud = ref.watch(cloudAuthProvider);
     final sync = ref.watch(cloudSyncProvider);
+    final reminders = ref.watch(reminderControllerProvider);
     final desktop = MediaQuery.sizeOf(context).width >= 950;
     final wideDetails = MediaQuery.sizeOf(context).width >= 1200;
     final query = searchQuery.trim().toLowerCase();
@@ -210,7 +212,19 @@ class _NotesHomeState extends ConsumerState<NotesHome> {
         if (details != null && context.mounted) {
           await showNotesSyncConflictDialog(context, ref, details);
         }
+      } else if (value == 'reminders') {
+        await ref.read(reminderControllerProvider.notifier)
+            .setEnabled(!ref.read(reminderControllerProvider).enabled);
       } else if (value == 'logout') {
+        if (!await ref.read(reminderControllerProvider.notifier)
+            .cancelBeforeLogout()) {
+          if (context.mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+              content: Text('Prima di uscire, riprova ad annullare i promemoria.'),
+            ));
+          }
+          return;
+        }
         await ref.read(cloudAuthProvider.notifier).logout();
       } else if (value == 'login') {
         if (!CloudConfig.enabled) {
@@ -264,6 +278,20 @@ class _NotesHomeState extends ConsumerState<NotesHome> {
               onPress: () => accountAction('resolve'),
             ),
           if (cloud.authenticated) ...[
+            if (ReminderController.supported) ...[
+              .item(
+                title: Text(reminders.busy ? 'Aggiornamento promemoria...' :
+                  reminders.enabled
+                    ? 'Disattiva promemoria (${reminders.pending})'
+                    : 'Attiva promemoria Android'),
+                prefix: const Icon(Icons.notifications_outlined, size: 18),
+                enabled: !reminders.busy,
+                onPress: () => accountAction('reminders'),
+              ),
+              if (reminders.error != null)
+                .item(enabled: false, title: Text(reminders.error!,
+                  style: const TextStyle(fontSize: 12))),
+            ],
             .item(
               title: const Text('Verifica sincronizzazione'),
               prefix: const Icon(Icons.fact_check_outlined, size: 18),

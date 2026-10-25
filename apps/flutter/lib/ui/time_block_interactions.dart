@@ -3,6 +3,7 @@ import 'package:timezone/timezone.dart' as tz;
 import '../data/models.dart';
 import '../data/task_due_clock.dart';
 import 'calendar_logic.dart';
+import 'time_block_view.dart';
 
 /// P1.3: each gesture creates exactly one mutation on release. Screen
 /// displacement is snapped to 15 real (UTC elapsed) minutes, not wall-clock
@@ -120,6 +121,7 @@ class CalendarDayScale {
 class CalendarBlockGeometry {
   const CalendarBlockGeometry({
     required this.task,
+    required this.slot,
     required this.top,
     required this.height,
     required this.lane,
@@ -127,6 +129,7 @@ class CalendarBlockGeometry {
   });
 
   final LocalTask task;
+  final TimeSlot slot;
   final double top;
   final double height;
   final int lane;
@@ -138,21 +141,29 @@ class CalendarBlockGeometry {
 /// predictable across drag frames and narrow mobile widths.
 List<CalendarBlockGeometry> calendarBlockLayout(
     Iterable<LocalTask> tasks, CalendarDayScale scale, double pixelsPerHour) {
-  final visible = tasks.where((t) =>
-    t.timeBlock != null &&
-    t.timeBlock!.start.isBefore(scale.end) &&
-    t.timeBlock!.end.isAfter(scale.start)).toList()
-      ..sort((a, b) => a.timeBlock!.start.compareTo(b.timeBlock!.start));
+  final visible = <ScheduledSlot>[];
+  for (final task in tasks) {
+    for (final slot in task.timeBlocks) {
+      if (slot.block.start.isBefore(scale.end) &&
+          slot.block.end.isAfter(scale.start)) {
+        visible.add(ScheduledSlot(task: task, slot: slot));
+      }
+    }
+  }
+  visible.sort((a, b) {
+    final c = a.slot.block.start.compareTo(b.slot.block.start);
+    return c != 0 ? c : a.slot.id.compareTo(b.slot.id);
+  });
   final laneEnds = <DateTime>[];
   final lanes = <int>[];
-  for (final task in visible) {
-    final start = task.timeBlock!.start;
+  for (final entry in visible) {
+    final start = entry.slot.block.start;
     var lane = laneEnds.indexWhere((end) => !end.isAfter(start));
     if (lane < 0) {
       lane = laneEnds.length;
-      laneEnds.add(task.timeBlock!.end);
+      laneEnds.add(entry.slot.block.end);
     } else {
-      laneEnds[lane] = task.timeBlock!.end;
+      laneEnds[lane] = entry.slot.block.end;
     }
     lanes.add(lane);
   }
@@ -160,16 +171,17 @@ List<CalendarBlockGeometry> calendarBlockLayout(
   return [
     for (var i = 0; i < visible.length; i++)
       CalendarBlockGeometry(
-        task: visible[i],
+        task: visible[i].task,
+        slot: visible[i].slot,
         top: scale.topFor(
-          visible[i].timeBlock!.start.isBefore(scale.start)
-              ? scale.start : visible[i].timeBlock!.start, pixelsPerHour),
-        height: (scale.topFor(
-            visible[i].timeBlock!.end.isAfter(scale.end)
-                ? scale.end : visible[i].timeBlock!.end, pixelsPerHour) -
-            scale.topFor(
-            visible[i].timeBlock!.start.isBefore(scale.start)
-                ? scale.start : visible[i].timeBlock!.start, pixelsPerHour)),
+          visible[i].slot.block.start.isBefore(scale.start)
+              ? scale.start : visible[i].slot.block.start, pixelsPerHour),
+        height: scale.topFor(
+            visible[i].slot.block.end.isAfter(scale.end)
+                ? scale.end : visible[i].slot.block.end, pixelsPerHour) -
+          scale.topFor(
+            visible[i].slot.block.start.isBefore(scale.start)
+                ? scale.start : visible[i].slot.block.start, pixelsPerHour),
         lane: lanes[i],
         totalLanes: count,
       ),

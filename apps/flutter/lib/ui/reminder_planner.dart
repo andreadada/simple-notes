@@ -58,7 +58,9 @@ abstract final class ReminderPlanner {
     required int leadMinutes,
   }) {
     _validate(ownerId, leadMinutes);
-    if (task.completed) return null;
+    if (task.completed) {
+      return null;
+    }
     final slot = task.timeBlocks.where((s) => s.id == slotId).firstOrNull;
     if (slot == null) return null;
     return _build(task, ownerId, 'block:${slot.id}',

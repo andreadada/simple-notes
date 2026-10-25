@@ -106,7 +106,7 @@ class _CalendarBoardState extends ConsumerState<CalendarBoard> {
       }
       await ref.read(localStoreProvider.notifier)
           .addTaskTimeSlot(taskId, suggested);
-      _showPlanningMessage('Blocco di ${quickDurationMinutes} minuti aggiunto.');
+      _showPlanningMessage('Blocco di $quickDurationMinutes minuti aggiunto.');
     } on FormatException catch (error) {
       _showPlanningMessage(error.message);
     } catch (_) {
@@ -571,7 +571,7 @@ class _CalendarBoardState extends ConsumerState<CalendarBoard> {
               hint: 'Cerca attività, tag o sottotask',
               control: FTextFieldControl.managed(
                 controller: searchController,
-                onChange: (value) => setState(() => searchTerm = value)),
+                onChange: (value) => setState(() => searchTerm = value.text)),
             ),
           ),
           const SizedBox(height: 8),

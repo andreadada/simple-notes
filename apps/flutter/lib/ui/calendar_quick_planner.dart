@@ -78,9 +78,13 @@ TimeBlock? suggestNextFreeBlock({
     final start = starts.single.instant;
     final end = ends.single.instant;
     if (start.isBefore(utcNow) ||
-        end.difference(start).inMinutes != durationMinutes) continue;
+        end.difference(start).inMinutes != durationMinutes) {
+      continue;
+    }
     if (busy.any((block) =>
-        block.start.isBefore(end) && block.end.isAfter(start))) continue;
+        block.start.isBefore(end) && block.end.isAfter(start))) {
+      continue;
+    }
     return TimeBlock(start: start, end: end, timeZone: timeZone);
   }
   return null;

@@ -207,6 +207,7 @@ class TimeBlockSyncIntegrationTest {
             {"operationId":"%s","entityId":"%s","entityType":"task",
              "action":"upsert","expectedVersion":1,
              "payload":{"title":"No",
+              "due":{"kind":"date","date":"2026-11-02"},
               "timeBlocks":[
                 {"id":"%s","start":"2026-11-01T08:00:00Z",
                  "end":"2026-11-01T09:00:00Z","timeZone":"Europe/Rome"},

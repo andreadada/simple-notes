@@ -236,17 +236,7 @@ class _CalendarBoardState extends ConsumerState<CalendarBoard> {
             child: Text('Nessun blocco o attività in questo giorno.',
               style: TextStyle(color: NotesPalette.secondaryText)),
           ),
-        if (mode == CalendarMode.day) ...[
-          const Text('TIMELINE · trascina per spostare,'
-              ' usa la maniglia inferiore per ridimensionare',
-            style: TextStyle(color: NotesPalette.secondaryText, fontSize: 11)),
-          const SizedBox(height: 10),
-          TimeBlockTimeline(
-            key: Key('calendar-day-timeline-${calendarDateKey(day)}'),
-            day: day, tasks: blocks, onChange: _saveBlock,
-          ),
-          const SizedBox(height: 16),
-        ] else if (blocks.isNotEmpty) ...[
+        if (mode != CalendarMode.day && blocks.isNotEmpty) ...[
           const Text('BLOCCHI DI TEMPO', style: TextStyle(
               color: NotesPalette.secondaryText, fontSize: 12,
               fontWeight: FontWeight.w600)),
@@ -273,6 +263,17 @@ class _CalendarBoardState extends ConsumerState<CalendarBoard> {
               color: NotesPalette.secondaryText, fontSize: 12)),
           const SizedBox(height: 8),
           for (final task in scheduled) _taskCard(task),
+        ],
+        if (mode == CalendarMode.day) ...[
+          const SizedBox(height: 14),
+          const Text('TIMELINE · trascina per spostare, '
+              'usa la maniglia inferiore per ridimensionare',
+            style: TextStyle(color: NotesPalette.secondaryText, fontSize: 11)),
+          const SizedBox(height: 10),
+          TimeBlockTimeline(
+            key: Key('calendar-day-timeline-${calendarDateKey(day)}'),
+            day: day, tasks: blocks, onChange: _saveBlock,
+          ),
         ],
       ],
     );

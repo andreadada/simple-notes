@@ -90,6 +90,8 @@ class _InteractiveBlock extends StatefulWidget {
 class _InteractiveBlockState extends State<_InteractiveBlock> {
   double move = 0;
   double resize = 0;
+  double? moveStartDy;
+  double? resizeStartDy;
   bool busy = false;
 
   Future<void> _commit(TimeBlock Function(TimeBlock) update) async {
@@ -122,14 +124,20 @@ class _InteractiveBlockState extends State<_InteractiveBlock> {
 
   void _finishMove() {
     final minutes = calendarGestureMinutes(move, widget.pixelsPerHour);
-    setState(() => move = 0);
+    setState(() {
+      move = 0;
+      moveStartDy = null;
+    });
     if (minutes != 0) {
       _commit((block) => calendarMoveBlock(block, minutes));
     }
   }
   void _finishResize() {
     final minutes = calendarGestureMinutes(resize, widget.pixelsPerHour);
-    setState(() => resize = 0);
+    setState(() {
+      resize = 0;
+      resizeStartDy = null;
+    });
     if (minutes != 0) {
       _commit((block) => calendarResizeBlock(block, minutes));
     }
@@ -188,9 +196,14 @@ class _InteractiveBlockState extends State<_InteractiveBlock> {
           Expanded(child: GestureDetector(
             key: Key('calendar-block-move-${task.id}'),
             behavior: HitTestBehavior.opaque,
+            onVerticalDragDown: busy ? null : (details) {
+              moveStartDy = details.globalPosition.dy;
+            },
             onVerticalDragStart: busy ? null : (_) => setState(() => move = 0),
-            onVerticalDragUpdate: busy ? null : (details) =>
-                setState(() => move += details.delta.dy),
+            onVerticalDragUpdate: busy ? null : (details) => setState(() {
+              move = details.globalPosition.dy -
+                  (moveStartDy ?? details.globalPosition.dy);
+            }),
             onVerticalDragEnd: busy ? null : (_) => _finishMove(),
             onVerticalDragCancel: () => setState(() => move = 0),
             child: Padding(
@@ -216,9 +229,14 @@ class _InteractiveBlockState extends State<_InteractiveBlock> {
           GestureDetector(
             key: Key('calendar-block-resize-${task.id}'),
             behavior: HitTestBehavior.opaque,
+            onVerticalDragDown: busy ? null : (details) {
+              resizeStartDy = details.globalPosition.dy;
+            },
             onVerticalDragStart: busy ? null : (_) => setState(() => resize = 0),
-            onVerticalDragUpdate: busy ? null : (details) =>
-                setState(() => resize += details.delta.dy),
+            onVerticalDragUpdate: busy ? null : (details) => setState(() {
+              resize = details.globalPosition.dy -
+                  (resizeStartDy ?? details.globalPosition.dy);
+            }),
             onVerticalDragEnd: busy ? null : (_) => _finishResize(),
             onVerticalDragCancel: () => setState(() => resize = 0),
             child: MouseRegion(

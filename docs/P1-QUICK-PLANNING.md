@@ -38,7 +38,7 @@
 - La pianificazione rapida evita le collisioni ma non è un ottimizzatore del calendario né una prenotazione con lock fra dispositivi. Due client offline potrebbero scegliere lo stesso slot, coerentemente con la sincronizzazione task-level esistente.
 - Per fusi non rilevati o orari fuori da 09:00–20:00 usare l'editor manuale; rimane modificabile direttamente il titolo del task.
 
-## Sviluppi successivi
+## Sviluppi previsti all'epoca (P1.6 già integrata)
 
 - P1.6 ricorrenze versionate con modello/sync e protezione client legacy.
 - P1.7 promemoria locali Android/Windows, evitando notifiche duplicate, con consenso alle autorizzazioni e controllo DST.

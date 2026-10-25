@@ -4,7 +4,7 @@
 > **Codice corrente:** P1.6 ricorrenze integrata su `main`, Flutter `0.10.0+12`, Flyway V10/Drift V8. P1.7 promemoria su branch senza delivery nativa. Ultimo server controllato V8; V9/V10 e dispositivi reali da verificare. Questa specifica contiene anche note storiche: consultare [CURRENT-STATUS.md](CURRENT-STATUS.md) per la versione effettiva e i gate.
 
 
-## Stato (25 ottobre 2026)
+## Stato storico dell'incremento P1.1 (25 ottobre 2026)
 
 **Implementato su GitHub main nel client Flutter `0.5.0+7`; risultati di CI e prove su hardware vanno verificati separatamente.** Non è stata installata questa versione sui dispositivi né eseguito un deploy da questa attività. Nessuna nuova tabella, migrazione Flyway o versione dell'API è richiesta da P1.1.
 
@@ -39,7 +39,7 @@
 
 ## Limiti dichiarati
 
-**P1.2 — Time blocking ancora da implementare.** La scadenza non è un blocco temporale: manca un intervallo inizio/fine o una durata. Non riutilizzare `dueAt` come orario di inizio e non alterare il modello `TaskDue` per simulare un blocco. La prossima modifica dovrà introdurre un modello start/end coerente con fusi orari, DST, conflitti e versionamento (nuovo contratto API/migrazioni con piano di rollout).
+**Al tempo di P1.1, P1.2 era ancora da implementare (ora integrata su `main`).** La scadenza non è un blocco temporale: manca un intervallo inizio/fine o una durata. Non riutilizzare `dueAt` come orario di inizio e non alterare il modello `TaskDue` per simulare un blocco. La prossima modifica dovrà introdurre un modello start/end coerente con fusi orari, DST, conflitti e versionamento (nuovo contratto API/migrazioni con piano di rollout).
 
 Ancora fuori ambito: drag/drop e ridimensionamento delle fasce orarie, ricorrenze, notifiche, connessione ai calendari Google/Outlook, sincronizzazione in background e selezione di slot senza scadenza.
 

@@ -1,4 +1,4 @@
-# Delta Sync v1 (P0 in sviluppo)
+# Delta Sync v1 — protocollo e storia degli incrementi
 
 <!-- CURRENT-STATUS-REF -->
 > **Stato coerente con repository:** P1.6 (ricorrenze, Flyway V10/Drift V8) integrata in `main`; P1.7 promemoria solo foundation su branch, **senza OS scheduler operativo**. Ultimo server verificato V8, V9/V10 da verificare prima di aggiornare i client. [Versioni e gate attuali](CURRENT-STATUS.md). I riferimenti precedenti nel documento costituiscono storico.

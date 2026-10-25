@@ -54,7 +54,7 @@
 - Questa versione non implementa auto-scroll durante il drag verso date fuori schermo, suggerimento di slot, layout completo degli eventi su tutta la settimana, undo transazionale, shortcut tastiera per resize, ricorrenze e Google/Outlook.
 - Il drag tra giorni preserva l'ora di partenza nel fuso dell'evento, mentre il drag verticale agisce sulla durata UTC: sull'ora del DST possono esserci salti visivi coerenti con il tempo reale.
 
-**Gate di rilascio:** merge del PR P1.3 solo dopo CI e approvazione, poi rollout backend P1.2 e installazione coordinata app. Nessun reset dei dati di test richiesto.
+**Gate di rilascio storico (merge già avvenuto):** merge del PR P1.3 solo dopo CI e approvazione, poi rollout backend P1.2 e installazione coordinata app. Nessun reset dei dati di test richiesto.
 
 ### Promozione del codice ≠ distribuzione
 

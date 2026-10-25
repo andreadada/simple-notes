@@ -56,9 +56,9 @@
 - `task_due_migration_test.dart`: precedente fixture V4 conservata, copre passaggi automatici fino a Drift V6.
 - CI GitHub Actions è la verifica automatizzata; **non** una prova di deploy o hardware.
 
-**Passaggio successivo:** P1.3 drag & drop dei blocchi e pianificazione multi-intervallo, dopo test/distribuzione coordinata P1.2.
+**Passaggio successivo previsto all'epoca (ora integrato):** P1.3 drag & drop dei blocchi e pianificazione multi-intervallo, dopo test/distribuzione coordinata P1.2.
 
-## Incremento successivo P1.3 in sviluppo
+## Cronologia — P1.3 in sviluppo (ora integrata)
 
 Il codice del calendario è stato esteso sul branch `feature/p1-3-calendar-interactions` (`0.7.0+9`): move/resize verticale e trasferimento tra giorni, senza cambiare Flyway V8 né il contratto `timeBlockSchema:1`. **Non è una release né un merge su main**. I limiti originali di questa pagina descrivono la *sola versione P1.2*. Specifica: [P1-CALENDAR-INTERACTIONS.md](P1-CALENDAR-INTERACTIONS.md).
 

@@ -1,7 +1,7 @@
 # AGENTS.md — Istruzioni operative per agenti AI
 
 <!-- CURRENT-STATUS-REF -->
-> **Unica fonte operativa:** [docs/CURRENT-STATUS.md](docs/CURRENT-STATUS.md). Al 25/10/2026, `main` include P1.6 (Flutter `0.10.0+12`, Drift V8, Flyway V10); P1.7 è in [PR #6 draft](https://github.com/andreadada/simple-notes/pull/6), senza notifiche native operative. Ultimo DB Coolify verificato: V8; V9/V10 e accettazione hardware del batch non confermati. Non trasformare versioni storiche in istruzioni correnti.
+> **Unica fonte operativa:** [docs/CURRENT-STATUS.md](docs/CURRENT-STATUS.md). Al 25/10/2026, `main` include P1.6 (Flutter `0.10.0+12`, Drift V8, Flyway V10); P1.7 Android è integrata con [PR #6](https://github.com/andreadada/simple-notes/pull/6), Flutter `0.11.0+13`: opt-in e scheduler Android inexact, **senza prova E2E reale**; su Windows notifiche disattivate senza MSIX. Ultimo DB Coolify verificato: V8; V9/V10 e accettazione hardware del batch non confermati. Non trasformare versioni storiche in istruzioni correnti.
 
 ## Prima di qualsiasi modifica
 
@@ -17,7 +17,7 @@
 - Le migrazioni Flyway e Drift sono **additive**, preservano dati reali e offline e vanno testate con fixture esistenti. Non confondere schema su `main` (Flyway V10/Drift V8) con schema realmente applicato su Coolify.
 - `TaskDue` ha semantiche `none/date/datetime/legacy`; date-only **non** significa mezzanotte UTC. Conservare IANA/DST, fold/gap, independence delle scadenze dai time block; fino a 12 slot per task e ricorrenze versione P1.6.
 - Prima di inviare nuovi payload, verificare `GET /api/v1/capabilities` con JWT: `taskDueSchema:1`, `timeBlockSchema:1`, `timeBlocksSchema:1`, `recurrenceSchema:1`. HTTP **426** blocca la sync conservando l'outbox; HTTP **409** è un conflitto, non un successo. Non usare CRUD legacy per simulare delta-sync.
-- P1.7 PR #6 calcola solo piani UTC deterministici; **non** dichiarare notifiche/scheduler native, permission handling, background delivery o packaging MSIX pronti finché implementati e verificati.
+- P1.7 (PR #6) integra planner UTC, riconciliazione, ledger, permesso Android richiesto solo su opt-in e scheduler inexact. **Non** dichiarare delivery Android con app chiusa verificata, reminder Windows, snooze, deep-link o packaging MSIX pronti: i test fisici e il packaging Windows mancano.
 
 ## Regole di design obbligatorie
 

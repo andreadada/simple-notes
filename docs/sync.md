@@ -1,7 +1,7 @@
 # Delta Sync v1 — protocollo e storia degli incrementi
 
 <!-- CURRENT-STATUS-REF -->
-> **Stato coerente con repository:** P1.6 (ricorrenze, Flyway V10/Drift V8) integrata in `main`; P1.7 promemoria solo foundation su branch, **senza OS scheduler operativo**. Ultimo server verificato V8, V9/V10 da verificare prima di aggiornare i client. [Versioni e gate attuali](CURRENT-STATUS.md). I riferimenti precedenti nel documento costituiscono storico.
+> **Stato codice (25/10/2026):** P1.7 Android integrata su `main` (Flutter `0.11.0+13`, Flyway V10/Drift V8): promemoria nativi inexact e opt-in, CI verde, **senza collaudo reale**. Windows ZIP senza notifiche finché non è pronto MSIX. Ultimo Coolify verificato V8, V9/V10 non attestati. **Fonte unica:** [CURRENT-STATUS.md](CURRENT-STATUS.md). I riferimenti storici più sotto non documentano un deploy attuale.
 
 
 ## Ultima versione di un elemento / risoluzione conflitto (P0)

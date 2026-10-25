@@ -1,7 +1,7 @@
 # Release P1.2 + P1.3 — Simple Notes 0.7.0+9
 
 <!-- CURRENT-STATUS-REF -->
-> **Stato codice:** P1.6 (Flutter 0.10, Flyway V10, Drift V8) integrata su `main` con CI verde. P1.7 promemoria in branch fondativo, **nessuna notifica OS attiva**. L'ultima VPS verificata è V8; V9/V10 non confermate. Per i deploy usare il [runbook batch](P1-RELEASE-BATCH.md) e lo [stato canonico](CURRENT-STATUS.md); quanto segue può descrivere versioni precedenti.
+> **Stato codice (25/10/2026):** P1.7 Android integrata su `main` (Flutter `0.11.0+13`, Flyway V10/Drift V8): promemoria nativi inexact e opt-in, CI verde, **senza collaudo reale**. Windows ZIP senza notifiche finché non è pronto MSIX. Ultimo Coolify verificato V8, V9/V10 non attestati. **Fonte unica:** [CURRENT-STATUS.md](CURRENT-STATUS.md). I riferimenti storici più sotto non documentano un deploy attuale.
 
 
 **Data:** 25 ottobre 2026 · **Codice integrato su `main`**. PR #1 (P1.2) e PR #2 (P1.3) merged. **NON attestare come distribuito:** Coolify, Flyway V8 reale, app Windows/Android reali e prova E2E restano da verificare. Il lavoro GitHub è terminato; il deploy Coolify richiede accesso all'installazione del proprietario.

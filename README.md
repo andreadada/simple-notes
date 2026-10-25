@@ -3,14 +3,14 @@
 App offline-first per **Windows 11 e Android** dedicata ad attività, note e pianificazione. Flutter/Forui con Drift SQLite locale, Google OAuth e sincronizzazione con Spring Boot/PostgreSQL su Coolify.
 
 <!-- CURRENT-STATUS-REF -->
-> **Stato di riferimento (25/10/2026):** P1.1–P1.6 integrate su `main`; Flutter `0.10.0+12`, Drift V8, Flyway fino a V10. P1.7 è una PR draft separata, **solo motore di pianificazione**: nessuna notifica nativa Android/Windows operativa. Ultima VPS verificata: Flyway V8; V9/V10 e collaudo Windows↔Android del batch non attestati. Lo stato verificabile e i gate sono in **[docs/CURRENT-STATUS.md](docs/CURRENT-STATUS.md)**.
+> **Stato di riferimento (25/10/2026):** P1.1–P1.6 e **P1.7 Android** integrate su `main`; Flutter `0.11.0+13`, Drift V8, Flyway V10. P1.7 Android offre promemoria locali **opt-in e inexact** nel codice, CI verde, non ancora provati su un telefono reale; **Windows non notifica** senza MSIX/package identity. Ultima VPS verificata: Flyway V8; V9/V10 e collaudo Windows↔Android del batch non attestati. Lo stato verificabile e i gate sono in **[docs/CURRENT-STATUS.md](docs/CURRENT-STATUS.md)**.
 
 ## Funzionalità presenti nel codice
 
 - Login Google, note e task, liste/priorità/tag/sottotask, modifica direttamente sul testo visualizzato, cestino note e sincronizzazione offline-first con coda persistente.
 - Calendario giorno/settimana/mese, scadenze civili e date-time con fuso IANA e DST.
 - Blocchi orari multipli e drag/resize, riepilogo del tempo, slot liberi, ricerca e filtri.
-- Ricorrenze giornaliere/settimanali/mensili (P1.6). **Non** generano notifiche con app chiusa: P1.7 non è ancora distribuita.
+- Ricorrenze giornaliere/settimanali/mensili (P1.6). P1.7 aggiunge scheduling locale Android opt-in (delivery da verificare sul telefono); nessun reminder nativo sul client Windows ZIP.
 
 **Implementato su GitHub ≠ distribuito.** Prima di installare client aggiornati verificare su Coolify Flyway V10 e le capability autenticate. Nessun reset, cancellazione di volumi o migrazione manuale per una normale verifica. Il deploy resta un'operazione distinta e controllata dall'utente.
 
@@ -21,7 +21,7 @@ App offline-first per **Windows 11 e Android** dedicata ad attività, note e pia
 - [Handoff e cronologia](docs/HANDOFF.md)
 - [Architettura](docs/architecture.md), [API](docs/api.md), [sync](docs/sync.md)
 - [Client Windows/Android](apps/flutter/README.md), [backend/Coolify](infra/README.md)
-- [P1.6: ricorrenze](docs/P1-RECURRENCE.md), [P1.7: PR in sviluppo](https://github.com/andreadada/simple-notes/pull/6)
+- [P1.6: ricorrenze](docs/P1-RECURRENCE.md), [P1.7: Android e limiti Windows](docs/P1-REMINDERS-FOUNDATION.md)
 - [Runbook di rilascio V10](docs/P1-RELEASE-BATCH.md) e [check E2E](docs/T4-DEVICE-SYNC.md)
 
 ## Regole UX e dati

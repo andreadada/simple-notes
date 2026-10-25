@@ -1,6 +1,6 @@
-# Rollout coordinato — Simple Notes P1.6 (V10)
+# Rollout coordinato — Simple Notes backend V10 e client P1.7 Android
 
-**Stato:** runbook preparato in repository; nessun deploy né installazione device eseguiti dalla PR #5. L'utente ha scelto di effettuare personalmente il deploy Coolify **dopo** il gruppo di incrementi. I comandi sono istruzioni di sola lettura salvo il pulsante **Redeploy** esplicitamente indicato.
+**Stato:** runbook per backend P1.6 V10 e client P1.7 Android `0.11.0+13`; le PR #5 e #6 sono su `main`, ma nessun deploy né nuova installazione sui dispositivi è stato attestato da questa attività. L'utente ha scelto di effettuare personalmente il deploy Coolify **dopo** il gruppo di incrementi. I comandi sono istruzioni di sola lettura salvo il pulsante **Redeploy** esplicitamente indicato.
 
 ## Prima di agire
 
@@ -52,7 +52,7 @@ FAILED_MIGRATIONS=0
 
 Health deve restituire `{"status":"UP"}`. Su endpoint autenticato `/api/v1/capabilities` verificare **`taskDueSchema:1`**, **`timeBlockSchema:1`**, **`timeBlocksSchema:1`** e **`recurrenceSchema:1`**, usando JWT in locale: **non inserire token nei messaggi, screenshot o log**. Il semplice health UP non dimostra tutte le capability.
 
-## 4 — Client soltanto quando backend è compatibile
+## 4 — Client Flutter 0.11.0+13 soltanto quando backend è compatibile
 
 Sul PC con repository aggiornato su `main`:
 
@@ -73,6 +73,6 @@ Verificare con lo **stesso account Google**: dati Windows↔Android, note e cest
 
 ## Limiti
 
-- P1.6 **non** include notifiche native o generazione automatica a client chiuso; promemoria P1.7 restano un incremento distinto.
+- P1.6 di per sé non genera notifiche a client chiuso. P1.7 introduce notifiche **solo Android** opt-in e inexact (CI verde, test real-device da completare); il client Windows ZIP non le attiva. Vedere [P1-REMINDERS-FOUNDATION.md](P1-REMINDERS-FOUNDATION.md).
 - Un downgrade del codice **non** annulla in sicurezza migrazioni Flyway già applicate. Non tentare di tornare a V8 cancellando manualmente le colonne.
 - In caso di migration ERROR o HTTP426 fermarsi e diagnosticare, mantenendo i dati/operazioni in coda: evitare azioni distruttive.

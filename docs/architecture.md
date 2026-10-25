@@ -1,7 +1,7 @@
 # Simple Notes — Architettura applicativa
 
 <!-- CURRENT-STATUS-REF -->
-> **Snapshot del codice (25/10/2026):** P1.6 integrata su `main`; Flutter `0.10.0+12`, Drift schema V8, backend Flyway fino a V10. P1.7 reminder foundation resta in PR draft senza delivery OS. Il server Coolify era **verificato solo a Flyway V8**; V9/V10 e nuovo test E2E non attestati. [Stato canonico](CURRENT-STATUS.md).
+> **Stato codice (25/10/2026):** P1.7 Android integrata su `main` (Flutter `0.11.0+13`, Flyway V10/Drift V8): promemoria nativi inexact e opt-in, CI verde, **senza collaudo reale**. Windows ZIP senza notifiche finché non è pronto MSIX. Ultimo Coolify verificato V8, V9/V10 non attestati. **Fonte unica:** [CURRENT-STATUS.md](CURRENT-STATUS.md). I riferimenti storici più sotto non documentano un deploy attuale.
 
 ## Componenti del codice attuale
 

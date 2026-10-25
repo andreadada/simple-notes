@@ -1,6 +1,6 @@
 # P1.7 — Promemoria Android e pianificazione cross-platform
 
-**Stato del branch (25 ottobre 2026):** integrazione Android in PR #6, ancora da validare in CI e su dispositivo. P1.6 è già integrata su `main`. Non equivale a un deploy, a una release Windows né a notifiche E2E verificate.
+**Stato del codice (25 ottobre 2026):** P1.7 Android integrata su `main` con [PR #6](https://github.com/andreadada/simple-notes/pull/6), merge `df40b93e`. CI Flutter **verde** ([run 40231569864](https://github.com/andreadada/simple-notes/actions/runs/40231569864)) su test, Windows release e APK JDK17/21. **Nessun test fisico Android**, deploy e delivery Windows da attestare.
 
 ## Implementato in questo incremento
 
@@ -23,7 +23,7 @@
 
 ## Gate di verifica
 
-1. CI Flutter analyze/test, Windows release, APK Android JDK17/JDK21: verdi **sullo SHA finale**.
+1. [x] CI Flutter analyze/test, Windows release, APK Android JDK17/JDK21 **verdi** sul branch prima del merge (run 40231569864); [ ] nuova CI di main se richiesta.
 2. Su Android autentica Google, verifica `boundOwnerId`, attiva dal menu, accetta permesso; conferma pending schedulati e ricezione reale con app chiusa.
 3. Task data-only (nessun allarme), con orario, più time block, ricorrenza avanzata, DST fold/gap, modifica/cancellazione/completamento e assenza di duplicati.
 4. Disattiva e verifica annullamento; riattiva e cambia account, verifica nessuna notifica del precedente; nega il permesso e conferma che lo stato non diventa «attivo».

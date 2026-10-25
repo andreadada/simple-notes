@@ -26,4 +26,4 @@
 - Flutter CI: analisi/lint, widget/logic tests, build Windows e Android JDK17/21.
 - Test manuali **solo nel batch successivo:** scegliere ricorrenza, completare e verificare data cambiata e ID invariato; test cross-device, offline/online e DST; vecchio client HTTP 426, senza reset.
 - Per distribuire: Flyway V10 **prima** di Flutter 0.10, health e capability verificate. Aggiornare [CURRENT-STATUS.md](CURRENT-STATUS.md) soltanto con prova reale.
-- Il prossimo step P1.7 saranno notifiche locali Android/Windows con deduplica e permessi espliciti; non appartengono a P1.6.
+- P1.7 Android è stata integrata successivamente con opt-in, deduplica e scheduler locale inexact, ma non è stata verificata su hardware; Windows necessita MSIX. Queste funzioni non appartengono al contratto P1.6: [stato corrente](CURRENT-STATUS.md), [P1.7](P1-REMINDERS-FOUNDATION.md).

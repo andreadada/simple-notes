@@ -1,13 +1,13 @@
 # Simple Notes — Progetto e roadmap
 
 <!-- CURRENT-STATUS-REF -->
-> **Stato del codice 25/10/2026:** P1.1–P1.6 integrate su `main` (Flutter `0.10.0+12`, Drift V8, Flyway V10). P1.7 reminder **solo foundation** in [PR #6](https://github.com/andreadada/simple-notes/pull/6), non fusa, senza notifiche native. Ultimo server Coolify verificato V8; V9/V10 e batch E2E non attestati. **Fonte unica:** [docs/CURRENT-STATUS.md](docs/CURRENT-STATUS.md).
+> **Stato del codice 25/10/2026:** P1.1–P1.6 e P1.7 Android integrate su `main` (Flutter `0.11.0+13`, Drift V8, Flyway V10). P1.7 Android ha opt-in, permessi e scheduler locale inexact, **non collaudato su telefono reale**; Windows non notifica senza MSIX. Ultimo server Coolify verificato V8; V9/V10 e batch E2E non attestati. **Fonte unica:** [docs/CURRENT-STATUS.md](docs/CURRENT-STATUS.md).
 
 **Obiettivo:** Windows 11 + Android offline-first, Google OAuth, Flutter/Forui/Drift + Spring Boot/PostgreSQL su Coolify. Regole UX in [design.md](design.md); deploy sicuro in [P1-RELEASE-BATCH.md](docs/P1-RELEASE-BATCH.md). Le checklist sotto includono traguardi storici: `[x]` significa **codice verificato nella CI o prova specifica**, non distribuzione sul VPS.
 
 ## Gate corrente (non eseguito)
 
-- [ ] Completare integrazione delivery nativa di P1.7 e CI; PR #6 è al momento solo pianificazione.
+- [x] P1.7 Android con scheduler inexact, ledger, opt-in e CI verde (PR #6). [ ] Prova fisica Android app chiusa/reboot e controllo permessi; [ ] packaging MSIX e promemoria Windows.
 - [ ] Verificare Flyway V10, health **e** capability su Coolify prima di nuovi client.
 - [ ] Eseguire il collaudo E2E Windows↔Android **solo a fine batch**, preservando database e dati locali.
 - [ ] Concludere hardening, signing, offsite secondo decisione esplicita prima di release pubblica.
@@ -112,7 +112,7 @@
 - [x] **P1.4 Multi-block + riepilogo**: PR #3 integrata in main; 12 slot per attività, Flyway V9/Drift V7, CI superate. Deploy e collaudo hardware ancora da verificare. [Specifica](docs/P1-MULTI-BLOCKS.md).
 - [x] **P1.5 Pianificazione rapida e filtri**: PR #4 unita in `main` (Flutter `0.9.0+11`, CI verde), hardware non collaudato. [Specifica](docs/P1-QUICK-PLANNING.md).
 - [x] **P1.6 Ricorrenze**: PR #5 integrata, Flutter 0.10/Flyway V10/Drift V8, CI completa verde; deploy ancora da verificare. [Specifica](docs/P1-RECURRENCE.md).
-- [ ] **P1.7 Promemoria nativi**: branch dedicato PR #6 (motore di pianificazione senza adapter OS); notifiche Windows/Android non implementate.
+- [x] **P1.7 Android nel codice**: PR #6 integrata, Flutter 0.11, scheduler inexact e ledger opt-in; CI verde, test fisici non eseguiti. [ ] Promemoria Windows con MSIX e cancellazione affidabile. [Specifica](docs/P1-REMINDERS-FOUNDATION.md).
 - [ ] Eisenhower Matrix a quattro quadranti.
 - [ ] Kanban con drag & drop.
 - [ ] Pomodoro/cronometro e statistiche.

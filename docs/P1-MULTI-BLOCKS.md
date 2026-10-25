@@ -1,7 +1,7 @@
 # P1.4 — Multi-block, duplicate e riepilogo focus
 
 <!-- CURRENT-STATUS-REF -->
-> **Codice corrente:** P1.6 ricorrenze integrata su `main`, Flutter `0.10.0+12`, Flyway V10/Drift V8. P1.7 promemoria su branch senza delivery nativa. Ultimo server controllato V8; V9/V10 e dispositivi reali da verificare. Questa specifica contiene anche note storiche: consultare [CURRENT-STATUS.md](CURRENT-STATUS.md) per la versione effettiva e i gate.
+> **Stato codice (25/10/2026):** P1.7 Android integrata su `main` (Flutter `0.11.0+13`, Flyway V10/Drift V8): promemoria nativi inexact e opt-in, CI verde, **senza collaudo reale**. Windows ZIP senza notifiche finché non è pronto MSIX. Ultimo Coolify verificato V8, V9/V10 non attestati. **Fonte unica:** [CURRENT-STATUS.md](CURRENT-STATUS.md). I riferimenti storici più sotto non documentano un deploy attuale.
 
 
 ## Funzioni implementate

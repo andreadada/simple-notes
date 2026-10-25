@@ -140,7 +140,9 @@ class LocalStore extends Notifier<LocalData> {
       throw StateError('Imposta prima una scadenza con data.');
     }
     if (task.recurrence.kind == rule.kind &&
-        task.recurrence.interval == rule.interval) return;
+        task.recurrence.interval == rule.interval) {
+      return;
+    }
     await _persistTask(task.copyWith(
         recurrence: rule, changeRecurrence: true));
   }

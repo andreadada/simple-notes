@@ -163,6 +163,22 @@ class CloudSync extends StateNotifier<SyncState> {
     return capabilities['noteRestoreSchema'] == 1;
   }
 
+  /// P1.2: even an explicit "none" needs a capability gate; old servers
+  /// may otherwise ignore a requested block removal and acknowledge it.
+  Future<bool> _supportsTimeBlocks() async {
+    final token = await ref.read(cloudAuthProvider.notifier).validAccessToken();
+    final result = await _client.get(
+      Uri.parse('$_apiBaseUrl/api/v1/capabilities'),
+      headers: {'Authorization': 'Bearer $token'},
+    ).timeout(const Duration(seconds: 20));
+    if (result.statusCode == 404) return false;
+    if (result.statusCode != 200) {
+      throw StateError('Capacità API non verificabili (HTTP ${result.statusCode})');
+    }
+    return (jsonDecode(result.body)
+        as Map<String, dynamic>)['timeBlockSchema'] == 1;
+  }
+
   /// T4: passive, read-only diagnostics for real Windows/Android acceptance.
   /// Never uploads outbox entries, changes local ownership or logs secrets.
   Future<SyncDiagnostics> inspectSync() async {
@@ -245,6 +261,7 @@ class CloudSync extends StateNotifier<SyncState> {
       int uploaded = 0;
       bool? typedDueSupported;
       bool? noteRestoreSupported;
+      bool? timeBlockSupported;
       for (final op in mutations) {
         conflicting = op;
         verifyAccount();
@@ -256,6 +273,11 @@ class CloudSync extends StateNotifier<SyncState> {
             due is Map && (due['kind'] == 'date' || due['kind'] == 'datetime')) {
           typedDueSupported ??= await _supportsTypedDue();
           if (!typedDueSupported) throw const SyncUpgradeRequired();
+        }
+        if (op.entityType == 'task' && op.action == 'upsert' &&
+            payload.containsKey('timeBlock')) {
+          timeBlockSupported ??= await _supportsTimeBlocks();
+          if (!timeBlockSupported) throw const SyncUpgradeRequired();
         }
         if (op.entityType == 'note' && op.action == 'restore') {
           noteRestoreSupported ??= await _supportsNoteRestore();

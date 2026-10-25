@@ -28,6 +28,9 @@ void main() {
     final server = <String, Map<String, dynamic>>{};
     final changes = <Map<String, dynamic>>[];
     final mock = MockClient((request) async {
+      if (request.url.path == '/api/v1/capabilities') {
+        return http.Response('{"timeBlockSchema":1}', 200);
+      }
       if (request.url.path == '/api/v1/sync/apply') {
         final op = jsonDecode(request.body) as Map<String, dynamic>;
         final id = op['entityId'] as String;

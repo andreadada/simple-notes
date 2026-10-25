@@ -47,6 +47,7 @@ class LocalStore extends Notifier<LocalData> {
     TaskDue? due, bool changeDue = false,
     String? listId, bool changeListId = false, int? priority,
     List<String>? tags, List<LocalSubtask>? subtasks,
+    TimeBlock? timeBlock, bool changeTimeBlock = false,
   }) async {
     final trimmed = title.trim();
     if (trimmed.isEmpty) return;
@@ -76,6 +77,7 @@ class LocalStore extends Notifier<LocalData> {
           priority: priority,
           tags: tags?.map((tag) => tag.trim()).toSet().toList(),
           subtasks: subtasks,
+          timeBlock: timeBlock, changeTimeBlock: changeTimeBlock,
         );
         await _persistTask(changed);
         return;
@@ -127,6 +129,15 @@ class LocalStore extends Notifier<LocalData> {
     final task = state.tasks.where((item) => item.id == id).firstOrNull;
     if (task == null) throw StateError('Attività non disponibile.');
     await _persistTask(task.copyWith(due: due, changeDue: true));
+  }
+
+  /// An explicit block update uses the newest in-memory task and keeps
+  /// its independent due date intact. null clears the block, not the due date.
+  Future<void> setTaskTimeBlock(String id, TimeBlock? block) async {
+    final task = state.tasks.where((item) => item.id == id).firstOrNull;
+    if (task == null) throw StateError('Attività non disponibile.');
+    await _persistTask(task.copyWith(
+        timeBlock: block, changeTimeBlock: true));
   }
 
   Future<void> setTaskDue(String id, DateTime? date) async {

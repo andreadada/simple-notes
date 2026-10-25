@@ -46,3 +46,7 @@ Ancora fuori ambito: drag/drop e ridimensionamento delle fasce orarie, ricorrenz
 - E2E Windows–Android: **non completato**.
 - Coolify deploy: **non eseguito**; P1.1 è client-only.
 - Nessun reset dati e nessuna migrazione richiesti per aggiornare il client.
+
+## P1.2 in sviluppo su branch separato (25/10/2026)
+
+La versione successiva estende la proiezione aggiungendo i blocchi temporali distinti dalle scadenze. Serve API `timeBlockSchema:1` e Flyway V8 prima di aggiornare client: [P1-TIME-BLOCKING.md](P1-TIME-BLOCKING.md). Fino al merge e al rollout, le funzioni P1.2 **non sono presenti nella release attuale**.

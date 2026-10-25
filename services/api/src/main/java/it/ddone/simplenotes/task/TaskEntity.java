@@ -26,6 +26,9 @@ public class TaskEntity {
     @Column(name = "due_time") public LocalTime dueTime;
     @Column(name = "due_timezone", length = 128) public String dueTimezone;
     @Column(name = "due_offset_seconds") public Integer dueOffsetSeconds;
+    @Column(name = "block_start_at") public Instant blockStartAt;
+    @Column(name = "block_end_at") public Instant blockEndAt;
+    @Column(name = "block_timezone", length = 128) public String blockTimezone;
     @Column(name = "completed_at") public Instant completedAt;
     @Version public long version;
     @Column(name = "created_at", nullable = false) public Instant createdAt;

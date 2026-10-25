@@ -102,6 +102,14 @@ public class SyncService {
                 throw new ClientUpgradeRequiredException();
             due = TaskDue.fromOldInstant(optionalInstant(value, "dueAt"));
         }
+        // The time block must never be silently dropped by an old client
+        // editing the task title. Explicit schema capability is required.
+        TaskTimeBlock block = null;
+        if (value.has("timeBlock")) {
+            block = TaskTimeBlock.parse(value.get("timeBlock"));
+        } else if (existing != null && existing.blockStartAt != null) {
+            throw new ClientUpgradeRequiredException();
+        }
         boolean completed = value.path("completed").asBoolean(false);
         UUID listId = optionalUuid(value, "listId");
         if (listId != null && !lists.existsByIdAndOwnerIdAndDeletedAtIsNull(listId, owner)) {
@@ -127,6 +135,7 @@ public class SyncService {
             entity.updatedAt = Instant.now();
         }
         due.applyTo(entity);
+        TaskTimeBlock.applyTo(entity, block);
         entity.listId = listId;
         entity.priority = priority;
         entity.tagsJson = tagsJson;
@@ -140,6 +149,7 @@ public class SyncService {
         result.put("description", entity.description == null ? "" : entity.description);
         result.put("dueAt", entity.dueAt == null ? "" : entity.dueAt.toString());
         result.put("due", TaskDue.fromEntity(entity).toPayload());
+        result.put("timeBlock", TaskTimeBlock.toPayload(entity));
         result.put("createdAt", entity.createdAt.toString());
         result.put("listId", entity.listId == null ? null : entity.listId.toString());
         result.put("priority", entity.priority);

@@ -1,5 +1,8 @@
 # Flutter client — P0 e P1
 
+> **P1.2 su branch dedicato (25/10):** Flutter `0.6.0+8`, editor blocchi temporali e calendario, migration Drift V6, `timeBlockSchema:1` prima dell'upload. Ancora NON rilasciato. [Specifica](../../docs/P1-TIME-BLOCKING.md).
+
+
 > **25/10/2026 — versione `0.5.0+7`**: P1.1 Calendario giorno/settimana/mese (proiezione di `TaskDue`, aggiunta rapida, inline edit; senza migrazioni) implementato nel client, CI e prova hardware distinte. Reset del workspace test eseguito dall'utente su PostgreSQL, Windows e Android, non da GitHub Actions. Documentazione: [P1-CALENDAR](../../docs/P1-CALENDAR.md) e [RESET-TEST-DATA](../../docs/RESET-TEST-DATA.md). Il ripristino del Cestino richiede backend con capability `noteRestoreSchema:1`; Coolify non è stato aggiornato da questa sessione.
 
 ## Stato reale verificato e T4.2 (24 ottobre 2026)

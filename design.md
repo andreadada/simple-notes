@@ -1,5 +1,10 @@
 # Simple Notes — Design & Product Specification
 
+## Stato P1.4 dopo il merge — 25/10/2026
+
+**P1.4 è integrata su `main`** (PR #3, merge `ab4cd441`, Flutter `0.8.0+10`, Flyway **V9** e Drift **V7**). Backend, Flutter e Compose CI della PR sono **verdi**. L'installazione effettiva sui dispositivi e la migrazione Flyway V9 sulla VPS **non sono state verificate**; non confondere il merge con il deploy. Le descrizioni sotto etichettate «branch in sviluppo» si riferiscono allo stato storico precedente al merge. Collezioni multi-blocco, editor e riepilogo focus sono documentati in [P1-MULTI-BLOCKS.md](docs/P1-MULTI-BLOCKS.md). **Niente reset né modifiche ai dati reali da questa operazione.**
+
+
 ## P1.4 — Multi-block e riepilogo focus (25/10/2026)
 
 **Branch in sviluppo `feature/p1-4-multi-blocks-batch`, NON ancora su `main`, NON deployato su Coolify.** Flutter `0.8.0+10`; backend Flyway V9, Drift V7, fino a 12 slot per attività con ID stabili; CRUD/pannello Forui, copia slot, drag mirato e riepilogo pianificate/completate. Compatibilità protetta con `timeBlocksSchema:1` / 426 su client V8 incapaci di salvare il multi-block. Il server attualmente installato dall'utente rimane Flyway V8 e il client effettivo non è stato aggiornato a V0.8. Niente reset/dati persi e **collaudo dispositivi rimandato a fine batch**. [Specifiche](docs/P1-MULTI-BLOCKS.md).

@@ -12,6 +12,7 @@ public class CapabilitiesController {
         return Map.of("taskDueSchema", 1,
             "taskDueKinds", new String[]{"none", "date", "datetime", "legacy"},
             "requiresExplicitDueForModernTasks", true,
-            "noteRestoreSchema", 1);
+            "noteRestoreSchema", 1,
+            "timeBlockSchema", 1);
     }
 }

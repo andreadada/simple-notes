@@ -1,5 +1,10 @@
 ## Stato operativo aggiornato — 25 ottobre 2026 (fonte corrente)
 
+## P1.2 — Time blocking in sviluppo (25 ottobre 2026)
+
+**Branch `feature/p1-2-time-blocking`, Flutter `0.6.0+8`.** Introdotto intervallo `timeBlock` indipendente dalla scadenza, con editor Forui, blocchi nel calendario e percorso di sincronizzazione versionato. **Backend V8/Drift V6 sono solo codice: nessun deploy Coolify, migrazione reale, nuova pulizia dati o installazione sui dispositivi effettuata.** `timeBlockSchema:1` è un gate obbligatorio prima di inviare nuovi task. I test CI automatici e l'accettazione PC↔Android sono ancora da verificare. Non confondere codice implementato con feature già rilasciata. Specifica e piano: [P1-TIME-BLOCKING.md](docs/P1-TIME-BLOCKING.md). La versione su `main` resta `0.5.0+7` fino a merge autorizzato/dopo verifiche.
+
+
 **Reset del workspace di test concluso dall'utente:** PostgreSQL `simplenotes` verificato con **0 task, 0 liste, 0 note, 0 eventi e 0 operazioni di sync**; SQLite Windows eliminata dallo script, dati Android cancellati dalle impostazioni del dispositivo dopo che ADB `pm clear` era stato rifiutato dal sistema. Il reset è stato confermato dall'utente: **non va ripetuto** per avviare P1. `app_user`, sessioni backend, schema e Flyway restano conservati. I conteggi storici (5 note soft-deleted, cursor 34, backup e restore PASS) descrivono lo stato **prima** del reset, non quello corrente.
 
 **Codice:** Flutter `0.5.0+7` introduce **P1.1 Calendario** (giorno/settimana/mese, agenda, scadenze date-only e timed, edit inline, aggiunta rapida) tramite proiezione dei task già sincronizzati, **senza migrazioni DB né nuove API**. Vedi [P1-CALENDAR.md](docs/P1-CALENDAR.md) (oppure [specifica P1.1](P1-CALENDAR.md) per i documenti in `docs/`). Cestino note/restore versionato già implementato in `0.4.2+6`, ma **non verificato sui dispositivi** e per il ripristino cloud richiede l'API aggiornata `noteRestoreSchema:1`; il deploy Coolify non è attestato. P1.2 time blocking, P0 reminder/ricorrenze/hardening e test E2E restano **aperti**, non vengono segnati completati.
@@ -157,7 +162,7 @@ Riferimento tecnico: `apps/flutter/lib/ui/notes_theme.dart` (`InlineTextMetrics.
 
 ## P1 — Produttività completa
 - [ ] **P1.1 Calendario giorno/settimana/mese** implementato nel codice Flutter `0.5.0+7`, in attesa di CI e verifica hardware; [specifica](docs/P1-CALENDAR.md). 
-- [ ] **P1.2 Time blocking**: modello esplicito inizio/fine e relativa UX/sync ancora da progettare e testare.
+- [ ] **P1.2 Time blocking**: modello start/end, backend Flyway V8, Flutter Drift V6, editor e sincronizzazione implementati sul branch `feature/p1-2-time-blocking`; CI/hardware/deploy ancora da verificare. [Specifica](docs/P1-TIME-BLOCKING.md).
 - [ ] Eisenhower Matrix a quattro quadranti.
 - [ ] Kanban con drag & drop.
 - [ ] Pomodoro/cronometro e statistiche.
@@ -325,3 +330,4 @@ Esempio: `2026-10-21 14:20 CEST | commit abc1234 | Aggiunto modulo promemoria e 
 - 2026-10-24 | fix(t4.2) | Lo script per build locali permette working tree tracciati modificati senza cancellarli; segnala build non riproducibile da HEAD nel manifest, supporta `-CheckOnly` e `-RequireClean` opzionale, evita rigenerazione piattaforme se già presenti e non usa cancellazione automatica output di build_runner. Nessuna migrazione/deploy/data reset.
 - 2026-10-24 | feat(notes)+tools | Nuovo cestino note, restore versionato tramite backend con controllo capacità, protezione contro delta vecchi, test Flutter/backend; script di reset del SOLO workspace test con conferme e anteprima, locali Windows/Android e dati server. Nessuna cancellazione dati, migrazione o deploy effettuato da ChatGPT. Successivo P1 calendario dopo smoke test.
 - 2026-10-25 | feat(p1.1) | Implementato Calendario giorno/settimana/mese su Flutter (TaskDue civili/IANA esistenti, navigazione, task inline, quick-add e test). Reset dati di test confermato dall'utente su server/Windows/Android; nessun deploy o modifica DB svolta dall'assistente. P1.2 time blocking ancora da fare.
+- 2026-10-25 | feat(p1.2) | Sviluppo branch P1.2: TimeBlock UTC/IANA come periodo distinto dalla scadenza, PostgreSQL V8, Drift V6, sync capability fail-closed, calendario/editor e test. Non applicato su Coolify né sui device. Dopo CI restano rollout e test reali.

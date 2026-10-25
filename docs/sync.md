@@ -67,3 +67,7 @@ Il campo `due` è ora supportato nel **codice backend**: `{kind:none}`, `{kind:d
 - Conflitti: la lista è una entità con revisione propria; le modifiche ai sottotask appartengono alla versione dell'intero task, non hanno merge automatico per campo.
 
 Per dettagli, limiti e sequenza di deploy: [task-organization.md](task-organization.md).
+
+## P1.2 — protezione dei blocchi orari
+
+Il task serializza `timeBlock` come `kind:none|range` con `start/end` UTC e `timeZone` IANA. Qualsiasi task upsert nuovo verifica prima `timeBlockSchema:1` via API capabilities; fallimento conserva la coda. Il server, dopo Flyway V8, rifiuta con 426 aggiornamenti legacy privi di `timeBlock` se l'entità ha un blocco esistente. La scadenza `due` non è collegata al blocco. [P1-TIME-BLOCKING.md](P1-TIME-BLOCKING.md).

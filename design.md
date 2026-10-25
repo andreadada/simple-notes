@@ -1,5 +1,12 @@
 # Simple Notes — Design & Product Specification
 
+## P1.2 — Time blocking in sviluppo (25 ottobre 2026)
+
+**Branch `feature/p1-2-time-blocking`, Flutter `0.6.0+8`.** Introdotto intervallo `timeBlock` indipendente dalla scadenza, con editor Forui, blocchi nel calendario e percorso di sincronizzazione versionato. **Backend V8/Drift V6 sono solo codice: nessun deploy Coolify, migrazione reale, nuova pulizia dati o installazione sui dispositivi effettuata.** `timeBlockSchema:1` è un gate obbligatorio prima di inviare nuovi task. I test CI automatici e l'accettazione PC↔Android sono ancora da verificare. Non confondere codice implementato con feature già rilasciata. Specifica e piano: [P1-TIME-BLOCKING.md](docs/P1-TIME-BLOCKING.md). La versione su `main` resta `0.5.0+7` fino a merge autorizzato/dopo verifiche.
+
+**Design constraint:** le scadenze sono *deadline*, i blocchi sono periodi con inizio/fine e fuso IANA. Non rendere una deadline un blocco a mezzanotte. Per un attributo semplice continuare con editing inline; usare un dialog Forui soltanto per l'intervallo composto (data, ora, fuso, fold DST).
+
+
 > **Aggiornamento prodotto 25/10/2026:** nuova sezione calendario P1.1 client-only con giorno/settimana/mese e quick-add inline; regola **inline-edit first** invariata. Giorni senza orario NON diventano midnight UTC, gli orari usano il giorno di visualizzazione locale senza perdere l'etichetta IANA. P1.2 time blocking non implementato. Reset di test PostgreSQL + Windows + Android confermato dall'utente; le note storiche sotto datate 24/10 sono precedenti al reset. Specifica: [P1-CALENDAR](docs/P1-CALENDAR.md).
 
 > **Stato reale 24/10/2026:** PostgreSQL `simplenotes` 17.11, Flyway V1–V7 riuscite, backup `simple-notes-20261024T132857Z-271921.dump` con SHA256 valido e restore isolato PASS. Copia offsite non effettuata per scelta dell'utente. Restano da verificare l'API autenticata (`taskDueSchema:1`) e il collaudo T4.2 Windows↔Android con Flutter `0.4.0+4`. Non ripetere backup, migrazioni o deploy automaticamente. [T4.2](docs/T4-DEVICE-SYNC.md).

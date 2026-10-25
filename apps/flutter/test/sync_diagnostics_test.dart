@@ -36,7 +36,7 @@ void main() {
   const typedCapabilities =
     '{"taskDueSchema":1,'
     '"taskDueKinds":["none","date","datetime","legacy"],'
-    '"requiresExplicitDueForModernTasks":true}';
+    '"requiresExplicitDueForModernTasks":true,"timeBlockSchema":1}';
 
   test('Passive diagnostics checks compatibility without uploading tasks',
       () async {

@@ -9,6 +9,8 @@ import 'inline_editable_title.dart';
 import 'inline_quick_add.dart';
 import 'notes_theme.dart';
 import 'task_due_editor.dart';
+import 'time_block_editor.dart';
+import 'time_block_view.dart';
 
 /// P1.1: calendar projection over existing SQLite tasks. No new local/cloud
 /// storage and no fabricated hour for date-only deadlines.
@@ -56,6 +58,39 @@ class _CalendarBoardState extends ConsumerState<CalendarBoard> {
         title: task.title, due: due, changeDue: true);
   }
 
+  Future<void> _updateBlock(LocalTask task) async {
+    final decision = await showTimeBlockEditor(context,
+        initial: task.timeBlock, selectedDay: selected);
+    if (decision == null || !mounted) return;
+    await ref.read(localStoreProvider.notifier)
+        .setTaskTimeBlock(task.id, decision.block);
+  }
+
+  Widget _blockCard(LocalTask task) => Padding(
+    padding: const EdgeInsets.only(bottom: 8),
+    child: FCard(child: Row(children: [
+      const Icon(Icons.timelapse_outlined, size: 18,
+          color: NotesPalette.accent),
+      const SizedBox(width: 10),
+      Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(task.title, maxLines: 2,
+              style: const TextStyle(fontWeight: FontWeight.w600)),
+          const SizedBox(height: 4),
+          Text(timeBlockLabel(task.timeBlock),
+              style: const TextStyle(fontSize: 11,
+                  color: NotesPalette.secondaryText)),
+        ],
+      )),
+      FButton.icon(
+        key: Key('calendar-edit-block-${task.id}'),
+        variant: FButtonVariant.ghost,
+        onPress: () => _updateBlock(task),
+        child: const Icon(Icons.edit_calendar_outlined, size: 18),
+      ),
+    ])),
+  );
+
   Widget _taskCard(LocalTask task, {bool compact = false}) => Padding(
     padding: EdgeInsets.only(bottom: compact ? 6 : 9),
     child: FCard(child: Row(children: [
@@ -96,6 +131,12 @@ class _CalendarBoardState extends ConsumerState<CalendarBoard> {
       )),
       const SizedBox(width: 5),
       FButton.icon(
+        key: Key('calendar-schedule-${task.id}'),
+        variant: FButtonVariant.ghost,
+        onPress: () => _updateBlock(task),
+        child: const Icon(Icons.timelapse_outlined, size: 18),
+      ),
+      FButton.icon(
         key: Key('calendar-edit-due-${task.id}'),
         variant: FButtonVariant.ghost,
         onPress: () => _updateDue(task),
@@ -107,6 +148,7 @@ class _CalendarBoardState extends ConsumerState<CalendarBoard> {
   Widget _agenda(DateTime day, List<LocalTask> tasks,
       {bool includeHeading = true}) {
     final items = calendarTasksForDay(tasks, day);
+    final blocks = calendarBlocksForDay(tasks, day);
     final allDay = items.where((t) => t.due.kind == 'date').toList();
     final scheduled = items.where((t) => t.due.kind != 'date').toList();
     return Column(
@@ -117,11 +159,26 @@ class _CalendarBoardState extends ConsumerState<CalendarBoard> {
               fontSize: 17, fontWeight: FontWeight.w600)),
           const SizedBox(height: 10),
         ],
-        if (items.isEmpty)
+        if (blocks.isEmpty && items.isEmpty)
           const Padding(
             padding: EdgeInsets.symmetric(vertical: 24),
-            child: Text('Nessuna attività con scadenza in questo giorno.',
+            child: Text('Nessun blocco o attività in questo giorno.',
               style: TextStyle(color: NotesPalette.secondaryText)),
+          ),
+        if (blocks.isNotEmpty) ...[
+          const Text('BLOCCHI DI TEMPO', style: TextStyle(
+              color: NotesPalette.secondaryText, fontSize: 12,
+              fontWeight: FontWeight.w600)),
+          const SizedBox(height: 8),
+          for (final task in blocks) _blockCard(task),
+          const SizedBox(height: 12),
+        ],
+        if (items.isNotEmpty)
+          const Padding(
+            padding: EdgeInsets.only(bottom: 8),
+            child: Text('SCADENZE', style: TextStyle(
+              color: NotesPalette.secondaryText,
+              fontSize: 12, fontWeight: FontWeight.w600)),
           ),
         if (allDay.isNotEmpty) ...[
           const Text('Senza orario', style: TextStyle(
@@ -166,6 +223,7 @@ class _CalendarBoardState extends ConsumerState<CalendarBoard> {
         itemBuilder: (context, index) {
           final day = days[index];
           final items = calendarTasksForDay(tasks, day);
+          final blocks = calendarBlocksForDay(tasks, day);
           final focused = calendarDateKey(day) == calendarDateKey(selected);
           final today = calendarDateKey(day) ==
               calendarDateKey(DateTime.now());
@@ -187,9 +245,11 @@ class _CalendarBoardState extends ConsumerState<CalendarBoard> {
                           : today ? NotesPalette.accent : null,
                       fontWeight: today || focused
                           ? FontWeight.bold : FontWeight.normal)),
-                    if (items.isNotEmpty) ...[
+                    if (items.isNotEmpty || blocks.isNotEmpty) ...[
                       const SizedBox(height: 3),
-                      Text(width < 650 ? '${items.length}' : '${items.length} attività',
+                      Text(width < 650
+                          ? '${items.length} · ${blocks.length}'
+                          : '${items.length} scad. · ${blocks.length} blocchi',
                         maxLines: 1, overflow: TextOverflow.ellipsis,
                         style: const TextStyle(fontSize: 10,
                             color: NotesPalette.secondaryText)),
@@ -234,9 +294,12 @@ class _CalendarBoardState extends ConsumerState<CalendarBoard> {
                 child: Text('${_weekdays[day.weekday - 1]} ${day.day}'),
               ),
               const SizedBox(height: 10),
+              for (final task in calendarBlocksForDay(tasks, day))
+                _blockCard(task),
               for (final task in calendarTasksForDay(tasks, day))
                 _taskCard(task, compact: true),
-              if (calendarTasksForDay(tasks, day).isEmpty)
+              if (calendarTasksForDay(tasks, day).isEmpty &&
+                  calendarBlocksForDay(tasks, day).isEmpty)
                 const Padding(
                   padding: EdgeInsets.symmetric(vertical: 13),
                   child: Text('—', style: TextStyle(
@@ -252,7 +315,8 @@ class _CalendarBoardState extends ConsumerState<CalendarBoard> {
   Widget build(BuildContext context) {
     final tasks = ref.watch(localStoreProvider).tasks;
     final unscheduled = tasks.where((task) =>
-        calendarTaskCivilDay(task) == null && !task.completed).length;
+        task.due.kind == 'none' && task.timeBlock == null &&
+        !task.completed).length;
     return Column(children: [
       Padding(
         padding: const EdgeInsets.fromLTRB(14, 5, 14, 10),
@@ -326,6 +390,29 @@ class _CalendarBoardState extends ConsumerState<CalendarBoard> {
                 maxLength: 1024,
                 onAdd: _createTask,
               ),
+              if (unscheduled > 0) ...[
+                const SizedBox(height: 18),
+                const Text('DA PIANIFICARE',
+                  style: TextStyle(fontSize: 12,
+                      color: NotesPalette.secondaryText)),
+                for (final task in tasks.where((task) =>
+                    task.due.kind == 'none' &&
+                    task.timeBlock == null && !task.completed))
+                  Padding(
+                    padding: const EdgeInsets.only(top: 5),
+                    child: Row(children: [
+                      Expanded(child: Text(task.title, maxLines: 1,
+                        overflow: TextOverflow.ellipsis)),
+                      FButton(
+                        key: Key('calendar-plan-unscheduled-${task.id}'),
+                        variant: FButtonVariant.ghost,
+                        mainAxisSize: MainAxisSize.min,
+                        onPress: () => _updateBlock(task),
+                        child: const Text('Pianifica'),
+                      ),
+                    ]),
+                  ),
+              ],
             ],
           ),
         ),

@@ -33,7 +33,8 @@ void main() {
           request.url.path == '/api/v1/capabilities') {
         return http.Response(
           '{"taskDueSchema":1,"requiresExplicitDueForModernTasks":true,'
-          '"taskDueKinds":["none","date","datetime","legacy"]}', 200);
+          '"taskDueKinds":["none","date","datetime","legacy"],'
+          '"timeBlockSchema":1}', 200);
       }
       sent++;
       return http.Response('{}', 404);
@@ -67,7 +68,7 @@ void main() {
     await tester.tap(find.text('Open diagnostics'));
     await tester.pumpAndSettle();
     expect(find.byKey(const Key('sync-diagnostics-dialog')), findsOneWidget);
-    expect(find.text('Compatibile (taskDueSchema 1)'), findsOneWidget);
+    expect(find.text('Compatibile (scadenze 1 + blocchi 1)'), findsOneWidget);
     expect(find.text('Modifiche in attesa'), findsOneWidget);
     expect(find.byKey(const Key('sync-diagnostics-copy')), findsOneWidget);
     expect(find.text('Sensitive sample'), findsNothing);

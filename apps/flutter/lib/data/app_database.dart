@@ -26,6 +26,9 @@ class TaskEntries extends Table {
   TextColumn get dueTime => text().nullable()();
   TextColumn get dueTimezone => text().nullable()();
   IntColumn get dueOffsetSeconds => integer().nullable()();
+  DateTimeColumn get blockStartAt => dateTime().nullable()();
+  DateTimeColumn get blockEndAt => dateTime().nullable()();
+  TextColumn get blockTimezone => text().nullable()();
   BoolColumn get completed => boolean().withDefault(const Constant(false))();
   DateTimeColumn get createdAt => dateTime()();
   IntColumn get remoteVersion => integer().nullable()();
@@ -80,7 +83,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase([QueryExecutor? executor]) : super(executor ?? _openDatabase());
 
   @override
-  int get schemaVersion => 5;
+  int get schemaVersion => 6;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -104,6 +107,13 @@ class AppDatabase extends _$AppDatabase {
         // Preserve old timestamps and pending mutations, even at midnight.
         await customStatement("UPDATE task_entries SET due_kind = "
             "CASE WHEN due_at IS NULL THEN 'none' ELSE 'legacy' END");
+      }
+      if (from < 6) {
+        // New optional block fields. No backfill from dueAt: a deadline is
+        // never implicitly promoted into a scheduling interval.
+        await m.addColumn(taskEntries, taskEntries.blockStartAt);
+        await m.addColumn(taskEntries, taskEntries.blockEndAt);
+        await m.addColumn(taskEntries, taskEntries.blockTimezone);
       }
     },
   );
@@ -133,6 +143,10 @@ class AppDatabase extends _$AppDatabase {
       tasks: tasks.map((t) => LocalTask(
         id: t.id, title: t.title, description: t.description,
         dueAt: t.dueAt,
+        timeBlock: t.blockStartAt == null ? null : TimeBlock(
+          start: t.blockStartAt!, end: t.blockEndAt!,
+          timeZone: t.blockTimezone!,
+        ),
         due: TaskDue.fromStorage(
           kind: t.dueKind, date: t.dueDate, time: t.dueTime,
           timeZone: t.dueTimezone,
@@ -173,6 +187,9 @@ class AppDatabase extends _$AppDatabase {
       dueTime: Value(task.due.time),
       dueTimezone: Value(task.due.timeZone),
       dueOffsetSeconds: Value(task.due.offsetSeconds),
+      blockStartAt: Value(task.timeBlock?.start.toLocal()),
+      blockEndAt: Value(task.timeBlock?.end.toLocal()),
+      blockTimezone: Value(task.timeBlock?.timeZone),
       completed: Value(task.completed),
       createdAt: task.createdAt,
       remoteVersion: Value(previous?.remoteVersion),
@@ -412,6 +429,12 @@ class AppDatabase extends _$AppDatabase {
         dueTime: Value(due.time),
         dueTimezone: Value(due.timeZone),
         dueOffsetSeconds: Value(due.offsetSeconds),
+        blockStartAt: Value(
+          TimeBlock.optionalFromJson(payload['timeBlock'])?.start.toLocal()),
+        blockEndAt: Value(
+          TimeBlock.optionalFromJson(payload['timeBlock'])?.end.toLocal()),
+        blockTimezone: Value(
+          TimeBlock.optionalFromJson(payload['timeBlock'])?.timeZone),
         completed: Value(payload['completed'] as bool? ?? false),
         createdAt: created ?? DateTime.now(),
         deletedAt: const Value(null),

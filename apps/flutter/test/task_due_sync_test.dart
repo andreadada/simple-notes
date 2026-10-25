@@ -40,7 +40,7 @@ void main() {
         return http.Response(
           '{"taskDueSchema":1,'
           '"taskDueKinds":["none","date","datetime","legacy"],'
-          '"requiresExplicitDueForModernTasks":true}', 200);
+          '"requiresExplicitDueForModernTasks":true,"timeBlockSchema":1}', 200);
       }
       if (request.url.path == '/api/v1/sync/apply') {
         final op = jsonDecode(request.body) as Map<String, dynamic>;
@@ -136,12 +136,12 @@ void main() {
     await pc.read(localStoreProvider.notifier).setTaskDueSemantics(
         task.id, TaskDue.dateOnly('2026-10-26'));
     await pc.read(cloudSyncProvider.notifier).synchronize();
-    // There is an older none task queued first; that operation can go through,
-    // but the modern date-only operation MUST be blocked before upload.
+    // The new explicit "none" block contract also fails closed on old APIs.
+    // All queued writes remain local until backend V8 is deployed.
     expect(pc.read(cloudSyncProvider).message, contains('server'));
     expect(await db.pendingCount(), greaterThan(0));
     expect(pc.read(cloudSyncProvider).conflict, false);
-    expect(attemptedApply, isTrue);
+    expect(attemptedApply, isFalse);
   });
 
   test('HTTP 426 is not a rebasable conflict; unsent data stays in outbox',

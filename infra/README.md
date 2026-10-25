@@ -109,3 +109,7 @@ Verifica soft delete e storico degli eventi sincronizzati (compreso il gap curso
 ## Reset VOLONTARIO dei dati di test (distruttivo)
 
 Per un solo account di test, `DB_CONTAINER=<container-postgres-simple-notes> EXPECTED_POSTGRES_DB=simplenotes bash infra/reset-test-workspace.sh --preview` mostra le quantità senza scrivere. L'esecuzione reale richiede esplicitamente `--execute`, `CLIENTS_CLOSED=YES`, `ERASE_TEST_WORKSPACE=ERASE_SIMPLE_NOTES_TEST_WORKSPACE`; non elimina utenti, sessioni, Flyway, schema o altri database. **Prima chiudere entrambi i client e dopo azzerare entrambe le SQLite.** Guida completa: [RESET-TEST-DATA.md](../docs/RESET-TEST-DATA.md).
+
+## P1.2 — Deploy controllato backend V8 (solo quando approvato)
+
+Il branch `feature/p1-2-time-blocking` contiene `V8__task_time_blocks.sql` (3 colonne nullable su `task`, CHECK, indice). La migrazione **non** è stata applicata da questa sessione. Non effettuare reset o restore del database di produzione. Prima della nuova app Flutter `0.6.0+8`, il backend deve esporre `timeBlockSchema:1`, altrimenti la nuova outbox task si conserva offline. La checklist di rollout separata è in [P1-TIME-BLOCKING.md](../docs/P1-TIME-BLOCKING.md).

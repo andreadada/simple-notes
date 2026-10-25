@@ -1,3 +1,5 @@
+> **Stato 25/10/2026:** tutti i dati di test Simple Notes server/Windows/Android sono stati azzerati e il server confermato con contatori 0. Non riavviare un reset. P1.1 su main `0.5.0+7`; P1.2 su branch `feature/p1-2-time-blocking` `0.6.0+8`, non rilasciato. **Prima di client P1.2** eseguire rollout backend V8 controllato e controllare capabilities `timeBlockSchema:1`; poi due dispositivi offline/online, blocco inizio-fine, DST e cancellazione blocco indipendente dalla scadenza. Vedi [P1-TIME-BLOCKING.md](P1-TIME-BLOCKING.md). I check storici più sotto rimangono come riferimento per P0, non come invito a ricancellare dati. 
+
 # P0 — Checklist operativa Coolify, Windows e Android
 
 ## Stato reale verificato e T4.2 (24 ottobre 2026)

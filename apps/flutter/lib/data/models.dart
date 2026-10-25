@@ -1,4 +1,6 @@
 import 'task_due.dart';
+import 'time_block.dart';
+export 'time_block.dart';
 export 'task_due.dart';
 
 class LocalSubtask {
@@ -51,6 +53,7 @@ class LocalTask {
   final String title;
   final String description;
   final TaskDue due;
+  final TimeBlock? timeBlock;
   DateTime? get dueAt => due.displayLocal;
   final bool completed;
   final DateTime createdAt;
@@ -61,7 +64,7 @@ class LocalTask {
 
   LocalTask({
     required this.id, required this.title, required DateTime? dueAt,
-    TaskDue? due,
+    TaskDue? due, this.timeBlock,
     required this.completed, required this.createdAt,
     this.description = '',
     this.listId,
@@ -76,6 +79,7 @@ class LocalTask {
     description: value['description'] as String? ?? '',
     dueAt: value['dueAt'] == null || value['dueAt'] == ''
       ? null : DateTime.parse(value['dueAt'] as String),
+    timeBlock: TimeBlock.optionalFromJson(value['timeBlock']),
     due: TaskDue.fromJson(value['due'], oldDueAt:
       value['dueAt'] == null || value['dueAt'] == ''
         ? null : DateTime.parse(value['dueAt'] as String)),
@@ -94,6 +98,7 @@ class LocalTask {
     'id': id, 'title': title, 'description': description,
     'dueAt': due.instant?.toUtc().toIso8601String(),
     'due': due.toJson(),
+    'timeBlock': timeBlock?.toJson() ?? const {'kind': 'none'},
     'completed': completed, 'createdAt': createdAt.toIso8601String(),
     'listId': listId, 'priority': priority, 'tags': tags,
     'subtasks': subtasks.map((item) => item.toJson()).toList(),
@@ -102,6 +107,7 @@ class LocalTask {
   LocalTask copyWith({
     bool? completed, String? title, String? description, DateTime? dueAt,
     bool changeDueAt = false, TaskDue? due, bool changeDue = false,
+    TimeBlock? timeBlock, bool changeTimeBlock = false,
     String? listId, bool changeListId = false,
     int? priority, List<String>? tags, List<LocalSubtask>? subtasks,
   }) => LocalTask(
@@ -110,6 +116,7 @@ class LocalTask {
     dueAt: changeDueAt ? dueAt : this.dueAt,
     due: changeDue ? (due ?? TaskDue.none) :
       changeDueAt ? TaskDue.legacy(dueAt) : this.due,
+    timeBlock: changeTimeBlock ? timeBlock : this.timeBlock,
     completed: completed ?? this.completed, createdAt: createdAt,
     listId: changeListId ? listId : this.listId,
     priority: priority ?? this.priority,

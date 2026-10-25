@@ -43,8 +43,13 @@ class ReminderController extends StateNotifier<ReminderStatus> {
   bool _pluginInitialized = false;
   Future<void> _queue = Future<void>.value();
 
-  /// Android only until Windows is shipped with package identity/MSIX.
-  static bool get supported => Platform.isAndroid;
+  /// Windows is enabled only for an installed MSIX. ZIP/EXE cannot reliably
+  /// cancel notifications; opt-in must not be available without identity.
+  static bool get supported =>
+      Platform.isAndroid ||
+      (Platform.isWindows && MsixUtils.hasPackageIdentity());
+
+  static String get platformLabel => Platform.isWindows ? 'Windows' : 'Android';
 
   Future<void> _restore() async {
     if (!supported) return;
@@ -66,6 +71,11 @@ class ReminderController extends StateNotifier<ReminderStatus> {
     time_zone_data.initializeTimeZones();
     await _plugin.initialize(settings: const InitializationSettings(
       android: AndroidInitializationSettings('@mipmap/ic_launcher'),
+      windows: WindowsInitializationSettings(
+        appName: 'Simple Notes',
+        appUserModelId: 'ddone.SimpleNotes',
+        guid: 'a13975c1-6710-47a1-a87f-61532822aab0',
+      ),
     ));
     _pluginInitialized = true;
   }
@@ -86,12 +96,14 @@ class ReminderController extends StateNotifier<ReminderStatus> {
             await _ref.read(databaseProvider).setting('boundOwnerId') != owner) {
           throw StateError('Completa prima la sincronizzazione di questo account.');
         }
-        final permission = await _plugin
-            .resolvePlatformSpecificImplementation<
-                AndroidFlutterLocalNotificationsPlugin>()
-            ?.requestNotificationsPermission();
-        if (permission != true) {
-          throw StateError('Permesso notifiche non concesso.');
+        if (Platform.isAndroid) {
+          final permission = await _plugin
+              .resolvePlatformSpecificImplementation<
+                  AndroidFlutterLocalNotificationsPlugin>()
+              ?.requestNotificationsPermission();
+          if (permission != true) {
+            throw StateError('Permesso notifiche non concesso.');
+          }
         }
         await prefs.setBool(_enabledKey, true);
         if (!mounted) return;
@@ -207,12 +219,15 @@ class ReminderController extends StateNotifier<ReminderStatus> {
         title: 'Simple Notes',
         body: 'Hai un’attività in programma.',
         scheduledDate: tz.TZDateTime.from(plan.fireAtUtc, tz.UTC),
-        notificationDetails: const NotificationDetails(android: AndroidNotificationDetails(
-          'simple_notes_tasks_v1', 'Promemoria attività',
-          channelDescription: 'Scadenze e blocchi orari di Simple Notes',
-          importance: Importance.defaultImportance,
-          priority: Priority.defaultPriority,
-        )),
+        notificationDetails: const NotificationDetails(
+          android: AndroidNotificationDetails(
+            'simple_notes_tasks_v1', 'Promemoria attività',
+            channelDescription: 'Scadenze e blocchi orari di Simple Notes',
+            importance: Importance.defaultImportance,
+            priority: Priority.defaultPriority,
+          ),
+          windows: WindowsNotificationDetails(),
+        ),
         androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
         payload: plan.taskId,
       );

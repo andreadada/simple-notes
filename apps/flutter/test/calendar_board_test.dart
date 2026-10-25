@@ -62,4 +62,64 @@ void main() {
     await tester.pumpWidget(const SizedBox.shrink());
     await db.close();
   });
+  testWidgets('Calendar filters status/priority/search without changing tasks',
+      (tester) async {
+    tester.view.physicalSize = const Size(1250, 950);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(() {
+      tester.view.resetPhysicalSize();
+      tester.view.resetDevicePixelRatio();
+    });
+    final db = AppDatabase(NativeDatabase.memory());
+    addTearDown(db.close);
+    final today = DateTime.now();
+    final due = TaskDue.dateOnly(calendarDateKey(today));
+    await db.upsertTask(LocalTask(
+      id: 'first', title: 'Fisica 2', dueAt: null, due: due,
+      completed: false, priority: 2, createdAt: today));
+    await db.upsertTask(LocalTask(
+      id: 'second', title: 'Spesa', dueAt: null, due: due,
+      completed: true, priority: 0, createdAt: today));
+    await tester.pumpWidget(ProviderScope(overrides: [
+      databaseProvider.overrideWithValue(db),
+      initialDataProvider.overrideWithValue(await db.snapshot()),
+    ], child: MaterialApp(
+      builder: (context, child) => FTheme(
+        data: NotesTheme.forPlatform(TargetPlatform.windows),
+        child: child ?? const SizedBox.shrink(),
+      ),
+      home: const Scaffold(body: CalendarBoard()),
+    )));
+    expect(find.text('2 di 2 attività visibili'), findsOneWidget);
+    await tester.tap(find.byKey(const Key('calendar-filter-open')));
+    await tester.pumpAndSettle();
+    expect(find.text('1 di 2 attività visibili'), findsOneWidget);
+
+    await tester.tap(find.byKey(const Key('calendar-filter-important')));
+    await tester.pumpAndSettle();
+    expect(find.text('1 di 2 attività visibili'), findsOneWidget);
+    await tester.tap(find.byKey(const Key('calendar-filter-completed')));
+    await tester.pumpAndSettle();
+    expect(find.text('0 di 2 attività visibili'), findsOneWidget);
+
+    await tester.tap(find.byKey(const Key('calendar-filter-important')));
+    await tester.pumpAndSettle();
+    expect(find.text('1 di 2 attività visibili'), findsOneWidget);
+    await tester.tap(find.byKey(const Key('calendar-filter-all')));
+    await tester.pumpAndSettle();
+
+    final field = find.descendant(
+        of: find.byKey(const Key('calendar-search')),
+        matching: find.byType(EditableText));
+    await tester.enterText(field, 'fisica');
+    await tester.pumpAndSettle();
+    expect(find.text('1 di 2 attività visibili'), findsOneWidget);
+
+    final container = ProviderScope.containerOf(
+        tester.element(find.byType(CalendarBoard)));
+    expect(container.read(localStoreProvider).tasks.length, 2);
+    expect((await db.snapshot()).tasks.length, 2);
+    await tester.pumpWidget(const SizedBox.shrink());
+  });
+
 }

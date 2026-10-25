@@ -31,7 +31,7 @@ names="$(query "SELECT COUNT(*) FROM pg_catalog.pg_class c JOIN pg_catalog.pg_na
 failed="$(query "SELECT COUNT(*) FROM public.flyway_schema_history WHERE NOT success")"
 [[ "$failed" == "0" ]] || { echo "REFUSED: Flyway history has failed migrations" >&2; exit 2; }
 latest="$(query "SELECT COALESCE((SELECT version FROM public.flyway_schema_history WHERE success AND version IS NOT NULL ORDER BY installed_rank DESC LIMIT 1),'unknown')")"
-[[ "$latest" =~ ^[0-9]+$ && "$latest" -ge 1 && "$latest" -le 9 ]] || {
+[[ "$latest" =~ ^[0-9]+$ && "$latest" -ge 1 && "$latest" -le 10 ]] || {
   echo "REFUSED: unknown, unsupported or unexpected Flyway version" >&2; exit 2
 }
 due_columns="$(query "SELECT COUNT(*) FROM information_schema.columns WHERE table_schema='public' AND table_name='task' AND column_name IN ('due_kind','due_date','due_time','due_timezone','due_offset_seconds')")"
@@ -55,17 +55,24 @@ if [[ "$latest" -lt 8 && "$block_columns" != "0" ]]; then
   echo "REFUSED: V8 columns present before successful Flyway V8" >&2; exit 2
 fi
 blocks_json_columns="$(query "SELECT COUNT(*) FROM information_schema.columns WHERE table_schema='public' AND table_name='task' AND column_name='blocks_json'")"
-if [[ "$latest" == "9" && "$blocks_json_columns" != "1" ]]; then
+if [[ "$latest" -ge 9 && "$blocks_json_columns" != "1" ]]; then
   echo "REFUSED: Flyway V9 missing time block collection column" >&2; exit 2
 fi
 if [[ "$latest" -lt 9 && "$blocks_json_columns" != "0" ]]; then
   echo "REFUSED: V9 column present before successful migration" >&2; exit 2
 fi
+recurrence_columns="$(query "SELECT COUNT(*) FROM information_schema.columns WHERE table_schema='public' AND table_name='task' AND column_name='recurrence_json'")"
+if [[ "$latest" -ge 10 && "$recurrence_columns" != "1" ]]; then
+  echo "REFUSED: Flyway V10 missing recurrence column" >&2; exit 2
+fi
+if [[ "$latest" -lt 10 && "$recurrence_columns" != "0" ]]; then
+  echo "REFUSED: V10 column present before successful migration" >&2; exit 2
+fi
 
 printf 'T4_SOURCE_INSPECTION=PASS\n'
 printf 'DB_NAME=%s\nPOSTGRES_MAJOR=%s\nFLYWAY_LATEST=%s\n' \
   "$actual_db" "$major" "$latest"
-printf 'DUE_COLUMNS=%s\nBLOCK_COLUMNS=%s\nBLOCKS_JSON_COLUMNS=%s\nFAILED_MIGRATIONS=0\n' "$due_columns" "$block_columns" "$blocks_json_columns"
+printf 'DUE_COLUMNS=%s\nBLOCK_COLUMNS=%s\nBLOCKS_JSON_COLUMNS=%s\nRECURRENCE_COLUMNS=%s\nFAILED_MIGRATIONS=0\n' "$due_columns" "$block_columns" "$blocks_json_columns" "$recurrence_columns"
 for table in app_user task note sync_change sync_operation; do
   count="$(query "SELECT COUNT(*) FROM public.$table")"
   [[ "$count" =~ ^[0-9]+$ ]] || { echo "REFUSED: invalid row count" >&2; exit 2; }

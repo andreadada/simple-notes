@@ -14,6 +14,7 @@ public class CapabilitiesController {
             "requiresExplicitDueForModernTasks", true,
             "noteRestoreSchema", 1,
             "timeBlockSchema", 1,
-            "timeBlocksSchema", 1);
+            "timeBlocksSchema", 1,
+            "recurrenceSchema", 1);
     }
 }

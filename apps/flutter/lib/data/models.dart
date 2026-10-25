@@ -1,6 +1,8 @@
 import 'task_due.dart';
 import 'time_block.dart';
 import 'time_slot.dart';
+import 'task_recurrence.dart';
+export 'task_recurrence.dart';
 export 'time_slot.dart';
 export 'time_block.dart';
 export 'task_due.dart';
@@ -55,6 +57,7 @@ class LocalTask {
   final String title;
   final String description;
   final TaskDue due;
+  final TaskRecurrence recurrence;
   /// P1.4 canonical schedule; the P1.2 getter remains for old widgets.
   final List<TimeSlot> timeBlocks;
   TimeBlock? get timeBlock => timeBlocks.isEmpty ? null : timeBlocks.first.block;
@@ -68,7 +71,7 @@ class LocalTask {
 
   LocalTask({
     required this.id, required this.title, required DateTime? dueAt,
-    TaskDue? due, TimeBlock? timeBlock, List<TimeSlot>? timeBlocks,
+    TaskDue? due, TaskRecurrence? recurrence, TimeBlock? timeBlock, List<TimeSlot>? timeBlocks,
     required this.completed, required this.createdAt,
     this.description = '',
     this.listId,
@@ -76,6 +79,7 @@ class LocalTask {
     this.tags = const [],
     this.subtasks = const [],
   }) : due = due ?? TaskDue.legacy(dueAt),
+       recurrence = recurrence ?? TaskRecurrence.none,
        timeBlocks = List.unmodifiable(TimeSlotCollection.validate(
           timeBlocks ?? (timeBlock == null
               ? <TimeSlot>[]
@@ -87,6 +91,7 @@ class LocalTask {
     description: value['description'] as String? ?? '',
     dueAt: value['dueAt'] == null || value['dueAt'] == ''
       ? null : DateTime.parse(value['dueAt'] as String),
+    recurrence: TaskRecurrence.fromJson(value['recurrence']),
     timeBlocks: TimeSlotCollection.fromPayload(value),
     due: TaskDue.fromJson(value['due'], oldDueAt:
       value['dueAt'] == null || value['dueAt'] == ''
@@ -106,6 +111,7 @@ class LocalTask {
     'id': id, 'title': title, 'description': description,
     'dueAt': due.instant?.toUtc().toIso8601String(),
     'due': due.toJson(),
+    'recurrence': recurrence.toJson(),
     'timeBlock': timeBlock?.toJson() ?? const {'kind': 'none'},
     'timeBlocks': TimeSlotCollection.toJson(timeBlocks),
     'completed': completed, 'createdAt': createdAt.toIso8601String(),
@@ -116,6 +122,7 @@ class LocalTask {
   LocalTask copyWith({
     bool? completed, String? title, String? description, DateTime? dueAt,
     bool changeDueAt = false, TaskDue? due, bool changeDue = false,
+    TaskRecurrence? recurrence, bool changeRecurrence = false,
     TimeBlock? timeBlock, bool changeTimeBlock = false,
     List<TimeSlot>? timeBlocks, bool changeTimeBlocks = false,
     String? listId, bool changeListId = false,
@@ -126,6 +133,8 @@ class LocalTask {
     dueAt: changeDueAt ? dueAt : this.dueAt,
     due: changeDue ? (due ?? TaskDue.none) :
       changeDueAt ? TaskDue.legacy(dueAt) : this.due,
+    recurrence: changeRecurrence ? (recurrence ?? TaskRecurrence.none) :
+        this.recurrence,
     timeBlocks: changeTimeBlocks ? timeBlocks :
         changeTimeBlock ? (timeBlock == null ? <TimeSlot>[] :
           [TimeSlot(id: this.timeBlocks.isEmpty

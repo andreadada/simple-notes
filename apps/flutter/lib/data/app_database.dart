@@ -30,6 +30,7 @@ class TaskEntries extends Table {
   DateTimeColumn get blockEndAt => dateTime().nullable()();
   TextColumn get blockTimezone => text().nullable()();
   TextColumn get blocksJson => text().withDefault(const Constant('[]'))();
+  TextColumn get recurrenceJson => text().withDefault(const Constant('{"kind":"none"}'))();
   BoolColumn get completed => boolean().withDefault(const Constant(false))();
   DateTimeColumn get createdAt => dateTime()();
   IntColumn get remoteVersion => integer().nullable()();
@@ -84,7 +85,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase([QueryExecutor? executor]) : super(executor ?? _openDatabase());
 
   @override
-  int get schemaVersion => 7;
+  int get schemaVersion => 8;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -121,6 +122,10 @@ class AppDatabase extends _$AppDatabase {
         // Snapshot reads the V6 mirror whenever blocks_json is empty.
         await m.addColumn(taskEntries, taskEntries.blocksJson);
       }
+      if (from < 8) {
+        // P1.6 recurrence metadata: preserve V7 rows/outbox, no due changes.
+        await m.addColumn(taskEntries, taskEntries.recurrenceJson);
+      }
     },
   );
 
@@ -149,6 +154,7 @@ class AppDatabase extends _$AppDatabase {
       tasks: tasks.map((t) => LocalTask(
         id: t.id, title: t.title, description: t.description,
         dueAt: t.dueAt,
+        recurrence: TaskRecurrence.fromJson(jsonDecode(t.recurrenceJson)),
         timeBlocks: TimeSlotCollection.fromPayload({
           if (t.blocksJson != '[]') 'timeBlocks': jsonDecode(t.blocksJson),
           if (t.blocksJson == '[]') 'timeBlock': t.blockStartAt == null
@@ -201,6 +207,7 @@ class AppDatabase extends _$AppDatabase {
       blockTimezone: Value(task.timeBlock?.timeZone),
       blocksJson: Value(jsonEncode(
           TimeSlotCollection.toJson(task.timeBlocks))),
+      recurrenceJson: Value(jsonEncode(task.recurrence.toJson())),
       completed: Value(task.completed),
       createdAt: task.createdAt,
       remoteVersion: Value(previous?.remoteVersion),
@@ -446,6 +453,8 @@ class AppDatabase extends _$AppDatabase {
         blockEndAt: Value(primary?.end.toLocal()),
         blockTimezone: Value(primary?.timeZone),
         blocksJson: Value(jsonEncode(TimeSlotCollection.toJson(blocks))),
+        recurrenceJson: Value(jsonEncode(
+            TaskRecurrence.fromJson(payload['recurrence']).toJson())),
         completed: Value(payload['completed'] as bool? ?? false),
         createdAt: created ?? DateTime.now(),
         deletedAt: const Value(null),

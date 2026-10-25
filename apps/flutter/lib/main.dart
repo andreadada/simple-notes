@@ -8,6 +8,7 @@ import 'ui/notes_dialogs.dart';
 import 'ui/task_due_editor.dart';
 import 'ui/calendar_board.dart';
 import 'ui/task_blocks_panel.dart';
+import 'ui/task_recurrence_panel.dart';
 import 'data/task_due_view.dart';
 import 'ui/sync_conflict_dialog.dart';
 import 'ui/sync_diagnostics_dialog.dart';
@@ -780,6 +781,8 @@ class _NotesHomeState extends ConsumerState<NotesHome> {
                 child: const Icon(Icons.close, size: 17),
               ),
           ]),
+          const SizedBox(height: 18),
+          TaskRecurrencePanel(task: task),
           const SizedBox(height: 18),
           TaskBlocksPanel(task: task),
           const SizedBox(height: 18),

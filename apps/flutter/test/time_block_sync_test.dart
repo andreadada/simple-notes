@@ -44,7 +44,7 @@ void main() {
             '{"taskDueSchema":1,"taskDueKinds":'
             '["none","date","datetime","legacy"],'
             '"requiresExplicitDueForModernTasks":true,'
-            '"timeBlockSchema":1,"timeBlocksSchema":1}', 200);
+            '"timeBlockSchema":1,"timeBlocksSchema":1,"recurrenceSchema":1}', 200);
       }
       if (req.url.path == '/api/v1/sync/apply') {
         final op = jsonDecode(req.body) as Map<String, dynamic>;

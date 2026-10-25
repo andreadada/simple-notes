@@ -128,6 +128,26 @@ public class SyncService {
                 : List.of(new TaskTimeBlocks.Slot(
                     oldSlots.isEmpty() ? "legacy" : oldSlots.get(0).id(), oldBlock));
         }
+        // A legacy client must not erase an enabled recurrence while merely
+        // editing title or tags. New clients send explicit {"kind":"none"}.
+        TaskRecurrence oldRecurrence;
+        try {
+            oldRecurrence = existing == null ? TaskRecurrence.none()
+                : TaskRecurrence.parse(json.readTree(existing.recurrenceJson));
+        } catch (JsonProcessingException exception) {
+            throw new IllegalStateException("Invalid stored recurrence", exception);
+        }
+        TaskRecurrence recurrence = value.has("recurrence")
+            ? TaskRecurrence.parse(value.get("recurrence"))
+            : TaskRecurrence.none();
+        if (!value.has("recurrence") && !"none".equals(oldRecurrence.kind())) {
+            throw new ClientUpgradeRequiredException();
+        }
+        if (!"none".equals(recurrence.kind()) &&
+                !Set.of("date", "datetime").contains(due.kind())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                "Recurring task requires date-only or timed due");
+        }
         boolean completed = value.path("completed").asBoolean(false);
         UUID listId = optionalUuid(value, "listId");
         if (listId != null && !lists.existsByIdAndOwnerIdAndDeletedAtIsNull(listId, owner)) {
@@ -154,6 +174,7 @@ public class SyncService {
         }
         due.applyTo(entity);
         TaskTimeBlocks.applyTo(entity, slots, json);
+        entity.recurrenceJson = encode(recurrence.payload());
         entity.listId = listId;
         entity.priority = priority;
         entity.tagsJson = tagsJson;
@@ -169,6 +190,7 @@ public class SyncService {
         result.put("due", TaskDue.fromEntity(entity).toPayload());
         result.put("timeBlock", TaskTimeBlock.toPayload(entity));
         result.put("timeBlocks", TaskTimeBlocks.toPayload(slots));
+        result.put("recurrence", recurrence.payload());
         result.put("createdAt", entity.createdAt.toString());
         result.put("listId", entity.listId == null ? null : entity.listId.toString());
         result.put("priority", entity.priority);

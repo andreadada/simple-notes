@@ -179,6 +179,18 @@ class CloudSync extends StateNotifier<SyncState> {
         as Map<String, dynamic>)['timeBlocksSchema'] == 1;
   }
 
+  Future<bool> _supportsRecurrence() async {
+    try {
+      final result = await _request('GET', '/capabilities');
+      return result['recurrenceSchema'] == 1;
+    } on StateError catch (error) {
+      // A pre-capabilities API (404) is an upgrade gate, not a transient
+      // upload failure. Keep all queued task mutations unchanged.
+      if (error.toString().contains('HTTP 404')) return false;
+      rethrow;
+    }
+  }
+
   /// T4: passive, read-only diagnostics for real Windows/Android acceptance.
   /// Never uploads outbox entries, changes local ownership or logs secrets.
   Future<SyncDiagnostics> inspectSync() async {
@@ -213,7 +225,8 @@ class CloudSync extends StateNotifier<SyncState> {
       try {
         final result = await _request('GET', '/capabilities');
         backend = _typedDueContractMatches(result) &&
-                result['timeBlocksSchema'] == 1
+                result['timeBlocksSchema'] == 1 &&
+                result['recurrenceSchema'] == 1
             ? 'compatible' : 'outdated';
       } on SyncUpgradeRequired {
         backend = 'outdated';
@@ -263,6 +276,7 @@ class CloudSync extends StateNotifier<SyncState> {
       bool? typedDueSupported;
       bool? noteRestoreSupported;
       bool? timeBlockSupported;
+      bool? recurrenceSupported;
       for (final op in mutations) {
         conflicting = op;
         verifyAccount();
@@ -274,6 +288,11 @@ class CloudSync extends StateNotifier<SyncState> {
             due is Map && (due['kind'] == 'date' || due['kind'] == 'datetime')) {
           typedDueSupported ??= await _supportsTypedDue();
           if (!typedDueSupported) throw const SyncUpgradeRequired();
+        }
+        if (op.entityType == 'task' && op.action == 'upsert' &&
+            payload.containsKey('recurrence')) {
+          recurrenceSupported ??= await _supportsRecurrence();
+          if (!recurrenceSupported) throw const SyncUpgradeRequired();
         }
         if (op.entityType == 'task' && op.action == 'upsert' &&
             payload.containsKey('timeBlocks')) {

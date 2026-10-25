@@ -31,6 +31,8 @@ public class TaskEntity {
     @Column(name = "block_timezone", length = 128) public String blockTimezone;
     @Column(name = "blocks_json", nullable = false, columnDefinition = "text")
     public String blocksJson = "[]";
+    @Column(name = "recurrence_json", nullable = false, columnDefinition = "text")
+    public String recurrenceJson = "{\"kind\":\"none\"}";
     @Column(name = "completed_at") public Instant completedAt;
     @Version public long version;
     @Column(name = "created_at", nullable = false) public Instant createdAt;

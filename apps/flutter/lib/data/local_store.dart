@@ -128,7 +128,23 @@ class LocalStore extends Notifier<LocalData> {
   Future<void> setTaskDueSemantics(String id, TaskDue due) async {
     final task = state.tasks.where((item) => item.id == id).firstOrNull;
     if (task == null) throw StateError('Attività non disponibile.');
-    await _persistTask(task.copyWith(due: due, changeDue: true));
+    await _persistTask(task.copyWith(due: due, changeDue: true,
+      recurrence: due.modern ? task.recurrence : TaskRecurrence.none,
+      changeRecurrence: true));
+  }
+
+  Future<void> setTaskRecurrence(String id, TaskRecurrence rule) async {
+    final task = state.tasks.where((item) => item.id == id).firstOrNull;
+    if (task == null) throw StateError('Attività non disponibile.');
+    if (rule.enabled && !task.due.modern) {
+      throw StateError('Imposta prima una scadenza con data.');
+    }
+    if (task.recurrence.kind == rule.kind &&
+        task.recurrence.interval == rule.interval) {
+      return;
+    }
+    await _persistTask(task.copyWith(
+        recurrence: rule, changeRecurrence: true));
   }
 
   /// An explicit block update uses the newest in-memory task and keeps
@@ -247,12 +263,18 @@ class LocalStore extends Notifier<LocalData> {
   }
 
   Future<void> toggleTask(String id) async {
-    for (final task in state.tasks) {
-      if (task.id == id) {
-        await _persistTask(task.copyWith(completed: !task.completed));
-        return;
-      }
+    final task = state.tasks.where((item) => item.id == id).firstOrNull;
+    if (task == null) return;
+    if (!task.completed && task.recurrence.enabled) {
+      // Advance *once* in the same task/UUID; one SQLite transaction and
+      // one outbox operation. A second device must pass the server version
+      // check, avoiding duplicate future task entities.
+      final next = task.recurrence.advance(task.due);
+      await _persistTask(task.copyWith(
+          due: next, changeDue: true, completed: false));
+      return;
     }
+    await _persistTask(task.copyWith(completed: !task.completed));
   }
 
   Future<void> toggleSubtask(String taskId, String subtaskId) async {

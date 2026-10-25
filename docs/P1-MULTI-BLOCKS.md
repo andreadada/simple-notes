@@ -1,13 +1,8 @@
 # P1.4 — Multi-block, duplicate e riepilogo focus
 
-## Stato P1.4 dopo il merge — 25/10/2026
+<!-- CURRENT-STATUS-REF -->
+> **Stato:** `main` = P1.5 / Flutter 0.9 (CI verde); P1.6 ricorrenze / Flutter 0.10 in sviluppo, **non deployato**. Ultima verifica server V8; V9/V10 non verificati. Questo documento è tecnico/storico; per le fasi effettive usare [CURRENT-STATUS.md](CURRENT-STATUS.md).
 
-**P1.4 è integrata su `main`** (PR #3, merge `ab4cd441`, Flutter `0.8.0+10`, Flyway **V9** e Drift **V7**). Backend, Flutter e Compose CI della PR sono **verdi**. L'installazione effettiva sui dispositivi e la migrazione Flyway V9 sulla VPS **non sono state verificate**; non confondere il merge con il deploy. Le descrizioni sotto etichettate «branch in sviluppo» si riferiscono allo stato storico precedente al merge. Collezioni multi-blocco, editor e riepilogo focus sono documentati in [P1-MULTI-BLOCKS.md](P1-MULTI-BLOCKS.md). **Niente reset né modifiche ai dati reali da questa operazione.**
-
-
-**25 ottobre 2026 · Branch:** `feature/p1-4-multi-blocks-batch` · Flutter `0.8.0+10`.
-
-> **SOLO SVILUPPO.** `main` e Coolify restano sulla versione P1.2+P1.3 `0.7.0+9` (Flyway V8). Nessun deploy o reset eseguito da questa fase. Il collaudo Windows/Android viene deliberatamente accorpato a fine batch, anziché ripetuto a ogni singola funzionalità.
 
 ## Funzioni implementate
 

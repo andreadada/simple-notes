@@ -1,5 +1,9 @@
 # T4 — Rilascio controllato Simple Notes (Coolify/PostgreSQL)
 
+<!-- CURRENT-STATUS-REF -->
+> **Documento storico/procedura specifica:** codice `main` = P1.5 (0.9), P1.6 ricorrenze V10/Drift V8 ancora su branch. Ultimo deploy **verificato**: Flyway V8; V9/V10 non attestati, dispositivi non collaudati. [Stato canonico](CURRENT-STATUS.md). Evitare di usare i vecchi numeri di versione contenuti qui come istruzioni per nuovi deploy.
+
+
 ## Stato reale verificato e T4.2 (24 ottobre 2026)
 
 **PostgreSQL Simple Notes sulla VPS:** l'utente ha verificato direttamente `simplenotes` (PostgreSQL **17.11**), Flyway **V1–V7 tutte riuscite**, colonne V7 presenti e conteggi in quel momento: **1 utente, 5 task, 4 note, 25 sync_change, 25 sync_operation**. Il dump PostgreSQL reale `simple-notes-20261024T132857Z-271921.dump` ha superato **SHA256 e restore isolato**; il restore non ha toccato produzione. **Copia offsite non eseguita per scelta dell'utente**: non marcarla completata e non riaprire automaticamente la procedura backup.

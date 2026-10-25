@@ -1,18 +1,8 @@
 # Simple Notes API v1
 
-## Stato P1.4 dopo il merge — 25/10/2026
+<!-- CURRENT-STATUS-REF -->
+> **Stato del progetto:** codice `main` = P1.5 (0.9), P1.6 ricorrenze V10/Drift V8 ancora su branch. Ultimo deploy **verificato**: Flyway V8; V9/V10 non attestati, dispositivi non collaudati. [Stato canonico](CURRENT-STATUS.md). Evitare di usare i vecchi numeri di versione contenuti qui come istruzioni per nuovi deploy.
 
-**P1.4 è integrata su `main`** (PR #3, merge `ab4cd441`, Flutter `0.8.0+10`, Flyway **V9** e Drift **V7**). Backend, Flutter e Compose CI della PR sono **verdi**. L'installazione effettiva sui dispositivi e la migrazione Flyway V9 sulla VPS **non sono state verificate**; non confondere il merge con il deploy. Le descrizioni sotto etichettate «branch in sviluppo» si riferiscono allo stato storico precedente al merge. Collezioni multi-blocco, editor e riepilogo focus sono documentati in [P1-MULTI-BLOCKS.md](P1-MULTI-BLOCKS.md). **Niente reset né modifiche ai dati reali da questa operazione.**
-
-
-## P1.4 — Multi-block e riepilogo focus (25/10/2026)
-
-**Branch in sviluppo `feature/p1-4-multi-blocks-batch`, NON ancora su `main`, NON deployato su Coolify.** Flutter `0.8.0+10`; backend Flyway V9, Drift V7, fino a 12 slot per attività con ID stabili; CRUD/pannello Forui, copia slot, drag mirato e riepilogo pianificate/completate. Compatibilità protetta con `timeBlocksSchema:1` / 426 su client V8 incapaci di salvare il multi-block. Il server attualmente installato dall'utente rimane Flyway V8 e il client effettivo non è stato aggiornato a V0.8. Niente reset/dati persi e **collaudo dispositivi rimandato a fine batch**. [Specifiche](P1-MULTI-BLOCKS.md).
-
-
-> **Stato reale 24/10/2026:** PostgreSQL `simplenotes` 17.11, Flyway V1–V7 riuscite, backup `simple-notes-20261024T132857Z-271921.dump` con SHA256 valido e restore isolato PASS. Copia offsite non effettuata per scelta dell'utente. Restano da verificare l'API autenticata (`taskDueSchema:1`) e il collaudo T4.2 Windows↔Android con Flutter `0.4.0+4`. Non ripetere backup, migrazioni o deploy automaticamente. [T4.2](T4-DEVICE-SYNC.md).
-
-Base URL `/api/v1`. Per endpoint privati: header `Authorization: Bearer <accessToken>`.
 
 ## Auth
 - `POST /auth/google`: `{"idToken":"..."}` → `{accessToken,refreshToken,expiresInSeconds,userId,displayName,photoUrl?}`.

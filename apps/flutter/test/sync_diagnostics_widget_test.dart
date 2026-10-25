@@ -34,7 +34,7 @@ void main() {
         return http.Response(
           '{"taskDueSchema":1,"requiresExplicitDueForModernTasks":true,'
           '"taskDueKinds":["none","date","datetime","legacy"],'
-          '"timeBlockSchema":1,"timeBlocksSchema":1}', 200);
+          '"timeBlockSchema":1,"timeBlocksSchema":1,"recurrenceSchema":1}', 200);
       }
       sent++;
       return http.Response('{}', 404);

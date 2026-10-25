@@ -40,7 +40,7 @@ void main() {
         return http.Response(
           '{"taskDueSchema":1,'
           '"taskDueKinds":["none","date","datetime","legacy"],'
-          '"requiresExplicitDueForModernTasks":true,"timeBlockSchema":1,"timeBlocksSchema":1}', 200);
+          '"requiresExplicitDueForModernTasks":true,"timeBlockSchema":1,"timeBlocksSchema":1,"recurrenceSchema":1}', 200);
       }
       if (request.url.path == '/api/v1/sync/apply') {
         final op = jsonDecode(request.body) as Map<String, dynamic>;

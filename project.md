@@ -1,18 +1,7 @@
 ## Stato operativo aggiornato — 25 ottobre 2026 (fonte corrente)
 
-## P1.5 — Pianificazione rapida e filtri (25/10/2026)
-
-**Sviluppo su `feature/p1-5-quick-planning-filters`, non su main e non distribuito:** Flutter `0.9.0+11`, slot libero 30/60/90 minuti entro la finestra civile 09–20, filtro attività per stato/priorità/ricerca e protezione DST/collisioni. Non introduce migrazioni oltre Flyway V9/Drift V7 già previste per P1.4; nessuna modifica alla VPS o alle app installate. Il collaudo Windows–Android rimane unico e differito a fine batch. [Specifica](docs/P1-QUICK-PLANNING.md).
-
-
-## Stato P1.4 dopo il merge — 25/10/2026
-
-**P1.4 è integrata su `main`** (PR #3, merge `ab4cd441`, Flutter `0.8.0+10`, Flyway **V9** e Drift **V7**). Backend, Flutter e Compose CI della PR sono **verdi**. L'installazione effettiva sui dispositivi e la migrazione Flyway V9 sulla VPS **non sono state verificate**; non confondere il merge con il deploy. Le descrizioni sotto etichettate «branch in sviluppo» si riferiscono allo stato storico precedente al merge. Collezioni multi-blocco, editor e riepilogo focus sono documentati in [P1-MULTI-BLOCKS.md](docs/P1-MULTI-BLOCKS.md). **Niente reset né modifiche ai dati reali da questa operazione.**
-
-
-## P1.4 — Multi-block e riepilogo focus (25/10/2026)
-
-**Branch in sviluppo `feature/p1-4-multi-blocks-batch`, NON ancora su `main`, NON deployato su Coolify.** Flutter `0.8.0+10`; backend Flyway V9, Drift V7, fino a 12 slot per attività con ID stabili; CRUD/pannello Forui, copia slot, drag mirato e riepilogo pianificate/completate. Compatibilità protetta con `timeBlocksSchema:1` / 426 su client V8 incapaci di salvare il multi-block. Il server attualmente installato dall'utente rimane Flyway V8 e il client effettivo non è stato aggiornato a V0.8. Niente reset/dati persi e **collaudo dispositivi rimandato a fine batch**. [Specifiche](docs/P1-MULTI-BLOCKS.md).
+<!-- CURRENT-STATUS-REF -->
+> **Stato aggiornato:** P1.5 (`0.9.0+11`) integrata su `main`; P1.6 ricorrenze (`0.10.0+12`, Flyway V10/Drift V8) in sviluppo su branch. Ultimo server **verificato**: Flyway V8; V9/V10 e installazioni Windows/Android non ancora collaudate. **Fonte unica:** [CURRENT-STATUS.md](docs/CURRENT-STATUS.md). Le sezioni su vecchi branch/commit più sotto sono cronologia tecnica, non lo stato corrente.
 
 
 ## Stato corrente — rilascio 0.7.0+9 (25/10/2026)
@@ -34,7 +23,7 @@
 
 **Reset del workspace di test concluso dall'utente:** PostgreSQL `simplenotes` verificato con **0 task, 0 liste, 0 note, 0 eventi e 0 operazioni di sync**; SQLite Windows eliminata dallo script, dati Android cancellati dalle impostazioni del dispositivo dopo che ADB `pm clear` era stato rifiutato dal sistema. Il reset è stato confermato dall'utente: **non va ripetuto** per avviare P1. `app_user`, sessioni backend, schema e Flyway restano conservati. I conteggi storici (5 note soft-deleted, cursor 34, backup e restore PASS) descrivono lo stato **prima** del reset, non quello corrente.
 
-**Codice:** Flutter `0.5.0+7` introduce **P1.1 Calendario** (giorno/settimana/mese, agenda, scadenze date-only e timed, edit inline, aggiunta rapida) tramite proiezione dei task già sincronizzati, **senza migrazioni DB né nuove API**. Vedi [P1-CALENDAR.md](docs/P1-CALENDAR.md) (oppure [specifica P1.1](P1-CALENDAR.md) per i documenti in `docs/`). Cestino note/restore versionato già implementato in `0.4.2+6`, ma **non verificato sui dispositivi** e per il ripristino cloud richiede l'API aggiornata `noteRestoreSchema:1`; il deploy Coolify non è attestato. P1.2 time blocking, P0 reminder/ricorrenze/hardening e test E2E restano **aperti**, non vengono segnati completati.
+**Codice:** Flutter `0.5.0+7` introduce **P1.1 Calendario** (giorno/settimana/mese, agenda, scadenze date-only e timed, edit inline, aggiunta rapida) tramite proiezione dei task già sincronizzati, **senza migrazioni DB né nuove API**. Vedi [P1-CALENDAR.md](docs/P1-CALENDAR.md) (oppure [specifica P1.1](docs/P1-CALENDAR.md) per i documenti in `docs/`). Cestino note/restore versionato già implementato in `0.4.2+6`, ma **non verificato sui dispositivi** e per il ripristino cloud richiede l'API aggiornata `noteRestoreSchema:1`; il deploy Coolify non è attestato. P1.2 time blocking, P0 reminder/ricorrenze/hardening e test E2E restano **aperti**, non vengono segnati completati.
 
 **CI:** la revisione precedente `d29d2f3` (0.4.2+6) è verde su Flutter e backend; per P1.1 citare la **nuova CI** dopo averne verificato l'esito. **Nessun nuovo deploy, backup o ulteriore reset eseguito da ChatGPT.**
 
@@ -192,7 +181,8 @@ Riferimento tecnico: `apps/flutter/lib/ui/notes_theme.dart` (`InlineTextMetrics.
 - [ ] **P1.2 Time blocking**: modello start/end, backend Flyway V8, Flutter Drift V6, editor e sincronizzazione implementati sul branch `feature/p1-2-time-blocking`; CI/hardware/deploy ancora da verificare. [Specifica](docs/P1-TIME-BLOCKING.md).
 - [ ] **P1.3 Interazioni calendario**: implementazione su `main` in versione 0.7; hardware non ancora verificato. [Specifica](docs/P1-CALENDAR-INTERACTIONS.md).
 - [x] **P1.4 Multi-block + riepilogo**: PR #3 integrata in main; 12 slot per attività, Flyway V9/Drift V7, CI superate. Deploy e collaudo hardware ancora da verificare. [Specifica](docs/P1-MULTI-BLOCKS.md).
-- [ ] **P1.5 Pianificazione rapida e filtri**: sviluppo su branch `feature/p1-5-quick-planning-filters`; CI e collaudo finale ancora da verificare. [Specifica](docs/P1-QUICK-PLANNING.md).
+- [x] **P1.5 Pianificazione rapida e filtri**: PR #4 unita in `main` (Flutter `0.9.0+11`, CI verde), hardware non collaudato. [Specifica](docs/P1-QUICK-PLANNING.md).
+- [ ] **P1.6 Ricorrenze**: branch `feature/p1-6-recurrence-docs-audit` (V10/Drift V8), implementazione/test in corso, non merge né deploy. [Specifica](docs/P1-RECURRENCE.md).
 - [ ] Eisenhower Matrix a quattro quadranti.
 - [ ] Kanban con drag & drop.
 - [ ] Pomodoro/cronometro e statistiche.

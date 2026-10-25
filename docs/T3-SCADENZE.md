@@ -1,7 +1,7 @@
 # T3 — Scadenze Forui, fusi IANA e calendario civile
 
 <!-- CURRENT-STATUS-REF -->
-> **Documento storico/procedura specifica:** codice `main` = P1.5 (0.9), P1.6 ricorrenze V10/Drift V8 ancora su branch. Ultimo deploy **verificato**: Flyway V8; V9/V10 non attestati, dispositivi non collaudati. [Stato canonico](CURRENT-STATUS.md). Evitare di usare i vecchi numeri di versione contenuti qui come istruzioni per nuovi deploy.
+> **Stato codice:** P1.6 (Flutter 0.10, Flyway V10, Drift V8) integrata su `main` con CI verde. P1.7 promemoria in branch fondativo, **nessuna notifica OS attiva**. L'ultima VPS verificata è V8; V9/V10 non confermate. Per i deploy usare il [runbook batch](P1-RELEASE-BATCH.md) e lo [stato canonico](CURRENT-STATUS.md); quanto segue può descrivere versioni precedenti.
 
 
 > Stato al 24/10: codice T3 implementato; **Flyway V7 verificata sul DB reale e dump/restore isolato PASS**. API autenticata e prove fisiche Windows↔Android ancora non confermate. Verificare gli esiti più recenti in [GitHub Actions](https://github.com/andreadada/simple-notes/actions/workflows/flutter-ci.yml).

@@ -1,7 +1,7 @@
 ## Stato corrente — rilascio 0.7.0+9 (25/10/2026)
 
 <!-- CURRENT-STATUS-REF -->
-> **Documento storico/procedura specifica:** codice `main` = P1.5 (0.9), P1.6 ricorrenze V10/Drift V8 ancora su branch. Ultimo deploy **verificato**: Flyway V8; V9/V10 non attestati, dispositivi non collaudati. [Stato canonico](CURRENT-STATUS.md). Evitare di usare i vecchi numeri di versione contenuti qui come istruzioni per nuovi deploy.
+> **Stato codice:** P1.6 (Flutter 0.10, Flyway V10, Drift V8) integrata su `main` con CI verde. P1.7 promemoria in branch fondativo, **nessuna notifica OS attiva**. L'ultima VPS verificata è V8; V9/V10 non confermate. Per i deploy usare il [runbook batch](P1-RELEASE-BATCH.md) e lo [stato canonico](CURRENT-STATUS.md); quanto segue può descrivere versioni precedenti.
 
 
 **Codice integrato su `main`**: PR #1 P1.2 (time blocking + Flyway V8 + Drift V6) e PR #2 P1.3 (drag/resize e timeline) unite con successo. La CI dei branch è verde; le build automatiche successive al merge sono da controllare separatamente. **Coolify e PostgreSQL reali NON sono stati aggiornati/verificati da questa chat; non dichiarare Flyway V8 già applicata, né l'app installata su Windows/Android.** Per il rollout serve verificare backend `timeBlockSchema:1` e Flyway V8 prima di aggiornare i client. Non eseguire reset degli archivi: l'utente ha già concluso il reset dei soli dati di test. **Runbook attuale:** [P1-RELEASE-0.7.0.md](P1-RELEASE-0.7.0.md).

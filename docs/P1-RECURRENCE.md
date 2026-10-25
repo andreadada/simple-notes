@@ -1,6 +1,6 @@
 # P1.6 — Ricorrenze versionate
 
-**Stato:** branch `feature/p1-6-recurrence-docs-audit` in sviluppo, **NON deployato**, Flutter `0.10.0+12`. Backend Flyway **V10** additiva, Drift **V8** additiva.
+**Stato codice:** integrata su `main` con PR #5 (CI complete verdi), Flutter `0.10.0+12`. **Il deploy non è stato verificato.** Backend Flyway **V10** additiva, Drift **V8** additiva.
 
 ## Requisiti implementati
 

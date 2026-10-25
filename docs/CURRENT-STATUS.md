@@ -6,10 +6,10 @@
 
 | Contesto | Stato |
 |---|---|
-| `main` | P1.5 integrata con PR #4, commit merge `113daa589`, Flutter `0.9.0+11` |
-| Backend su `main` | Migrazioni Flyway fino a **V9** e capability `timeBlocksSchema:1`, oltre a time blocking e date-only |
-| Drift client su `main` | Schema **V7** |
-| Incremento **P1.6** | Branch `feature/p1-6-recurrence-docs-audit`, Flutter `0.10.0+12`, Flyway **V10**, Drift **V8**, ricorrenze; non fuso e non distribuito |
+| `main` | P1.6 integrata con PR #5, commit merge `2f316f2c`, Flutter `0.10.0+12` |
+| Backend su `main` | Migrazioni Flyway fino a **V10** e capability `recurrenceSchema:1` oltre a `timeBlocksSchema:1`, oltre a time blocking e date-only |
+| Drift client su `main` | Schema **V8** |
+| Incremento **P1.7** | Branch `feature/p1-7-reminders-foundation`, sola pianificazione promemoria, **senza notifiche native**; non fuso né distribuito |
 | VPS Coolify | **Ultima verifica effettivamente fornita dall'utente:** Flyway V8, PostgreSQL17, `BLOCK_COLUMNS=3`, `FAILED_MIGRATIONS=0`, health `UP` alle 12:02 circa del 25/10/2026. La presenza di V9/V10 sulla VPS non è stata verificata. |
 | Windows/Android | Build locale `0.7.0+9` riuscita, ma installazione e verifica E2E **non confermate**. Non supporre che i client siano già alla versione di `main`. |
 | Collaudo | Aggregato alla fine di più incrementi, secondo richiesta. Nessun reset dei dati; non ripetere test hardware a ogni feature. |
@@ -26,8 +26,8 @@ Le CI verificano il codice e producono artefatti, **non** dimostrano un deploy. 
 | P1.2–P1.3 | Singolo time block, drag/resize, DST, Flyway V8 | Prova UX sui dispositivi |
 | P1.4 | Fino a 12 blocchi per task, V9/Drift V7, summary ore, API 426 legacy | Flyway V9 reale e prova multi-device |
 | P1.5 | Filtri e pianificazione rapida, Flutter 0.9, nessuna migrazione | Prova UI reale |
-| P1.6 | Ricorrenze giornaliere/settimanali/mensili in sviluppo, V10/Drift V8 | CI finale, merge, deploy e acceptance |
-| P1.7 | Promemoria/notification native | Non implementate, non dichiarare attive |
+| P1.6 | Ricorrenze giornaliere/settimanali/mensili integrate in `main`, V10/Drift V8 | Deploy Coolify e acceptance hardware |
+| P1.7 | Pianificazione promemoria in branch PR #6; notifiche native non implementate | Adapter Android/Windows, permessi, packaging MSIX, test |
 | P2/P3 | Estensioni web/condivisione/export e ulteriori fasi | Pianificate |
 
 ## Regole vincolanti
@@ -49,7 +49,7 @@ Le CI verificano il codice e producono artefatti, **non** dimostrano un deploy. 
 
 ## Compiti aperti prima del prossimo rilascio
 
-- Concludere P1.6, CI e review; non fonderla finché i job non sono verdi.
-- Decidere se implementare P1.7 promemoria, con autorizzazione notifiche e deduplica per occorrenza.
+- P1.6 completata in repository (CI verdi e PR #5 integrata). Verificare deployment backend V10 prima di installare client 0.10.
+- P1.7 avviata su branch separato: motore di promemoria, ancora senza integrazione delle notifiche native Android/Windows.
 - Verificare automaticamente la migrazione Flyway più recente *effettivamente deployata* prima di installare la successiva versione Flutter.
 - Fare un collaudo E2E Windows/Android una sola volta a fine gruppo: login, note, task, scadenze, multi-block, sync offline/online, conflitti, cancellazione/restore, ricorrenze e notifiche solo se implementate.

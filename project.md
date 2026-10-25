@@ -1,7 +1,7 @@
 ## Stato operativo aggiornato — 25 ottobre 2026 (fonte corrente)
 
 <!-- CURRENT-STATUS-REF -->
-> **Stato aggiornato:** P1.5 (`0.9.0+11`) integrata su `main`; P1.6 ricorrenze (`0.10.0+12`, Flyway V10/Drift V8) in sviluppo su branch. Ultimo server **verificato**: Flyway V8; V9/V10 e installazioni Windows/Android non ancora collaudate. **Fonte unica:** [CURRENT-STATUS.md](docs/CURRENT-STATUS.md). Le sezioni su vecchi branch/commit più sotto sono cronologia tecnica, non lo stato corrente.
+> **Stato aggiornato:** P1.6 ricorrenze è integrata su `main` (PR #5, Flutter `0.10.0+12`, Flyway V10/Drift V8). P1.7 promemoria è avviata su branch, **senza notifiche native operative**. Ultimo schema Coolify realmente verificato: V8; V9/V10 non attestati, collaudo Windows/Android differito. **Fonte unica:** [CURRENT-STATUS.md](docs/CURRENT-STATUS.md). Gli stati precedenti più sotto sono cronologia, non prove di deploy.
 
 
 ## Stato corrente — rilascio 0.7.0+9 (25/10/2026)
@@ -182,7 +182,8 @@ Riferimento tecnico: `apps/flutter/lib/ui/notes_theme.dart` (`InlineTextMetrics.
 - [ ] **P1.3 Interazioni calendario**: implementazione su `main` in versione 0.7; hardware non ancora verificato. [Specifica](docs/P1-CALENDAR-INTERACTIONS.md).
 - [x] **P1.4 Multi-block + riepilogo**: PR #3 integrata in main; 12 slot per attività, Flyway V9/Drift V7, CI superate. Deploy e collaudo hardware ancora da verificare. [Specifica](docs/P1-MULTI-BLOCKS.md).
 - [x] **P1.5 Pianificazione rapida e filtri**: PR #4 unita in `main` (Flutter `0.9.0+11`, CI verde), hardware non collaudato. [Specifica](docs/P1-QUICK-PLANNING.md).
-- [ ] **P1.6 Ricorrenze**: branch `feature/p1-6-recurrence-docs-audit` (V10/Drift V8), implementazione/test in corso, non merge né deploy. [Specifica](docs/P1-RECURRENCE.md).
+- [x] **P1.6 Ricorrenze**: PR #5 integrata, Flutter 0.10/Flyway V10/Drift V8, CI completa verde; deploy ancora da verificare. [Specifica](docs/P1-RECURRENCE.md).
+- [ ] **P1.7 Promemoria nativi**: branch dedicato PR #6 (motore di pianificazione senza adapter OS); notifiche Windows/Android non implementate.
 - [ ] Eisenhower Matrix a quattro quadranti.
 - [ ] Kanban con drag & drop.
 - [ ] Pomodoro/cronometro e statistiche.

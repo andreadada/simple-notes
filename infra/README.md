@@ -1,7 +1,7 @@
 # Backend — Coolify
 
 <!-- CURRENT-STATUS-REF -->
-> **Stato aggiornato:** P1.5 (`0.9.0+11`) integrata su `main`; P1.6 ricorrenze (`0.10.0+12`, Flyway V10/Drift V8) in sviluppo su branch. Ultimo server **verificato**: Flyway V8; V9/V10 e installazioni Windows/Android non ancora collaudate. **Fonte unica:** [CURRENT-STATUS.md](../docs/CURRENT-STATUS.md). Le sezioni su vecchi branch/commit più sotto sono cronologia tecnica, non lo stato corrente.
+> **Stato aggiornato:** P1.6 ricorrenze è integrata su `main` (PR #5, Flutter `0.10.0+12`, Flyway V10/Drift V8). P1.7 promemoria è avviata su branch, **senza notifiche native operative**. Ultimo schema Coolify realmente verificato: V8; V9/V10 non attestati, collaudo Windows/Android differito. **Fonte unica:** [CURRENT-STATUS.md](../docs/CURRENT-STATUS.md). Gli stati precedenti più sotto sono cronologia, non prove di deploy.
 
 
 ## Stato corrente — rilascio 0.7.0+9 (25/10/2026)

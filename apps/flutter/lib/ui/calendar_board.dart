@@ -60,21 +60,31 @@ class _CalendarBoardState extends ConsumerState<CalendarBoard> {
         title: task.title, due: due, changeDue: true);
   }
 
-  Future<void> _updateBlock(LocalTask task) async {
+  Future<void> _updateBlock(LocalTask task, {TimeSlot? slot}) async {
     final decision = await showTimeBlockEditor(context,
-        initial: task.timeBlock, selectedDay: selected);
+        initial: slot?.block, selectedDay: selected);
     if (decision == null || !mounted) return;
-    await ref.read(localStoreProvider.notifier)
-        .setTaskTimeBlock(task.id, decision.block);
+    final store = ref.read(localStoreProvider.notifier);
+    if (slot != null) {
+      if (decision.block == null) {
+        await store.removeTaskTimeSlot(task.id, slot.id);
+      } else {
+        await store.updateTaskTimeSlot(task.id, slot.id, decision.block!);
+      }
+    } else if (decision.block != null) {
+      await store.addTaskTimeSlot(task.id, decision.block!);
+    }
   }
 
-  Future<void> _saveBlock(String id, TimeBlock block) =>
-      ref.read(localStoreProvider.notifier).setTaskTimeBlock(id, block);
+  Future<void> _saveBlock(String id, String slotId, TimeBlock block) =>
+      ref.read(localStoreProvider.notifier)
+          .updateTaskTimeSlot(id, slotId, block);
 
-  Future<void> _shiftBlock(LocalTask task,
+  Future<void> _shiftBlock(ScheduledSlot entry,
       TimeBlock Function(TimeBlock) mutate) async {
     try {
-      await _saveBlock(task.id, mutate(task.timeBlock!));
+      await _saveBlock(entry.task.id, entry.slot.id,
+          mutate(entry.slot.block));
     } on FormatException catch (error) {
       if (mounted) {
         ScaffoldMessenger.maybeOf(context)?.showSnackBar(
@@ -88,12 +98,15 @@ class _CalendarBoardState extends ConsumerState<CalendarBoard> {
     }
   }
 
-  Future<void> _moveBlockToDay(String id, DateTime day) async {
+  Future<void> _moveBlockToDay(
+      String id, String slotId, DateTime day) async {
     final current = ref.read(localStoreProvider).tasks
         .where((task) => task.id == id).firstOrNull;
-    if (current?.timeBlock == null) return;
+    final slot = current?.timeBlocks.where((s) => s.id == slotId).firstOrNull;
+    if (slot == null) return;
     try {
-      await _saveBlock(id, calendarMoveBlockToDay(current!.timeBlock!, day));
+      await _saveBlock(id, slotId,
+          calendarMoveBlockToDay(slot.block, day));
     } on FormatException catch (error) {
       if (mounted) {
         ScaffoldMessenger.maybeOf(context)?.showSnackBar(
@@ -107,11 +120,14 @@ class _CalendarBoardState extends ConsumerState<CalendarBoard> {
     }
   }
 
-  Widget _blockCard(LocalTask task) => Padding(
+  Widget _blockCard(ScheduledSlot entry) {
+    final task = entry.task;
+    final slot = entry.slot;
+    return Padding(
     padding: const EdgeInsets.only(bottom: 8),
     child: FCard(child: Row(children: [
       LongPressDraggable<CalendarBlockDrag>(
-        data: CalendarBlockDrag(task.id),
+        data: CalendarBlockDrag(task.id, slot.id),
         feedback: Material(
           color: const Color(0xFF303B52),
           child: Padding(padding: const EdgeInsets.all(10),
@@ -128,25 +144,25 @@ class _CalendarBoardState extends ConsumerState<CalendarBoard> {
           Text(task.title, maxLines: 2,
               style: const TextStyle(fontWeight: FontWeight.w600)),
           const SizedBox(height: 4),
-          Text(timeBlockLabel(task.timeBlock),
+          Text(timeBlockLabel(slot.block),
               style: const TextStyle(fontSize: 11,
                   color: NotesPalette.secondaryText)),
         ],
       )),
-      if (task.timeBlock != null) ...[
+      if (task.timeBlocks.isNotEmpty) ...[
         IconButton(
-          key: Key('calendar-block-earlier-${task.id}'),
+          key: Key('calendar-block-earlier-${task.id}-${slot.id}'),
           tooltip: 'Sposta 15 minuti prima',
-          onPressed: () => _shiftBlock(task,
+          onPressed: () => _shiftBlock(entry,
               (block) => calendarMoveBlock(block, -15)),
           icon: const Icon(Icons.keyboard_arrow_up, size: 17),
           constraints: const BoxConstraints(minWidth: 26, minHeight: 26),
           padding: EdgeInsets.zero,
         ),
         IconButton(
-          key: Key('calendar-block-later-${task.id}'),
+          key: Key('calendar-block-later-${task.id}-${slot.id}'),
           tooltip: 'Sposta 15 minuti dopo',
-          onPressed: () => _shiftBlock(task,
+          onPressed: () => _shiftBlock(entry,
               (block) => calendarMoveBlock(block, 15)),
           icon: const Icon(Icons.keyboard_arrow_down, size: 17),
           constraints: const BoxConstraints(minWidth: 26, minHeight: 26),
@@ -154,13 +170,14 @@ class _CalendarBoardState extends ConsumerState<CalendarBoard> {
         ),
       ],
       FButton.icon(
-        key: Key('calendar-edit-block-${task.id}'),
+        key: Key('calendar-edit-block-${task.id}-${slot.id}'),
         variant: FButtonVariant.ghost,
-        onPress: () => _updateBlock(task),
+        onPress: () => _updateBlock(task, slot: slot),
         child: const Icon(Icons.edit_calendar_outlined, size: 18),
       ),
     ])),
   );
+  }
 
   Widget _taskCard(LocalTask task, {bool compact = false}) => Padding(
     padding: EdgeInsets.only(bottom: compact ? 6 : 9),
@@ -219,7 +236,7 @@ class _CalendarBoardState extends ConsumerState<CalendarBoard> {
   Widget _agenda(DateTime day, List<LocalTask> tasks,
       {bool includeHeading = true}) {
     final items = calendarTasksForDay(tasks, day);
-    final blocks = calendarBlocksForDay(tasks, day);
+    final blocks = calendarTimeSlotsForDay(tasks, day);
     final allDay = items.where((t) => t.due.kind == 'date').toList();
     final scheduled = items.where((t) => t.due.kind != 'date').toList();
     return Column(
@@ -241,7 +258,7 @@ class _CalendarBoardState extends ConsumerState<CalendarBoard> {
               color: NotesPalette.secondaryText, fontSize: 12,
               fontWeight: FontWeight.w600)),
           const SizedBox(height: 8),
-          for (final task in blocks) _blockCard(task),
+          for (final entry in blocks) _blockCard(entry),
           const SizedBox(height: 12),
         ],
         if (items.isNotEmpty)
@@ -305,7 +322,7 @@ class _CalendarBoardState extends ConsumerState<CalendarBoard> {
         itemBuilder: (context, index) {
           final day = days[index];
           final items = calendarTasksForDay(tasks, day);
-          final blocks = calendarBlocksForDay(tasks, day);
+          final blocks = calendarTimeSlotsForDay(tasks, day);
           final focused = calendarDateKey(day) == calendarDateKey(selected);
           final today = calendarDateKey(day) ==
               calendarDateKey(DateTime.now());
@@ -383,14 +400,14 @@ class _CalendarBoardState extends ConsumerState<CalendarBoard> {
               const SizedBox(height: 10),
               TimeBlockTimeline(
                 day: day,
-                tasks: calendarBlocksForDay(tasks, day),
+                tasks: tasks,
                 compact: true, onChange: _saveBlock,
               ),
               const SizedBox(height: 10),
               for (final task in calendarTasksForDay(tasks, day))
                 _taskCard(task, compact: true),
               if (calendarTasksForDay(tasks, day).isEmpty &&
-                  calendarBlocksForDay(tasks, day).isEmpty)
+                  calendarTimeSlotsForDay(tasks, day).isEmpty)
                 const Padding(
                   padding: EdgeInsets.symmetric(vertical: 13),
                   child: Text('—', style: TextStyle(
@@ -406,7 +423,7 @@ class _CalendarBoardState extends ConsumerState<CalendarBoard> {
   Widget build(BuildContext context) {
     final tasks = ref.watch(localStoreProvider).tasks;
     final unscheduled = tasks.where((task) =>
-        task.due.kind == 'none' && task.timeBlock == null &&
+        task.due.kind == 'none' && task.timeBlocks.isEmpty &&
         !task.completed).length;
     return Column(children: [
       Padding(
@@ -490,7 +507,7 @@ class _CalendarBoardState extends ConsumerState<CalendarBoard> {
                       color: NotesPalette.secondaryText)),
                 for (final task in tasks.where((task) =>
                     task.due.kind == 'none' &&
-                    task.timeBlock == null && !task.completed))
+                    task.timeBlocks.isEmpty && !task.completed))
                   Padding(
                     padding: const EdgeInsets.only(top: 5),
                     child: Row(children: [

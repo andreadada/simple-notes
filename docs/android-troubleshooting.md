@@ -1,5 +1,9 @@
 # Android — build, firma, Google OAuth e installazione
 
+<!-- CURRENT-STATUS-REF -->
+> **Stato del progetto:** codice `main` = P1.5 (0.9), P1.6 ricorrenze V10/Drift V8 ancora su branch. Ultimo deploy **verificato**: Flyway V8; V9/V10 non attestati, dispositivi non collaudati. [Stato canonico](CURRENT-STATUS.md). Evitare di usare i vecchi numeri di versione contenuti qui come istruzioni per nuovi deploy.
+
+
 > Runbook basato sui problemi reali risolti il 22–23 ottobre 2026. Package Android **`it.andreadada.simplenotes`**. Per il quadro completo leggere [HANDOFF.md](HANDOFF.md).
 
 ## 1. Avvio sul dispositivo Android

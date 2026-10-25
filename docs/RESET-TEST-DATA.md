@@ -1,5 +1,9 @@
 # Reset coordinato dei soli dati di test — Simple Notes
 
+<!-- CURRENT-STATUS-REF -->
+> **Documento storico/procedura specifica:** codice `main` = P1.5 (0.9), P1.6 ricorrenze V10/Drift V8 ancora su branch. Ultimo deploy **verificato**: Flyway V8; V9/V10 non attestati, dispositivi non collaudati. [Stato canonico](CURRENT-STATUS.md). Evitare di usare i vecchi numeri di versione contenuti qui come istruzioni per nuovi deploy.
+
+
 **ESEGUITO E VERIFICATO DALL'UTENTE il 25 ottobre 2026. Non ripetere questa procedura per continuare lo sviluppo.** È un'operazione distruttiva, autorizzata dall'utente **solo per i dati di test** (24/10/2026). Non riutilizzare questi comandi quando ci saranno dati reali. Il reset comprende task, liste, note visibili ed eliminate, operazioni e storico sync su PostgreSQL e SQLite su entrambi i dispositivi. **Preserva** l'account Google `app_user`, le sessioni backend, lo schema e le migrazioni Flyway e gli altri database della VPS.
 
 ## Esito reale comunicato dall'utente (25/10/2026)

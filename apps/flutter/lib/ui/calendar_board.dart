@@ -5,6 +5,7 @@ import 'package:forui/forui.dart';
 import '../data/local_store.dart';
 import '../data/task_due_view.dart';
 import 'calendar_logic.dart';
+import 'calendar_plan_summary.dart';
 import 'inline_editable_title.dart';
 import 'inline_quick_add.dart';
 import 'notes_theme.dart';
@@ -422,6 +423,7 @@ class _CalendarBoardState extends ConsumerState<CalendarBoard> {
   @override
   Widget build(BuildContext context) {
     final tasks = ref.watch(localStoreProvider).tasks;
+    final summary = calendarPlanSummary(tasks, selected, mode);
     final unscheduled = tasks.where((task) =>
         task.due.kind == 'none' && task.timeBlocks.isEmpty &&
         !task.completed).length;
@@ -474,8 +476,14 @@ class _CalendarBoardState extends ConsumerState<CalendarBoard> {
               ),
           ]),
           const SizedBox(height: 6),
-          Text('Trascina blocchi nella timeline per cambiare orario; '
-              'trascinali sull’intestazione di un altro giorno per spostarli. '
+          Text('${summary.slotCount} blocchi · '
+              '${calendarMinutesLabel(summary.plannedMinutes)} pianificate · '
+              '${calendarMinutesLabel(summary.completedMinutes)} completate',
+            key: const Key('calendar-summary'),
+            style: const TextStyle(fontSize: 12,
+                color: NotesPalette.secondaryText)),
+          const SizedBox(height: 5),
+          Text('Trascina i blocchi per spostare orari e date · '
               '$unscheduled attività da pianificare',
             style: const TextStyle(fontSize: 11,
                 color: NotesPalette.secondaryText)),

@@ -1,8 +1,16 @@
 # Reset coordinato dei soli dati di test — Simple Notes
 
-**Non ancora eseguito sulla VPS né sui dispositivi da questa chat.** È un'operazione distruttiva, autorizzata dall'utente **solo per i dati di test** (24/10/2026). Non riutilizzare questi comandi quando ci saranno dati reali. Il reset comprende task, liste, note visibili ed eliminate, operazioni e storico sync su PostgreSQL e SQLite su entrambi i dispositivi. **Preserva** l'account Google `app_user`, le sessioni backend, lo schema e le migrazioni Flyway e gli altri database della VPS.
+**ESEGUITO E VERIFICATO DALL'UTENTE il 25 ottobre 2026. Non ripetere questa procedura per continuare lo sviluppo.** È un'operazione distruttiva, autorizzata dall'utente **solo per i dati di test** (24/10/2026). Non riutilizzare questi comandi quando ci saranno dati reali. Il reset comprende task, liste, note visibili ed eliminate, operazioni e storico sync su PostgreSQL e SQLite su entrambi i dispositivi. **Preserva** l'account Google `app_user`, le sessioni backend, lo schema e le migrazioni Flyway e gli altri database della VPS.
 
-## Sequenza obbligatoria
+## Esito reale comunicato dall'utente (25/10/2026)
+
+- PostgreSQL Simple Notes: anteprima finale **tutti 0** (task, liste, note, sync_change, sync_operation).
+- Windows: `WINDOWS_LOCAL_DATA_ERASED` su `simple_notes.sqlite`, senza disinstallazione.
+- Android: ADB `pm clear` **rifiutato per mancanza di permesso**; cancellazione dei dati dell'app effettuata manualmente dalle impostazioni, confermata dall'utente.
+- Account Google e schema Flyway non eliminati. La revisione client corrente nella repo è `0.5.0+7` con calendario P1.1.
+- Questa procedura è conservata **solo come runbook storico**. Nessuna richiesta di nuovo reset, migrazione o backup.
+
+## Sequenza obbligatoria (storica, non rieseguire)
 
 1. **Chiudere Simple Notes su Windows e Android**; lasciare entrambi i dispositivi con l'app chiusa fino al termine dei punti 2–4. Su Android si può anche eseguire `& $adb shell am force-stop it.andreadada.simplenotes` dal PC, dopo avere verificato il telefono. Non avviare versioni vecchie durante il reset.
 2. **Solo sulla VPS, repository aggiornata e container PostgreSQL corretto**. Controllare in anteprima:

@@ -1,3 +1,5 @@
+> **Aggiornamento prodotto 25/10/2026:** nuova sezione calendario P1.1 client-only con giorno/settimana/mese e quick-add inline; regola **inline-edit first** invariata. Giorni senza orario NON diventano midnight UTC, gli orari usano il giorno di visualizzazione locale senza perdere l'etichetta IANA. P1.2 time blocking non implementato. Reset di test PostgreSQL + Windows + Android confermato dall'utente; le note storiche sotto datate 24/10 sono precedenti al reset. Specifica: [P1-CALENDAR](docs/P1-CALENDAR.md).
+
 # Simple Notes — Design & Product Specification
 
 > **Stato reale 24/10/2026:** PostgreSQL `simplenotes` 17.11, Flyway V1–V7 riuscite, backup `simple-notes-20261024T132857Z-271921.dump` con SHA256 valido e restore isolato PASS. Copia offsite non effettuata per scelta dell'utente. Restano da verificare l'API autenticata (`taskDueSchema:1`) e il collaudo T4.2 Windows↔Android con Flutter `0.4.0+4`. Non ripetere backup, migrazioni o deploy automaticamente. [T4.2](docs/T4-DEVICE-SYNC.md).

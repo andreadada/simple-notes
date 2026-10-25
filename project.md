@@ -1,3 +1,13 @@
+## Stato operativo aggiornato — 25 ottobre 2026 (fonte corrente)
+
+**Reset del workspace di test concluso dall'utente:** PostgreSQL `simplenotes` verificato con **0 task, 0 liste, 0 note, 0 eventi e 0 operazioni di sync**; SQLite Windows eliminata dallo script, dati Android cancellati dalle impostazioni del dispositivo dopo che ADB `pm clear` era stato rifiutato dal sistema. Il reset è stato confermato dall'utente: **non va ripetuto** per avviare P1. `app_user`, sessioni backend, schema e Flyway restano conservati. I conteggi storici (5 note soft-deleted, cursor 34, backup e restore PASS) descrivono lo stato **prima** del reset, non quello corrente.
+
+**Codice:** Flutter `0.5.0+7` introduce **P1.1 Calendario** (giorno/settimana/mese, agenda, scadenze date-only e timed, edit inline, aggiunta rapida) tramite proiezione dei task già sincronizzati, **senza migrazioni DB né nuove API**. Vedi [P1-CALENDAR.md](docs/P1-CALENDAR.md) (oppure [specifica P1.1](P1-CALENDAR.md) per i documenti in `docs/`). Cestino note/restore versionato già implementato in `0.4.2+6`, ma **non verificato sui dispositivi** e per il ripristino cloud richiede l'API aggiornata `noteRestoreSchema:1`; il deploy Coolify non è attestato. P1.2 time blocking, P0 reminder/ricorrenze/hardening e test E2E restano **aperti**, non vengono segnati completati.
+
+**CI:** la revisione precedente `d29d2f3` (0.4.2+6) è verde su Flutter e backend; per P1.1 citare la **nuova CI** dopo averne verificato l'esito. **Nessun nuovo deploy, backup o ulteriore reset eseguito da ChatGPT.**
+
+> Le sezioni datate 23–24 ottobre più in basso sono **cronologia**, non istruzioni operative correnti; prevale questo stato e [RESET-TEST-DATA.md](docs/RESET-TEST-DATA.md) per la storia del reset.
+
 ## Aggiornamento 24/10/2026 — test reali, sicurezza note e futuro P1
 
 **Verificato dall'utente:** Flutter `0.4.1+5` installata via `adb install -r`, login Google e API `taskDueSchema:1` su Windows e Android, entrambi cursor 34 e pending 0. L'audit PostgreSQL **sola lettura** ha individuato 5 note tutte in soft-delete, in particolare eventi 33–34 dal server; i dati sono di test e l'utente sceglie di azzerarli. La sorgente dei DELETE non è attribuibile a un dispositivo dal solo registro: non chiamarla causa risolta.
@@ -146,7 +156,8 @@ Riferimento tecnico: `apps/flutter/lib/ui/notes_theme.dart` (`InlineTextMetrics.
 - [ ] Sincronizzazione PC↔Android ancora da confermare E2E; la migrazione UI non ne prova il funzionamento.
 
 ## P1 — Produttività completa
-- [ ] Calendario giorno/settimana/mese e time blocking.
+- [ ] **P1.1 Calendario giorno/settimana/mese** implementato nel codice Flutter `0.5.0+7`, in attesa di CI e verifica hardware; [specifica](docs/P1-CALENDAR.md). 
+- [ ] **P1.2 Time blocking**: modello esplicito inizio/fine e relativa UX/sync ancora da progettare e testare.
 - [ ] Eisenhower Matrix a quattro quadranti.
 - [ ] Kanban con drag & drop.
 - [ ] Pomodoro/cronometro e statistiche.
@@ -313,3 +324,4 @@ Esempio: `2026-10-21 14:20 CEST | commit abc1234 | Aggiunto modulo promemoria e 
 - 2026-10-24 | T4.2 build/hardening | `tools/t4-build-devices.ps1` crea APK Android debug e ZIP Windows con stesso commit e OAuth IDs locali da `.t4-device-build.json` ignorato; nessuna installazione/reset/deploy. Flutter `0.4.1+5`; il controllo `_supportsTypedDue()` ora richiede il contratto completo API prima di inviare data/ora; aggiunto test fail-closed. Verificare CI e prove fisiche, ancora non eseguite.
 - 2026-10-24 | fix(t4.2) | Lo script per build locali permette working tree tracciati modificati senza cancellarli; segnala build non riproducibile da HEAD nel manifest, supporta `-CheckOnly` e `-RequireClean` opzionale, evita rigenerazione piattaforme se già presenti e non usa cancellazione automatica output di build_runner. Nessuna migrazione/deploy/data reset.
 - 2026-10-24 | feat(notes)+tools | Nuovo cestino note, restore versionato tramite backend con controllo capacità, protezione contro delta vecchi, test Flutter/backend; script di reset del SOLO workspace test con conferme e anteprima, locali Windows/Android e dati server. Nessuna cancellazione dati, migrazione o deploy effettuato da ChatGPT. Successivo P1 calendario dopo smoke test.
+- 2026-10-25 | feat(p1.1) | Implementato Calendario giorno/settimana/mese su Flutter (TaskDue civili/IANA esistenti, navigazione, task inline, quick-add e test). Reset dati di test confermato dall'utente su server/Windows/Android; nessun deploy o modifica DB svolta dall'assistente. P1.2 time blocking ancora da fare.

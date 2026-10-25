@@ -130,8 +130,9 @@ void main() {
     final block = _block(start, 90);
     final task = _task('touch-block', block);
     final changes = <TimeBlock>[];
-    Future<void> changed(String id, TimeBlock value) async {
+    Future<void> changed(String id, String slotId, TimeBlock value) async {
       expect(id, 'touch-block');
+      expect(slotId, 'legacy');
       changes.add(value);
     }
     await tester.pumpWidget(MaterialApp(home: Scaffold(
@@ -143,8 +144,8 @@ void main() {
         ),
       ),
     )));
-    final moveKey = find.byKey(const Key('calendar-block-move-touch-block'));
-    final resizeKey = find.byKey(const Key('calendar-block-resize-touch-block'));
+    final moveKey = find.byKey(const Key('calendar-block-move-touch-block-legacy'));
+    final resizeKey = find.byKey(const Key('calendar-block-resize-touch-block-legacy'));
     await tester.ensureVisible(moveKey);
     await tester.drag(moveKey, const Offset(0, 27));
     await tester.pumpAndSettle();

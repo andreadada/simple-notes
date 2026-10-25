@@ -7,8 +7,6 @@ import 'ui/inline_quick_add.dart';
 import 'ui/notes_dialogs.dart';
 import 'ui/task_due_editor.dart';
 import 'ui/calendar_board.dart';
-import 'ui/time_block_editor.dart';
-import 'ui/time_block_view.dart';
 import 'ui/task_blocks_panel.dart';
 import 'data/task_due_view.dart';
 import 'ui/sync_conflict_dialog.dart';

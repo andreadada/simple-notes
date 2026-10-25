@@ -29,7 +29,9 @@ public record TaskTimeBlock(Instant start, Instant end, String timeZone) {
             Duration length = Duration.between(start, end);
             if (length.isNegative() || length.isZero() ||
                     length.compareTo(Duration.ofHours(24)) > 0) throw invalid();
-            if (start.getNano() != 0 || end.getNano() != 0) throw invalid();
+            if (start.getNano() != 0 || end.getNano() != 0 ||
+                    start.getEpochSecond() % 60 != 0 ||
+                    end.getEpochSecond() % 60 != 0) throw invalid();
             return new TaskTimeBlock(start, end, zone);
         } catch (RuntimeException ex) {
             throw invalid();

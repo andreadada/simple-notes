@@ -45,7 +45,9 @@ abstract final class ReminderPlanner {
     _validate(ownerId, leadMinutes);
     // Date-only has no clock. Never fabricate a midnight notification.
     if (task.completed || task.due.kind != 'datetime' ||
-        task.due.instant == null) return null;
+        task.due.instant == null) {
+      return null;
+    }
     return _build(task, ownerId, 'due', task.due.instant!,
         now, leadMinutes);
   }
@@ -62,7 +64,9 @@ abstract final class ReminderPlanner {
       return null;
     }
     final slot = task.timeBlocks.where((s) => s.id == slotId).firstOrNull;
-    if (slot == null) return null;
+    if (slot == null) {
+      return null;
+    }
     return _build(task, ownerId, 'block:${slot.id}',
         slot.block.start, now, leadMinutes);
   }
@@ -79,7 +83,9 @@ abstract final class ReminderPlanner {
   ) {
     final utcTarget = target.toUtc();
     final fireAtUtc = utcTarget.subtract(Duration(minutes: leadMinutes));
-    if (!fireAtUtc.isAfter(now.toUtc())) return null;
+    if (!fireAtUtc.isAfter(now.toUtc())) {
+      return null;
+    }
     final key = '$ownerId|${task.id}|$kind|'
         '${utcTarget.toIso8601String()}|$leadMinutes';
     return ReminderPlan(
@@ -112,7 +118,9 @@ abstract final class ReminderPlanner {
     for (final task in tasks) {
       final due = forTaskDue(task, ownerId: ownerId, now: now,
           leadMinutes: dueLeadMinutes);
-      if (due != null && !due.fireAtUtc.isAfter(latest)) plans.add(due);
+      if (due != null && !due.fireAtUtc.isAfter(latest)) {
+        plans.add(due);
+      }
       for (final slot in task.timeBlocks) {
         final scheduled = forTimeBlock(task, ownerId: ownerId,
             slotId: slot.id, now: now, leadMinutes: blockLeadMinutes);
@@ -129,9 +137,13 @@ abstract final class ReminderPlanner {
     final ids = <int>{};
     final result = <ReminderPlan>[];
     for (final plan in plans) {
-      if (!ids.add(plan.notificationId)) continue;
+      if (!ids.add(plan.notificationId)) {
+        continue;
+      }
       result.add(plan);
-      if (result.length == maxNotifications) break;
+      if (result.length == maxNotifications) {
+        break;
+      }
     }
     return result;
   }

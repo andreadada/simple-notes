@@ -1,5 +1,10 @@
 ## Stato operativo aggiornato — 25 ottobre 2026 (fonte corrente)
 
+## P1.5 — Pianificazione rapida e filtri (25/10/2026)
+
+**Sviluppo su `feature/p1-5-quick-planning-filters`, non su main e non distribuito:** Flutter `0.9.0+11`, slot libero 30/60/90 minuti entro la finestra civile 09–20, filtro attività per stato/priorità/ricerca e protezione DST/collisioni. Non introduce migrazioni oltre Flyway V9/Drift V7 già previste per P1.4; nessuna modifica alla VPS o alle app installate. Il collaudo Windows–Android rimane unico e differito a fine batch. [Specifica](docs/P1-QUICK-PLANNING.md).
+
+
 ## Stato P1.4 dopo il merge — 25/10/2026
 
 **P1.4 è integrata su `main`** (PR #3, merge `ab4cd441`, Flutter `0.8.0+10`, Flyway **V9** e Drift **V7**). Backend, Flutter e Compose CI della PR sono **verdi**. L'installazione effettiva sui dispositivi e la migrazione Flyway V9 sulla VPS **non sono state verificate**; non confondere il merge con il deploy. Le descrizioni sotto etichettate «branch in sviluppo» si riferiscono allo stato storico precedente al merge. Collezioni multi-blocco, editor e riepilogo focus sono documentati in [P1-MULTI-BLOCKS.md](docs/P1-MULTI-BLOCKS.md). **Niente reset né modifiche ai dati reali da questa operazione.**
@@ -187,6 +192,7 @@ Riferimento tecnico: `apps/flutter/lib/ui/notes_theme.dart` (`InlineTextMetrics.
 - [ ] **P1.2 Time blocking**: modello start/end, backend Flyway V8, Flutter Drift V6, editor e sincronizzazione implementati sul branch `feature/p1-2-time-blocking`; CI/hardware/deploy ancora da verificare. [Specifica](docs/P1-TIME-BLOCKING.md).
 - [ ] **P1.3 Interazioni calendario**: implementazione su `main` in versione 0.7; hardware non ancora verificato. [Specifica](docs/P1-CALENDAR-INTERACTIONS.md).
 - [x] **P1.4 Multi-block + riepilogo**: PR #3 integrata in main; 12 slot per attività, Flyway V9/Drift V7, CI superate. Deploy e collaudo hardware ancora da verificare. [Specifica](docs/P1-MULTI-BLOCKS.md).
+- [ ] **P1.5 Pianificazione rapida e filtri**: sviluppo su branch `feature/p1-5-quick-planning-filters`; CI e collaudo finale ancora da verificare. [Specifica](docs/P1-QUICK-PLANNING.md).
 - [ ] Eisenhower Matrix a quattro quadranti.
 - [ ] Kanban con drag & drop.
 - [ ] Pomodoro/cronometro e statistiche.

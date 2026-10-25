@@ -129,4 +129,93 @@ class TimeBlockSyncIntegrationTest {
                 .andExpect(status().isBadRequest());
         }
     }
+
+    @Test void multipleBlocksSurviveSyncAndLegacyClientsCannotEraseThem()
+        throws Exception {
+        var owner = users.save(new AppUser("multi-" + UUID.randomUUID(),
+            "multi@example.com", "Multi"));
+        String auth = jwt(owner.id);
+        String task = UUID.randomUUID().toString();
+        String first = UUID.randomUUID().toString();
+        String second = UUID.randomUUID().toString();
+        mvc.perform(get("/api/v1/capabilities").header("Authorization", auth))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.timeBlocksSchema").value(1));
+
+        String create = """
+            {"operationId":"%s","entityId":"%s","entityType":"task","action":"upsert",
+             "payload":{"title":"Sessioni di studio",
+              "due":{"kind":"date","date":"2026-11-02"},
+              "timeBlock":{"kind":"range","start":"2026-11-01T08:00:00Z",
+                "end":"2026-11-01T09:00:00Z","timeZone":"Europe/Rome"},
+              "timeBlocks":[
+                {"id":"%s","start":"2026-11-01T08:00:00Z",
+                 "end":"2026-11-01T09:00:00Z","timeZone":"Europe/Rome"},
+                {"id":"%s","start":"2026-11-01T12:00:00Z",
+                 "end":"2026-11-01T13:00:00Z","timeZone":"Europe/Rome"}]}}
+            """.formatted(UUID.randomUUID(), task, first, second);
+        mvc.perform(post("/api/v1/sync/apply").header("Authorization", auth)
+            .contentType(MediaType.APPLICATION_JSON).content(create))
+            .andExpect(status().isOk()).andExpect(jsonPath("$.version").value(0));
+
+        mvc.perform(get("/api/v1/sync/changes").header("Authorization", auth)
+            .param("cursor", "0"))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.changes[0].payload.timeBlocks.length()").value(2))
+            .andExpect(jsonPath("$.changes[0].payload.timeBlocks[0].id").value(first))
+            .andExpect(jsonPath("$.changes[0].payload.timeBlocks[1].id").value(second))
+            .andExpect(jsonPath("$.changes[0].payload.due.date").value("2026-11-02"));
+
+        // V8 client can see the mirror but cannot destroy the second interval.
+        String legacyEdit = """
+            {"operationId":"%s","entityId":"%s","entityType":"task",
+             "action":"upsert","expectedVersion":0,
+             "payload":{"title":"Vecchio client",
+              "timeBlock":{"kind":"range","start":"2026-11-01T08:00:00Z",
+                "end":"2026-11-01T09:00:00Z","timeZone":"Europe/Rome"}}}
+            """.formatted(UUID.randomUUID(), task);
+        mvc.perform(post("/api/v1/sync/apply").header("Authorization", auth)
+            .contentType(MediaType.APPLICATION_JSON).content(legacyEdit))
+            .andExpect(status().isUpgradeRequired());
+
+        // New app edits one interval and preserves the other and the deadline.
+        String update = """
+            {"operationId":"%s","entityId":"%s","entityType":"task",
+             "action":"upsert","expectedVersion":0,
+             "payload":{"title":"Sessioni di studio",
+              "due":{"kind":"date","date":"2026-11-02"},
+              "timeBlocks":[
+                {"id":"%s","start":"2026-11-01T08:00:00Z",
+                 "end":"2026-11-01T09:00:00Z","timeZone":"Europe/Rome"},
+                {"id":"%s","start":"2026-11-01T13:00:00Z",
+                 "end":"2026-11-01T14:00:00Z","timeZone":"Europe/Rome"}]}}
+            """.formatted(UUID.randomUUID(), task, first, second);
+        mvc.perform(post("/api/v1/sync/apply").header("Authorization", auth)
+            .contentType(MediaType.APPLICATION_JSON).content(update))
+            .andExpect(status().isOk()).andExpect(jsonPath("$.version").value(1));
+        mvc.perform(get("/api/v1/sync/changes").header("Authorization", auth)
+            .param("cursor", "0"))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.changes[1].payload.timeBlocks[0].id").value(first))
+            .andExpect(jsonPath("$.changes[1].payload.timeBlocks[1].id").value(second))
+            .andExpect(jsonPath("$.changes[1].payload.timeBlocks[1].start")
+                .value("2026-11-01T13:00:00Z"))
+            .andExpect(jsonPath("$.changes[1].payload.due.date").value("2026-11-02"));
+
+        // Duplicate slot IDs are invalid: failed request must not change task.
+        String bad = """
+            {"operationId":"%s","entityId":"%s","entityType":"task",
+             "action":"upsert","expectedVersion":1,
+             "payload":{"title":"No",
+              "timeBlocks":[
+                {"id":"%s","start":"2026-11-01T08:00:00Z",
+                 "end":"2026-11-01T09:00:00Z","timeZone":"Europe/Rome"},
+                {"id":"%s","start":"2026-11-02T08:00:00Z",
+                 "end":"2026-11-02T09:00:00Z","timeZone":"Europe/Rome"}]}}
+            """.formatted(UUID.randomUUID(), task, first, first);
+        mvc.perform(post("/api/v1/sync/apply").header("Authorization", auth)
+            .contentType(MediaType.APPLICATION_JSON).content(bad))
+            .andExpect(status().isBadRequest());
+    }
+
 }

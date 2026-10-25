@@ -73,6 +73,7 @@ class _CalendarBoardState extends ConsumerState<CalendarBoard> {
             key: Key('calendar-rename-${task.id}'),
             value: task.title,
             semanticsLabel: 'Titolo attività nel calendario',
+            maxLength: 1024,
             style: TextStyle(
               fontSize: compact ? 12 : 14,
               decoration: task.completed
@@ -188,7 +189,7 @@ class _CalendarBoardState extends ConsumerState<CalendarBoard> {
                           ? FontWeight.bold : FontWeight.normal)),
                     if (items.isNotEmpty) ...[
                       const SizedBox(height: 3),
-                      Text('${items.length} attività',
+                      Text(width < 650 ? '${items.length}' : '${items.length} attività',
                         maxLines: 1, overflow: TextOverflow.ellipsis,
                         style: const TextStyle(fontSize: 10,
                             color: NotesPalette.secondaryText)),

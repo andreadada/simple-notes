@@ -1,87 +1,16 @@
-## Stato operativo aggiornato — 25 ottobre 2026 (fonte corrente)
+# Simple Notes — Progetto e roadmap
 
 <!-- CURRENT-STATUS-REF -->
-> **Stato aggiornato:** P1.6 ricorrenze è integrata su `main` (PR #5, Flutter `0.10.0+12`, Flyway V10/Drift V8). P1.7 promemoria è avviata su branch, **senza notifiche native operative**. Ultimo schema Coolify realmente verificato: V8; V9/V10 non attestati, collaudo Windows/Android differito. **Fonte unica:** [CURRENT-STATUS.md](docs/CURRENT-STATUS.md). Gli stati precedenti più sotto sono cronologia, non prove di deploy.
+> **Stato del codice 25/10/2026:** P1.1–P1.6 integrate su `main` (Flutter `0.10.0+12`, Drift V8, Flyway V10). P1.7 reminder **solo foundation** in [PR #6](https://github.com/andreadada/simple-notes/pull/6), non fusa, senza notifiche native. Ultimo server Coolify verificato V8; V9/V10 e batch E2E non attestati. **Fonte unica:** [docs/CURRENT-STATUS.md](docs/CURRENT-STATUS.md).
 
+**Obiettivo:** Windows 11 + Android offline-first, Google OAuth, Flutter/Forui/Drift + Spring Boot/PostgreSQL su Coolify. Regole UX in [design.md](design.md); deploy sicuro in [P1-RELEASE-BATCH.md](docs/P1-RELEASE-BATCH.md). Le checklist sotto includono traguardi storici: `[x]` significa **codice verificato nella CI o prova specifica**, non distribuzione sul VPS.
 
-## Stato corrente — rilascio 0.7.0+9 (25/10/2026)
+## Gate corrente (non eseguito)
 
-**Codice integrato su `main`**: PR #1 P1.2 (time blocking + Flyway V8 + Drift V6) e PR #2 P1.3 (drag/resize e timeline) unite con successo. La CI dei branch è verde; le build automatiche successive al merge sono da controllare separatamente. **Coolify e PostgreSQL reali NON sono stati aggiornati/verificati da questa chat; non dichiarare Flyway V8 già applicata, né l'app installata su Windows/Android.** Per il rollout serve verificare backend `timeBlockSchema:1` e Flyway V8 prima di aggiornare i client. Non eseguire reset degli archivi: l'utente ha già concluso il reset dei soli dati di test. **Runbook attuale:** [P1-RELEASE-0.7.0.md](docs/P1-RELEASE-0.7.0.md).
-
-> I passaggi più in basso che parlano di PR «bozza» o di `main` `0.5.0+7` sono cronologia precedente al merge. Prevale lo stato appena indicato.
-
-
-## P1.3 — Calendar drag/resize (25/10/2026)
-
-**Su branch `feature/p1-3-calendar-interactions` (non su `main`): Flutter `0.7.0+9`, timeline interattiva giorno/settimana, move/resize a step 15 minuti, drag su intestazioni giornaliere e celle del mese, supporto DST e corsie sovrapposizioni; test dedicati.** Non richiede nuove tabelle oltre Flyway V8 di P1.2 e Drift V6. *CI e test hardware da verificare; nessun deploy/merge di P1.2 e P1.3 né modifica ai dati reali*. P1.2 `feature/p1-2-time-blocking` ha CI backend e Flutter completamente verde ma resta draft, non distribuito. P1.3 è documentato in [P1-CALENDAR-INTERACTIONS.md](docs/P1-CALENDAR-INTERACTIONS.md). Multi-blocco per task resta fuori ambito, per successiva revisione di modello.
-
-
-## P1.2 — Time blocking in sviluppo (25 ottobre 2026)
-
-**Branch `feature/p1-2-time-blocking`, Flutter `0.6.0+8`.** Introdotto intervallo `timeBlock` indipendente dalla scadenza, con editor Forui, blocchi nel calendario e percorso di sincronizzazione versionato. **Backend V8/Drift V6 sono solo codice: nessun deploy Coolify, migrazione reale, nuova pulizia dati o installazione sui dispositivi effettuata.** `timeBlockSchema:1` è un gate obbligatorio prima di inviare nuovi task. I test CI automatici e l'accettazione PC↔Android sono ancora da verificare. Non confondere codice implementato con feature già rilasciata. Specifica e piano: [P1-TIME-BLOCKING.md](docs/P1-TIME-BLOCKING.md). La versione su `main` resta `0.5.0+7` fino a merge autorizzato/dopo verifiche.
-
-
-**Reset del workspace di test concluso dall'utente:** PostgreSQL `simplenotes` verificato con **0 task, 0 liste, 0 note, 0 eventi e 0 operazioni di sync**; SQLite Windows eliminata dallo script, dati Android cancellati dalle impostazioni del dispositivo dopo che ADB `pm clear` era stato rifiutato dal sistema. Il reset è stato confermato dall'utente: **non va ripetuto** per avviare P1. `app_user`, sessioni backend, schema e Flyway restano conservati. I conteggi storici (5 note soft-deleted, cursor 34, backup e restore PASS) descrivono lo stato **prima** del reset, non quello corrente.
-
-**Codice:** Flutter `0.5.0+7` introduce **P1.1 Calendario** (giorno/settimana/mese, agenda, scadenze date-only e timed, edit inline, aggiunta rapida) tramite proiezione dei task già sincronizzati, **senza migrazioni DB né nuove API**. Vedi [P1-CALENDAR.md](docs/P1-CALENDAR.md) (oppure [specifica P1.1](docs/P1-CALENDAR.md) per i documenti in `docs/`). Cestino note/restore versionato già implementato in `0.4.2+6`, ma **non verificato sui dispositivi** e per il ripristino cloud richiede l'API aggiornata `noteRestoreSchema:1`; il deploy Coolify non è attestato. P1.2 time blocking, P0 reminder/ricorrenze/hardening e test E2E restano **aperti**, non vengono segnati completati.
-
-**CI:** la revisione precedente `d29d2f3` (0.4.2+6) è verde su Flutter e backend; per P1.1 citare la **nuova CI** dopo averne verificato l'esito. **Nessun nuovo deploy, backup o ulteriore reset eseguito da ChatGPT.**
-
-> Le sezioni datate 23–24 ottobre più in basso sono **cronologia**, non istruzioni operative correnti; prevale questo stato e [RESET-TEST-DATA.md](docs/RESET-TEST-DATA.md) per la storia del reset.
-
-## Aggiornamento 24/10/2026 — test reali, sicurezza note e futuro P1
-
-**Verificato dall'utente:** Flutter `0.4.1+5` installata via `adb install -r`, login Google e API `taskDueSchema:1` su Windows e Android, entrambi cursor 34 e pending 0. L'audit PostgreSQL **sola lettura** ha individuato 5 note tutte in soft-delete, in particolare eventi 33–34 dal server; i dati sono di test e l'utente sceglie di azzerarli. La sorgente dei DELETE non è attribuibile a un dispositivo dal solo registro: non chiamarla causa risolta.
-
-**Nuovo codice:** Cestino note sincronizzato, ripristino dello stesso ID con verifica della versione, blocco delle vecchie operazioni che tentano di sovrascrivere tombstone ed eventi remoti più vecchi ignorati, capability API `noteRestoreSchema:1`, Flutter `0.4.2+6`. È presente un reset esplicito del solo workspace di test (server PostgreSQL + SQLite Windows/Android), con **anteprime obbligatorie e conferme**; nessun reset/deploy è stato eseguito da questa chat. [Guida operativa](docs/RESET-TEST-DATA.md). La CI prova il codice, non i dati live; verificare prima del deployment.
-
-**Prossimo sviluppo dopo il reset e breve verifica E2E:** P1 calendario giorno/settimana/mese e time blocking. Le funzioni richiedono nuovi incrementi, non sono ancora implementate. T4.2 non è completata finché non si verificano i nuovi flussi offline/cestino su entrambi i dispositivi.
-
-# Simple Notes — Project
-
-## Stato reale verificato e T4.2 (24 ottobre 2026)
-
-**PostgreSQL Simple Notes sulla VPS:** l'utente ha verificato direttamente `simplenotes` (PostgreSQL **17.11**), Flyway **V1–V7 tutte riuscite**, colonne V7 presenti e conteggi in quel momento: **1 utente, 5 task, 4 note, 25 sync_change, 25 sync_operation**. Il dump PostgreSQL reale `simple-notes-20261024T132857Z-271921.dump` ha superato **SHA256 e restore isolato**; il restore non ha toccato produzione. **Copia offsite non eseguita per scelta dell'utente**: non marcarla completata e non riaprire automaticamente la procedura backup.
-
-**Prossimo gate — T4.2 hardware:** verificare il nuovo contratto API autenticato e la sincronizzazione Windows ↔ Android con due build Flutter aggiornate. È disponibile dall'avatar il nuovo dialog Forui **Verifica sincronizzazione**: legge solo SQLite locale e `GET /api/v1/capabilities` con JWT, indica compatibilità `taskDueSchema:1`, modifiche in coda, conteggi locali, cursor e ultimo successo. **Non invia né elimina dati** e consente di copiare un report privo di titoli, note, token o ID account. Dopo sync completa si registra l'ultimo successo; su 426 l'app avvisa e sospende il retry automatico, conservando l'outbox. Test automatizzati dedicati e CI non sostituiscono prove real-device.
-
-La V7 è **già applicata** sul database reale: non ripetere migrazioni o fare Redeploy per questo motivo. La compatibilità **API** e la nuova sync bidirezionale sono ancora da provare. Procedura breve in [T4-DEVICE-SYNC.md](docs/T4-DEVICE-SYNC.md).
-
-
-## T4.1 — Inventario pre-deploy
-
-Sorgente `infra/t4-inspect-db.sh`: query SELECT sul solo PostgreSQL selezionato, verifica versione 17, ultima Flyway, colonne V7 e conteggi strutturali. Preflight richiede restore verificato nelle ultime 24 ore per evitare attestati obsoleti. Verifica VPS realmente eseguita 24/10; V1–V7, SHA256 e restore isolato già PASS. Non ripetere per T4.2. [Runbook](docs/T4-RELEASE-RUNBOOK.md).
-
-## T4 — Gate di rilascio sicuro (24/10/2026)
-
-**Strumenti e CI implementati; inventario reale del DB, backup SHA256 e restore isolato PASS il 24/10/2026.** Flyway V7 è presente nel database. **Copia offsite non eseguita per scelta dell'utente; contratto API e prove T4.2 Windows↔Android ancora da verificare.** `infra/backup-postgres.sh` verifica container e schema prima del dump PostgreSQL custom + SHA256; `infra/verify-restore.sh` ripristina in container PostgreSQL 17 **senza rete**, interroga le tabelle e genera un receipt legato al digest del dump. `infra/t4-preflight.sh` rifiuta dump/receipt incoerenti, copia offsite non attestata, commit non approvato o tree sporco; **non avvia deploy**. `infra/t4-check-api.sh` verifica soltanto salute HTTPS e capability autenticata `taskDueSchema:1`.
-
-La CI Compose usa dump **sintetici** e verifica i rifiuti su backup alterati; la CI backend prova una migrazione V6→V7 PostgreSQL Testcontainers con task/note/liste/sync log esistenti. **Gate reali al 24/10:** PostgreSQL V7, backup SHA256 e restore isolato già verificati. Offsite non effettuata per scelta dell'utente e distinta dal collaudo T4.2. Il prossimo controllo è su API autenticata e Windows/Android E2E; per una release formale restano anche hardening/offsite e preflight. Non avviare un redeploy solo perché V7 è citata. Non distribuire né ripristinare sulla produzione durante una prova. [Runbook T4](docs/T4-RELEASE-RUNBOOK.md) · [GitHub Actions](https://github.com/andreadada/simple-notes/actions).
-
-
-## T3 — Scadenze Forui, IANA e DST (24/10/2026)
-
-**Implementato nel codice su main, non distribuito.** Un unico editor `ui/task_due_editor.dart` gestisce scadenze solo-giorno e data/ora, calendario Forui, HH:mm, fuso IANA e scelta esplicita delle due occorrenze in un cambio d'ora. Gli orari inesistenti sono rifiutati, la mezzanotte scelta rimane `datetime`, e le scadenze `legacy` non sono reinterpretate in automatico. Il fuso OS viene rilevato se disponibile, altrimenti richiesto esplicitamente.
-
-`data/task_due_clock.dart` usa `timezone ^0.11.2` e `flutter_timezone ^5.1.0`; `data/task_due_view.dart` presenta label e filtri Oggi/7 giorni secondo **giorni civili**, evitando il calcolo sbagliato di 168 ore attorno all'ora legale. Aggiunta rapida, dettagli ed editor avanzato salvano `TaskDue` con SQLite/outbox; una rinomina non muta `date/datetime` in `legacy`. Test per gap/fold, visualizzazione, filtri e modifica avanzata. **V7 già verificata sul database reale**, backup SHA256 e restore isolato PASS. Mancano capability API `taskDueSchema:1` e prove Windows/Android; non ripetere deploy senza un'incompatibilità accertata. Ricorrenze, notifiche e browser web restano fuori da T3.
-
-Dettagli e checklist: [specifica T3](docs/T3-SCADENZE.md). CI: [Flutter Actions](https://github.com/andreadada/simple-notes/actions/workflows/flutter-ci.yml).
-
-
-## Vincolo correttivo: testo completo + sottolineatura aderente (24/10/2026)
-
-**Due larghezze diverse, entrambe necessarie:**
-
-- **Testo/placeholder integralmente visibile**: il `TextField` deve essere largo **almeno quanto il contenuto misurato, più spazio per cursore/selezione** (~18 dp, limitato dalla larghezza realmente disponibile). Il testo non deve essere troncato (es. «test telefono» → «test telefonc») né andare a capo inutilmente («Aggiungi una descrizione...» in un pannello sufficientemente largo). Un campo realmente stretto può andare a capo o scorrere, senza perdita di caratteri.
-- **Linea breve**: la sottolineatura rimane sotto i glifi visibili (valore oppure placeholder) e NON include lo spazio riservato al cursore. Il bordo nativo resta invisibile; disegnare la linea con `InlineGlyphUnderline`, misurandola con `InlineTextMetrics.fieldWidth`. Usare `InlineTextMetrics.inputWidth` per la larghezza effettiva del campo, **non** riutilizzare `fieldWidth` anche per il `TextField`.
-- **Aspetto**: nessun fondo grigio, linea neutra sottile e blu al focus, placeholder più trasparente (`NotesPalette.placeholder`). La larghezza dell'input cresce al digitare e si ferma ai limiti del contenitore disponibile.
-- **Ovunque**: applicare questi componenti condivisi a titoli task/liste/note, descrizioni, tag, sottotask, input di aggiunta rapida e varianti desktop/Android. Nei test controllare *entrambe* le dimensioni: il viewport interno deve essere più largo della linea, e il segmento della linea deve seguire la misura del testo. Includere stringhe lunghe e placeholder, anche nelle sidebar strette.
-
-Riferimento tecnico: `apps/flutter/lib/ui/notes_theme.dart` (`InlineTextMetrics.fieldWidth`, `InlineTextMetrics.inputWidth`, `InlineGlyphUnderline`). **Non ridurre la larghezza del TextField alla sola linea: provoca clipping.** Questa regola prevale sulle note storiche che chiedevano di togliere ogni spazio aggiuntivo dal campo: è la *linea* a dover essere precisa, non il viewport di editing.
-
-**Obiettivo:** app offline-first Windows 11 + Android ispirata alle funzionalità di TickTick, con UI originale, login Google e backend self-hosted su Coolify.
-**Stack:** Flutter/Dart + Forui (UI) + Riverpod + Drift/SQLite; Spring Boot (Java 21) + Spring Security + PostgreSQL/Flyway; REST + sync incrementale + WebSocket; Android FCM; Docker/Coolify.
-**Stato:** P0 IN CORSO. Note sincronizzate realmente PC↔Android e attività create su Android viste su Windows (conferma utente, 23/10). Auto-sync foreground funzionante per questi flussi. Nuovo recupero conflitti, descrizioni attività e backup operativo implementati con test automatici, ma da verificare con Coolify/dispositivi aggiornati. **Non pronto per il rilascio**. Stato dettagliato in [docs/P0-STATUS.md](docs/P0-STATUS.md).
+- [ ] Completare integrazione delivery nativa di P1.7 e CI; PR #6 è al momento solo pianificazione.
+- [ ] Verificare Flyway V10, health **e** capability su Coolify prima di nuovi client.
+- [ ] Eseguire il collaudo E2E Windows↔Android **solo a fine batch**, preservando database e dati locali.
+- [ ] Concludere hardening, signing, offsite secondo decisione esplicita prima di release pubblica.
 
 ## Regole vincolanti — COME FARE
 - [ ] Lavorare in piccoli commit descrittivi, con test e documentazione aggiornati.
@@ -92,7 +21,7 @@ Riferimento tecnico: `apps/flutter/lib/ui/notes_theme.dart` (`InlineTextMetrics.
 - [ ] Distinguere layout Windows e Android; testare accessibilità, ridimensionamento e dark/light.
 - [x] **Design rule inline-edit first:** se un titolo/nome/attributo semplice è già visibile, renderlo editabile sul posto, senza bottone/modale Rinomina. Invio/blur salva, Esc annulla; validazione e SQLite/outbox sempre obbligatori. Eccezioni per form complessi o distruttivi.
 - [x] **Design rule larghezza esatta:** testo senza sfondo, sottolineatura neutra solo larga quanto valore/placeholder (non il contenitore; ~1px per cursore), blu al focus, placeholder semitrasparente (~72%). Implementazione condivisa `InlineTextMetrics.fieldWidth` in `notes_theme.dart`, utilizzata da titolo, descrizione, note, tag, sottotask e input task rapido; vedi `design.md` / `docs/ui-forui.md`. Il codice è nel commit `7303d45`; CI e test real-device da registrare separatamente.
-- [ ] Gestire i fusi orari, DST, le ricorrenze e la deduplicazione dei promemoria.
+- [ ] **Completamento promemoria:** fusi IANA/DST e ricorrenze sono implementati nel codice (T3/P1.6); restano deduplicazione e delivery nativa P1.7.
 - [ ] Eseguire test unitari, integrazione, offline/online e ripristino backup prima dei rilasci.
 - [ ] Aggiornare **Edit Timespan** in fondo ad ogni commit che modifica il progetto.
 
@@ -177,9 +106,9 @@ Riferimento tecnico: `apps/flutter/lib/ui/notes_theme.dart` (`InlineTextMetrics.
 - [ ] Sincronizzazione PC↔Android ancora da confermare E2E; la migrazione UI non ne prova il funzionamento.
 
 ## P1 — Produttività completa
-- [ ] **P1.1 Calendario giorno/settimana/mese** implementato nel codice Flutter `0.5.0+7`, in attesa di CI e verifica hardware; [specifica](docs/P1-CALENDAR.md). 
-- [ ] **P1.2 Time blocking**: modello start/end, backend Flyway V8, Flutter Drift V6, editor e sincronizzazione implementati sul branch `feature/p1-2-time-blocking`; CI/hardware/deploy ancora da verificare. [Specifica](docs/P1-TIME-BLOCKING.md).
-- [ ] **P1.3 Interazioni calendario**: implementazione su `main` in versione 0.7; hardware non ancora verificato. [Specifica](docs/P1-CALENDAR-INTERACTIONS.md).
+- [x] **P1.1 Calendario giorno/settimana/mese** integrato su `main` (implementazione iniziale Flutter `0.5.0+7`), CI della linea P1 successiva verde; E2E hardware ancora aperto; [specifica](docs/P1-CALENDAR.md). 
+- [x] **P1.2 Time blocking**: PR #1 integrata su `main`, Flyway V8/Drift V6; CI riuscita, verifica deploy/hardware del batch ancora aperta. [Specifica](docs/P1-TIME-BLOCKING.md).
+- [x] **P1.3 Interazioni calendario**: PR #2 integrata su `main`, Flutter 0.7; hardware non ancora verificato. [Specifica](docs/P1-CALENDAR-INTERACTIONS.md).
 - [x] **P1.4 Multi-block + riepilogo**: PR #3 integrata in main; 12 slot per attività, Flyway V9/Drift V7, CI superate. Deploy e collaudo hardware ancora da verificare. [Specifica](docs/P1-MULTI-BLOCKS.md).
 - [x] **P1.5 Pianificazione rapida e filtri**: PR #4 unita in `main` (Flutter `0.9.0+11`, CI verde), hardware non collaudato. [Specifica](docs/P1-QUICK-PLANNING.md).
 - [x] **P1.6 Ricorrenze**: PR #5 integrata, Flutter 0.10/Flyway V10/Drift V8, CI completa verde; deploy ancora da verificare. [Specifica](docs/P1-RECURRENCE.md).
@@ -206,7 +135,7 @@ Riferimento tecnico: `apps/flutter/lib/ui/notes_theme.dart` (`InlineTextMetrics.
 - [ ] Riepiloghi/suggerimenti AI **opzionali**, con controllo privacy.
 - [ ] Ottimizzazioni, test di carico e UX.
 
-## Gate immediato e prossimo incremento (23 ottobre 2026)
+## Cronologia — gate del 23 ottobre 2026 (non operativo)
 
 - [x] Backup reale PostgreSQL, SHA256 e restore temporaneo isolato PASS 24/10. [ ] Offsite non eseguita per scelta, gate separato per release.
 - [ ] Controllare API `taskDueSchema:1` e provare Flutter `0.4.0+4` su Windows e Android, senza eliminare SQLite o ripetere migrazioni.
@@ -214,7 +143,7 @@ Riferimento tecnico: `apps/flutter/lib/ui/notes_theme.dart` (`InlineTextMetrics.
 - [ ] Scadenze: primo editor opzionale HH:mm implementato con campo `dueAt` esistente; **ancora pendenti** modello date-only distinto, timezone IANA/DST e test reali. A seguire ricorrenze e notifiche native.
 - [ ] Correggere residui di documentazione storica prima dei rilasci, preservando attestazioni e prove precedenti.
 
-## T2 — Flutter e SQLite v5 (implementato nel repository, non distribuito)
+## Cronologia — T2 Flutter/SQLite v5 (schema storico)
 
 - **Modello canonico**: `apps/flutter/lib/data/task_due.dart` distingue `none/date/datetime/legacy`. Una data senza orario è una stringa civile ISO, mai una mezzanotte UTC inventata; la modalità `legacy` conserva lo storico senza inferenze.
 - **Persistenza**: `AppDatabase` usa Drift **schemaVersion 5** con 5 colonne aggiuntive (kind, date, time, timezone, offset) e backfill `due_at != NULL → legacy`, altrimenti `none`. Le tabelle sync/outbox, il cursore e i remoteVersion non vengono cancellati.
@@ -222,7 +151,7 @@ Riferimento tecnico: `apps/flutter/lib/ui/notes_theme.dart` (`InlineTextMetrics.
 - **Test creati**: `task_due_test.dart`, `task_due_sync_test.dart`, `task_due_migration_test.dart`; includono due database simulati, fold DST, mezzanotte esplicita, server obsoleto, 426, e upgrade di SQLite v4 popolato con versioni e operazioni in coda. Verificare l'esito CI effettivo prima di considerarli convalidati.
 - **Stato aggiornato:** T2 (Drift v5, `TaskDue`, capability/426) e T3 (editor Forui date-only/ora e IANA/DST) sono implementati nel codice, non ancora collaudati sui due dispositivi. Flyway V7 e restore reale PASS, ma contratto API da verificare. Flutter Web, ricorrenze e notifiche non ancora supportati.
 
-## Prossimo incremento pianificato — date-only e timezone (23 ottobre 2026)
+## Cronologia — date-only e timezone (23 ottobre 2026, implementato)
 
 Specifica **solo progettuale**: [docs/due-dates-timezones.md](docs/due-dates-timezones.md). L'editor HH:mm esistente ha CI Flutter verde; NON distingue ancora mezzanotte esplicita da «solo giorno».
 

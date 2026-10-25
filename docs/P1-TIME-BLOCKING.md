@@ -50,3 +50,11 @@
 - CI GitHub Actions è la verifica automatizzata; **non** una prova di deploy o hardware.
 
 **Passaggio successivo:** P1.3 drag & drop dei blocchi e pianificazione multi-intervallo, dopo test/distribuzione coordinata P1.2.
+
+## Incremento successivo P1.3 in sviluppo
+
+Il codice del calendario è stato esteso sul branch `feature/p1-3-calendar-interactions` (`0.7.0+9`): move/resize verticale e trasferimento tra giorni, senza cambiare Flyway V8 né il contratto `timeBlockSchema:1`. **Non è una release né un merge su main**. I limiti originali di questa pagina descrivono la *sola versione P1.2*. Specifica: [P1-CALENDAR-INTERACTIONS.md](P1-CALENDAR-INTERACTIONS.md).
+
+### Gate release (post merge, non prova di deploy)
+
+Le CI verdi dei branch confermano la compilazione e i test. Il rilascio su Coolify resta un'azione separata: backup prima di V8, pull della versione approvata, deploy/riavvio **solo API** tramite il progetto Compose esistente, controllo di `FLYWAY_LATEST=8`, `BLOCK_COLUMNS=3` e capability `timeBlockSchema:1`. Flutter `0.7.0+9` va installato solo dopo questi controlli. Se auto-deploy Coolify è abilitato su `main`, verificare immediatamente i log dopo il merge. Non azzerare PostgreSQL né reinstallare senza conservare i dati locali.

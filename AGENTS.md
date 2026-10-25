@@ -1,5 +1,8 @@
 # AGENTS.md — Istruzioni di lavoro per assistenti AI
 
+> **P1.3 in sviluppo (25/10/2026):** su `feature/p1-3-calendar-interactions` (base: P1.2) Flutter `0.7.0+9` introduce drag/resize dei blocchi nella timeline Giorno/Settimana, drop su altro giorno con gestione DST, snap 15 minuti e test. Non è su `main`; Flyway V8/Drift V6 sono gli stessi di P1.2. **Nessun deploy/migrazione su Coolify e nessun reset dati!** La specifica corrente è [docs/P1-CALENDAR-INTERACTIONS.md](docs/P1-CALENDAR-INTERACTIONS.md). Mai dichiarare P1.3 su dispositivo senza collaudo esplicito.
+
+
 > **Stato aggiornato 25/10/2026:** il reset dei dati di test è completato per server, SQLite Windows e Android (utente: «tutto 0»). Non ripetere reset. Su `main` è presente P1.1 calendario `0.5.0+7`, CI verde. Sul branch `feature/p1-2-time-blocking` è in sviluppo P1.2 (`0.6.0+8`): periodo UTC + fuso IANA indipendente dalla deadline, Flyway V8, Drift V6, editor Forui, sync capability `timeBlockSchema:1`, test. **Non applicare V8 o fare deploy automatici al DB Coolify**: controllare CI e rollout esplicitamente. La documentazione corrente è [docs/P1-TIME-BLOCKING.md](docs/P1-TIME-BLOCKING.md), che prevale sulle istruzioni storiche qui sotto.
 
 ## Stato reale verificato e T4.2 (24 ottobre 2026)

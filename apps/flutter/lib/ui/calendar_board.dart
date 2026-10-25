@@ -11,6 +11,8 @@ import 'notes_theme.dart';
 import 'task_due_editor.dart';
 import 'time_block_editor.dart';
 import 'time_block_view.dart';
+import 'time_block_interactions.dart';
+import 'time_block_timeline.dart';
 
 /// P1.1: calendar projection over existing SQLite tasks. No new local/cloud
 /// storage and no fabricated hour for date-only deadlines.
@@ -66,11 +68,60 @@ class _CalendarBoardState extends ConsumerState<CalendarBoard> {
         .setTaskTimeBlock(task.id, decision.block);
   }
 
+  Future<void> _saveBlock(String id, TimeBlock block) =>
+      ref.read(localStoreProvider.notifier).setTaskTimeBlock(id, block);
+
+  Future<void> _shiftBlock(LocalTask task,
+      TimeBlock Function(TimeBlock) mutate) async {
+    try {
+      await _saveBlock(task.id, mutate(task.timeBlock!));
+    } on FormatException catch (error) {
+      if (mounted) {
+        ScaffoldMessenger.maybeOf(context)?.showSnackBar(
+          SnackBar(content: Text(error.message)));
+      }
+    } catch (_) {
+      if (mounted) {
+        ScaffoldMessenger.maybeOf(context)?.showSnackBar(
+          const SnackBar(content: Text('Modifica non riuscita.')));
+      }
+    }
+  }
+
+  Future<void> _moveBlockToDay(String id, DateTime day) async {
+    final current = ref.read(localStoreProvider).tasks
+        .where((task) => task.id == id).firstOrNull;
+    if (current?.timeBlock == null) return;
+    try {
+      await _saveBlock(id, calendarMoveBlockToDay(current!.timeBlock!, day));
+    } on FormatException catch (error) {
+      if (mounted) {
+        ScaffoldMessenger.maybeOf(context)?.showSnackBar(
+          SnackBar(content: Text(error.message)));
+      }
+    } catch (_) {
+      if (mounted) {
+        ScaffoldMessenger.maybeOf(context)?.showSnackBar(
+          const SnackBar(content: Text('Spostamento non riuscito.')));
+      }
+    }
+  }
+
   Widget _blockCard(LocalTask task) => Padding(
     padding: const EdgeInsets.only(bottom: 8),
     child: FCard(child: Row(children: [
-      const Icon(Icons.timelapse_outlined, size: 18,
-          color: NotesPalette.accent),
+      LongPressDraggable<CalendarBlockDrag>(
+        data: CalendarBlockDrag(task.id),
+        feedback: Material(
+          color: const Color(0xFF303B52),
+          child: Padding(padding: const EdgeInsets.all(10),
+              child: Text(task.title, style:
+                const TextStyle(color: Colors.white))),
+        ),
+        child: const Tooltip(message: 'Trascina sul giorno di destinazione',
+          child: Icon(Icons.drag_indicator, size: 18,
+            color: NotesPalette.accent)),
+      ),
       const SizedBox(width: 10),
       Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -82,6 +133,26 @@ class _CalendarBoardState extends ConsumerState<CalendarBoard> {
                   color: NotesPalette.secondaryText)),
         ],
       )),
+      if (task.timeBlock != null) ...[
+        IconButton(
+          key: Key('calendar-block-earlier-${task.id}'),
+          tooltip: 'Sposta 15 minuti prima',
+          onPressed: () => _shiftBlock(task,
+              (block) => calendarMoveBlock(block, -15)),
+          icon: const Icon(Icons.keyboard_arrow_up, size: 17),
+          constraints: const BoxConstraints(minWidth: 26, minHeight: 26),
+          padding: EdgeInsets.zero,
+        ),
+        IconButton(
+          key: Key('calendar-block-later-${task.id}'),
+          tooltip: 'Sposta 15 minuti dopo',
+          onPressed: () => _shiftBlock(task,
+              (block) => calendarMoveBlock(block, 15)),
+          icon: const Icon(Icons.keyboard_arrow_down, size: 17),
+          constraints: const BoxConstraints(minWidth: 26, minHeight: 26),
+          padding: EdgeInsets.zero,
+        ),
+      ],
       FButton.icon(
         key: Key('calendar-edit-block-${task.id}'),
         variant: FButtonVariant.ghost,
@@ -165,7 +236,7 @@ class _CalendarBoardState extends ConsumerState<CalendarBoard> {
             child: Text('Nessun blocco o attività in questo giorno.',
               style: TextStyle(color: NotesPalette.secondaryText)),
           ),
-        if (blocks.isNotEmpty) ...[
+        if (mode != CalendarMode.day && blocks.isNotEmpty) ...[
           const Text('BLOCCHI DI TEMPO', style: TextStyle(
               color: NotesPalette.secondaryText, fontSize: 12,
               fontWeight: FontWeight.w600)),
@@ -192,6 +263,17 @@ class _CalendarBoardState extends ConsumerState<CalendarBoard> {
               color: NotesPalette.secondaryText, fontSize: 12)),
           const SizedBox(height: 8),
           for (final task in scheduled) _taskCard(task),
+        ],
+        if (mode == CalendarMode.day) ...[
+          const SizedBox(height: 14),
+          const Text('TIMELINE · trascina per spostare, '
+              'usa la maniglia inferiore per ridimensionare',
+            style: TextStyle(color: NotesPalette.secondaryText, fontSize: 11)),
+          const SizedBox(height: 10),
+          TimeBlockTimeline(
+            key: Key('calendar-day-timeline-${calendarDateKey(day)}'),
+            day: day, tasks: blocks, onChange: _saveBlock,
+          ),
         ],
       ],
     );
@@ -228,11 +310,13 @@ class _CalendarBoardState extends ConsumerState<CalendarBoard> {
           final today = calendarDateKey(day) ==
               calendarDateKey(DateTime.now());
           final inMonth = day.month == selected.month;
-          return Material(
-            color: focused ? NotesPalette.accent.withValues(alpha: 0.14)
-                : const Color(0xff252525),
-            borderRadius: BorderRadius.circular(9),
-            child: InkWell(
+          return CalendarDayDropZone(
+            day: day, onDrop: _moveBlockToDay,
+            child: Material(
+              color: focused ? NotesPalette.accent.withValues(alpha: 0.14)
+                  : const Color(0xff252525),
+              borderRadius: BorderRadius.circular(9),
+              child: InkWell(
               key: Key('calendar-date-${calendarDateKey(day)}'),
               borderRadius: BorderRadius.circular(9),
               onTap: () => setState(() => selected = day),
@@ -265,7 +349,7 @@ class _CalendarBoardState extends ConsumerState<CalendarBoard> {
                 ),
               ),
             ),
-          );
+          ));
         },
       ),
       const SizedBox(height: 22),
@@ -283,19 +367,26 @@ class _CalendarBoardState extends ConsumerState<CalendarBoard> {
           SizedBox(width: cellWidth, child: Padding(
             padding: const EdgeInsets.only(right: 6),
             child: Column(children: [
-              FButton(
-                key: Key('calendar-week-${calendarDateKey(day)}'),
-                variant: calendarDateKey(day) == calendarDateKey(selected)
-                    ? FButtonVariant.primary : FButtonVariant.outline,
-                onPress: () => setState(() {
-                  selected = day;
-                  mode = CalendarMode.day;
-                }),
-                child: Text('${_weekdays[day.weekday - 1]} ${day.day}'),
+              CalendarDayDropZone(
+                day: day, onDrop: _moveBlockToDay,
+                child: FButton(
+                  key: Key('calendar-week-${calendarDateKey(day)}'),
+                  variant: calendarDateKey(day) == calendarDateKey(selected)
+                      ? FButtonVariant.primary : FButtonVariant.outline,
+                  onPress: () => setState(() {
+                    selected = day;
+                    mode = CalendarMode.day;
+                  }),
+                  child: Text('${_weekdays[day.weekday - 1]} ${day.day}'),
+                ),
               ),
               const SizedBox(height: 10),
-              for (final task in calendarBlocksForDay(tasks, day))
-                _blockCard(task),
+              TimeBlockTimeline(
+                day: day,
+                tasks: calendarBlocksForDay(tasks, day),
+                compact: true, onChange: _saveBlock,
+              ),
+              const SizedBox(height: 10),
               for (final task in calendarTasksForDay(tasks, day))
                 _taskCard(task, compact: true),
               if (calendarTasksForDay(tasks, day).isEmpty &&
@@ -366,7 +457,9 @@ class _CalendarBoardState extends ConsumerState<CalendarBoard> {
               ),
           ]),
           const SizedBox(height: 6),
-          Text('Solo attività con scadenza · $unscheduled senza scadenza',
+          Text('Trascina blocchi nella timeline per cambiare orario; '
+              'trascinali sull’intestazione di un altro giorno per spostarli. '
+              '$unscheduled attività da pianificare',
             style: const TextStyle(fontSize: 11,
                 color: NotesPalette.secondaryText)),
         ]),

@@ -4,7 +4,7 @@
 > **Stato aggiornato:** P1.6 ricorrenze è integrata su `main` (PR #5, Flutter `0.10.0+12`, Flyway V10/Drift V8). P1.7 promemoria è avviata su branch, **senza notifiche native operative**. Ultimo schema Coolify realmente verificato: V8; V9/V10 non attestati, collaudo Windows/Android differito. **Fonte unica:** [CURRENT-STATUS.md](../docs/CURRENT-STATUS.md). Gli stati precedenti più sotto sono cronologia, non prove di deploy.
 
 
-## Stato corrente — rilascio 0.7.0+9 (25/10/2026)
+## Cronologia — rilascio 0.7.0+9 (superato da P1.6)
 
 **Codice integrato su `main`**: PR #1 P1.2 (time blocking + Flyway V8 + Drift V6) e PR #2 P1.3 (drag/resize e timeline) unite con successo. La CI dei branch è verde; le build automatiche successive al merge sono da controllare separatamente. **Coolify e PostgreSQL reali NON sono stati aggiornati/verificati da questa chat; non dichiarare Flyway V8 già applicata, né l'app installata su Windows/Android.** Per il rollout serve verificare backend `timeBlockSchema:1` e Flyway V8 prima di aggiornare i client. Non eseguire reset degli archivi: l'utente ha già concluso il reset dei soli dati di test. **Runbook attuale:** [P1-RELEASE-0.7.0.md](../docs/P1-RELEASE-0.7.0.md).
 
@@ -121,7 +121,7 @@ Verifica soft delete e storico degli eventi sincronizzati (compreso il gap curso
 
 Per un solo account di test, `DB_CONTAINER=<container-postgres-simple-notes> EXPECTED_POSTGRES_DB=simplenotes bash infra/reset-test-workspace.sh --preview` mostra le quantità senza scrivere. L'esecuzione reale richiede esplicitamente `--execute`, `CLIENTS_CLOSED=YES`, `ERASE_TEST_WORKSPACE=ERASE_SIMPLE_NOTES_TEST_WORKSPACE`; non elimina utenti, sessioni, Flyway, schema o altri database. **Prima chiudere entrambi i client e dopo azzerare entrambe le SQLite.** Guida completa: [RESET-TEST-DATA.md](../docs/RESET-TEST-DATA.md).
 
-## P1.2 — Deploy controllato backend V8 (solo quando approvato)
+## Storico — deploy P1.2/V8 (per nuovo rilascio usare batch V10)
 
 Il branch `feature/p1-2-time-blocking` contiene `V8__task_time_blocks.sql` (3 colonne nullable su `task`, CHECK, indice). La migrazione **non** è stata applicata da questa sessione. Non effettuare reset o restore del database di produzione. Prima della nuova app Flutter `0.6.0+8`, il backend deve esporre `timeBlockSchema:1`, altrimenti la nuova outbox task si conserva offline. La checklist di rollout separata è in [P1-TIME-BLOCKING.md](../docs/P1-TIME-BLOCKING.md).
 

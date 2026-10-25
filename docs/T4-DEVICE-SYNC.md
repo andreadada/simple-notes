@@ -1,4 +1,4 @@
-## Stato corrente — rilascio 0.7.0+9 (25/10/2026)
+## Cronologia — rilascio 0.7.0+9 (superato da P1.6)
 
 <!-- CURRENT-STATUS-REF -->
 > **Stato codice:** P1.6 (Flutter 0.10, Flyway V10, Drift V8) integrata su `main` con CI verde. P1.7 promemoria in branch fondativo, **nessuna notifica OS attiva**. L'ultima VPS verificata è V8; V9/V10 non confermate. Per i deploy usare il [runbook batch](P1-RELEASE-BATCH.md) e lo [stato canonico](CURRENT-STATUS.md); quanto segue può descrivere versioni precedenti.
@@ -8,7 +8,7 @@
 
 > I passaggi più in basso che parlano di PR «bozza» o di `main` `0.5.0+7` sono cronologia precedente al merge. Prevale lo stato appena indicato.
 
-> **25/10/2026 — stato dopo reset:** l'utente ha confermato **tutti i conteggi server a 0** e l'eliminazione dati locali Windows/Android. Gli eventi 25–34 e l'analisi delle note più sotto sono **precedenti al reset**. La revisione Flutter corrente nel repository è `0.5.0+7` (nuovo calendario P1.1), ma il collaudo su dispositivi delle nuove build e del Cestino resta **aperto**. Non resettare di nuovo per completare T4.2. [Procedura storica del reset](RESET-TEST-DATA.md).
+> **Cronologia 25/10/2026 — stato dopo reset (non versione attuale):** l'utente ha confermato **tutti i conteggi server a 0** e l'eliminazione dati locali Windows/Android. Gli eventi 25–34 e l'analisi delle note più sotto sono **precedenti al reset**. La revisione Flutter corrente nel repository è `0.5.0+7` (nuovo calendario P1.1), ma il collaudo su dispositivi delle nuove build e del Cestino resta **aperto**. Non resettare di nuovo per completare T4.2. [Procedura storica del reset](RESET-TEST-DATA.md).
 
 > **Aggiornamento 24/10/2026 — test reali:** Windows e Android avevano API `taskDueSchema:1`, cursor entrambi 34 e pending 0, ma 0 note visibili dopo due cancellazioni arrivate al backend fra gli eventi 33 e 34. Audit read-only PostgreSQL ha mostrato **5 note soft-deleted** e i payload storici ancora presenti. L'utente conferma che sono tutti dati di test e sceglie un reset volontario dell'intero workspace di test, non il recupero. Procedura e garanzie: [RESET-TEST-DATA.md](RESET-TEST-DATA.md). Nuova app `0.4.2+6` include Cestino note, ripristino versionato e protezione stale-sync; funzionalità e reset **non ancora verificati sui device aggiornati**. Backend `noteRestoreSchema:1` richiede deploy dell'API, non una migrazione DB.
 

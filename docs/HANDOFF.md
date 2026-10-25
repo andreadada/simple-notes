@@ -4,24 +4,24 @@
 > **Stato aggiornato:** P1.6 ricorrenze è integrata su `main` (PR #5, Flutter `0.10.0+12`, Flyway V10/Drift V8). P1.7 promemoria è avviata su branch, **senza notifiche native operative**. Ultimo schema Coolify realmente verificato: V8; V9/V10 non attestati, collaudo Windows/Android differito. **Fonte unica:** [CURRENT-STATUS.md](CURRENT-STATUS.md). Gli stati precedenti più sotto sono cronologia, non prove di deploy.
 
 
-## Stato corrente — rilascio 0.7.0+9 (25/10/2026)
+## Cronologia — rilascio 0.7.0+9 (superato da P1.6)
 
 **Codice integrato su `main`**: PR #1 P1.2 (time blocking + Flyway V8 + Drift V6) e PR #2 P1.3 (drag/resize e timeline) unite con successo. La CI dei branch è verde; le build automatiche successive al merge sono da controllare separatamente. **Coolify e PostgreSQL reali NON sono stati aggiornati/verificati da questa chat; non dichiarare Flyway V8 già applicata, né l'app installata su Windows/Android.** Per il rollout serve verificare backend `timeBlockSchema:1` e Flyway V8 prima di aggiornare i client. Non eseguire reset degli archivi: l'utente ha già concluso il reset dei soli dati di test. **Runbook attuale:** [P1-RELEASE-0.7.0.md](P1-RELEASE-0.7.0.md).
 
 > I passaggi più in basso che parlano di PR «bozza» o di `main` `0.5.0+7` sono cronologia precedente al merge. Prevale lo stato appena indicato.
 
 
-## P1.3 — Calendar drag/resize (25/10/2026)
+## Cronologia — P1.3 (ora integrata)
 
 **Su branch `feature/p1-3-calendar-interactions` (non su `main`): Flutter `0.7.0+9`, timeline interattiva giorno/settimana, move/resize a step 15 minuti, drag su intestazioni giornaliere e celle del mese, supporto DST e corsie sovrapposizioni; test dedicati.** Non richiede nuove tabelle oltre Flyway V8 di P1.2 e Drift V6. *CI e test hardware da verificare; nessun deploy/merge di P1.2 e P1.3 né modifica ai dati reali*. P1.2 `feature/p1-2-time-blocking` ha CI backend e Flutter completamente verde ma resta draft, non distribuito. P1.3 è documentato in [P1-CALENDAR-INTERACTIONS.md](P1-CALENDAR-INTERACTIONS.md). Multi-blocco per task resta fuori ambito, per successiva revisione di modello.
 
 
-## P1.2 — Time blocking in sviluppo (25 ottobre 2026)
+## Cronologia — P1.2 in sviluppo (ora integrata)
 
 **Branch `feature/p1-2-time-blocking`, Flutter `0.6.0+8`.** Introdotto intervallo `timeBlock` indipendente dalla scadenza, con editor Forui, blocchi nel calendario e percorso di sincronizzazione versionato. **Backend V8/Drift V6 sono solo codice: nessun deploy Coolify, migrazione reale, nuova pulizia dati o installazione sui dispositivi effettuata.** `timeBlockSchema:1` è un gate obbligatorio prima di inviare nuovi task. I test CI automatici e l'accettazione PC↔Android sono ancora da verificare. Non confondere codice implementato con feature già rilasciata. Specifica e piano: [P1-TIME-BLOCKING.md](P1-TIME-BLOCKING.md). La versione su `main` resta `0.5.0+7` fino a merge autorizzato/dopo verifiche.
 
 
-## Stato operativo aggiornato — 25 ottobre 2026 (fonte corrente)
+## Cronologia — snapshot del 25 ottobre precedente a P1.2–P1.6
 
 **Reset del workspace di test concluso dall'utente:** PostgreSQL `simplenotes` verificato con **0 task, 0 liste, 0 note, 0 eventi e 0 operazioni di sync**; SQLite Windows eliminata dallo script, dati Android cancellati dalle impostazioni del dispositivo dopo che ADB `pm clear` era stato rifiutato dal sistema. Il reset è stato confermato dall'utente: **non va ripetuto** per avviare P1. `app_user`, sessioni backend, schema e Flyway restano conservati. I conteggi storici (5 note soft-deleted, cursor 34, backup e restore PASS) descrivono lo stato **prima** del reset, non quello corrente.
 
@@ -31,7 +31,7 @@
 
 > Le sezioni datate 23–24 ottobre più in basso sono **cronologia**, non istruzioni operative correnti; prevale questo stato e [RESET-TEST-DATA.md](RESET-TEST-DATA.md) per la storia del reset.
 
-## Stato reale verificato e T4.2 (24 ottobre 2026)
+## Evidenza storica — T4.2 del 24 ottobre
 
 **PostgreSQL Simple Notes sulla VPS:** l'utente ha verificato direttamente `simplenotes` (PostgreSQL **17.11**), Flyway **V1–V7 tutte riuscite**, colonne V7 presenti e conteggi in quel momento: **1 utente, 5 task, 4 note, 25 sync_change, 25 sync_operation**. Il dump PostgreSQL reale `simple-notes-20261024T132857Z-271921.dump` ha superato **SHA256 e restore isolato**; il restore non ha toccato produzione. **Copia offsite non eseguita per scelta dell'utente**: non marcarla completata e non riaprire automaticamente la procedura backup.
 
@@ -40,7 +40,7 @@
 La V7 è **già applicata** sul database reale: non ripetere migrazioni o fare Redeploy per questo motivo. La compatibilità **API** e la nuova sync bidirezionale sono ancora da provare. Procedura breve in [T4-DEVICE-SYNC.md](T4-DEVICE-SYNC.md).
 
 
-## Prossima sessione: collaudo T4.2 Windows ↔ Android
+## Checklist storica T4.2 — consolidare nel batch P1.6
 
 1. Compilare stessa revisione Flutter `0.4.1+5` per Windows e Android senza cancellare dati.
 2. Accedere allo stesso account e aprire avatar → **Verifica sincronizzazione**, controllando API `taskDueSchema:1` e pending.
@@ -82,13 +82,13 @@ Nel commit [7303d45](https://github.com/andreadada/simple-notes/commit/7303d45c3
 
 Il client ha esteso `InlineEditableTitle` a task/note/sottotask/tag, aggiunto `InlineEditableBody` per descrizioni e note e un quick-add inline dei sottotask. Proprietà lista/priorità sono menu Forui, profilo ora popover Forui e dettaglio mobile sheet Forui; eliminazioni di task/note richiedono conferma. Le modifiche persistono in SQLite/outbox con i metodi `LocalStore`. L'editor avanzato resta per i cambi multi-campo. **Web runtime ancora non operativo**: database nativo e auth platform-specific. Leggere [ui-design-audit.md](ui-design-audit.md).
 
-## T2 — aggiornamento Flutter e compatibilità (24/10/2026)
+## Cronologia — T2/Drift V5 (schema superato da V8)
 
 Flutter adotta `TaskDue` (`none/date/datetime/legacy`) e Drift **schema v5**. Una data senza ora resta una data civile; scadenze storiche conservate come `legacy`; `due_at` e outbox rimangono per compatibilità. `CloudSync` controlla il server `GET /api/v1/capabilities` prima di caricare scadenze `date/datetime` e richiede `taskDueSchema=1`; il server obsoleto non riceve aggiornamenti moderni. HTTP **426 CLIENT_UPGRADE_REQUIRED** blocca la sync senza cancellare mutazioni o attivare la risoluzione 409. I payload `dueAt` storici restano leggibili.
 
 Test automatici T2/T3 per data-only, DST, doppio SQLite, outbox, Drift v4→v5 ed editor Forui. [Flutter CI 40100324302](https://github.com/andreadada/simple-notes/actions/runs/40100324302) PASS sul commit `5a0e6b6`. Il DB reale ha V7 e restore isolato verificato; capability API e hardware T4.2 ancora da provare. Flutter Web non supportato.
 
-## Prossima implementazione progettata (23 ottobre 2026)
+## Cronologia — proposta del 23 ottobre (già implementata)
 
 Per intervenire su scadenze, SQLite, Flyway o sync leggere **[due-dates-timezones.md](due-dates-timezones.md)**: pianifica il tipo `none/date/datetime/legacy`, la migrazione PostgreSQL V7 e Flutter Drift v5, timezone IANA/DST, protezione dei client precedenti e test. **T1/T2/T3 implementati nel codice** e Flyway V7 confermata nel DB reale; API e dispositivi ancora da collaudare. Le CI per l'editor HH:mm già esistente sono verdi ([40011789270](https://github.com/andreadada/simple-notes/actions/runs/40011789270)). Backup/restore reale già riusciti; restano verifica API e prova hardware in [P0-DEVICE-CHECKS.md](P0-DEVICE-CHECKS.md).
 
@@ -108,7 +108,7 @@ Commit [1bafec0](https://github.com/andreadada/simple-notes/commit/1bafec046dd0c
 - **Account:** avatar Google (claim opzionale `picture`) e menu compatto al posto dei due pulsanti; backend Flyway V4 conserva la foto. **Richiede redeploy Coolify** e nuovo login per valorizzare la foto di utenti preesistenti.
 - **Stato del prodotto:** **P0 IN CORSO, non pronto per release pubblica**. La roadmap e i criteri di completamento sono in [../project.md](../project.md).
 
-## Percorso di lettura per chi inizia da zero
+## Percorso di lettura per chi inizia da zero (stato in CURRENT-STATUS)
 
 1. [../README.md](../README.md) — panoramica e stato.
 2. **Questo file** — contesto recente, blocchi risolti, prossime azioni.

@@ -4,7 +4,7 @@
 > **Stato aggiornato:** P1.6 ricorrenze è integrata su `main` (PR #5, Flutter `0.10.0+12`, Flyway V10/Drift V8). P1.7 promemoria è avviata su branch, **senza notifiche native operative**. Ultimo schema Coolify realmente verificato: V8; V9/V10 non attestati, collaudo Windows/Android differito. **Fonte unica:** [CURRENT-STATUS.md](../../docs/CURRENT-STATUS.md). Gli stati precedenti più sotto sono cronologia, non prove di deploy.
 
 
-## Stato corrente — rilascio 0.7.0+9 (25/10/2026)
+## Cronologia — rilascio 0.7.0+9 (superato da P1.6)
 
 **Codice integrato su `main`**: PR #1 P1.2 (time blocking + Flyway V8 + Drift V6) e PR #2 P1.3 (drag/resize e timeline) unite con successo. La CI dei branch è verde; le build automatiche successive al merge sono da controllare separatamente. **Coolify e PostgreSQL reali NON sono stati aggiornati/verificati da questa chat; non dichiarare Flyway V8 già applicata, né l'app installata su Windows/Android.** Per il rollout serve verificare backend `timeBlockSchema:1` e Flyway V8 prima di aggiornare i client. Non eseguire reset degli archivi: l'utente ha già concluso il reset dei soli dati di test. **Runbook attuale:** [P1-RELEASE-0.7.0.md](../../docs/P1-RELEASE-0.7.0.md).
 
@@ -18,7 +18,7 @@
 
 > **25/10/2026 — versione `0.5.0+7`**: P1.1 Calendario giorno/settimana/mese (proiezione di `TaskDue`, aggiunta rapida, inline edit; senza migrazioni) implementato nel client, CI e prova hardware distinte. Reset del workspace test eseguito dall'utente su PostgreSQL, Windows e Android, non da GitHub Actions. Documentazione: [P1-CALENDAR](../../docs/P1-CALENDAR.md) e [RESET-TEST-DATA](../../docs/RESET-TEST-DATA.md). Il ripristino del Cestino richiede backend con capability `noteRestoreSchema:1`; Coolify non è stato aggiornato da questa sessione.
 
-## Stato reale verificato e T4.2 (24 ottobre 2026)
+## Evidenza storica — T4.2 del 24 ottobre
 
 **PostgreSQL Simple Notes sulla VPS:** l'utente ha verificato direttamente `simplenotes` (PostgreSQL **17.11**), Flyway **V1–V7 tutte riuscite**, colonne V7 presenti e conteggi in quel momento: **1 utente, 5 task, 4 note, 25 sync_change, 25 sync_operation**. Il dump PostgreSQL reale `simple-notes-20261024T132857Z-271921.dump` ha superato **SHA256 e restore isolato**; il restore non ha toccato produzione. **Copia offsite non eseguita per scelta dell'utente**: non marcarla completata e non riaprire automaticamente la procedura backup.
 
@@ -55,7 +55,7 @@ Le schermate Flutter condivise adottano ora il comportamento descritto in [audit
 
 **Web browser non ancora disponibile:** l'app corrente usa `dart:io` + Drift Native e OAuth desktop/Android, quindi questa UI non basta per una build web funzionante. Serve un adattamento separato con Drift web/SQLite WASM e OAuth web; non presentare `flutter run -d chrome` come supportato. Windows/Android restano i target attuali.
 
-## T2 — aggiornamento Flutter e compatibilità (24/10/2026)
+## Cronologia — T2/Drift V5 (schema superato da V8)
 
 Flutter adotta `TaskDue` (`none/date/datetime/legacy`) e Drift **schema v5**. Una data senza ora resta una data civile; scadenze storiche conservate come `legacy`; `due_at` e outbox rimangono per compatibilità. `CloudSync` controlla il server `GET /api/v1/capabilities` prima di caricare scadenze `date/datetime` e richiede `taskDueSchema=1`; il server obsoleto non riceve aggiornamenti moderni. HTTP **426 CLIENT_UPGRADE_REQUIRED** blocca la sync senza cancellare mutazioni o attivare la risoluzione 409. I payload `dueAt` storici restano leggibili.
 
@@ -114,7 +114,7 @@ La nuova `AutoSyncHost` sincronizza quando si effettua login/ripristino sessione
 
 Non è un servizio Android in background con app chiusa; lo stato della connessione non garantisce accesso a Internet, quindi i timeout HTTP restano necessari. I test reali PC↔Android, conflitti e offline/retry sono ancora da verificare.
 
-## Limiti correnti (23/10/2026)
+## Limiti storici (23/10/2026)
 La sync **è automatica in foreground** (login/ripristino, modifica, ritorno online, resume, poll ogni 60 s); la sync manuale rimane disponibile. Note PC↔Android e task Android→Windows sono confermati dall'utente, mentre conflitti reali, logout/refresh su entrambi, delete e recovery offline restano da verificare. Le **liste, priorità, tag e sottotask esistono e hanno test CI**, ma richiedono Flyway V6 deployata e prova fisica. Rimangono da sviluppare scadenze con orari robusti, ricorrenze, reminder/notifiche native, filtri salvati, packaging e hardening. **Non installare client nuovi prima che il server sia compatibile; non cancellare dati locali.** Vedere [P0-STATUS.md](../../docs/P0-STATUS.md).
 
 ## Diagnostica sincronizzazione note (23/10/2026)

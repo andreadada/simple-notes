@@ -4,19 +4,19 @@
 > **Stato aggiornato:** P1.6 ricorrenze è integrata su `main` (PR #5, Flutter `0.10.0+12`, Flyway V10/Drift V8). P1.7 promemoria è avviata su branch, **senza notifiche native operative**. Ultimo schema Coolify realmente verificato: V8; V9/V10 non attestati, collaudo Windows/Android differito. **Fonte unica:** [CURRENT-STATUS.md](docs/CURRENT-STATUS.md). Gli stati precedenti più sotto sono cronologia, non prove di deploy.
 
 
-## Stato corrente — rilascio 0.7.0+9 (25/10/2026)
+## Cronologia — rilascio 0.7.0+9 (superato da P1.6)
 
 **Codice integrato su `main`**: PR #1 P1.2 (time blocking + Flyway V8 + Drift V6) e PR #2 P1.3 (drag/resize e timeline) unite con successo. La CI dei branch è verde; le build automatiche successive al merge sono da controllare separatamente. **Coolify e PostgreSQL reali NON sono stati aggiornati/verificati da questa chat; non dichiarare Flyway V8 già applicata, né l'app installata su Windows/Android.** Per il rollout serve verificare backend `timeBlockSchema:1` e Flyway V8 prima di aggiornare i client. Non eseguire reset degli archivi: l'utente ha già concluso il reset dei soli dati di test. **Runbook attuale:** [P1-RELEASE-0.7.0.md](docs/P1-RELEASE-0.7.0.md).
 
 > I passaggi più in basso che parlano di PR «bozza» o di `main` `0.5.0+7` sono cronologia precedente al merge. Prevale lo stato appena indicato.
 
 
-## P1.3 — Calendar drag/resize (25/10/2026)
+## Cronologia — P1.3 (ora integrata)
 
 **Su branch `feature/p1-3-calendar-interactions` (non su `main`): Flutter `0.7.0+9`, timeline interattiva giorno/settimana, move/resize a step 15 minuti, drag su intestazioni giornaliere e celle del mese, supporto DST e corsie sovrapposizioni; test dedicati.** Non richiede nuove tabelle oltre Flyway V8 di P1.2 e Drift V6. *CI e test hardware da verificare; nessun deploy/merge di P1.2 e P1.3 né modifica ai dati reali*. P1.2 `feature/p1-2-time-blocking` ha CI backend e Flutter completamente verde ma resta draft, non distribuito. P1.3 è documentato in [P1-CALENDAR-INTERACTIONS.md](docs/P1-CALENDAR-INTERACTIONS.md). Multi-blocco per task resta fuori ambito, per successiva revisione di modello.
 
 
-## P1.2 — Time blocking in sviluppo (25 ottobre 2026)
+## Cronologia — P1.2 in sviluppo (ora integrata)
 
 **Branch `feature/p1-2-time-blocking`, Flutter `0.6.0+8`.** Introdotto intervallo `timeBlock` indipendente dalla scadenza, con editor Forui, blocchi nel calendario e percorso di sincronizzazione versionato. **Backend V8/Drift V6 sono solo codice: nessun deploy Coolify, migrazione reale, nuova pulizia dati o installazione sui dispositivi effettuata.** `timeBlockSchema:1` è un gate obbligatorio prima di inviare nuovi task. I test CI automatici e l'accettazione PC↔Android sono ancora da verificare. Non confondere codice implementato con feature già rilasciata. Specifica e piano: [P1-TIME-BLOCKING.md](docs/P1-TIME-BLOCKING.md). La versione su `main` resta `0.5.0+7` fino a merge autorizzato/dopo verifiche.
 
@@ -141,7 +141,7 @@ User(id, googleSub, email), Device(id, userId, lastSeen), Session(id, deviceId, 
 
 Il futuro modello distingue `none`/`date` (giorno civile, nessuna ora) / `datetime` (data/ora, timezone IANA, istante UTC, offset DST) / `legacy` (dato `dueAt` precedente, non inferire automaticamente dal valore 00:00). Non equivale a funzionalità implementata: sono pianificati Flyway V7, Drift v5, protezione per vecchi client e test multi-device. Leggere [docs/due-dates-timezones.md](docs/due-dates-timezones.md) prima di sviluppare ricorrenze o reminder.
 
-## T2 — aggiornamento Flutter e compatibilità (24/10/2026)
+## Cronologia — T2/Drift V5 (schema superato da V8)
 
 Flutter adotta `TaskDue` (`none/date/datetime/legacy`) e Drift **schema v5**. Una data senza ora resta una data civile; scadenze storiche conservate come `legacy`; `due_at` e outbox rimangono per compatibilità. `CloudSync` controlla il server `GET /api/v1/capabilities` prima di caricare scadenze `date/datetime` e richiede `taskDueSchema=1`; il server obsoleto non riceve aggiornamenti moderni. HTTP **426 CLIENT_UPGRADE_REQUIRED** blocca la sync senza cancellare mutazioni o attivare la risoluzione 409. I payload `dueAt` storici restano leggibili.
 

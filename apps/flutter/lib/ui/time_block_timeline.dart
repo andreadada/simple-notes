@@ -7,8 +7,9 @@ import 'time_block_interactions.dart';
 import 'time_block_view.dart';
 
 class CalendarBlockDrag {
-  const CalendarBlockDrag(this.taskId);
+  const CalendarBlockDrag(this.taskId, this.slotId);
   final String taskId;
+  final String slotId;
 }
 
 /// Interactive 24h day lane. Each completed pointer gesture makes exactly
@@ -24,7 +25,7 @@ class TimeBlockTimeline extends StatelessWidget {
 
   final DateTime day;
   final List<LocalTask> tasks;
-  final Future<void> Function(String id, TimeBlock value) onChange;
+  final Future<void> Function(String taskId, String slotId, TimeBlock value) onChange;
   final bool compact;
 
   @override
@@ -55,7 +56,7 @@ class TimeBlockTimeline extends StatelessWidget {
             ),
           for (final item in blocks)
             _InteractiveBlock(
-              key: ValueKey('interactive-${item.task.id}'),
+              key: ValueKey('interactive-${item.task.id}-${item.slot.id}'),
               geometry: item,
               pixelsPerHour: pixelsPerHour,
               left: rulerWidth + item.lane * (availableWidth / item.totalLanes),
@@ -81,7 +82,7 @@ class _InteractiveBlock extends StatefulWidget {
   final double pixelsPerHour;
   final double left;
   final double width;
-  final Future<void> Function(String, TimeBlock) onChange;
+  final Future<void> Function(String, String, TimeBlock) onChange;
 
   @override
   State<_InteractiveBlock> createState() => _InteractiveBlockState();
@@ -100,7 +101,7 @@ class _InteractiveBlockState extends State<_InteractiveBlock> {
     setState(() => busy = true);
     try {
       await widget.onChange(widget.geometry.task.id,
-          update(widget.geometry.task.timeBlock!));
+          widget.geometry.slot.id, update(widget.geometry.slot.block));
     } on FormatException catch (error) {
       if (mounted) {
         ScaffoldMessenger.maybeOf(context)?.showSnackBar(
@@ -164,13 +165,13 @@ class _InteractiveBlockState extends State<_InteractiveBlock> {
     if (defaultTargetPlatform == TargetPlatform.android ||
         defaultTargetPlatform == TargetPlatform.iOS) {
       return LongPressDraggable<CalendarBlockDrag>(
-        data: CalendarBlockDrag(widget.geometry.task.id),
+        data: CalendarBlockDrag(widget.geometry.task.id, widget.geometry.slot.id),
         feedback: feedback, childWhenDragging: Opacity(opacity: 0.4, child: icon),
         child: icon,
       );
     }
     return Draggable<CalendarBlockDrag>(
-      data: CalendarBlockDrag(widget.geometry.task.id),
+      data: CalendarBlockDrag(widget.geometry.task.id, widget.geometry.slot.id),
       feedback: feedback, childWhenDragging: Opacity(opacity: 0.4, child: icon),
       child: icon,
     );
@@ -187,7 +188,7 @@ class _InteractiveBlockState extends State<_InteractiveBlock> {
       width: widget.width,
       height: height,
       child: Container(
-        key: Key('calendar-block-${task.id}'),
+        key: Key('calendar-block-${task.id}-${widget.geometry.slot.id}'),
         decoration: BoxDecoration(
           color: const Color(0xFF24354E),
           border: Border.all(color: NotesPalette.accent.withValues(alpha: 0.65)),
@@ -195,7 +196,7 @@ class _InteractiveBlockState extends State<_InteractiveBlock> {
         ),
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           Expanded(child: GestureDetector(
-            key: Key('calendar-block-move-${task.id}'),
+            key: Key('calendar-block-move-${task.id}-${widget.geometry.slot.id}'),
             behavior: HitTestBehavior.opaque,
             onVerticalDragDown: busy ? null : (details) {
               moveStartDy = details.globalPosition.dy;
@@ -220,7 +221,7 @@ class _InteractiveBlockState extends State<_InteractiveBlock> {
                         fontSize: 11))),
                   ]),
                   if (!short)
-                    Text(timeBlockLabel(task.timeBlock),
+                    Text(timeBlockLabel(widget.geometry.slot.block),
                       maxLines: 1, overflow: TextOverflow.ellipsis,
                       style: const TextStyle(fontSize: 9,
                           color: NotesPalette.secondaryText)),
@@ -228,7 +229,7 @@ class _InteractiveBlockState extends State<_InteractiveBlock> {
             ),
           )),
           Listener(
-            key: Key('calendar-block-resize-${task.id}'),
+            key: Key('calendar-block-resize-${task.id}-${widget.geometry.slot.id}'),
             behavior: HitTestBehavior.opaque,
             // Raw pointer events are intentional here. The resize handle
             // is 11dp tall: small, precise drags must not be swallowed by
@@ -287,7 +288,8 @@ class CalendarDayDropZone extends StatelessWidget {
     super.key, required this.day, required this.onDrop, required this.child,
   });
   final DateTime day;
-  final Future<void> Function(String id, DateTime targetDay) onDrop;
+  final Future<void> Function(
+      String taskId, String slotId, DateTime targetDay) onDrop;
   final Widget child;
 
   @override
@@ -295,7 +297,7 @@ class CalendarDayDropZone extends StatelessWidget {
       DragTarget<CalendarBlockDrag>(
         onWillAcceptWithDetails: (_) => true,
         onAcceptWithDetails: (details) =>
-            onDrop(details.data.taskId, day),
+            onDrop(details.data.taskId, details.data.slotId, day),
         builder: (context, candidates, rejects) => DecoratedBox(
           decoration: BoxDecoration(
             border: candidates.isEmpty ? null : Border.all(

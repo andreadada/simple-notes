@@ -76,7 +76,7 @@ class SyncDiagnostics {
   final String backendStatus;
 
   String get backendLabel => switch (backendStatus) {
-    'compatible' => 'Compatibile (scadenze 1 + blocchi 1)',
+    'compatible' => 'Compatibile (scadenze 1 + blocchi multipli 1)',
     'outdated' => 'Versione backend incompatibile',
     'offline' => 'API non raggiungibile o non verificabile',
     'signed-out' => 'Accedi con Google',
@@ -176,7 +176,7 @@ class CloudSync extends StateNotifier<SyncState> {
       throw StateError('Capacità API non verificabili (HTTP ${result.statusCode})');
     }
     return (jsonDecode(result.body)
-        as Map<String, dynamic>)['timeBlockSchema'] == 1;
+        as Map<String, dynamic>)['timeBlocksSchema'] == 1;
   }
 
   /// T4: passive, read-only diagnostics for real Windows/Android acceptance.
@@ -213,7 +213,7 @@ class CloudSync extends StateNotifier<SyncState> {
       try {
         final result = await _request('GET', '/capabilities');
         backend = _typedDueContractMatches(result) &&
-                result['timeBlockSchema'] == 1
+                result['timeBlocksSchema'] == 1
             ? 'compatible' : 'outdated';
       } on SyncUpgradeRequired {
         backend = 'outdated';
@@ -276,7 +276,7 @@ class CloudSync extends StateNotifier<SyncState> {
           if (!typedDueSupported) throw const SyncUpgradeRequired();
         }
         if (op.entityType == 'task' && op.action == 'upsert' &&
-            payload.containsKey('timeBlock')) {
+            payload.containsKey('timeBlocks')) {
           timeBlockSupported ??= await _supportsTimeBlocks();
           if (!timeBlockSupported) throw const SyncUpgradeRequired();
         }

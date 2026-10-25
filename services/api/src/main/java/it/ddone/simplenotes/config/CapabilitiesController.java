@@ -13,6 +13,7 @@ public class CapabilitiesController {
             "taskDueKinds", new String[]{"none", "date", "datetime", "legacy"},
             "requiresExplicitDueForModernTasks", true,
             "noteRestoreSchema", 1,
-            "timeBlockSchema", 1);
+            "timeBlockSchema", 1,
+            "timeBlocksSchema", 1);
     }
 }

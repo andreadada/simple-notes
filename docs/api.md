@@ -1,5 +1,10 @@
 # Simple Notes API v1
 
+## P1.4 — Multi-block e riepilogo focus (25/10/2026)
+
+**Branch in sviluppo `feature/p1-4-multi-blocks-batch`, NON ancora su `main`, NON deployato su Coolify.** Flutter `0.8.0+10`; backend Flyway V9, Drift V7, fino a 12 slot per attività con ID stabili; CRUD/pannello Forui, copia slot, drag mirato e riepilogo pianificate/completate. Compatibilità protetta con `timeBlocksSchema:1` / 426 su client V8 incapaci di salvare il multi-block. Il server attualmente installato dall'utente rimane Flyway V8 e il client effettivo non è stato aggiornato a V0.8. Niente reset/dati persi e **collaudo dispositivi rimandato a fine batch**. [Specifiche](P1-MULTI-BLOCKS.md).
+
+
 > **Stato reale 24/10/2026:** PostgreSQL `simplenotes` 17.11, Flyway V1–V7 riuscite, backup `simple-notes-20261024T132857Z-271921.dump` con SHA256 valido e restore isolato PASS. Copia offsite non effettuata per scelta dell'utente. Restano da verificare l'API autenticata (`taskDueSchema:1`) e il collaudo T4.2 Windows↔Android con Flutter `0.4.0+4`. Non ripetere backup, migrazioni o deploy automaticamente. [T4.2](T4-DEVICE-SYNC.md).
 
 Base URL `/api/v1`. Per endpoint privati: header `Authorization: Bearer <accessToken>`.

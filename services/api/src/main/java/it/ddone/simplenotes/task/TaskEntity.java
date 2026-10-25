@@ -29,6 +29,8 @@ public class TaskEntity {
     @Column(name = "block_start_at") public Instant blockStartAt;
     @Column(name = "block_end_at") public Instant blockEndAt;
     @Column(name = "block_timezone", length = 128) public String blockTimezone;
+    @Column(name = "blocks_json", nullable = false, columnDefinition = "text")
+    public String blocksJson = "[]";
     @Column(name = "completed_at") public Instant completedAt;
     @Version public long version;
     @Column(name = "created_at", nullable = false) public Instant createdAt;

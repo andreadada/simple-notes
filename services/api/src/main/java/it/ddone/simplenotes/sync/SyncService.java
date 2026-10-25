@@ -102,13 +102,31 @@ public class SyncService {
                 throw new ClientUpgradeRequiredException();
             due = TaskDue.fromOldInstant(optionalInstant(value, "dueAt"));
         }
-        // The time block must never be silently dropped by an old client
-        // editing the task title. Explicit schema capability is required.
-        TaskTimeBlock block = null;
-        if (value.has("timeBlock")) {
-            block = TaskTimeBlock.parse(value.get("timeBlock"));
-        } else if (existing != null && existing.blockStartAt != null) {
-            throw new ClientUpgradeRequiredException();
+        // v9 is canonical. v8 payloads may update 0/1 slots, but must
+        // never silently erase 2+ independent time slots from a newer app.
+        List<TaskTimeBlocks.Slot> oldSlots = existing == null ? List.of()
+            : TaskTimeBlocks.fromEntity(existing, json);
+        List<TaskTimeBlocks.Slot> slots;
+        if (value.has("timeBlocks")) {
+            slots = TaskTimeBlocks.parse(value.get("timeBlocks"));
+            if (value.has("timeBlock")) {
+                TaskTimeBlock mirror = TaskTimeBlock.parse(value.get("timeBlock"));
+                TaskTimeBlock first = slots.isEmpty() ? null : slots.get(0).block();
+                if (!Objects.equals(mirror, first))
+                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                        "timeBlock mirror does not match timeBlocks[0]");
+            }
+        } else {
+            if (oldSlots.size() > 1) throw new ClientUpgradeRequiredException();
+            TaskTimeBlock oldBlock = null;
+            if (value.has("timeBlock")) {
+                oldBlock = TaskTimeBlock.parse(value.get("timeBlock"));
+            } else if (!oldSlots.isEmpty()) {
+                throw new ClientUpgradeRequiredException();
+            }
+            slots = oldBlock == null ? List.of()
+                : List.of(new TaskTimeBlocks.Slot(
+                    oldSlots.isEmpty() ? "legacy" : oldSlots.get(0).id(), oldBlock));
         }
         boolean completed = value.path("completed").asBoolean(false);
         UUID listId = optionalUuid(value, "listId");
@@ -135,7 +153,7 @@ public class SyncService {
             entity.updatedAt = Instant.now();
         }
         due.applyTo(entity);
-        TaskTimeBlock.applyTo(entity, block);
+        TaskTimeBlocks.applyTo(entity, slots, json);
         entity.listId = listId;
         entity.priority = priority;
         entity.tagsJson = tagsJson;
@@ -150,6 +168,7 @@ public class SyncService {
         result.put("dueAt", entity.dueAt == null ? "" : entity.dueAt.toString());
         result.put("due", TaskDue.fromEntity(entity).toPayload());
         result.put("timeBlock", TaskTimeBlock.toPayload(entity));
+        result.put("timeBlocks", TaskTimeBlocks.toPayload(slots));
         result.put("createdAt", entity.createdAt.toString());
         result.put("listId", entity.listId == null ? null : entity.listId.toString());
         result.put("priority", entity.priority);

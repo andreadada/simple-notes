@@ -1,5 +1,7 @@
 import 'task_due.dart';
 import 'time_block.dart';
+import 'time_slot.dart';
+export 'time_slot.dart';
 export 'time_block.dart';
 export 'task_due.dart';
 
@@ -53,7 +55,9 @@ class LocalTask {
   final String title;
   final String description;
   final TaskDue due;
-  final TimeBlock? timeBlock;
+  /// P1.4 canonical schedule; the P1.2 getter remains for old widgets.
+  final List<TimeSlot> timeBlocks;
+  TimeBlock? get timeBlock => timeBlocks.isEmpty ? null : timeBlocks.first.block;
   DateTime? get dueAt => due.displayLocal;
   final bool completed;
   final DateTime createdAt;
@@ -64,14 +68,18 @@ class LocalTask {
 
   LocalTask({
     required this.id, required this.title, required DateTime? dueAt,
-    TaskDue? due, this.timeBlock,
+    TaskDue? due, TimeBlock? timeBlock, List<TimeSlot>? timeBlocks,
     required this.completed, required this.createdAt,
     this.description = '',
     this.listId,
     this.priority = 0,
     this.tags = const [],
     this.subtasks = const [],
-  }) : due = due ?? TaskDue.legacy(dueAt);
+  }) : due = due ?? TaskDue.legacy(dueAt),
+       timeBlocks = List.unmodifiable(TimeSlotCollection.validate(
+          timeBlocks ?? (timeBlock == null
+              ? <TimeSlot>[]
+              : [TimeSlot(id: 'legacy', block: timeBlock)])));
 
   factory LocalTask.fromJson(Map<String, dynamic> value) => LocalTask(
     id: value['id'] as String,
@@ -79,7 +87,7 @@ class LocalTask {
     description: value['description'] as String? ?? '',
     dueAt: value['dueAt'] == null || value['dueAt'] == ''
       ? null : DateTime.parse(value['dueAt'] as String),
-    timeBlock: TimeBlock.optionalFromJson(value['timeBlock']),
+    timeBlocks: TimeSlotCollection.fromPayload(value),
     due: TaskDue.fromJson(value['due'], oldDueAt:
       value['dueAt'] == null || value['dueAt'] == ''
         ? null : DateTime.parse(value['dueAt'] as String)),
@@ -99,6 +107,7 @@ class LocalTask {
     'dueAt': due.instant?.toUtc().toIso8601String(),
     'due': due.toJson(),
     'timeBlock': timeBlock?.toJson() ?? const {'kind': 'none'},
+    'timeBlocks': TimeSlotCollection.toJson(timeBlocks),
     'completed': completed, 'createdAt': createdAt.toIso8601String(),
     'listId': listId, 'priority': priority, 'tags': tags,
     'subtasks': subtasks.map((item) => item.toJson()).toList(),
@@ -108,6 +117,7 @@ class LocalTask {
     bool? completed, String? title, String? description, DateTime? dueAt,
     bool changeDueAt = false, TaskDue? due, bool changeDue = false,
     TimeBlock? timeBlock, bool changeTimeBlock = false,
+    List<TimeSlot>? timeBlocks, bool changeTimeBlocks = false,
     String? listId, bool changeListId = false,
     int? priority, List<String>? tags, List<LocalSubtask>? subtasks,
   }) => LocalTask(
@@ -116,7 +126,11 @@ class LocalTask {
     dueAt: changeDueAt ? dueAt : this.dueAt,
     due: changeDue ? (due ?? TaskDue.none) :
       changeDueAt ? TaskDue.legacy(dueAt) : this.due,
-    timeBlock: changeTimeBlock ? timeBlock : this.timeBlock,
+    timeBlocks: changeTimeBlocks ? timeBlocks :
+        changeTimeBlock ? (timeBlock == null ? <TimeSlot>[] :
+          [TimeSlot(id: this.timeBlocks.isEmpty
+              ? 'legacy' : this.timeBlocks.first.id, block: timeBlock)])
+        : this.timeBlocks,
     completed: completed ?? this.completed, createdAt: createdAt,
     listId: changeListId ? listId : this.listId,
     priority: priority ?? this.priority,

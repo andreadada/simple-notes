@@ -7,8 +7,7 @@ import 'ui/inline_quick_add.dart';
 import 'ui/notes_dialogs.dart';
 import 'ui/task_due_editor.dart';
 import 'ui/calendar_board.dart';
-import 'ui/time_block_editor.dart';
-import 'ui/time_block_view.dart';
+import 'ui/task_blocks_panel.dart';
 import 'data/task_due_view.dart';
 import 'ui/sync_conflict_dialog.dart';
 import 'ui/sync_diagnostics_dialog.dart';
@@ -782,26 +781,7 @@ class _NotesHomeState extends ConsumerState<NotesHome> {
               ),
           ]),
           const SizedBox(height: 18),
-          const Text('BLOCCO DI TEMPO', style: TextStyle(
-            color: NotesPalette.secondaryText, fontSize: 11)),
-          const SizedBox(height: 8),
-          Wrap(spacing: 8, runSpacing: 8, children: [
-            FButton(
-              key: const Key('inline-task-time-block'),
-              variant: FButtonVariant.outline,
-              mainAxisSize: MainAxisSize.min,
-              onPress: () async {
-                final result = await showTimeBlockEditor(context,
-                    initial: task.timeBlock);
-                if (result != null) {
-                  await ref.read(localStoreProvider.notifier)
-                      .setTaskTimeBlock(task.id, result.block);
-                }
-              },
-              prefix: const Icon(Icons.timelapse_outlined, size: 16),
-              child: Text(timeBlockLabel(task.timeBlock)),
-            ),
-          ]),
+          TaskBlocksPanel(task: task),
           const SizedBox(height: 18),
           const Text('PRIORITÀ', style: TextStyle(
             color: NotesPalette.secondaryText, fontSize: 11)),

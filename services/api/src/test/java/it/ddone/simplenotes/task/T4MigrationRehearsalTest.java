@@ -104,13 +104,13 @@ class T4MigrationRehearsalTest {
                 postgres.getPassword()).load();
             migrated.migrate();
             migrated.validate();
-            assertEquals("8", migrated.info().current().getVersion().toString());
+            assertEquals("9", migrated.info().current().getVersion().toString());
 
             try (Connection db = DriverManager.getConnection(
                     postgres.getJdbcUrl(), postgres.getUsername(),
                     postgres.getPassword())) {
                 try (PreparedStatement ps = db.prepareStatement(
-                    "SELECT due_kind,due_at,version,tags_json,list_id,block_start_at,block_end_at,block_timezone "
+                    "SELECT due_kind,due_at,version,tags_json,list_id,block_start_at,block_end_at,block_timezone,blocks_json "
                     + "FROM task WHERE id=?")) {
                     ps.setObject(1, task);
                     try (ResultSet rs = ps.executeQuery()) {
@@ -124,6 +124,7 @@ class T4MigrationRehearsalTest {
                         assertNull(rs.getTimestamp(6));
                         assertNull(rs.getTimestamp(7));
                         assertNull(rs.getString(8));
+                        assertEquals("[]", rs.getString(9));
                     }
                 }
                 try (PreparedStatement ps = db.prepareStatement(

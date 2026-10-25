@@ -29,6 +29,7 @@ class TaskEntries extends Table {
   DateTimeColumn get blockStartAt => dateTime().nullable()();
   DateTimeColumn get blockEndAt => dateTime().nullable()();
   TextColumn get blockTimezone => text().nullable()();
+  TextColumn get blocksJson => text().withDefault(const Constant('[]'))();
   BoolColumn get completed => boolean().withDefault(const Constant(false))();
   DateTimeColumn get createdAt => dateTime()();
   IntColumn get remoteVersion => integer().nullable()();
@@ -83,7 +84,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase([QueryExecutor? executor]) : super(executor ?? _openDatabase());
 
   @override
-  int get schemaVersion => 6;
+  int get schemaVersion => 7;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -115,6 +116,11 @@ class AppDatabase extends _$AppDatabase {
         await m.addColumn(taskEntries, taskEntries.blockEndAt);
         await m.addColumn(taskEntries, taskEntries.blockTimezone);
       }
+      if (from < 7) {
+        // Non-destructive: existing V6 rows retain the legacy block fields.
+        // Snapshot reads the V6 mirror whenever blocks_json is empty.
+        await m.addColumn(taskEntries, taskEntries.blocksJson);
+      }
     },
   );
 
@@ -143,10 +149,13 @@ class AppDatabase extends _$AppDatabase {
       tasks: tasks.map((t) => LocalTask(
         id: t.id, title: t.title, description: t.description,
         dueAt: t.dueAt,
-        timeBlock: t.blockStartAt == null ? null : TimeBlock(
-          start: t.blockStartAt!, end: t.blockEndAt!,
-          timeZone: t.blockTimezone!,
-        ),
+        timeBlocks: TimeSlotCollection.fromPayload({
+          if (t.blocksJson != '[]') 'timeBlocks': jsonDecode(t.blocksJson),
+          if (t.blocksJson == '[]') 'timeBlock': t.blockStartAt == null
+              ? const {'kind': 'none'}
+              : TimeBlock(start: t.blockStartAt!, end: t.blockEndAt!,
+                  timeZone: t.blockTimezone!).toJson(),
+        }),
         due: TaskDue.fromStorage(
           kind: t.dueKind, date: t.dueDate, time: t.dueTime,
           timeZone: t.dueTimezone,
@@ -190,6 +199,8 @@ class AppDatabase extends _$AppDatabase {
       blockStartAt: Value(task.timeBlock?.start.toLocal()),
       blockEndAt: Value(task.timeBlock?.end.toLocal()),
       blockTimezone: Value(task.timeBlock?.timeZone),
+      blocksJson: Value(jsonEncode(
+          TimeSlotCollection.toJson(task.timeBlocks))),
       completed: Value(task.completed),
       createdAt: task.createdAt,
       remoteVersion: Value(previous?.remoteVersion),
@@ -415,6 +426,8 @@ class AppDatabase extends _$AppDatabase {
       // Reject malformed modern payloads before changing existing rows.
       final due = TaskDue.fromJson(payload['due'], oldDueAt: oldDue);
       final created = DateTime.tryParse(payload['createdAt'] as String? ?? '');
+      final blocks = TimeSlotCollection.fromPayload(payload);
+      final primary = blocks.isEmpty ? null : blocks.first.block;
       await into(taskEntries).insertOnConflictUpdate(TaskEntriesCompanion.insert(
         id: entityId,
         title: payload['title'] as String,
@@ -429,12 +442,10 @@ class AppDatabase extends _$AppDatabase {
         dueTime: Value(due.time),
         dueTimezone: Value(due.timeZone),
         dueOffsetSeconds: Value(due.offsetSeconds),
-        blockStartAt: Value(
-          TimeBlock.optionalFromJson(payload['timeBlock'])?.start.toLocal()),
-        blockEndAt: Value(
-          TimeBlock.optionalFromJson(payload['timeBlock'])?.end.toLocal()),
-        blockTimezone: Value(
-          TimeBlock.optionalFromJson(payload['timeBlock'])?.timeZone),
+        blockStartAt: Value(primary?.start.toLocal()),
+        blockEndAt: Value(primary?.end.toLocal()),
+        blockTimezone: Value(primary?.timeZone),
+        blocksJson: Value(jsonEncode(TimeSlotCollection.toJson(blocks))),
         completed: Value(payload['completed'] as bool? ?? false),
         createdAt: created ?? DateTime.now(),
         deletedAt: const Value(null),

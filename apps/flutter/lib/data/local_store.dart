@@ -140,6 +140,49 @@ class LocalStore extends Notifier<LocalData> {
         timeBlock: block, changeTimeBlock: true));
   }
 
+  /// Target one stable slot ID; no other scheduled interval is discarded.
+  Future<void> addTaskTimeSlot(String id, TimeBlock block) async {
+    final task = state.tasks.where((item) => item.id == id).firstOrNull;
+    if (task == null) throw StateError('Attività non disponibile.');
+    await _persistTask(task.copyWith(timeBlocks: [
+      ...task.timeBlocks,
+      TimeSlot(id: const Uuid().v4(), block: block),
+    ], changeTimeBlocks: true));
+  }
+
+  Future<void> updateTaskTimeSlot(
+      String id, String slotId, TimeBlock block) async {
+    final task = state.tasks.where((item) => item.id == id).firstOrNull;
+    if (task == null || !task.timeBlocks.any((x) => x.id == slotId)) {
+      throw StateError('Blocco orario non disponibile.');
+    }
+    await _persistTask(task.copyWith(timeBlocks: [
+      for (final slot in task.timeBlocks)
+        slot.id == slotId ? slot.copyWith(block: block) : slot,
+    ], changeTimeBlocks: true));
+  }
+
+  Future<void> removeTaskTimeSlot(String id, String slotId) async {
+    final task = state.tasks.where((item) => item.id == id).firstOrNull;
+    if (task == null || !task.timeBlocks.any((x) => x.id == slotId)) {
+      throw StateError('Blocco orario non disponibile.');
+    }
+    await _persistTask(task.copyWith(timeBlocks: [
+      for (final slot in task.timeBlocks) if (slot.id != slotId) slot,
+    ], changeTimeBlocks: true));
+  }
+
+  Future<void> duplicateTaskTimeSlot(String id, String slotId) async {
+    final task = state.tasks.where((item) => item.id == id).firstOrNull;
+    final slot = task?.timeBlocks.where((x) => x.id == slotId).firstOrNull;
+    if (slot == null) throw StateError('Blocco orario non disponibile.');
+    final shifted = TimeBlock(
+      start: slot.block.start.add(const Duration(days: 1)),
+      end: slot.block.end.add(const Duration(days: 1)),
+      timeZone: slot.block.timeZone);
+    await addTaskTimeSlot(id, shifted);
+  }
+
   Future<void> setTaskDue(String id, DateTime? date) async {
     final task = state.tasks.where((item) => item.id == id).firstOrNull;
     if (task == null) throw StateError('Attività non disponibile.');

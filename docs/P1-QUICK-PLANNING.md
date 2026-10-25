@@ -1,6 +1,10 @@
 # P1.5 — Pianificazione rapida e filtri calendario
 
-**Stato:** sviluppo su `feature/p1-5-quick-planning-filters`, Flutter `0.9.0+11`. Basato sulla P1.4 in `main`. Nessun deploy Coolify, nessuna migrazione API/DB e nessuna installazione dispositivo da questo lavoro.
+<!-- CURRENT-STATUS-REF -->
+> **Stato:** `main` = P1.5 / Flutter 0.9 (CI verde); P1.6 ricorrenze / Flutter 0.10 in sviluppo, **non deployato**. Ultima verifica server V8; V9/V10 non verificati. Questo documento è tecnico/storico; per le fasi effettive usare [CURRENT-STATUS.md](CURRENT-STATUS.md).
+
+
+**Stato codice:** integrata in `main` con PR #4, Flutter `0.9.0+11` e CI Flutter verde. Nessuna migrazione aggiuntiva; deploy e prove hardware non attestati.
 
 ## Funzionalità
 

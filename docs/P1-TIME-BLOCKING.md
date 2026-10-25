@@ -1,5 +1,9 @@
 # P1.2 — Time blocking sincronizzato (prima implementazione)
 
+<!-- CURRENT-STATUS-REF -->
+> **Stato:** `main` = P1.5 / Flutter 0.9 (CI verde); P1.6 ricorrenze / Flutter 0.10 in sviluppo, **non deployato**. Ultima verifica server V8; V9/V10 non verificati. Questo documento è tecnico/storico; per le fasi effettive usare [CURRENT-STATUS.md](CURRENT-STATUS.md).
+
+
 > **Aggiornamento dopo merge:** P1.2 e P1.3 sono ora su `main` in Flutter `0.7.0+9`; **non significa deploy Coolify**. Procedura di rilascio e gate: [P1-RELEASE-0.7.0.md](P1-RELEASE-0.7.0.md). Le etichette “in sviluppo” sotto sono cronologia del branch.
 
 

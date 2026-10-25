@@ -1,5 +1,9 @@
 # P1.1 — Calendario giorno, settimana, mese
 
+<!-- CURRENT-STATUS-REF -->
+> **Stato:** `main` = P1.5 / Flutter 0.9 (CI verde); P1.6 ricorrenze / Flutter 0.10 in sviluppo, **non deployato**. Ultima verifica server V8; V9/V10 non verificati. Questo documento è tecnico/storico; per le fasi effettive usare [CURRENT-STATUS.md](CURRENT-STATUS.md).
+
+
 ## Stato (25 ottobre 2026)
 
 **Implementato su GitHub main nel client Flutter `0.5.0+7`; risultati di CI e prove su hardware vanno verificati separatamente.** Non è stata installata questa versione sui dispositivi né eseguito un deploy da questa attività. Nessuna nuova tabella, migrazione Flyway o versione dell'API è richiesta da P1.1.

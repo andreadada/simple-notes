@@ -99,18 +99,24 @@ class _InteractiveBlockState extends State<_InteractiveBlock> {
       await widget.onChange(widget.geometry.task.id,
           update(widget.geometry.task.timeBlock!));
     } on FormatException catch (error) {
-      if (mounted) ScaffoldMessenger.maybeOf(context)?.showSnackBar(
-        SnackBar(content: Text(error.message)));
+      if (mounted) {
+        ScaffoldMessenger.maybeOf(context)?.showSnackBar(
+          SnackBar(content: Text(error.message)));
+      }
     } catch (_) {
-      if (mounted) ScaffoldMessenger.maybeOf(context)?.showSnackBar(
-        const SnackBar(content: Text(
-            'Impossibile modificare il blocco. Nessun dato eliminato.')));
+      if (mounted) {
+        ScaffoldMessenger.maybeOf(context)?.showSnackBar(
+          const SnackBar(content: Text(
+              'Impossibile modificare il blocco. Nessun dato eliminato.')));
+      }
     } finally {
-      if (mounted) setState(() {
-        busy = false;
-        move = 0;
-        resize = 0;
-      });
+      if (mounted) {
+        setState(() {
+          busy = false;
+          move = 0;
+          resize = 0;
+        });
+      }
     }
   }
 

@@ -76,11 +76,15 @@ class _CalendarBoardState extends ConsumerState<CalendarBoard> {
     try {
       await _saveBlock(task.id, mutate(task.timeBlock!));
     } on FormatException catch (error) {
-      if (mounted) ScaffoldMessenger.maybeOf(context)?.showSnackBar(
+      if (mounted) {
+        ScaffoldMessenger.maybeOf(context)?.showSnackBar(
           SnackBar(content: Text(error.message)));
+      }
     } catch (_) {
-      if (mounted) ScaffoldMessenger.maybeOf(context)?.showSnackBar(
+      if (mounted) {
+        ScaffoldMessenger.maybeOf(context)?.showSnackBar(
           const SnackBar(content: Text('Modifica non riuscita.')));
+      }
     }
   }
 
@@ -91,11 +95,15 @@ class _CalendarBoardState extends ConsumerState<CalendarBoard> {
     try {
       await _saveBlock(id, calendarMoveBlockToDay(current!.timeBlock!, day));
     } on FormatException catch (error) {
-      if (mounted) ScaffoldMessenger.maybeOf(context)?.showSnackBar(
-        SnackBar(content: Text(error.message)));
+      if (mounted) {
+        ScaffoldMessenger.maybeOf(context)?.showSnackBar(
+          SnackBar(content: Text(error.message)));
+      }
     } catch (_) {
-      if (mounted) ScaffoldMessenger.maybeOf(context)?.showSnackBar(
-        const SnackBar(content: Text('Spostamento non riuscito.')));
+      if (mounted) {
+        ScaffoldMessenger.maybeOf(context)?.showSnackBar(
+          const SnackBar(content: Text('Spostamento non riuscito.')));
+      }
     }
   }
 

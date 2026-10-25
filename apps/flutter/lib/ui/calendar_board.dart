@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:forui/forui.dart';
 
 import '../data/local_store.dart';
-import '../data/models.dart';
 import '../data/task_due_view.dart';
 import 'calendar_logic.dart';
 import 'inline_editable_title.dart';

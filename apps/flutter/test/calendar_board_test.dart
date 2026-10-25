@@ -5,7 +5,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:forui/forui.dart';
 import 'package:simple_notes/data/app_database.dart';
 import 'package:simple_notes/data/local_store.dart';
-import 'package:simple_notes/data/models.dart';
 import 'package:simple_notes/ui/calendar_board.dart';
 import 'package:simple_notes/ui/calendar_logic.dart';
 import 'package:simple_notes/ui/notes_theme.dart';
@@ -56,7 +55,7 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.byKey(Key('calendar-date-${calendarDateKey(today)}')),
         findsOneWidget);
-    await tester.tap(find.byKey(const Key('calendar-date-${calendarDateKey(today)}')));
+    await tester.tap(find.byKey(Key('calendar-date-${calendarDateKey(today)}')));
     await tester.pumpAndSettle();
     expect(find.text('Task prova'), findsWidgets);
 

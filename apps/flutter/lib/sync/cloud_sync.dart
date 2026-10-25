@@ -180,8 +180,15 @@ class CloudSync extends StateNotifier<SyncState> {
   }
 
   Future<bool> _supportsRecurrence() async {
-    final result = await _request('GET', '/capabilities');
-    return result['recurrenceSchema'] == 1;
+    try {
+      final result = await _request('GET', '/capabilities');
+      return result['recurrenceSchema'] == 1;
+    } on StateError catch (error) {
+      // A pre-capabilities API (404) is an upgrade gate, not a transient
+      // upload failure. Keep all queued task mutations unchanged.
+      if (error.toString().contains('HTTP 404')) return false;
+      rethrow;
+    }
   }
 
   /// T4: passive, read-only diagnostics for real Windows/Android acceptance.

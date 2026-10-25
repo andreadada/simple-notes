@@ -12,7 +12,7 @@ android {
     // possible. Some Flutter/plugin versions still register a Kotlin task.
     enableKotlin = false
     namespace = "it.andreadada.simplenotes"
-    compileSdk = flutter.compileSdkVersion
+    compileSdk = 36
     ndkVersion = flutter.ndkVersion
 
     // Flutter/Gradle runs with JDK 17 or 21 depending on the developer
@@ -20,13 +20,14 @@ android {
     // compatibility aligned with the actual Gradle JDK so KGP's strict JVM
     // target validation never sees Java 17 vs Kotlin 21. CI builds both.
     compileOptions {
+        isCoreLibraryDesugaringEnabled = true
         sourceCompatibility = JavaVersion.current()
         targetCompatibility = JavaVersion.current()
     }
 
     defaultConfig {
         applicationId = "it.andreadada.simplenotes"
-        minSdk = flutter.minSdkVersion
+        minSdk = 24
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName
@@ -43,4 +44,9 @@ android {
 
 flutter {
     source = "../.."
+}
+
+// Flutter local notifications uses java.time when scheduling Android alarms.
+dependencies {
+    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.4")
 }

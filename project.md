@@ -1,6 +1,6 @@
 # Simple Notes — Progetto e roadmap
 
-> **Stato 26/10/2026:** P1.9 **Kanban integrato in `main`** con [PR #10](https://github.com/andreadada/simple-notes/pull/10) (Flutter `0.14.0+16`, [CI PR verde](https://github.com/andreadada/simple-notes/actions/runs/40328803094)). P1.10 **Pomodoro locale in sviluppo sul branch** `feature/p1-10-pomodoro-focus` (`0.15.0+17`), CI/merge e device da verificare. Backend repository Flyway V10/Drift V8; ultimo Coolify reale attestato **V8**, nessun deploy/reset. [Stato canonico](docs/CURRENT-STATUS.md).
+> **Stato 26/10/2026:** P1.10 Pomodoro **integrata su `main`** con [PR #11](https://github.com/andreadada/simple-notes/pull/11) (Flutter `0.15.0+17`, CI verde). P1.11 Habit Tracker **in sviluppo su branch** `feature/p1-11-habit-tracker` (`0.16.0+18`, CI/merge da verificare); storico locale, **non sincronizzato tra dispositivi**. Backend repo Flyway V10/Drift V8; ultima VPS Coolify attestata V8, nessun nuovo deploy/reset. [Stato canonico](docs/CURRENT-STATUS.md).
 
 <!-- CURRENT-STATUS-REF -->
 
@@ -116,8 +116,9 @@
 - [x] **P1.7 Android nel codice**: PR #6 integrata, Flutter 0.11, scheduler inexact e ledger opt-in; CI verde, test fisici non eseguiti. [x] Windows MSIX integrato con PR #7 (Flutter 0.12, CI verde), [ ] cancellazione e upgrade reali da verificare. [Specifica](docs/P1-REMINDERS-FOUNDATION.md).
 - [x] **P1.8 Matrice Eisenhower nel codice:** PR #8 integrata su `main`, Flutter `0.13.0+15`; 4 quadranti responsive, classificazione P2/P3 e scadenza, editing inline/Forui, test CI verdi. [ ] Test E2E Windows/Android reali. [Specifica](docs/P1-EISENHOWER.md).
 - [x] **P1.9 Kanban per liste:** [PR #10](https://github.com/andreadada/simple-notes/pull/10) su main, Flutter `0.14.0+16`, CI verde. Inbox/liste, drag/drop Windows/Android, menu spostamento, editor e aggiunta inline. [ ] Device E2E non ancora verificati. [Specifica](docs/P1-KANBAN.md).
-- [ ] **P1.10 Pomodoro locale e statistiche:** timer 25/5/15, pausa/ripresa, storage per account e 7 giorni di attività in sviluppo nel branch `feature/p1-10-pomodoro-focus` (Flutter `0.15.0+17`). CI/merge/hardware da verificare. **Statistiche device-only, non sincronizzate.** [Specifica](docs/P1-POMODORO.md).
-- [ ] Habit tracker, streak, check-in e countdown.
+- [x] **P1.10 Pomodoro locale e statistiche:** PR #11 integrata su main, Flutter `0.15.0+17`, CI verde; timer 25/5/15, pausa/ripresa, dati per account e statistiche device-only. Test reali/upgrade ancora aperti. **Statistiche device-only, non sincronizzate.** [Specifica](docs/P1-POMODORO.md).
+- [ ] **P1.11 Habit Tracker locale:** check-in giornalieri, streak, statistiche 7/30 giorni, archivio senza cancellazione, UI Forui Windows/Android nel branch `feature/p1-11-habit-tracker` (Flutter `0.16.0+18`). CI/merge/device ancora aperti; [specifica](docs/P1-HABITS.md). Nessuna sincronizzazione cloud in questa prima versione.
+- [ ] Countdown avanzati (separati dal Pomodoro), obiettivi settimanali e habit sync cross-device.
 - [ ] Sticky Notes in finestre Windows indipendenti.
 - [ ] UI responsive, scorciatoie, tray, temi.
 
@@ -296,3 +297,5 @@ Esempio: `2026-10-21 14:20 CEST | commit abc1234 | Aggiunto modulo promemoria e 
 - 2026-10-26 | feat(p1.9)+docs | Branch P1.9 Kanban per liste esistenti (cross-column drag/drop, alternativa menu, inline edits, outbox invariata), Flutter 0.14.0+16; nuova guida [OPERATIONS.md](docs/OPERATIONS.md) per Windows/Coolify/Android e gates reali, nessun deploy/reset. CI, merge ed E2E da confermare.
 
 - 2026-10-26 | feat(p1.10) | PR #10 P1.9 Kanban integrata dopo CI verde. Nuovo branch P1.10 Pomodoro: state machine 25/5/15, dedup session ID, UTC deadline e recupero al rientro, SharedPreferences per owner, statistiche di 7 giorni; nessuna modifica a SQLite/Flyway, Coolify o outbox. CI/merge/test hardware da verificare. [Specifica](docs/P1-POMODORO.md).
+
+- 2026-10-26 | feat(p1.11) | PR #11 Pomodoro integrata in main, CI verde. Nuovo branch Habit Tracker 0.16: check-in su date civili, streak, archivio ripristinabile, proprietario locale isolato, nessun Flyway/Drift/Cloud change. Allineamento documentazione, CI/merge e device test restano distinti; nessun deploy o reset. [Specifica](docs/P1-HABITS.md).

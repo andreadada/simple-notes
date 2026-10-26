@@ -1,6 +1,6 @@
 # P1.10 — Pomodoro locale e statistiche
 
-**Stato (26/10/2026):** in sviluppo nel branch `feature/p1-10-pomodoro-focus`, Flutter `0.15.0+17`. P1.9 Kanban PR #10 è stata integrata su `main` dopo [CI Flutter verde](https://github.com/andreadada/simple-notes/actions/runs/40328803094). P1.10 CI/merge/real-device ancora da verificare. Coolify non modificato: ultimo Flyway reale attestato V8, V10 soltanto nel repository.
+**Stato (26/10/2026):** **integrata su main con PR #11**, Flutter `0.15.0+17`, [CI Flutter verde](https://github.com/andreadada/simple-notes/actions/runs/40347771381) e [Markdown verde](https://github.com/andreadada/simple-notes/actions/runs/40347771324). P1.9 Kanban PR #10 è stata integrata su `main` dopo [CI Flutter verde](https://github.com/andreadada/simple-notes/actions/runs/40328803094). P1.10 CI/merge confermati; **test su dispositivi reali ancora da completare**. Coolify non modificato: ultimo Flyway reale attestato V8, V10 soltanto nel repository.
 
 ## Comportamento implementato
 
@@ -22,7 +22,7 @@
 
 ## Verifiche da completare
 
-1. [ ] Flutter `analyze`, unit/widget `test`, build APK JDK17+21, Windows EXE/MSIX e Markdown **verdi sul commit finale**.
+1. [x] Flutter `analyze`, unit/widget `test`, build APK JDK17+21, Windows EXE/MSIX e Markdown verdi sulla PR #11; [ ] collaudo hardware e verifica di installazione.
 2. [ ] Desktop e Android reali: 25/5/15, pause, riprese, riapertura dopo timer scaduto, navigate fra schermate e riavvio (niente duplicati).
 3. [ ] Cambio account Google e logout: nessuna statistica di un account visibile dall'altro; profilo locale separato.
 4. [ ] Salvataggio preferenze, corruzione/upgrade incompatibile gestiti senza perdita dati; differenze ZIP/MSIX.

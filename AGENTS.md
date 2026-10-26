@@ -1,6 +1,6 @@
 # AGENTS.md — Istruzioni operative per agenti AI
 
-> **Stato 26/10/2026:** P1.9 **Kanban integrato in `main`** con [PR #10](https://github.com/andreadada/simple-notes/pull/10) (Flutter `0.14.0+16`, [CI PR verde](https://github.com/andreadada/simple-notes/actions/runs/40328803094)). P1.10 **Pomodoro locale in sviluppo sul branch** `feature/p1-10-pomodoro-focus` (`0.15.0+17`), CI/merge e device da verificare. Backend repository Flyway V10/Drift V8; ultimo Coolify reale attestato **V8**, nessun deploy/reset. [Stato canonico](docs/CURRENT-STATUS.md).
+> **Stato 26/10/2026:** P1.10 Pomodoro **integrata su `main`** con [PR #11](https://github.com/andreadada/simple-notes/pull/11) (Flutter `0.15.0+17`, CI verde). P1.11 Habit Tracker **in sviluppo su branch** `feature/p1-11-habit-tracker` (`0.16.0+18`, CI/merge da verificare); storico locale, **non sincronizzato tra dispositivi**. Backend repo Flyway V10/Drift V8; ultima VPS Coolify attestata V8, nessun nuovo deploy/reset. [Stato canonico](docs/CURRENT-STATUS.md).
 
 <!-- CURRENT-STATUS-REF -->
 
@@ -39,4 +39,8 @@
 
 ## P1.10 locale
 
-Pomodoro (P1.10) è **device-only**, in branch: non aggiungere attributi o sessioni alla sync task, nessun API/DB migration. La preferenza JSON per owner è versionata, scadenza UTC e record deduplicato; un errore di parse **non** deve sovrascrivere i dati. Nessuna promessa di notifiche a timer chiuso. [Specifica](docs/P1-POMODORO.md).
+Pomodoro (P1.10, PR #11 su main) è **device-only**: non aggiungere attributi o sessioni alla sync task, nessun API/DB migration. La preferenza JSON per owner è versionata, scadenza UTC e record deduplicato; un errore di parse **non** deve sovrascrivere i dati. Nessuna promessa di notifiche a timer chiuso. [Specifica](docs/P1-POMODORO.md).
+
+## P1.11 — Habit Tracker (branch)
+
+Check-in giornalieri e streak **locali per owner**, data civile ISO, archivio ripristinabile: non aggiungere nuove tabelle/endpoint né pretendere sync. JSON in SharedPreferences versione 1, su corruzione non resettare/overwrite. UX Forui e editing inline, test date DST, isolamento account e widget. [Specifica](docs/P1-HABITS.md).

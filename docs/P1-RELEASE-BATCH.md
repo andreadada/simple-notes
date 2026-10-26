@@ -1,6 +1,6 @@
 # Rollout coordinato — Simple Notes backend V10 e client P1.8
 
-> **Stato sviluppo 26/10/2026:** P1.7 Windows **integrata su `main`** (PR #7, Flutter `0.12.0+14`, [CI verde](https://github.com/andreadada/simple-notes/actions/runs/40245561264)); package MSIX/non-EXE, **nessun test hardware/installazione**. P1.8 Matrice Eisenhower sviluppata su branch `feature/p1-8-eisenhower-matrix` (Flutter `0.13.0+15`, [specifica](P1-EISENHOWER.md)), **CI e merge da verificare**. Ultimo Coolify attestato Flyway V8; V9/V10 reali non verificati; nessun deploy/reset in questa attività.
+> **Stato 26/10/2026:** P1.8 **integrata su `main`** (PR #8, Flutter `0.13.0+15`; CI verde), così come P1.7 Android e Windows MSIX. Schema repository Flyway V10 / Drift V8; **ultimo database Coolify attestato V8**, migrazioni V9/V10 reali da verificare. Nessun nuovo deploy né collaudo E2E Windows↔Android sui dispositivi. [Stato canonico](CURRENT-STATUS.md).
 
 **Stato:** runbook per backend P1.6 Flyway V10 e client P1.8 `0.13.0+15` (**PR #6–#8 integrate su main**, CI verde); le PR #5 e #6 sono su `main`, ma nessun deploy né nuova installazione sui dispositivi è stato attestato da questa attività. L'utente ha scelto di effettuare personalmente il deploy Coolify **dopo** il gruppo di incrementi. I comandi sono istruzioni di sola lettura salvo il pulsante **Redeploy** esplicitamente indicato.
 

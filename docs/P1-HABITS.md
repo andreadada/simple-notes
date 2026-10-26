@@ -1,6 +1,6 @@
 # P1.11 — Habit Tracker locale
 
-> **Riferimento 26/10/2026:** `main` integra P1.13 Weekly Habit (PR #14, Flutter `0.18.0+20`, CI verde). P1.14 Sticky Windows è nel branch `feature/p1-14-sticky-windows` (Flutter candidata `0.19.0+21`), CI/merge e prova PC da verificare. Nessun deploy/reset; repo Flyway V10 e VPS attestata V8. Questa guida conserva informazioni dell'incremento originario: consultare lo [stato operativo](CURRENT-STATUS.md), le [operazioni](OPERATIONS.md) e la [P1.14](P1-STICKY-WINDOWS.md) per le decisioni correnti.
+> **Stato operativo — 26/10/2026:** P1.14 Sticky Windows su `main`, [PR #15](https://github.com/andreadada/simple-notes/pull/15), Flutter `0.19.0+21`, CI verde. P1.15 Shortcuts Windows in branch `feature/p1-15-desktop-shortcuts`, candidata `0.20.0+22`, CI/merge/device da verificare. Repo Flyway V10, ultima VPS reale attestata V8; nessun deploy/reset. [Stato](CURRENT-STATUS.md) · [Operazioni](OPERATIONS.md) · [Scorciatoie](P1-DESKTOP-SHORTCUTS.md).
 
 **Stato 26/10/2026:** **integrata su main con PR #12**, Flutter `0.16.0+18`, [Flutter CI verde](https://github.com/andreadada/simple-notes/actions/runs/40364300062) e [Markdown CI verde](https://github.com/andreadada/simple-notes/actions/runs/40364300000). P1.10 Pomodoro è integrata in `main` (PR #11), dopo [CI Flutter](https://github.com/andreadada/simple-notes/actions/runs/40347771381) e Markdown verdi. **P1.11 è integrata nel repo, ma non verificata installata sui dispositivi reali.** Backend GitHub Flyway V10/Drift V8 invariati; ultima versione Coolify confermata V8.
 

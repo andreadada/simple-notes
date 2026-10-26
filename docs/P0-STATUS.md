@@ -1,7 +1,7 @@
 # P0 — Stato verificabile e piano di chiusura
 
 <!-- CURRENT-STATUS-REF -->
-> **Riferimento 26/10/2026:** `main` integra P1.13 Weekly Habit (PR #14, Flutter `0.18.0+20`, CI verde). P1.14 Sticky Windows è nel branch `feature/p1-14-sticky-windows` (Flutter candidata `0.19.0+21`), CI/merge e prova PC da verificare. Nessun deploy/reset; repo Flyway V10 e VPS attestata V8. Questa guida conserva informazioni dell'incremento originario: consultare lo [stato operativo](CURRENT-STATUS.md), le [operazioni](OPERATIONS.md) e la [P1.14](P1-STICKY-WINDOWS.md) per le decisioni correnti.
+> **Snapshot storico — 26/10/2026:** P1.14 Sticky Windows su `main`, [PR #15](https://github.com/andreadada/simple-notes/pull/15), Flutter `0.19.0+21`, CI verde. P1.15 Shortcuts Windows in branch `feature/p1-15-desktop-shortcuts`, candidata `0.20.0+22`, CI/merge/device da verificare. Repo Flyway V10, ultima VPS reale attestata V8; nessun deploy/reset. La guida sotto conserva attestazioni storiche, non la procedura attuale. [Stato](CURRENT-STATUS.md) · [Operazioni](OPERATIONS.md) · [Scorciatoie](P1-DESKTOP-SHORTCUTS.md).
 
 
 ## Cronologia — rilascio 0.7.0+9 (superato da P1.6)

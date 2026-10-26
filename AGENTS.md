@@ -1,6 +1,6 @@
 # AGENTS.md — Istruzioni operative per agenti AI
 
-> **Stato 26/10/2026:** `main` include P1.11 Habit Tracker ([PR #12](https://github.com/andreadada/simple-notes/pull/12), Flutter `0.16.0+18`, CI verde). P1.12 Countdown è **solo in branch** `feature/p1-12-countdowns-main` (`0.17.0+19`), CI/merge/device da verificare. Pomodoro/Habits/Countdown sono locali per dispositivo, non sincronizzati. Repo Flyway V10, ultima VPS Coolify attestata V8; nessun deploy o reset. [Stato](docs/CURRENT-STATUS.md) · [P1.12](docs/P1-COUNTDOWNS.md).
+> **Stato 26/10/2026:** `main` include P1.12 Countdown ([PR #13](https://github.com/andreadada/simple-notes/pull/13), Flutter `0.17.0+19`, CI verde). P1.13 obiettivi settimanali è **in branch** `feature/p1-13-weekly-habit-goals` (`0.18.0+20`, CI/merge/device da verificare). P1.10–P1.13 sono dati locali per account/dispositivo, non sincronizzati. Backend GitHub Flyway V10; ultima VPS Coolify attestata V8. Nessun deploy/reset. [Stato](docs/CURRENT-STATUS.md) · [P1.13](docs/P1-WEEKLY-HABITS.md).
 
 <!-- CURRENT-STATUS-REF -->
 
@@ -45,6 +45,10 @@ Pomodoro (P1.10, PR #11 su main) è **device-only**: non aggiungere attributi o 
 
 Check-in giornalieri e streak **locali per owner**, data civile ISO, archivio ripristinabile: non aggiungere nuove tabelle/endpoint né pretendere sync. JSON in SharedPreferences versione 1, su corruzione non resettare/overwrite. UX Forui e editing inline, test date DST, isolamento account e widget. [Specifica](docs/P1-HABITS.md).
 
-## P1.12 — Countdown (branch)
+## P1.12 — Countdown (main, PR #13)
 
 Usare `TaskDue.dateOnly` per date civili senza inventare midnight UTC, oppure `TaskDue.datetime` risolte con fuso IANA dall'editor Forui. Le card sono dispositive, non cloud; `SharedPreferences` per owner, JSON schema 1 e archivio reversibile. Mai sovrascrivere su parse failure; no reminder o sync inventati. [Specifica](docs/P1-COUNTDOWNS.md).
+
+## P1.13 — Obiettivi settimanali Habit
+
+Il modello `LocalHabit.weeklyTarget` è retrocompatibile con JSON schema 1 P1.11, default 7. Non eliminare check-in o scrivere a server/outbox; solo SharedPreferences locale e isolata per owner. Settimane lunedì–domenica per data civile (no UTC midnight), streak corrente incompleto eredita settimana precedente. Widget Forui nella card, nessun Rename/modal superfluo. [P1.13](docs/P1-WEEKLY-HABITS.md).

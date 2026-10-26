@@ -42,6 +42,17 @@ void main() {
     expect(find.byKey(const Key('habits-board')), findsOneWidget);
     expect(find.text('0 / 1 completate oggi'), findsOneWidget);
     expect(find.byKey(const Key('habit-card-habit-1')), findsOneWidget);
+    expect(find.byKey(const Key('habit-weekly-target-habit-1')),
+        findsOneWidget);
+    expect(find.text('Obiettivo: 7/7'), findsOneWidget);
+    await tester.tap(find.byKey(const Key('habit-weekly-target-habit-1')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('3 giorni / settimana'));
+    await tester.pumpAndSettle();
+    expect(find.text('Obiettivo: 3/7'), findsOneWidget);
+    final afterGoal = await SharedPreferences.getInstance();
+    expect(HabitsState.deserialize(afterGoal.getString(key('owner-a'))!)
+        .active.single.weeklyTarget, 3);
     await tester.tap(find.byKey(const Key('habit-today-habit-1')));
     await tester.pumpAndSettle();
     expect(find.text('1 / 1 completate oggi'), findsOneWidget);
@@ -69,6 +80,8 @@ void main() {
     await tester.tap(find.byKey(const Key('habit-restore-habit-1')));
     await tester.pumpAndSettle();
     expect(find.text('1 / 1 completate oggi'), findsOneWidget);
+    expect(HabitsState.deserialize(prefs.getString(key('owner-a'))!)
+        .active.single.weeklyTarget, 3);
     await tester.pumpWidget(const SizedBox.shrink());
     await tester.pump(const Duration(milliseconds: 350));
   });

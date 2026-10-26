@@ -8,6 +8,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uuid/uuid.dart';
 
 import 'habits_model.dart';
+import 'habits_weekly.dart';
 import 'inline_editable_title.dart';
 import 'inline_quick_add.dart';
 import 'notes_theme.dart';
@@ -132,6 +133,10 @@ class _HabitsBoardState extends State<HabitsBoard>
     await _save(_data.update(id, (habit) => habit.renamed(value)),
         propagateFailure: true);
   }
+
+  Future<void> _setWeeklyTarget(String id, int target) =>
+      _save(_data.update(id, (habit) => habit.withWeeklyTarget(target)),
+          propagateFailure: true);
 
   Future<void> _toggle(String id, DateTime date) async {
     final today = DateTime.now();
@@ -259,6 +264,56 @@ class _HabitsBoardState extends State<HabitsBoard>
                       style: const TextStyle(fontSize: 12,
                         color: NotesPalette.secondaryText)),
                   ]),
+                  const SizedBox(height: 10),
+                  Wrap(
+                    crossAxisAlignment: WrapCrossAlignment.center,
+                    spacing: 12,
+                    runSpacing: 8,
+                    children: [
+                      FPopoverMenu(
+                        menu: [
+                          .group(children: [
+                            for (var target = 1; target <= 7; target++)
+                              .item(
+                                title: Text('$target ${target == 1 ? 'giorno' : 'giorni'} / settimana'),
+                                onPress: () => _setWeeklyTarget(habit.id, target),
+                              ),
+                          ]),
+                        ],
+                        menuBuilder: (context, controller, menu) => menu!,
+                        builder: (context, controller, child) => FButton(
+                          key: Key('habit-weekly-target-${habit.id}'),
+                          variant: FButtonVariant.outline,
+                          mainAxisSize: MainAxisSize.min,
+                          onPress: _busy ? null : controller.toggle,
+                          child: child!,
+                        ),
+                        child: Text('Obiettivo: ${habit.weeklyTarget}/7'),
+                      ),
+                      Text(
+                        '${HabitWeek.currentProgress(habit, today)} / '
+                        '${habit.weeklyTarget} questa settimana',
+                        key: Key('habit-weekly-progress-${habit.id}'),
+                        style: const TextStyle(fontSize: 12,
+                          color: NotesPalette.secondaryText),
+                      ),
+                      Text(
+                        '${HabitWeek.streak(habit, today)} settimane di streak',
+                        key: Key('habit-weekly-streak-${habit.id}'),
+                        style: const TextStyle(fontSize: 12,
+                          color: NotesPalette.secondaryText),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  LinearProgressIndicator(
+                    key: Key('habit-weekly-bar-${habit.id}'),
+                    value: (HabitWeek.currentProgress(habit, today) /
+                        habit.weeklyTarget).clamp(0.0, 1.0),
+                    color: NotesPalette.accent,
+                    backgroundColor: NotesPalette.muted,
+                    minHeight: 6,
+                  ),
                   const SizedBox(height: 10),
                   Wrap(spacing: 6, runSpacing: 6, children: [
                     for (final day in week)

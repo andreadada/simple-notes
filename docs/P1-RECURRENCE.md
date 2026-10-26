@@ -1,6 +1,6 @@
 # P1.6 — Ricorrenze versionate
 
-> **SNAPSHOT STORICO — 26/10/2026:** codice `main` fino a P1.11 Habit Tracker (Flutter `0.16.0+18`, PR #12, CI verde); P1.12 Countdown `0.17.0+19` **solo nel branch**, CI/merge/device da verificare. Pomodoro/Habits/Countdown sono locali per dispositivo/account, **non** sincronizzati. Repository Flyway V10, VPS Coolify confermata fino a V8, nessun deploy o reset. Questa specifica conserva lo storico del proprio incremento: **non usarla come runbook corrente**. [Stato](CURRENT-STATUS.md) · [Operazioni](OPERATIONS.md) · [Countdown](P1-COUNTDOWNS.md).
+> **SNAPSHOT STORICO — 26/10/2026:** P1.12 Countdown `0.17.0+19` ([PR #13](https://github.com/andreadada/simple-notes/pull/13)) integrata su `main` e CI verde. P1.13 Weekly Habit `0.18.0+20` **solo nel branch** `feature/p1-13-weekly-habit-goals`, CI/merge/device ancora da verificare. Pomodoro/Habits/Countdown sono **locali per device/owner**, non sincronizzati. Repository Flyway V10, ultima VPS Coolify attestata V8; nessun deploy/reset. I dettagli sotto restano uno storico e non la procedura corrente. [Stato](CURRENT-STATUS.md) · [Operazioni](OPERATIONS.md) · [P1.13](P1-WEEKLY-HABITS.md).
 
 **Stato codice:** integrata su `main` con PR #5 (CI complete verdi), Flutter `0.10.0+12`. **Il deploy non è stato verificato.** Backend Flyway **V10** additiva, Drift **V8** additiva.
 

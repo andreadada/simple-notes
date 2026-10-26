@@ -1,7 +1,7 @@
 # Simple Notes API v1
 
 <!-- CURRENT-STATUS-REF -->
-> **STATO OPERATIVO 26/10/2026:** P1.11 Habit Tracker (Flutter `0.16.0+18`, PR #12) è integrata su main con CI verde. Countdown P1.12 (`0.17.0+19`) è **in branch**, CI/merge/device da verificare. Pomodoro, Habits e Countdown sono dati **locali per account/dispositivo**, senza cloud sync né nuove migrazioni. Repo Flyway V10, VPS Coolify attestata V8. Nessun deploy/reset. [Stato](CURRENT-STATUS.md) · [Countdown](P1-COUNTDOWNS.md).
+> **STATO OPERATIVO — 26/10/2026:** `main` include P1.12 Countdown (`0.17.0+19`, PR #13, CI verde). P1.13 settimanale (`0.18.0+20`) è **solo nel branch**, CI/merge/device non attestati; `weeklyTarget` 1–7 non cancella check-in. Le funzioni Pomodoro/Habits/Countdown sono locali e non sincronizzate. Schema repo Flyway V10, Coolify attestato V8; nessun deploy/reset. [Stato](CURRENT-STATUS.md) · [Operazioni](OPERATIONS.md) · [P1.13](P1-WEEKLY-HABITS.md).
 
 
 ## Auth
@@ -61,3 +61,7 @@ Il Pomodoro P1.10 (main) e Habit Tracker P1.11 (branch) non aggiungono API, DTO,
 ## P1.12 — Nessun contratto API aggiuntivo
 
 Countdown è device-only in SharedPreferences per account. Non esiste endpoint per eventi Countdown, push, condivisione o sincronizzazione; riutilizza il parser locale TaskDue solo lato Flutter. Backend ancora Flyway V10 nel repository, deploy reale non attestato oltre V8. [Specifica](P1-COUNTDOWNS.md).
+
+## P1.13 — Nessuna nuova API
+
+`weeklyTarget` è un campo **opzionale locale** del JSON Habit schema 1, default 7 per record P1.11. Nessun DTO, endpoint, Flyway, PostgreSQL, sync capability o outbox. Non dichiarare che gli obiettivi settimanali siano sincronizzati. [P1.13](P1-WEEKLY-HABITS.md).

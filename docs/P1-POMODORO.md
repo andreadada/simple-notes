@@ -1,6 +1,6 @@
 # P1.10 — Pomodoro locale e statistiche
 
-> **SNAPSHOT STORICO — 26/10/2026:** codice `main` fino a P1.11 Habit Tracker (Flutter `0.16.0+18`, PR #12, CI verde); P1.12 Countdown `0.17.0+19` **solo nel branch**, CI/merge/device da verificare. Pomodoro/Habits/Countdown sono locali per dispositivo/account, **non** sincronizzati. Repository Flyway V10, VPS Coolify confermata fino a V8, nessun deploy o reset. Questa specifica conserva lo storico del proprio incremento: **non usarla come runbook corrente**. [Stato](CURRENT-STATUS.md) · [Operazioni](OPERATIONS.md) · [Countdown](P1-COUNTDOWNS.md).
+> **STATO OPERATIVO — 26/10/2026:** P1.12 Countdown `0.17.0+19` ([PR #13](https://github.com/andreadada/simple-notes/pull/13)) integrata su `main` e CI verde. P1.13 Weekly Habit `0.18.0+20` **solo nel branch** `feature/p1-13-weekly-habit-goals`, CI/merge/device ancora da verificare. Pomodoro/Habits/Countdown sono **locali per device/owner**, non sincronizzati. Repository Flyway V10, ultima VPS Coolify attestata V8; nessun deploy/reset. [Stato](CURRENT-STATUS.md) · [Operazioni](OPERATIONS.md) · [P1.13](P1-WEEKLY-HABITS.md).
 
 **Stato (26/10/2026):** **integrata su main con PR #11**, Flutter `0.15.0+17`, [CI Flutter verde](https://github.com/andreadada/simple-notes/actions/runs/40347771381) e [Markdown verde](https://github.com/andreadada/simple-notes/actions/runs/40347771324). P1.9 Kanban PR #10 è stata integrata su `main` dopo [CI Flutter verde](https://github.com/andreadada/simple-notes/actions/runs/40328803094). P1.10 CI/merge confermati; **test su dispositivi reali ancora da completare**. Coolify non modificato: ultimo Flyway reale attestato V8, V10 soltanto nel repository.
 
@@ -31,3 +31,7 @@
 5. [ ] Eseguire test E2E cloud soltanto al termine del batch, prima dopo attestazione Flyway V10/capability sul server reale.
 
 [Guida operativa](OPERATIONS.md) · [Stato canonico](CURRENT-STATUS.md) · [Roadmap](../project.md).
+
+## Stato attuale del progetto (26 ottobre 2026)
+
+La P1.13 in branch aggiunge obiettivi settimanali Habit (locale e senza migrazioni); non modifica Pomodoro, registro sessioni e contatori. P1.12 Countdown è integrata su main. [Stato](CURRENT-STATUS.md) · [P1.13](P1-WEEKLY-HABITS.md).

@@ -1,6 +1,6 @@
 # Simple Notes — Design & Product Specification
 
-> **Stato 26/10/2026:** `main` include P1.11 Habit Tracker ([PR #12](https://github.com/andreadada/simple-notes/pull/12), Flutter `0.16.0+18`, CI verde). P1.12 Countdown è **solo in branch** `feature/p1-12-countdowns-main` (`0.17.0+19`), CI/merge/device da verificare. Pomodoro/Habits/Countdown sono locali per dispositivo, non sincronizzati. Repo Flyway V10, ultima VPS Coolify attestata V8; nessun deploy o reset. [Stato](docs/CURRENT-STATUS.md) · [P1.12](docs/P1-COUNTDOWNS.md).
+> **Stato 26/10/2026:** `main` include P1.12 Countdown ([PR #13](https://github.com/andreadada/simple-notes/pull/13), Flutter `0.17.0+19`, CI verde). P1.13 obiettivi settimanali è **in branch** `feature/p1-13-weekly-habit-goals` (`0.18.0+20`, CI/merge/device da verificare). P1.10–P1.13 sono dati locali per account/dispositivo, non sincronizzati. Backend GitHub Flyway V10; ultima VPS Coolify attestata V8. Nessun deploy/reset. [Stato](docs/CURRENT-STATUS.md) · [P1.13](docs/P1-WEEKLY-HABITS.md).
 
 <!-- CURRENT-STATUS-REF -->
 
@@ -189,3 +189,7 @@ Forui e modifica titolo direttamente, un check-in giornaliero + ultimi 7 giorni;
 ## P1.12 — Countdown
 
 Nuova vista Forui nel gruppo Focus: card con titolo inline modificabile, pulsante per data/ora tramite selettore esistente, tempo residuo e archivio non distruttivo. Distingue `Oggi` da `Scaduto` senza mezzanotte implicita. UI adattiva, dati locali per account/dispositivo, nessuna notifica ad app chiusa. [Specifica](docs/P1-COUNTDOWNS.md).
+
+## P1.13 — Obiettivi Habit a settimana (branch)
+
+In ogni card Habit, Forui menu per 1–7 giorni/settimana, progress bar e streak in settimane. Il titolo resta editabile inline. La visualizzazione progressi quotidiani non cambia: le soglie settimanali sono un livello addizionale, senza nuovi campi cloud. Reattivo a check-in/undo e ritorno in app, nessuna perdita di storico. [Specifica](docs/P1-WEEKLY-HABITS.md).

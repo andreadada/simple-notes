@@ -1,44 +1,39 @@
 # Stato corrente — Simple Notes
 
-**Aggiornato 26/10/2026.** Codice GitHub, CI, deploy VPS e installazione effettiva Windows/Android **non sono equivalenti**. Questo file è la fonte operativa; i vecchi runbook restano cronologia.
+**Verificato il 26 ottobre 2026.** Distinguere codice GitHub, CI, installazioni Windows/Android e database Coolify: **non sono equivalenti**. Questo documento è la fonte operativa; le guide precedenti sono cronologia tecnica.
 
-## Stato verificato
+## Stato reale
 
-| Componente | Stato |
-|---|---|
-| `main` | **P0–P1.11 integrate**. Ultima [PR #12](https://github.com/andreadada/simple-notes/pull/12), merge `486701a`. Flutter **`0.16.0+18`** |
-| P1.12 Countdown | **Solo branch** `feature/p1-12-countdowns-main`, Flutter candidata **`0.17.0+19`**, CI/merge/hardware ancora da verificare |
-| API/schema GitHub | Spring Boot, PostgreSQL 17, Flyway **V10**, client Drift/SQLite **V8** |
-| Coolify reale | Ultimo stato comunicato dall'utente: Flyway **V8**, health UP. Deploy V9/V10, capability e stato attuale **non verificati** |
-| P1.11 CI | [Flutter 40364300062](https://github.com/andreadada/simple-notes/actions/runs/40364300062) verde: analyze/test, APK JDK17/21, Windows EXE/MSIX; [Markdown 40364300000](https://github.com/andreadada/simple-notes/actions/runs/40364300000) verde |
-| Installazioni reali | Nessuna evidenza che `0.16.0+18` o `0.17.0+19` siano installate e collaudate su Windows/Android |
-| Sicurezza dati | Nessun deploy, reset PostgreSQL/SQLite, cancellazione di outbox, reinstallazione o operazione volumi effettuata da questi incrementi |
-
-## Funzionalità
-
-| Fase | Implementazione nel codice | Da verificare |
+| Componente | Confermato | Gate ancora aperto |
 |---|---|---|
-| P0 | Login Google, task/liste/note, offline-first, outbox, sincronizzazione e Forui, editing inline | E2E reale |
-| P1.1–P1.3 | Calendario e time blocking con drag/resize | UX reale |
-| P1.4–P1.6 | Blocchi multipli, filtri/pianificazione e ricorrenze con Flyway V9/V10 / Drift V7/V8 | Server reale V10 |
-| P1.7 | Reminders Android inexact opt-in; Windows **solo MSIX**, nessuna notifica su ZIP | Device, cancellazione, firme, permessi |
-| P1.8 | Matrice Eisenhower da priorità/scadenze | Device |
-| P1.9 | Kanban per liste sincronizzate | Device |
-| P1.10 | Pomodoro 25/5/15 e statistiche **solo locali** | Device e persistenza |
-| P1.11 | Habit Tracker check-in/streak/archivio **solo locale** (PR #12) | Device, persistenza e isolamento owner |
-| P1.12 | Countdown per eventi civili/IANA, editing inline e archivio **in branch** | CI, merge, prova reale |
-| P2/P3 | Non iniziati | Integrazioni, collaborazione, AI e altre funzioni |
+| `main` | P0–P1.12 integrate, ultima [PR #13 Countdown](https://github.com/andreadada/simple-notes/pull/13), merge `5312d91`; Flutter **`0.17.0+19`** | Nessuna attestazione di installazione reale dell'ultima versione |
+| P1.13 settimanale | `feature/p1-13-weekly-habit-goals`, candidato Flutter **`0.18.0+20`**, UI e logica 1–7 giorni, streak settimanali, vecchio JSON compatibile | CI, merge e hardware da verificare; **non in main** |
+| Schema repository | API Spring Boot, Flyway **V10**, client SQLite/Drift **V8** | Sul VPS Coolify l'ultima versione comunicata è Flyway **V8**; V9/V10 reali e capability non attestate |
+| CI P1.12 | [Flutter 40368229874](https://github.com/andreadada/simple-notes/actions/runs/40368229874) verde (analyze/test, Windows EXE+MSIX, APK JDK17/JDK21); [Markdown 40368230012](https://github.com/andreadada/simple-notes/actions/runs/40368230012) verde | Nessun collaudo device reale |
+| Dati | Nessun deploy/reset PostgreSQL, SQLite, outbox, Android o preferenze eseguito con la P1.13 | Server-first verification e collaudo cumulativo non distruttivo |
 
-**Nota dati locali:** Pomodoro, Habit Tracker e Countdown usano SharedPreferences per account **sul singolo dispositivo**; non sono sincronizzati tra Windows e Android e non introducono nuove migrazioni server. Le date civili dei Countdown **non** vengono trasformate in mezzanotte UTC; le date con orario usano UTC + fuso IANA tramite editor condiviso.
+## Funzioni presenti
 
-## Gate prima di una release cumulativa
+| Fase | Codice | Collaudo |
+|---|---|---|
+| P0 | Google OAuth, task/notes/liste, offline-first, sync con outbox, Forui e input inline | E2E due dispositivi |
+| P1.1–P1.3 | Calendario, blocchi tempo, drag/resize | Hardware |
+| P1.4–P1.6 | Multi-blocchi, filtri e pianificazione, ricorrenze; Flyway V9/V10 | Server V10 + device |
+| P1.7 | Promemoria Android inexact opt-in, Windows solo **MSIX**; ZIP non supportato | Notifiche hardware, permessi, cancel e firma |
+| P1.8–P1.9 | Eisenhower e Kanban per liste sincronizzate | E2E |
+| P1.10 | Pomodoro 25/5/15, storia locale per account/device | Test locale e persistenza |
+| P1.11 | Habit Tracker quotidiano/streak/check-in/archivio locale | Test device/owner |
+| P1.12 | Countdown civili/UTC-IANA, editing inline, archivio, **locale**, PR #13 | Test device/owner |
+| P1.13 | Obiettivo 1–7 check-in/settimana, barra avanzamento, streak settimane, vecchi dati preservati **solo nel branch** | CI/merge/device |
+| P2/P3 | Non avviate | Integrazioni, collaborazione, AI |
 
-1. CI finale `flutter analyze`, `flutter test`, Windows EXE/MSIX, Android JDK17/21 e Markdown sullo stesso SHA; merge delle PR solo se verde.
-2. Il proprietario verifica **sulla vera VPS** Flyway V10, health UP, `FAILED_MIGRATIONS=0` e capability `taskDueSchema:1`, `timeBlockSchema:1`, `timeBlocksSchema:1`, `recurrenceSchema:1`.
-3. Verifica il passaggio Windows ZIP→MSIX in profilo di prova (SQLite, secure storage **e SharedPreferences**) e la firma/publisher prima di qualsiasi installazione reale.
-4. Un collaudo cumulativo Windows↔Android: offline/retry/409/426, note/task/liste, calendar, Kanban, reminder, Pomodoro, Habits e Countdown. I tre ultimi rimangono **volutamente distinti** sui due dispositivi.
-5. Nessun `down -v`, reset SQLite/DB, `adb uninstall` o cancellazione di dati esistenti.
+## Contratti e sicurezza
 
-## Documenti
+- **Task/Note/Liste** sincronizzati tramite server con la protezione già esistente. **Pomodoro, Habit Tracker e Countdown NON sincronizzati**: SharedPreferences isolate per owner Google e dispositivo; nessuna nuova migration dalla P1.13.
+- `weeklyTarget` per Habit Tracker è un campo **opzionale nel JSON schema 1**, default `7` sui record P1.11; aggiornare target non cancella check-in, storico, streak precedenti o preferenze. Check-in settimana lunedì–domenica in **giorni civili**, non blocchi di 24 ore UTC.
+- Regola design: campi semplici direttamente editabili; Forui-first. Controlli cambi target nella card, non modali superflue.
+- Per distribuire: verificare Flyway **V10** e capability `taskDueSchema:1`, `timeBlockSchema:1`, `timeBlocksSchema:1`, `recurrenceSchema:1` sulla VPS reale, prima di installare nuovi client.
+- Su Windows ZIP→MSIX provare **in un profilo separato** identità/firma e preservazione SQLite, secure storage e SharedPreferences; non disinstallare, resettare o cancellare i dati.
+- Un solo collaudo cumulativo Windows↔Android, incluse sync offline/retry/409/426 e test locali P1.10–P1.13; non affermare supporto multi-device per questi ultimi.
 
-[Guida operativa](OPERATIONS.md) · [Runbook server-first](P1-RELEASE-BATCH.md) · [Specifiche Countdown](P1-COUNTDOWNS.md) · [Habits](P1-HABITS.md) · [Pomodoro](P1-POMODORO.md) · [Roadmap](../project.md) · [Architettura](architecture.md) · [API](api.md) · [Sync](sync.md) · [Handoff](HANDOFF.md).
+[Guida operativa](OPERATIONS.md) · [Runbook V10](P1-RELEASE-BATCH.md) · [P1.13 Settimanali](P1-WEEKLY-HABITS.md) · [P1.12 Countdown](P1-COUNTDOWNS.md) · [Habit Tracker](P1-HABITS.md) · [Roadmap](../project.md) · [Handoff](HANDOFF.md).

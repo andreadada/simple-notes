@@ -1,5 +1,5 @@
 <!-- CURRENT-STATUS-REF -->
-> **STATO OPERATIVO 26/10/2026:** P1.11 Habit Tracker (Flutter `0.16.0+18`, PR #12) è integrata su main con CI verde. Countdown P1.12 (`0.17.0+19`) è **in branch**, CI/merge/device da verificare. Pomodoro, Habits e Countdown sono dati **locali per account/dispositivo**, senza cloud sync né nuove migrazioni. Repo Flyway V10, VPS Coolify attestata V8. Nessun deploy/reset. [Stato](CURRENT-STATUS.md) · [Countdown](P1-COUNTDOWNS.md).
+> **STATO OPERATIVO — 26/10/2026:** `main` include P1.12 Countdown (`0.17.0+19`, PR #13, CI verde). P1.13 settimanale (`0.18.0+20`) è **solo nel branch**, CI/merge/device non attestati; `weeklyTarget` 1–7 non cancella check-in. Le funzioni Pomodoro/Habits/Countdown sono locali e non sincronizzate. Schema repo Flyway V10, Coolify attestato V8; nessun deploy/reset. [Stato](CURRENT-STATUS.md) · [Operazioni](OPERATIONS.md) · [P1.13](P1-WEEKLY-HABITS.md).
 
 <!-- Vincolo UI aggiornato 24/10/2026: tutti i titoli di liste, task e subtasks usano la stessa logica inline-first. La sottolineatura non deve eccedere la larghezza del valore (o dell'hint) +~1px, nessun grigio di riempimento; placeholder semitrasparente (~72%). Utilizzare InlineTextMetrics.fieldWidth in notes_theme.dart, non minWidth artificiale o Expanded TextField full-width. Regole: ../design.md, ui-forui.md e ui-design-audit.md. -->
 # Organizzazione attività (P0) — liste, priorità, tag e sottotask
@@ -69,3 +69,7 @@ Le abitudini quotidiane non sono tag, sottotask o task ricorrenti: il loro stori
 ## P1.12 — Eventi Countdown non sono task
 
 Countdown permette date civili e con ora senza creare un task, blocco orario, ricorrenza o promemoria. I record sono locali in SharedPreferences e non modificano Kanban/Eisenhower né priorità, listId, tag e scadenze task. [Specifica](P1-COUNTDOWNS.md).
+
+## P1.13 — Obiettivi frequenza Habit
+
+Habit Tracker resta una funzionalità distinta da task ricorrenti, tag, liste e time blocks. L'obiettivo di 1–7 check-in ogni settimana modifica solo `LocalHabit.weeklyTarget` locale; non è una nuova scadenza, ricorrenza backend o assegnazione Kanban. [P1.13](P1-WEEKLY-HABITS.md).

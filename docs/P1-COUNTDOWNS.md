@@ -1,6 +1,8 @@
 # P1.12 — Countdown per eventi e scadenze
 
-**Stato 26/10/2026:** candidato su `feature/p1-12-countdowns-main`, Flutter `0.17.0+19`. P1.11 Habit Tracker è stata integrata su `main` via [PR #12](https://github.com/andreadada/simple-notes/pull/12) dopo [CI Flutter](https://github.com/andreadada/simple-notes/actions/runs/40364300062) e [Markdown](https://github.com/andreadada/simple-notes/actions/runs/40364300000) verdi. P1.12 deve ancora completare CI/merge e test device. Nessun deploy, database reset o aggiornamento server.
+> **STATO OPERATIVO — 26/10/2026:** P1.12 Countdown `0.17.0+19` ([PR #13](https://github.com/andreadada/simple-notes/pull/13)) integrata su `main` e CI verde. P1.13 Weekly Habit `0.18.0+20` **solo nel branch** `feature/p1-13-weekly-habit-goals`, CI/merge/device ancora da verificare. Pomodoro/Habits/Countdown sono **locali per device/owner**, non sincronizzati. Repository Flyway V10, ultima VPS Coolify attestata V8; nessun deploy/reset. [Stato](CURRENT-STATUS.md) · [Operazioni](OPERATIONS.md) · [P1.13](P1-WEEKLY-HABITS.md).
+
+**Stato 26/10/2026:** **integrata su `main` con PR #13**, Flutter `0.17.0+19`, [CI Flutter verde](https://github.com/andreadada/simple-notes/actions/runs/40368229874), [Markdown verde](https://github.com/andreadada/simple-notes/actions/runs/40368230012). P1.11 Habit Tracker è stata integrata su `main` via [PR #12](https://github.com/andreadada/simple-notes/pull/12) dopo [CI Flutter](https://github.com/andreadada/simple-notes/actions/runs/40364300062) e [Markdown](https://github.com/andreadada/simple-notes/actions/runs/40364300000) verdi. P1.12 ha completato CI e merge; **test device reali ancora da eseguire**. Nessun deploy, database reset o aggiornamento server.
 
 ## Comportamento
 
@@ -20,7 +22,7 @@
 
 ## Gate prima del merge e del rilascio
 
-1. [ ] CI `flutter analyze`, `flutter test`, build APK Android JDK17/JDK21 e Windows EXE/MSIX, controllo Markdown **verdi sul commit finale**.
+1. [x] CI `flutter analyze`, `flutter test`, APK Android JDK17/JDK21, Windows EXE/MSIX e Markdown verdi sulla PR #13; [ ] collaudo su dispositivi reali.
 2. [ ] Test di logica: oggi/ieri/domani, data civile attraverso DST, tempi UTC, arrotondamento minuti, ordine, archivio e import JSON incompatibile senza perdita.
 3. [ ] UI desktop/mobile reali: creazione da editor Forui, annullamento senza evento fantasma, modifica inline titolo, cambia scadenza, archivio/ripristino, stato dopo riavvio.
 4. [ ] Cambia account Google, controlla assenza di dati dell'altro profilo; verifica aggiornamento al ritorno nell'app dopo scadenza.

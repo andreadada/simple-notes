@@ -1,6 +1,6 @@
 # Simple Notes — Passaggio di consegne (handoff)
 
-> **STATO OPERATIVO 26/10/2026:** P1.11 Habit Tracker (Flutter `0.16.0+18`, PR #12) è integrata su main con CI verde. Countdown P1.12 (`0.17.0+19`) è **in branch**, CI/merge/device da verificare. Pomodoro, Habits e Countdown sono dati **locali per account/dispositivo**, senza cloud sync né nuove migrazioni. Repo Flyway V10, VPS Coolify attestata V8. Nessun deploy/reset. [Stato](CURRENT-STATUS.md) · [Countdown](P1-COUNTDOWNS.md).
+> **STATO OPERATIVO — 26/10/2026:** P1.12 Countdown `0.17.0+19` ([PR #13](https://github.com/andreadada/simple-notes/pull/13)) integrata su `main` e CI verde. P1.13 Weekly Habit `0.18.0+20` **solo nel branch** `feature/p1-13-weekly-habit-goals`, CI/merge/device ancora da verificare. Pomodoro/Habits/Countdown sono **locali per device/owner**, non sincronizzati. Repository Flyway V10, ultima VPS Coolify attestata V8; nessun deploy/reset. [Stato](CURRENT-STATUS.md) · [Operazioni](OPERATIONS.md) · [P1.13](P1-WEEKLY-HABITS.md).
 
 <!-- CURRENT-STATUS-REF -->
 
@@ -268,3 +268,7 @@ PR #11 Pomodoro è stata integrata con CI verde. Il branch `feature/p1-11-habit-
 ## Passaggio di consegne P1.12 (26/10/2026)
 
 P1.11 Habit Tracker PR #12 merged/CI verde. Countdown P1.12 in branch `feature/p1-12-countdowns-main`, Flutter `0.17.0+19`; semantica data civile vs UTC/IANA, editing inline, JSON SharedPreferences per owner e archivio reversibile. Nessuna migrazione, deploy o reset. Flyway repository V10, server reale attestato V8. [Specifica](P1-COUNTDOWNS.md).
+
+## Handoff P1.13 (26/10/2026)
+
+P1.12 PR #13 è integrata su main con CI Flutter/Markdown verdi. La P1.13 estende gli Habit con `weeklyTarget` 1–7, default 7 retrocompatibile nel JSON schema 1, calcolo settimane civili/streak, menu Forui e test. Branch `feature/p1-13-weekly-habit-goals`, Flutter `0.18.0+20`; CI/merge/device ancora aperti. Nessuna migrazione, deploy o reset. [Specifica](P1-WEEKLY-HABITS.md).

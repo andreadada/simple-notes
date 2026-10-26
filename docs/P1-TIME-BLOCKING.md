@@ -1,7 +1,7 @@
 # P1.2 — Time blocking sincronizzato (prima implementazione)
 
 <!-- CURRENT-STATUS-REF -->
-> **SNAPSHOT STORICO / GATE 26/10/2026:** `main` include P1.11 Habit Tracker (Flutter `0.16.0+18`, PR #12, CI verde); Countdown P1.12 `0.17.0+19` è **solo su branch**. Funzioni Pomodoro/Habits/Countdown **device-only**, nessuna sync o nuova migration; repo Flyway V10, server Coolify ultimo attestato V8. Nessun deploy/reset. Le istruzioni precedenti descrivono verifiche e versioni storiche, **non** l'attuale rilascio. [Stato](CURRENT-STATUS.md) · [Operazioni](OPERATIONS.md) · [Countdown](P1-COUNTDOWNS.md).
+> **SNAPSHOT STORICO — 26/10/2026:** P1.12 Countdown `0.17.0+19` ([PR #13](https://github.com/andreadada/simple-notes/pull/13)) integrata su `main` e CI verde. P1.13 Weekly Habit `0.18.0+20` **solo nel branch** `feature/p1-13-weekly-habit-goals`, CI/merge/device ancora da verificare. Pomodoro/Habits/Countdown sono **locali per device/owner**, non sincronizzati. Repository Flyway V10, ultima VPS Coolify attestata V8; nessun deploy/reset. I dettagli sotto restano uno storico e non la procedura corrente. [Stato](CURRENT-STATUS.md) · [Operazioni](OPERATIONS.md) · [P1.13](P1-WEEKLY-HABITS.md).
 
 
 > **Aggiornamento dopo merge:** P1.2 e P1.3 sono ora su `main` in Flutter `0.7.0+9`; **non significa deploy Coolify**. Procedura di rilascio e gate: [P1-RELEASE-0.7.0.md](P1-RELEASE-0.7.0.md). Le etichette “in sviluppo” sotto sono cronologia del branch.

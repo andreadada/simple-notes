@@ -43,7 +43,7 @@ abstract final class CountdownClock {
     final d1 = a.due.displayLocal!;
     final d2 = b.due.displayLocal!;
     final byDay = civilDaysBetween(d1, d2);
-    if (byDay != 0) return byDay;
+    if (byDay != 0) return -byDay;
     if (a.due.kind != b.due.kind) return a.due.kind == 'datetime' ? -1 : 1;
     if (a.due.kind == 'datetime') {
       final diff = a.due.instant!.compareTo(b.due.instant!);

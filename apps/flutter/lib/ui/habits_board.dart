@@ -89,8 +89,11 @@ class _HabitsBoardState extends State<HabitsBoard>
     }
   }
 
-  Future<void> _save(HabitsState next) async {
-    if (_busy || _loading || _loadError != null || _prefs == null) return;
+  Future<void> _save(HabitsState next, {bool propagateFailure = false}) async {
+    if (_busy || _loading || _loadError != null || _prefs == null) {
+      if (propagateFailure) throw StateError('Salvataggio non disponibile');
+      return;
+    }
     final identity = _key;
     setState(() {
       _busy = true;
@@ -105,6 +108,8 @@ class _HabitsBoardState extends State<HabitsBoard>
       if (!mounted || identity != _key) return;
       setState(() => _error = 'Salvataggio locale non riuscito. '
           'Nessuna modifica confermata.');
+      // InlineQuickAdd must preserve the text on failure instead of clearing it.
+      if (propagateFailure) rethrow;
     } finally {
       if (mounted && identity == _key) setState(() => _busy = false);
     }
@@ -115,7 +120,8 @@ class _HabitsBoardState extends State<HabitsBoard>
     if (trimmed.isEmpty || trimmed.length > 120) {
       throw StateError('Titolo: massimo 120 caratteri.');
     }
-    await _save(_data.add(const Uuid().v4(), trimmed, DateTime.now()));
+    await _save(_data.add(const Uuid().v4(), trimmed, DateTime.now()),
+        propagateFailure: true);
   }
 
   Future<void> _rename(String id, String title) async {
@@ -123,7 +129,8 @@ class _HabitsBoardState extends State<HabitsBoard>
     if (value.isEmpty || value.length > 120) {
       throw StateError('Titolo: da 1 a 120 caratteri.');
     }
-    await _save(_data.update(id, (habit) => habit.renamed(value)));
+    await _save(_data.update(id, (habit) => habit.renamed(value)),
+        propagateFailure: true);
   }
 
   Future<void> _toggle(String id, DateTime date) async {

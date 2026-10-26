@@ -1,7 +1,7 @@
 # Simple Notes API v1
 
 <!-- CURRENT-STATUS-REF -->
-> **STATO OPERATIVO — 26/10/2026:** `main` include P1.12 Countdown (`0.17.0+19`, PR #13, CI verde). P1.13 settimanale (`0.18.0+20`) è **solo nel branch**, CI/merge/device non attestati; `weeklyTarget` 1–7 non cancella check-in. Le funzioni Pomodoro/Habits/Countdown sono locali e non sincronizzate. Schema repo Flyway V10, Coolify attestato V8; nessun deploy/reset. [Stato](CURRENT-STATUS.md) · [Operazioni](OPERATIONS.md) · [P1.13](P1-WEEKLY-HABITS.md).
+> **Stato operativo 26/10/2026:** P1.13 Weekly Habits su `main` (PR #14, Flutter `0.18.0+20`, CI verde); P1.14 Sticky Windows **in branch** `feature/p1-14-sticky-windows` (Flutter candidata `0.19.0+21`, CI/merge/device non attestati). Repo Flyway V10, ultimo Coolify confermato V8, nessun deploy/reset. [Stato](CURRENT-STATUS.md) · [Guida operativa](OPERATIONS.md) · [Sticky Windows](P1-STICKY-WINDOWS.md).
 
 
 ## Auth
@@ -65,3 +65,7 @@ Countdown è device-only in SharedPreferences per account. Non esiste endpoint p
 ## P1.13 — Nessuna nuova API
 
 `weeklyTarget` è un campo **opzionale locale** del JSON Habit schema 1, default 7 per record P1.11. Nessun DTO, endpoint, Flyway, PostgreSQL, sync capability o outbox. Non dichiarare che gli obiettivi settimanali siano sincronizzati. [P1.13](P1-WEEKLY-HABITS.md).
+
+## P1.14 — Sticky Windows non introduce API
+
+Le finestre detached Windows non hanno backend o token propri: comunicano con il processo principale che aggiorna `LocalStore`/outbox e continua a sincronizzare note secondo il contratto esistente. Nessun endpoint e nessuna migration. [Specifica](P1-STICKY-WINDOWS.md).

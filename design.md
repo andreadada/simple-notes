@@ -1,6 +1,6 @@
 # Simple Notes — Design & Product Specification
 
-> **Stato 26/10/2026:** `main` include P1.12 Countdown ([PR #13](https://github.com/andreadada/simple-notes/pull/13), Flutter `0.17.0+19`, CI verde). P1.13 obiettivi settimanali è **in branch** `feature/p1-13-weekly-habit-goals` (`0.18.0+20`, CI/merge/device da verificare). P1.10–P1.13 sono dati locali per account/dispositivo, non sincronizzati. Backend GitHub Flyway V10; ultima VPS Coolify attestata V8. Nessun deploy/reset. [Stato](docs/CURRENT-STATUS.md) · [P1.13](docs/P1-WEEKLY-HABITS.md).
+> **Stato operativo (26/10/2026):** P1.13 obiettivi settimanali su `main` (PR #14, Flutter `0.18.0+20`, CI verde). P1.14 finestre Sticky Windows è **solo nel branch** `feature/p1-14-sticky-windows` (`0.19.0+21`, CI/merge/device da verificare). Repo Flyway V10; ultima VPS attestata V8. Nessun deploy/reset. [Stato](docs/CURRENT-STATUS.md) · [P1.14](docs/P1-STICKY-WINDOWS.md).
 
 <!-- CURRENT-STATUS-REF -->
 
@@ -193,3 +193,7 @@ Nuova vista Forui nel gruppo Focus: card con titolo inline modificabile, pulsant
 ## P1.13 — Obiettivi Habit a settimana (branch)
 
 In ogni card Habit, Forui menu per 1–7 giorni/settimana, progress bar e streak in settimane. Il titolo resta editabile inline. La visualizzazione progressi quotidiani non cambia: le soglie settimanali sono un livello addizionale, senza nuovi campi cloud. Reattivo a check-in/undo e ritorno in app, nessuna perdita di storico. [Specifica](docs/P1-WEEKLY-HABITS.md).
+
+## P1.14 — Sticky Windows
+
+Nella card Note un'icona pop-out visibile solo su Windows apre una finestra distinta con titolo e contenuto già editabili inline. La finestra usa lo stile Forui, il tasto Ricarica e un errore chiaro su conflitto; nessuna modale di rinomina. Il main resta proprietario del database e della sync. [Specifica](docs/P1-STICKY-WINDOWS.md).

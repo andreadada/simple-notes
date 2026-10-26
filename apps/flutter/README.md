@@ -1,6 +1,6 @@
 # Flutter client — P0 e P1
 
-> **Stato 26/10/2026:** `main` include P1.12 Countdown ([PR #13](https://github.com/andreadada/simple-notes/pull/13), Flutter `0.17.0+19`, CI verde). P1.13 obiettivi settimanali è **in branch** `feature/p1-13-weekly-habit-goals` (`0.18.0+20`, CI/merge/device da verificare). P1.10–P1.13 sono dati locali per account/dispositivo, non sincronizzati. Backend GitHub Flyway V10; ultima VPS Coolify attestata V8. Nessun deploy/reset. [Stato](../../docs/CURRENT-STATUS.md) · [P1.13](../../docs/P1-WEEKLY-HABITS.md).
+> **Stato operativo (26/10/2026):** P1.13 obiettivi settimanali su `main` (PR #14, Flutter `0.18.0+20`, CI verde). P1.14 finestre Sticky Windows è **solo nel branch** `feature/p1-14-sticky-windows` (`0.19.0+21`, CI/merge/device da verificare). Repo Flyway V10; ultima VPS attestata V8. Nessun deploy/reset. [Stato](../../docs/CURRENT-STATUS.md) · [P1.14](../../docs/P1-STICKY-WINDOWS.md).
 
 <!-- CURRENT-STATUS-REF -->
 
@@ -162,3 +162,7 @@ Flutter `0.17.0+19` con data civile/IANA da editor TaskDue condiviso, card Forui
 ## P1.13 — Weekly Habit Goals (branch)
 
 Flutter `0.18.0+20` candidato. `LocalHabit.weeklyTarget` 1–7 con default retrocompatibile 7 sui vecchi dati. `HabitWeek` calcola progressi/streak secondo calendario lunedì–domenica; menu Forui sulla card, senza server/Drift migration o delete preferenze. [Specifica](../../docs/P1-WEEKLY-HABITS.md).
+
+## P1.14 — Sticky Notes Windows
+
+`desktop_multi_window ^0.3.1` crea una finestra indipendente per nota Windows; `flutter_window.cpp` registra i plugin nel nuovo engine, che non apre AppDatabase né OAuth. Tutte le modifiche passano dal LocalStore/outbox principale con optimistic guard. Android resta invariato. Nuova build Flutter candidata 0.19, CI/real-device in verifica. [Specifica](../../docs/P1-STICKY-WINDOWS.md).

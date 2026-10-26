@@ -1,7 +1,7 @@
 name: simple_notes
 description: Offline-first tasks and notes for Windows and Android.
 publish_to: none
-version: 0.18.0+20
+version: 0.19.0+21
 environment:
   sdk: '>=3.10.0 <4.0.0'
 dependencies:
@@ -10,6 +10,7 @@ dependencies:
   flutter_riverpod: ^2.6.1
   forui: ^0.27.6
   shared_preferences: ^2.3.3
+  desktop_multi_window: ^0.3.1
   flutter_local_notifications: ^22.3.2
   connectivity_plus: ^7.3.2
   uuid: ^4.5.1
@@ -42,7 +43,7 @@ msix_config:
   publisher_display_name: DDone
   identity_name: ddone.SimpleNotes
   publisher: CN=DDone
-  msix_version: 0.18.0.0
+  msix_version: 0.19.0.0
   output_name: simple-notes-windows
   capabilities: internetClient
   install_certificate: false

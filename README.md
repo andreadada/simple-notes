@@ -1,6 +1,6 @@
 # Simple Notes
 
-> **Stato 26/10/2026:** `main` include P1.12 Countdown ([PR #13](https://github.com/andreadada/simple-notes/pull/13), Flutter `0.17.0+19`, CI verde). P1.13 obiettivi settimanali è **in branch** `feature/p1-13-weekly-habit-goals` (`0.18.0+20`, CI/merge/device da verificare). P1.10–P1.13 sono dati locali per account/dispositivo, non sincronizzati. Backend GitHub Flyway V10; ultima VPS Coolify attestata V8. Nessun deploy/reset. [Stato](docs/CURRENT-STATUS.md) · [P1.13](docs/P1-WEEKLY-HABITS.md).
+> **Stato operativo (26/10/2026):** P1.13 obiettivi settimanali su `main` (PR #14, Flutter `0.18.0+20`, CI verde). P1.14 finestre Sticky Windows è **solo nel branch** `feature/p1-14-sticky-windows` (`0.19.0+21`, CI/merge/device da verificare). Repo Flyway V10; ultima VPS attestata V8. Nessun deploy/reset. [Stato](docs/CURRENT-STATUS.md) · [P1.14](docs/P1-STICKY-WINDOWS.md).
 
 App offline-first per **Windows 11 e Android** dedicata ad attività, note e pianificazione. Flutter/Forui con Drift SQLite locale, Google OAuth e sincronizzazione con Spring Boot/PostgreSQL su Coolify.
 
@@ -18,7 +18,8 @@ App offline-first per **Windows 11 e Android** dedicata ad attività, note e pia
 - Pomodoro P1.10 (**main**): timer 25/5/15 e statistiche locali, **non sincronizzate tra dispositivi**.
 - Habit Tracker P1.11 (**main**, PR #12): abitudini quotidiane, streak, check-in, storico/archivio locali, senza cloud sync.
 - Countdown P1.12 (**main**, PR #13): eventi a data civile o ora IANA, titolo inline e archivio; locale, non sincronizzato.
-- P1.13 (**branch**): obiettivi Habit 1–7 giorni alla settimana e streak settimanali, storico locale preservato.
+- P1.13 (**main**, PR #14): obiettivi Habit 1–7 giorni alla settimana e streak settimanali, storico locale preservato.
+- P1.14 (**branch**): apri note sincronizzate in finestre Windows indipendenti, editing inline attraverso il processo principale.
 **Implementato su GitHub ≠ distribuito.** Prima di installare client aggiornati verificare su Coolify Flyway V10 e le capability autenticate. Nessun reset, cancellazione di volumi o migrazione manuale per una normale verifica. Il deploy resta un'operazione distinta e controllata dall'utente.
 
 ## Percorso rapido
@@ -38,3 +39,5 @@ La UI usa **Forui**, preferisce campi testuali editabili *inline* senza pulsanti
 ## Verifiche
 
 Le GitHub Actions coprono Flutter, backend, Compose e link Markdown. I test automatici **non** certificano la versione realmente distribuita, OAuth sui dispositivi, né la sync E2E. Tutte le procedure di reset e le versioni P0/T2/T3/P1.1–P1.5 sono documentate nelle specifiche storiche, non costituiscono istruzioni di rollout aggiornate.
+
+La fase Sticky Windows P1.14 è documentata in [P1-STICKY-WINDOWS.md](docs/P1-STICKY-WINDOWS.md); non è ancora attestata su hardware.

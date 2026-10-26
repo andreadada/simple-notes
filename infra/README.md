@@ -1,7 +1,7 @@
 # Backend — Coolify
 
 <!-- CURRENT-STATUS-REF -->
-> **STATO OPERATIVO — 26/10/2026:** `main` include P1.12 Countdown (`0.17.0+19`, PR #13, CI verde). P1.13 settimanale (`0.18.0+20`) è **solo nel branch**, CI/merge/device non attestati; `weeklyTarget` 1–7 non cancella check-in. Le funzioni Pomodoro/Habits/Countdown sono locali e non sincronizzate. Schema repo Flyway V10, Coolify attestato V8; nessun deploy/reset. [Stato](../docs/CURRENT-STATUS.md) · [Operazioni](../docs/OPERATIONS.md) · [P1.13](../docs/P1-WEEKLY-HABITS.md).
+> **Stato operativo 26/10/2026:** P1.13 Weekly Habits su `main` (PR #14, Flutter `0.18.0+20`, CI verde); P1.14 Sticky Windows **in branch** `feature/p1-14-sticky-windows` (Flutter candidata `0.19.0+21`, CI/merge/device non attestati). Repo Flyway V10, ultimo Coolify confermato V8, nessun deploy/reset. [Stato](../docs/CURRENT-STATUS.md) · [Guida operativa](../docs/OPERATIONS.md) · [Sticky Windows](../docs/P1-STICKY-WINDOWS.md).
 
 
 ## Cronologia — rilascio 0.7.0+9 (superato da P1.6)
@@ -142,3 +142,7 @@ La fase Countdown V1 è solo UI Flutter/SharedPreferences. Non aggiunge risorse 
 ## Gate P1.13 — Nessuna nuova migrazione
 
 Gli obiettivi settimanali Habit sono solo Flutter/SharedPreferences e restano device-only. Non aggiungere Compose, nuove risorse, variabili, backup distruttivi o migrazioni. Per il rilascio cumulativo verificare comunque Flyway V10 sul server reale (ultima attestazione V8), senza deploy/volumi automatici. [Guida](../docs/OPERATIONS.md) · [P1.13](../docs/P1-WEEKLY-HABITS.md).
+
+## P1.14 — Nessuna risorsa server aggiuntiva
+
+Le finestre Windows separate usano le note sincronizzate attraverso LocalStore del processo principale; nessun processo sync secondario, tabella, API, Compose service, variabile, backup o volume aggiuntivo. Il gate per release resta Flyway V10 realmente applicato (ultima attestazione V8). [Specifica](../docs/P1-STICKY-WINDOWS.md).

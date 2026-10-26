@@ -1,7 +1,7 @@
 # Audit applicazione di design.md — UI condivisa Flutter
 
 <!-- CURRENT-STATUS-REF -->
-> **Stato aggiornato 26/10/2026:** P1.10 Pomodoro `0.15.0+17` integrata su main (CI verde), Habit Tracker P1.11 `0.16.0+18` solo sul branch `feature/p1-11-habit-tracker` (CI/merge ancora da validare). Pomodoro e abitudini restano **locali, non sincronizzati**; repository Flyway V10, VPS Coolify attestata V8, nessun deploy/reset. [Stato](CURRENT-STATUS.md), [Operazioni](OPERATIONS.md), [P1.11](P1-HABITS.md).
+> **STATO OPERATIVO 26/10/2026:** P1.11 Habit Tracker (Flutter `0.16.0+18`, PR #12) è integrata su main con CI verde. Countdown P1.12 (`0.17.0+19`) è **in branch**, CI/merge/device da verificare. Pomodoro, Habits e Countdown sono dati **locali per account/dispositivo**, senza cloud sync né nuove migrazioni. Repo Flyway V10, VPS Coolify attestata V8. Nessun deploy/reset. [Stato](CURRENT-STATUS.md) · [Countdown](P1-COUNTDOWNS.md).
 
 
 > **Stato reale 24/10/2026:** PostgreSQL `simplenotes` 17.11, Flyway V1–V7 riuscite, backup `simple-notes-20261024T132857Z-271921.dump` con SHA256 valido e restore isolato PASS. Copia offsite non effettuata per scelta dell'utente. Restano da verificare l'API autenticata (`taskDueSchema:1`) e il collaudo T4.2 Windows↔Android con Flutter `0.4.0+4`. Non ripetere backup, migrazioni o deploy automaticamente. [T4.2](T4-DEVICE-SYNC.md).
@@ -99,3 +99,7 @@ Timer 25/5/15 e statistiche locali, identità Google isolata nelle chiavi Shared
 ## Stato del design P1.11 (candidato)
 
 Habit Tracker usa FCard/FCheckbox/FButton, InlineQuickAdd e InlineEditableTitle, con progressivo oggi, streak e selettori di date civili. Verificare su hardware: rientro dopo cambio giorno, overflow su Android stretto, interazione tastiera e touch, archiviazione reversibile e isolamento account. CI widget automatizzata da confermare su SHA finale. [P1.11](P1-HABITS.md).
+
+## Verifica UI P1.12 candidata
+
+Countdown usa FCard/FButton, `InlineEditableTitle`, `InlineQuickAdd` e l'editor Forui delle date condiviso. Da testare su hardware: dialogo DST, overflow Android, countdown scaduto, modifica inline, archivio e persistenza dopo ZIP→MSIX. CI compilazione non equivale a prova visuale. [Specifica](P1-COUNTDOWNS.md).

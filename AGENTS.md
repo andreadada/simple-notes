@@ -1,6 +1,6 @@
 # AGENTS.md — Istruzioni operative per agenti AI
 
-> **Stato 26/10/2026:** P1.10 Pomodoro **integrata su `main`** con [PR #11](https://github.com/andreadada/simple-notes/pull/11) (Flutter `0.15.0+17`, CI verde). P1.11 Habit Tracker **in sviluppo su branch** `feature/p1-11-habit-tracker` (`0.16.0+18`, CI/merge da verificare); storico locale, **non sincronizzato tra dispositivi**. Backend repo Flyway V10/Drift V8; ultima VPS Coolify attestata V8, nessun nuovo deploy/reset. [Stato canonico](docs/CURRENT-STATUS.md).
+> **Stato 26/10/2026:** `main` include P1.11 Habit Tracker ([PR #12](https://github.com/andreadada/simple-notes/pull/12), Flutter `0.16.0+18`, CI verde). P1.12 Countdown è **solo in branch** `feature/p1-12-countdowns-main` (`0.17.0+19`), CI/merge/device da verificare. Pomodoro/Habits/Countdown sono locali per dispositivo, non sincronizzati. Repo Flyway V10, ultima VPS Coolify attestata V8; nessun deploy o reset. [Stato](docs/CURRENT-STATUS.md) · [P1.12](docs/P1-COUNTDOWNS.md).
 
 <!-- CURRENT-STATUS-REF -->
 
@@ -44,3 +44,7 @@ Pomodoro (P1.10, PR #11 su main) è **device-only**: non aggiungere attributi o 
 ## P1.11 — Habit Tracker (branch)
 
 Check-in giornalieri e streak **locali per owner**, data civile ISO, archivio ripristinabile: non aggiungere nuove tabelle/endpoint né pretendere sync. JSON in SharedPreferences versione 1, su corruzione non resettare/overwrite. UX Forui e editing inline, test date DST, isolamento account e widget. [Specifica](docs/P1-HABITS.md).
+
+## P1.12 — Countdown (branch)
+
+Usare `TaskDue.dateOnly` per date civili senza inventare midnight UTC, oppure `TaskDue.datetime` risolte con fuso IANA dall'editor Forui. Le card sono dispositive, non cloud; `SharedPreferences` per owner, JSON schema 1 e archivio reversibile. Mai sovrascrivere su parse failure; no reminder o sync inventati. [Specifica](docs/P1-COUNTDOWNS.md).

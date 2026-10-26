@@ -1,7 +1,7 @@
 # Release storica P1.2 + P1.3 — Simple Notes 0.7.0+9
 
 <!-- CURRENT-STATUS-REF -->
-> **Aggiornamento operativo (26/10/2026):** `main` include P1.10 Pomodoro (Flutter `0.15.0+17`, PR #11, CI verde). Habit Tracker P1.11 è **in branch** `feature/p1-11-habit-tracker` (`0.16.0+18`, CI/merge non attestati). Abitudini e Pomodoro hanno storico **locale, non sincronizzato**. Flyway V10 è nel repository ma Coolify è confermato fino a V8; niente deploy o collaudo hardware. Le versioni precedenti riportate sotto sono **storiche**: seguire [stato canonico](CURRENT-STATUS.md), [operazioni](OPERATIONS.md) e [P1.11](P1-HABITS.md).
+> **SNAPSHOT STORICO / GATE 26/10/2026:** `main` include P1.11 Habit Tracker (Flutter `0.16.0+18`, PR #12, CI verde); Countdown P1.12 `0.17.0+19` è **solo su branch**. Funzioni Pomodoro/Habits/Countdown **device-only**, nessuna sync o nuova migration; repo Flyway V10, server Coolify ultimo attestato V8. Nessun deploy/reset. Le istruzioni precedenti descrivono verifiche e versioni storiche, **non** l'attuale rilascio. [Stato](CURRENT-STATUS.md) · [Operazioni](OPERATIONS.md) · [Countdown](P1-COUNTDOWNS.md).
 
 
 **Data:** 25 ottobre 2026 · **Codice integrato su `main`**. PR #1 (P1.2) e PR #2 (P1.3) merged. **NON attestare come distribuito:** Coolify, Flyway V8 reale, app Windows/Android reali e prova E2E restano da verificare. Il lavoro GitHub è terminato; il deploy Coolify richiede accesso all'installazione del proprietario.

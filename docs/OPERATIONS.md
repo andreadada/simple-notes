@@ -1,6 +1,8 @@
 # Guida operativa — Simple Notes
 
-**Fonte operativa** per il checkout locale Windows, CI, Coolify, Android e Windows ZIP/MSIX. **Ultimo stato verificabile (26/10/2026):** Flutter 0.15.0+17 P1.10 su `main`, CI verde; backend repository Flyway V10/Drift V8; **ultima VPS confermata Flyway V8**. L'incremento P1.11 Habit Tracker è in sviluppo nel branch `feature/p1-11-habit-tracker` (Flutter 0.16.0+18); una PR e una build non sono un deploy. Leggere sempre [CURRENT-STATUS.md](CURRENT-STATUS.md) per lo stato successivo.
+> **Stato 26/10/2026:** `main` include P1.11 Habit Tracker ([PR #12](https://github.com/andreadada/simple-notes/pull/12), Flutter `0.16.0+18`, CI verde). P1.12 Countdown è **solo in branch** `feature/p1-12-countdowns-main` (`0.17.0+19`), CI/merge/device da verificare. Pomodoro/Habits/Countdown sono locali per dispositivo, non sincronizzati. Repo Flyway V10, ultima VPS Coolify attestata V8; nessun deploy o reset. [Stato](CURRENT-STATUS.md) · [P1.12](P1-COUNTDOWNS.md).
+
+**Fonte operativa** per il checkout locale Windows, CI, Coolify, Android e Windows ZIP/MSIX. **Ultimo stato verificabile (26/10/2026):** Flutter 0.16.0+18 P1.11 su `main`, CI verde; backend repository Flyway V10/Drift V8; **ultima VPS confermata Flyway V8**. L'incremento P1.12 Countdown è in sviluppo nel branch `feature/p1-12-countdowns-main` (Flutter 0.17.0+19); una PR e una build non sono un deploy. Leggere sempre [CURRENT-STATUS.md](CURRENT-STATUS.md) per lo stato successivo.
 
 ## 0. Regola fondamentale
 
@@ -93,7 +95,7 @@ DB_CONTAINER=<ID_DB_CORRENTE> EXPECTED_POSTGRES_DB=simplenotes bash infra/t4-ins
 curl -fsS https://api.notes.ddone.it/actuator/health
 ```
 
-Per Flutter P1.8/P1.9/P1.10/P1.11 si attendono `FLYWAY_LATEST=10`, `FAILED_MIGRATIONS=0`, health `UP` e capability autenticate `taskDueSchema:1`, `timeBlockSchema:1`, `timeBlocksSchema:1`, `recurrenceSchema:1`. Usare JWT solo localmente, senza incollarli nei log/chat. Un health `UP` non basta.
+Per i client P1.8–P1.12 si attendono `FLYWAY_LATEST=10`, `FAILED_MIGRATIONS=0`, health `UP` e capability autenticate `taskDueSchema:1`, `timeBlockSchema:1`, `timeBlocksSchema:1`, `recurrenceSchema:1`. Usare JWT solo localmente, senza incollarli nei log/chat. Un health `UP` non basta.
 
 ## 6. Un solo collaudo batch Windows ↔ Android
 
@@ -102,7 +104,7 @@ Su **stesso account Google**, dopo aver attestato la compatibilità server:
 1. Note, cestino, attività, liste, tag, sottotask e modifica inline; verifica pending=0 e cursor dopo sync.
 2. Offline su un dispositivo → modifiche → online → compare sull'altro; conflitto HTTP 409 distinto da blocco upgrade 426, senza outbox persa.
 3. Calendario, più blocchi, ricorrenze, Eisenhower e Kanban (cambio lista trascinando) sincronizzati; nessun reset.
-4. Pomodoro e Habit Tracker: dati **locali per account/dispositivo**, timer che sopravvive alla navigazione/riavvio, streak e check-in su date civili; statistiche non sincronizzate; verificare che i profili Google differenti non condividano i dati.
+4. Pomodoro, Habit Tracker e Countdown: dati **locali per account/dispositivo**, timer che sopravvive alla navigazione/riavvio, streak e check-in su date civili; statistiche non sincronizzate; verificare che i profili Google differenti non condividano i dati.
 5. Promemoria Android opt-in, permesso negato, uscita, riavvio e inexact. Promemoria Windows **solo se MSIX** firmato e validato in profilo di prova.
 6. Verificare che entrambi i client conservino i dati dopo l'upgrade; su MSIX **non** procedere sui profili reali finché non è dimostrata la compatibilità del percorso locale.
 
@@ -115,3 +117,7 @@ Il timer Pomodoro persiste in `SharedPreferences` con chiave locale per owner. N
 ## P1.11 (branch): verifiche non distruttive
 
 Provare sul profilo di test: una abitudine, check-in/undo, streak ieri/oggi, archivio/restore, re-login e cambio account, fuso DST e giorno civile. Le abitudini salvate in SharedPreferences non sono dati cloud. Non cancellare preferenze/SQLite di un profilo reale, specialmente nel passaggio ZIP→MSIX; verificare la continuità di entrambi. [Dettagli](P1-HABITS.md).
+
+## P1.12 — Countdown e integrità dei dati
+
+Countdown riutilizza l'editor `TaskDue` e salva solo SharedPreferences device/owner: **non** è una nuova funzionalità cloud. Per i test verificare data civile vs istante IANA/DST, modifica titolo inline, cambio data, archivio/restore, login e riapertura. Nessun reset dati, nessuna notifica quando l'app è chiusa. Prima di ZIP→MSIX verificare anche la persistenza di preferenze e secure storage, non solo SQLite. [Specifica](P1-COUNTDOWNS.md).

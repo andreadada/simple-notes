@@ -1,6 +1,6 @@
 # Flutter client — P0 e P1
 
-> **Stato 26/10/2026:** P1.10 Pomodoro **integrata su `main`** con [PR #11](https://github.com/andreadada/simple-notes/pull/11) (Flutter `0.15.0+17`, CI verde). P1.11 Habit Tracker **in sviluppo su branch** `feature/p1-11-habit-tracker` (`0.16.0+18`, CI/merge da verificare); storico locale, **non sincronizzato tra dispositivi**. Backend repo Flyway V10/Drift V8; ultima VPS Coolify attestata V8, nessun nuovo deploy/reset. [Stato canonico](../../docs/CURRENT-STATUS.md).
+> **Stato 26/10/2026:** `main` include P1.11 Habit Tracker ([PR #12](https://github.com/andreadada/simple-notes/pull/12), Flutter `0.16.0+18`, CI verde). P1.12 Countdown è **solo in branch** `feature/p1-12-countdowns-main` (`0.17.0+19`), CI/merge/device da verificare. Pomodoro/Habits/Countdown sono locali per dispositivo, non sincronizzati. Repo Flyway V10, ultima VPS Coolify attestata V8; nessun deploy o reset. [Stato](../../docs/CURRENT-STATUS.md) · [P1.12](../../docs/P1-COUNTDOWNS.md).
 
 <!-- CURRENT-STATUS-REF -->
 
@@ -154,3 +154,7 @@ Timer focus 25/5/15 con stato salvato su SharedPreferences, isolato per account 
 ## P1.11 — Abitudini (branch)
 
 Flutter `0.16.0+18` candidato: abitudini quotidiane con check-in, streak, dashboard oggi/7/30 giorni, archivio e restore. Solo SharedPreferences per Google owner; nessuna migrazione server, senza sync fra dispositivi. [Specifica](../../docs/P1-HABITS.md).
+
+## P1.12 — Countdown (candidate branch)
+
+Flutter `0.17.0+19` con data civile/IANA da editor TaskDue condiviso, card Forui, editing inline, archivio e SharedPreferences owner-bound. Nessuna migrazione Drift/Flyway né nuova sync. [Specifica](../../docs/P1-COUNTDOWNS.md).

@@ -1,7 +1,7 @@
 # Delta Sync v1 — protocollo e storia degli incrementi
 
 <!-- CURRENT-STATUS-REF -->
-> **Stato aggiornato 26/10/2026:** P1.10 Pomodoro `0.15.0+17` integrata su main (CI verde), Habit Tracker P1.11 `0.16.0+18` solo sul branch `feature/p1-11-habit-tracker` (CI/merge ancora da validare). Pomodoro e abitudini restano **locali, non sincronizzati**; repository Flyway V10, VPS Coolify attestata V8, nessun deploy/reset. [Stato](CURRENT-STATUS.md), [Operazioni](OPERATIONS.md), [P1.11](P1-HABITS.md).
+> **STATO OPERATIVO 26/10/2026:** P1.11 Habit Tracker (Flutter `0.16.0+18`, PR #12) è integrata su main con CI verde. Countdown P1.12 (`0.17.0+19`) è **in branch**, CI/merge/device da verificare. Pomodoro, Habits e Countdown sono dati **locali per account/dispositivo**, senza cloud sync né nuove migrazioni. Repo Flyway V10, VPS Coolify attestata V8. Nessun deploy/reset. [Stato](CURRENT-STATUS.md) · [Countdown](P1-COUNTDOWNS.md).
 
 
 ## Ultima versione di un elemento / risoluzione conflitto (P0)
@@ -49,3 +49,7 @@ Timer 25/5/15 e statistiche locali, identità Google isolata nelle chiavi Shared
 ## P1.11 — Nessuna sync abitudini
 
 Habit Tracker resta device-only per account (SharedPreferences con schema 1 e check-in per data civile). Non invia `habit` a `/sync/apply`, non tocca cursor, versioni, outbox, liste/task. Non promettere coerenza del tracker Windows↔Android; una futura versione server richiederà schema, modello conflitti e test dedicati. [Specifica](P1-HABITS.md).
+
+## P1.12 — Countdown non sincronizzato
+
+Gli eventi Countdown non sono entità task, non entrano nei payload `/sync` né nella outbox, non producono cursor né capability. Restano locali a ogni installazione per account Google, così come Pomodoro e Habit Tracker. Non descrivere i Countdown come sincronizzati tra PC e telefono. [Specifica](P1-COUNTDOWNS.md).

@@ -1,5 +1,5 @@
 <!-- CURRENT-STATUS-REF -->
-> **Stato aggiornato 26/10/2026:** P1.10 Pomodoro `0.15.0+17` integrata su main (CI verde), Habit Tracker P1.11 `0.16.0+18` solo sul branch `feature/p1-11-habit-tracker` (CI/merge ancora da validare). Pomodoro e abitudini restano **locali, non sincronizzati**; repository Flyway V10, VPS Coolify attestata V8, nessun deploy/reset. [Stato](CURRENT-STATUS.md), [Operazioni](OPERATIONS.md), [P1.11](P1-HABITS.md).
+> **STATO OPERATIVO 26/10/2026:** P1.11 Habit Tracker (Flutter `0.16.0+18`, PR #12) è integrata su main con CI verde. Countdown P1.12 (`0.17.0+19`) è **in branch**, CI/merge/device da verificare. Pomodoro, Habits e Countdown sono dati **locali per account/dispositivo**, senza cloud sync né nuove migrazioni. Repo Flyway V10, VPS Coolify attestata V8. Nessun deploy/reset. [Stato](CURRENT-STATUS.md) · [Countdown](P1-COUNTDOWNS.md).
 
 <!-- Vincolo UI aggiornato 24/10/2026: tutti i titoli di liste, task e subtasks usano la stessa logica inline-first. La sottolineatura non deve eccedere la larghezza del valore (o dell'hint) +~1px, nessun grigio di riempimento; placeholder semitrasparente (~72%). Utilizzare InlineTextMetrics.fieldWidth in notes_theme.dart, non minWidth artificiale o Expanded TextField full-width. Regole: ../design.md, ui-forui.md e ui-design-audit.md. -->
 # Organizzazione attività (P0) — liste, priorità, tag e sottotask
@@ -65,3 +65,7 @@ La matrice Eisenhower deriva **importanza** dalle priorità task già esistenti 
 ## Ambito Habit Tracker (P1.11)
 
 Le abitudini quotidiane non sono tag, sottotask o task ricorrenti: il loro storico viene salvato su SharedPreferences per dispositivo/owner, con check-in civili e streak, **non** via LocalStore o sincronizzazione task. Le liste Kanban e le ricorrenze rimangono invariate. [Specifiche](P1-HABITS.md).
+
+## P1.12 — Eventi Countdown non sono task
+
+Countdown permette date civili e con ora senza creare un task, blocco orario, ricorrenza o promemoria. I record sono locali in SharedPreferences e non modificano Kanban/Eisenhower né priorità, listId, tag e scadenze task. [Specifica](P1-COUNTDOWNS.md).

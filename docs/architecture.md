@@ -1,7 +1,7 @@
 # Simple Notes — Architettura applicativa
 
 <!-- CURRENT-STATUS-REF -->
-> **Allineamento operativo — 26/10/2026:** `main` = P1.10 Pomodoro `0.15.0+17` (PR #11, CI verde); P1.11 Habit Tracker `0.16.0+18` **solo branch**, CI/merge non confermati. Entrambe le funzioni hanno storico locale, **non sincronizzato**. Repo Flyway V10 / Coolify attestato V8, nessun deploy o test hardware nuovo. [Stato](CURRENT-STATUS.md) · [Guida operativa](OPERATIONS.md) · [Specifiche P1.11](P1-HABITS.md).
+> **STATO OPERATIVO 26/10/2026:** P1.11 Habit Tracker (Flutter `0.16.0+18`, PR #12) è integrata su main con CI verde. Countdown P1.12 (`0.17.0+19`) è **in branch**, CI/merge/device da verificare. Pomodoro, Habits e Countdown sono dati **locali per account/dispositivo**, senza cloud sync né nuove migrazioni. Repo Flyway V10, VPS Coolify attestata V8. Nessun deploy/reset. [Stato](CURRENT-STATUS.md) · [Countdown](P1-COUNTDOWNS.md).
 
 ## Componenti del codice attuale
 
@@ -51,3 +51,7 @@ Timer 25/5/15 e statistiche locali, identità Google isolata nelle chiavi Shared
 ## P1.11 — Storage locale per account (candidate)
 
 Il modello Habit Tracker `LocalHabit/HabitsState` serializza un documento versionato in SharedPreferences; date civili, titoli inline, streak e archivio ripristinabile. Le chiavi sono isolate da hash SHA-256 dell'owner, ma non sono condivise fra device. Restano fuori da SQLite/outbox/sync e non creano tabelle Flyway. Un JSON corrotto è mostrato come errore non distruttivo. [Specifiche](P1-HABITS.md).
+
+## P1.12 — Countdown device-only
+
+`CountdownsState` aggrega `CountdownEvent` con `TaskDue.date` civile o `TaskDue.datetime` UTC/IANA, owner isolation, validazione JSON schema 1 e archivio reversibile. Nessuna tabella Drift/Flyway, endpoint, outbox, processo background o aggiornamento dati task. [Specifica](P1-COUNTDOWNS.md).

@@ -1,7 +1,7 @@
 # Backend — Coolify
 
 <!-- CURRENT-STATUS-REF -->
-> **Stato aggiornato 26/10/2026:** P1.10 Pomodoro `0.15.0+17` integrata su main (CI verde), Habit Tracker P1.11 `0.16.0+18` solo sul branch `feature/p1-11-habit-tracker` (CI/merge ancora da validare). Pomodoro e abitudini restano **locali, non sincronizzati**; repository Flyway V10, VPS Coolify attestata V8, nessun deploy/reset. [Stato](../docs/CURRENT-STATUS.md), [Operazioni](../docs/OPERATIONS.md), [P1.11](../docs/P1-HABITS.md).
+> **STATO OPERATIVO 26/10/2026:** P1.11 Habit Tracker (Flutter `0.16.0+18`, PR #12) è integrata su main con CI verde. Countdown P1.12 (`0.17.0+19`) è **in branch**, CI/merge/device da verificare. Pomodoro, Habits e Countdown sono dati **locali per account/dispositivo**, senza cloud sync né nuove migrazioni. Repo Flyway V10, VPS Coolify attestata V8. Nessun deploy/reset. [Stato](../docs/CURRENT-STATUS.md) · [Countdown](../docs/P1-COUNTDOWNS.md).
 
 
 ## Cronologia — rilascio 0.7.0+9 (superato da P1.6)
@@ -134,3 +134,7 @@ Sul VPS, identificare il container PostgreSQL da `docker ps`, mai assumere l'ID 
 ## Gate P1.11 (26 ottobre 2026)
 
 Habit Tracker P1.11 usa soltanto SharedPreferences lato Flutter e non aggiunge variabili, migrazioni PostgreSQL, job né servizi Compose. L'app nel repository continua a richiedere Flyway V10 per le funzioni P1.6; la VPS è attestata fino a V8. Non far partire un deploy per il solo tracker e non cancellare volume, DB o stato locale in preparazione. [Guida operativa](../docs/OPERATIONS.md).
+
+## P1.12 — Nessuna migrazione da applicare
+
+La fase Countdown V1 è solo UI Flutter/SharedPreferences. Non aggiunge risorse Coolify, credenziali, Compose, backend, endpoint, Flyway o volumi. La verifica Flyway V10 sulla VPS resta richiesta per il rilascio cumulativo delle funzioni cloud precedenti (ultima attestazione V8). Nessun reset o deploy automatico. [Operazioni](../docs/OPERATIONS.md).

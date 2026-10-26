@@ -1,5 +1,7 @@
 # P1.10 — Pomodoro locale e statistiche
 
+> **SNAPSHOT STORICO — 26/10/2026:** codice `main` fino a P1.11 Habit Tracker (Flutter `0.16.0+18`, PR #12, CI verde); P1.12 Countdown `0.17.0+19` **solo nel branch**, CI/merge/device da verificare. Pomodoro/Habits/Countdown sono locali per dispositivo/account, **non** sincronizzati. Repository Flyway V10, VPS Coolify confermata fino a V8, nessun deploy o reset. Questa specifica conserva lo storico del proprio incremento: **non usarla come runbook corrente**. [Stato](CURRENT-STATUS.md) · [Operazioni](OPERATIONS.md) · [Countdown](P1-COUNTDOWNS.md).
+
 **Stato (26/10/2026):** **integrata su main con PR #11**, Flutter `0.15.0+17`, [CI Flutter verde](https://github.com/andreadada/simple-notes/actions/runs/40347771381) e [Markdown verde](https://github.com/andreadada/simple-notes/actions/runs/40347771324). P1.9 Kanban PR #10 è stata integrata su `main` dopo [CI Flutter verde](https://github.com/andreadada/simple-notes/actions/runs/40328803094). P1.10 CI/merge confermati; **test su dispositivi reali ancora da completare**. Coolify non modificato: ultimo Flyway reale attestato V8, V10 soltanto nel repository.
 
 ## Comportamento implementato

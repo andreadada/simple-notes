@@ -1,7 +1,7 @@
 # T4 — Rilascio controllato Simple Notes (Coolify/PostgreSQL)
 
 <!-- CURRENT-STATUS-REF -->
-> **Snapshot storico, NON runbook attuale — 26/10/2026:** `main` = P1.10 Pomodoro `0.15.0+17` (PR #11, CI verde); P1.11 Habit Tracker `0.16.0+18` **solo branch**, CI/merge non confermati. Entrambe le funzioni hanno storico locale, **non sincronizzato**. Repo Flyway V10 / Coolify attestato V8, nessun deploy o test hardware nuovo. [Stato](CURRENT-STATUS.md) · [Guida operativa](OPERATIONS.md) · [Specifiche P1.11](P1-HABITS.md).
+> **SNAPSHOT STORICO / GATE 26/10/2026:** `main` include P1.11 Habit Tracker (Flutter `0.16.0+18`, PR #12, CI verde); Countdown P1.12 `0.17.0+19` è **solo su branch**. Funzioni Pomodoro/Habits/Countdown **device-only**, nessuna sync o nuova migration; repo Flyway V10, server Coolify ultimo attestato V8. Nessun deploy/reset. Le istruzioni precedenti descrivono verifiche e versioni storiche, **non** l'attuale rilascio. [Stato](CURRENT-STATUS.md) · [Operazioni](OPERATIONS.md) · [Countdown](P1-COUNTDOWNS.md).
 
 
 ## Stato reale verificato e T4.2 (24 ottobre 2026)

@@ -126,9 +126,13 @@ class _PomodoroBoardState extends State<PomodoroBoard>
     if (_saving || _loading || _error != null) return;
     final now = DateTime.now();
     final current = _value.settle(now);
-    final next = current.running
-        ? current.pause(now)
-        : current.start(now, const Uuid().v4());
+    // A just-expired focus becomes a break; a delayed Pause tap must not
+    // accidentally start that break automatically.
+    final next = !identical(current, _value)
+        ? current
+        : current.running
+            ? current.pause(now)
+            : current.start(now, const Uuid().v4());
     unawaited(_save(next));
   }
 

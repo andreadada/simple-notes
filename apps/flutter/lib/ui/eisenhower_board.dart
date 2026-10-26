@@ -52,7 +52,7 @@ class EisenhowerBoard extends ConsumerWidget {
               children: [
                 for (final quadrant in EisenhowerQuadrant.values)
                   SizedBox(
-                    key: Key('eisenhower-' + quadrant.name),
+                    key: Key('eisenhower-${quadrant.name}'),
                     width: width,
                     child: FCard(
                       child: Padding(
@@ -81,7 +81,7 @@ class EisenhowerBoard extends ConsumerWidget {
                               ),
                             for (final task in groups[quadrant]!)
                               Padding(
-                                key: Key('eisenhower-task-' + task.id),
+                                key: Key('eisenhower-task-${task.id}'),
                                 padding: const EdgeInsets.only(bottom: 10),
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -97,7 +97,7 @@ class EisenhowerBoard extends ConsumerWidget {
                                         ),
                                         const SizedBox(width: 8),
                                         Expanded(child: InlineEditableTitle(
-                                          key: Key('eisenhower-title-' + task.id),
+                                          key: Key('eisenhower-title-${task.id}'),
                                           value: task.title,
                                           maxLength: 1024,
                                           semanticsLabel: 'Titolo attività modificabile',
@@ -108,7 +108,7 @@ class EisenhowerBoard extends ConsumerWidget {
                                           onTap: () => onOpenTask(task),
                                         )),
                                         FButton.icon(
-                                          key: Key('eisenhower-open-' + task.id),
+                                          key: Key('eisenhower-open-${task.id}'),
                                           variant: FButtonVariant.ghost,
                                           onPress: () => onOpenTask(task),
                                           child: const Icon(Icons.chevron_right,
@@ -138,7 +138,7 @@ class EisenhowerBoard extends ConsumerWidget {
                                                 menu) => menu!,
                                             builder: (context, controller,
                                                 child) => FButton(
-                                              key: Key('eisenhower-priority-' + task.id),
+                                              key: Key('eisenhower-priority-${task.id}'),
                                               variant: FButtonVariant.outline,
                                               mainAxisSize: MainAxisSize.min,
                                               size: FButtonSizeVariant.sm,
@@ -149,7 +149,7 @@ class EisenhowerBoard extends ConsumerWidget {
                                               ? 'Normale' : 'P${task.priority}'),
                                           ),
                                           FButton(
-                                            key: Key('eisenhower-due-' + task.id),
+                                            key: Key('eisenhower-due-${task.id}'),
                                             variant: FButtonVariant.outline,
                                             mainAxisSize: MainAxisSize.min,
                                             size: FButtonSizeVariant.sm,

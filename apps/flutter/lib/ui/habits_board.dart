@@ -303,7 +303,6 @@ class _HabitsBoardState extends State<HabitsBoard>
                     ),
                   ]),
                 ))),
-              ),
         ],
         if (_error != null)
           Padding(padding: const EdgeInsets.symmetric(vertical: 12),

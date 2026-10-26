@@ -7,7 +7,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:forui/forui.dart';
 
 import '../data/local_store.dart';
-import '../data/models.dart';
 import 'inline_editable_body.dart';
 import 'inline_editable_title.dart';
 import 'notes_theme.dart';

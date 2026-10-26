@@ -1,7 +1,7 @@
 # T3 — Scadenze Forui, fusi IANA e calendario civile
 
 <!-- CURRENT-STATUS-REF -->
-> **SNAPSHOT STORICO — 26/10/2026:** `main` include P1.12 Countdown (`0.17.0+19`, PR #13, CI verde). P1.13 settimanale (`0.18.0+20`) è **solo nel branch**, CI/merge/device non attestati; `weeklyTarget` 1–7 non cancella check-in. Le funzioni Pomodoro/Habits/Countdown sono locali e non sincronizzate. Schema repo Flyway V10, Coolify attestato V8; nessun deploy/reset. La procedura sotto è storica. [Stato](CURRENT-STATUS.md) · [Operazioni](OPERATIONS.md) · [P1.13](P1-WEEKLY-HABITS.md).
+> **Snapshot storico 26/10/2026:** P1.13 Weekly Habits su `main` (PR #14, Flutter `0.18.0+20`, CI verde); P1.14 Sticky Windows **in branch** `feature/p1-14-sticky-windows` (Flutter candidata `0.19.0+21`, CI/merge/device non attestati). Repo Flyway V10, ultimo Coolify confermato V8, nessun deploy/reset. [Stato](CURRENT-STATUS.md) · [Guida operativa](OPERATIONS.md) · [Sticky Windows](P1-STICKY-WINDOWS.md).
 
 
 > Stato al 24/10: codice T3 implementato; **Flyway V7 verificata sul DB reale e dump/restore isolato PASS**. API autenticata e prove fisiche Windows↔Android ancora non confermate. Verificare gli esiti più recenti in [GitHub Actions](https://github.com/andreadada/simple-notes/actions/workflows/flutter-ci.yml).

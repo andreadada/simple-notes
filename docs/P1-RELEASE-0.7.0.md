@@ -1,7 +1,7 @@
 # Release storica P1.2 + P1.3 — Simple Notes 0.7.0+9
 
 <!-- CURRENT-STATUS-REF -->
-> **SNAPSHOT STORICO — 26/10/2026:** P1.12 Countdown `0.17.0+19` ([PR #13](https://github.com/andreadada/simple-notes/pull/13)) integrata su `main` e CI verde. P1.13 Weekly Habit `0.18.0+20` **solo nel branch** `feature/p1-13-weekly-habit-goals`, CI/merge/device ancora da verificare. Pomodoro/Habits/Countdown sono **locali per device/owner**, non sincronizzati. Repository Flyway V10, ultima VPS Coolify attestata V8; nessun deploy/reset. I dettagli sotto restano uno storico e non la procedura corrente. [Stato](CURRENT-STATUS.md) · [Operazioni](OPERATIONS.md) · [P1.13](P1-WEEKLY-HABITS.md).
+> **Snapshot storico 26/10/2026:** P1.13 Weekly Habits su `main` (PR #14, Flutter `0.18.0+20`, CI verde); P1.14 Sticky Windows **in branch** `feature/p1-14-sticky-windows` (Flutter candidata `0.19.0+21`, CI/merge/device non attestati). Repo Flyway V10, ultimo Coolify confermato V8, nessun deploy/reset. [Stato](CURRENT-STATUS.md) · [Guida operativa](OPERATIONS.md) · [Sticky Windows](P1-STICKY-WINDOWS.md).
 
 
 **Data:** 25 ottobre 2026 · **Codice integrato su `main`**. PR #1 (P1.2) e PR #2 (P1.3) merged. **NON attestare come distribuito:** Coolify, Flyway V8 reale, app Windows/Android reali e prova E2E restano da verificare. Il lavoro GitHub è terminato; il deploy Coolify richiede accesso all'installazione del proprietario.

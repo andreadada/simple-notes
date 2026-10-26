@@ -45,17 +45,20 @@ void main() {
     expect(find.byKey(const Key('eisenhower-board')), findsOneWidget);
     expect(find.byKey(const Key('eisenhower-doNow')), findsOneWidget);
     expect(find.byKey(const Key('eisenhower-delegate')), findsOneWidget);
-    expect(find.byKey(const Key('eisenhower-task-matrix-task')),
-        findsOneWidget);
+    expect(find.descendant(
+      of: find.byKey(const Key('eisenhower-delegate')),
+      matching: find.byKey(const Key('eisenhower-task-matrix-task'))),
+      findsOneWidget);
 
     final container = ProviderScope.containerOf(
       tester.element(find.byType(EisenhowerBoard)));
     await container.read(localStoreProvider.notifier)
         .setTaskPriority('matrix-task', 3);
     await tester.pumpAndSettle();
-    expect(EisenhowerBoard, isNotNull);
-    expect(find.byKey(const Key('eisenhower-task-matrix-task')),
-        findsOneWidget);
+    expect(find.descendant(
+      of: find.byKey(const Key('eisenhower-doNow')),
+      matching: find.byKey(const Key('eisenhower-task-matrix-task'))),
+      findsOneWidget);
     expect((await db.snapshot()).tasks.single.priority, 3);
 
     await tester.tap(find.byKey(const Key('eisenhower-open-matrix-task')));

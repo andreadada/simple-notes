@@ -36,8 +36,11 @@ Presupposti: Flutter SDK, Visual Studio con Desktop development with C++, Git e 
 
 ```powershell
 cd E:\dev\simple-notes
-Copy-Item tools\t4-device-build.example.json .t4-device-build.json
+if (-not (Test-Path -LiteralPath .t4-device-build.json)) {
+  Copy-Item tools\t4-device-build.example.json .t4-device-build.json
+}
 # Compila .t4-device-build.json solo al primo setup, senza segreti.
+# Se il file esiste già, non sovrascriverlo.
 .\tools\t4-build-devices.ps1 -Target windows -ValidateOnly
 .\tools\t4-build-devices.ps1 -Target windows -CheckOnly
 ```

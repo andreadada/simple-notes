@@ -1,7 +1,7 @@
 # Delta Sync v1 — protocollo e storia degli incrementi
 
 <!-- CURRENT-STATUS-REF -->
-> **Stato operativo (26/10/2026):** P1.13 obiettivi settimanali su `main` (PR #14, Flutter `0.18.0+20`, CI verde). P1.14 finestre Sticky Windows è **solo nel branch** `feature/p1-14-sticky-windows` (`0.19.0+21`, CI/merge/device da verificare). Repo Flyway V10; ultima VPS attestata V8. Nessun deploy/reset. [Stato](CURRENT-STATUS.md) · [P1.14](P1-STICKY-WINDOWS.md).
+> **Stato operativo — 26/10/2026:** P1.14 Sticky Notes Windows integrata su `main` (PR #15, Flutter `0.19.0+21`, CI verde); P1.15 scorciatoie Windows è **in branch** `feature/p1-15-desktop-shortcuts` (`0.20.0+22`), CI/merge/hardware aperti. Repo Flyway V10, ultima VPS attestata V8, nessun deploy/reset. [Stato](CURRENT-STATUS.md) · [Operazioni](OPERATIONS.md) · [P1.15](P1-DESKTOP-SHORTCUTS.md).
 
 
 ## Ultima versione di un elemento / risoluzione conflitto (P0)
@@ -61,3 +61,7 @@ Il target settimanale e lo streak derivano dai check-in locali, **non** sono inv
 ## P1.14 — Sticky Notes Windows
 
 Finestre Flutter separate senza Drift/SQLite proprio: via method channel leggono e aggiornano le note esistenti nel main engine, che conserva ID, outbox, conflitti e sync. La guardia contro valori stale evita sovrascritture silenziose; nessuna migration/API nuova. [Specifica](P1-STICKY-WINDOWS.md).
+
+## P1.15 — Tastiera UI Windows
+
+I comandi app-local selezionano viste già presenti o invocano i metodi normali di `LocalStore` per creare una nota; nessuna API, DTO, migration Flyway/Drift, endpoint, outbox distinta o altro processo. Ctrl+Shift+T mette solo a fuoco un input. [Specifiche](P1-DESKTOP-SHORTCUTS.md).

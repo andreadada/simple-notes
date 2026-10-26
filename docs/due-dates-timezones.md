@@ -1,7 +1,7 @@
 # P0 — Scadenze, date-only e fusi orari
 
 <!-- CURRENT-STATUS-REF -->
-> **Stato operativo 26/10/2026:** P1.13 Weekly Habits su `main` (PR #14, Flutter `0.18.0+20`, CI verde); P1.14 Sticky Windows **in branch** `feature/p1-14-sticky-windows` (Flutter candidata `0.19.0+21`, CI/merge/device non attestati). Repo Flyway V10, ultimo Coolify confermato V8, nessun deploy/reset. [Stato](CURRENT-STATUS.md) · [Guida operativa](OPERATIONS.md) · [Sticky Windows](P1-STICKY-WINDOWS.md).
+> **Snapshot storico — 26/10/2026:** P1.14 Sticky Notes Windows integrata su `main` (PR #15, Flutter `0.19.0+21`, CI verde); P1.15 scorciatoie Windows è **in branch** `feature/p1-15-desktop-shortcuts` (`0.20.0+22`), CI/merge/hardware aperti. Repo Flyway V10, ultima VPS attestata V8, nessun deploy/reset. Procedure sottostanti storiche. [Stato](CURRENT-STATUS.md) · [Operazioni](OPERATIONS.md) · [P1.15](P1-DESKTOP-SHORTCUTS.md).
 
 
 > **Stato reale 24/10/2026:** PostgreSQL `simplenotes` 17.11, Flyway V1–V7 riuscite, backup `simple-notes-20261024T132857Z-271921.dump` con SHA256 valido e restore isolato PASS. Copia offsite non effettuata per scelta dell'utente. Restano da verificare l'API autenticata (`taskDueSchema:1`) e il collaudo T4.2 Windows↔Android con Flutter `0.4.0+4`. Non ripetere backup, migrazioni o deploy automaticamente. [T4.2](T4-DEVICE-SYNC.md).

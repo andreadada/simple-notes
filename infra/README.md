@@ -1,7 +1,7 @@
 # Backend — Coolify
 
 <!-- CURRENT-STATUS-REF -->
-> **Stato operativo 26/10/2026:** P1.13 Weekly Habits su `main` (PR #14, Flutter `0.18.0+20`, CI verde); P1.14 Sticky Windows **in branch** `feature/p1-14-sticky-windows` (Flutter candidata `0.19.0+21`, CI/merge/device non attestati). Repo Flyway V10, ultimo Coolify confermato V8, nessun deploy/reset. [Stato](../docs/CURRENT-STATUS.md) · [Guida operativa](../docs/OPERATIONS.md) · [Sticky Windows](../docs/P1-STICKY-WINDOWS.md).
+> **Stato operativo — 26/10/2026:** P1.14 Sticky Notes Windows integrata su `main` (PR #15, Flutter `0.19.0+21`, CI verde); P1.15 scorciatoie Windows è **in branch** `feature/p1-15-desktop-shortcuts` (`0.20.0+22`), CI/merge/hardware aperti. Repo Flyway V10, ultima VPS attestata V8, nessun deploy/reset. [Stato](../docs/CURRENT-STATUS.md) · [Operazioni](../docs/OPERATIONS.md) · [P1.15](../docs/P1-DESKTOP-SHORTCUTS.md).
 
 
 ## Cronologia — rilascio 0.7.0+9 (superato da P1.6)
@@ -146,3 +146,7 @@ Gli obiettivi settimanali Habit sono solo Flutter/SharedPreferences e restano de
 ## P1.14 — Nessuna risorsa server aggiuntiva
 
 Le finestre Windows separate usano le note sincronizzate attraverso LocalStore del processo principale; nessun processo sync secondario, tabella, API, Compose service, variabile, backup o volume aggiuntivo. Il gate per release resta Flyway V10 realmente applicato (ultima attestazione V8). [Specifica](../docs/P1-STICKY-WINDOWS.md).
+
+## P1.15 — Nessun intervento su Coolify
+
+Le scorciatoie sono solo UI Flutter Windows, senza servizi, migrazioni, chiavi Google, variabili o volumi. Il server reale va confermato Flyway V10 separatamente prima dell'installazione cumulativa dei client (ultima attestazione V8). Niente deploy/reset per P1.15. [Specifica](../docs/P1-DESKTOP-SHORTCUTS.md).

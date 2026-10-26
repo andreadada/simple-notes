@@ -1,6 +1,6 @@
 # P1.7 Windows — MSIX e promemoria opt-in
 
-> **Stato operativo 26/10/2026:** P1.13 Weekly Habits su `main` (PR #14, Flutter `0.18.0+20`, CI verde); P1.14 Sticky Windows **in branch** `feature/p1-14-sticky-windows` (Flutter candidata `0.19.0+21`, CI/merge/device non attestati). Repo Flyway V10, ultimo Coolify confermato V8, nessun deploy/reset. [Stato](CURRENT-STATUS.md) · [Guida operativa](OPERATIONS.md) · [Sticky Windows](P1-STICKY-WINDOWS.md).
+> **Stato operativo — 26/10/2026:** P1.14 Sticky Notes Windows integrata su `main` (PR #15, Flutter `0.19.0+21`, CI verde); P1.15 scorciatoie Windows è **in branch** `feature/p1-15-desktop-shortcuts` (`0.20.0+22`), CI/merge/hardware aperti. Repo Flyway V10, ultima VPS attestata V8, nessun deploy/reset. [Stato](CURRENT-STATUS.md) · [Operazioni](OPERATIONS.md) · [P1.15](P1-DESKTOP-SHORTCUTS.md).
 
 **Stato 26/10/2026:** **integrata in `main` con PR #7** (merge `34106c4`, Flutter `0.12.0+14`, [CI 40245561264 verde](https://github.com/andreadada/simple-notes/actions/runs/40245561264)); **non installata o verificata su PC reale**, non rilasciata. Backend Flyway V10 e Drift V8 invariati. La release corrente del codice su `main` è ora Flutter `0.13.0+15` (PR #8); non installare nuovi client fino a verifica dell'API Coolify e compatibilità dell'upgrade MSIX.
 

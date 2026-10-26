@@ -1,6 +1,6 @@
 # P1.13 — Obiettivi settimanali Habit Tracker
 
-> **Stato operativo (26/10/2026):** P1.13 obiettivi settimanali su `main` (PR #14, Flutter `0.18.0+20`, CI verde). P1.14 finestre Sticky Windows è **solo nel branch** `feature/p1-14-sticky-windows` (`0.19.0+21`, CI/merge/device da verificare). Repo Flyway V10; ultima VPS attestata V8. Nessun deploy/reset. [Stato](CURRENT-STATUS.md) · [P1.14](P1-STICKY-WINDOWS.md).
+> **Stato operativo — 26/10/2026:** P1.14 Sticky Notes Windows integrata su `main` (PR #15, Flutter `0.19.0+21`, CI verde); P1.15 scorciatoie Windows è **in branch** `feature/p1-15-desktop-shortcuts` (`0.20.0+22`), CI/merge/hardware aperti. Repo Flyway V10, ultima VPS attestata V8, nessun deploy/reset. [Stato](CURRENT-STATUS.md) · [Operazioni](OPERATIONS.md) · [P1.15](P1-DESKTOP-SHORTCUTS.md).
 
 **Stato 26/10/2026:** **integrata su `main` con PR #14**, Flutter `0.18.0+20`, [CI Flutter](https://github.com/andreadada/simple-notes/actions/runs/40371894259) e [Markdown](https://github.com/andreadada/simple-notes/actions/runs/40371894390) verdi; hardware/installazione non attestati. P1.12 Countdown [PR #13](https://github.com/andreadada/simple-notes/pull/13) è integrata su `main` (`0.17.0+19`) con [Flutter CI verde](https://github.com/andreadada/simple-notes/actions/runs/40368229874) e [docs verdi](https://github.com/andreadada/simple-notes/actions/runs/40368230012).
 

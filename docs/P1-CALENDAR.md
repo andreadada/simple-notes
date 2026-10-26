@@ -1,7 +1,7 @@
 # P1.1 — Calendario giorno, settimana, mese
 
 <!-- CURRENT-STATUS-REF -->
-> **Stato codice (25/10/2026):** P1.7 Android integrata su `main` (Flutter `0.11.0+13`, Flyway V10/Drift V8): promemoria nativi inexact e opt-in, CI verde, **senza collaudo reale**. Windows ZIP senza notifiche finché non è pronto MSIX. Ultimo Coolify verificato V8, V9/V10 non attestati. **Fonte unica:** [CURRENT-STATUS.md](CURRENT-STATUS.md). I riferimenti storici più sotto non documentano un deploy attuale.
+> **Snapshot storico:** le versioni, PR, prove e prossimi passi riportati di seguito si riferiscono all'incremento originario, non allo stato attuale. Al 26/10/2026 `main` include **P1.8 / Flutter 0.13.0+15**, CI verde; backend GitHub Flyway V10, Coolify reale verificato fino a V8, device E2E non attestati. Per decisioni operative usare [CURRENT-STATUS.md](CURRENT-STATUS.md) e [P1-RELEASE-BATCH.md](P1-RELEASE-BATCH.md).
 
 
 ## Stato storico dell'incremento P1.1 (25 ottobre 2026)
@@ -51,6 +51,6 @@ Ancora fuori ambito: drag/drop e ridimensionamento delle fasce orarie, ricorrenz
 - Coolify deploy: **non eseguito**; P1.1 è client-only.
 - Nessun reset dati e nessuna migrazione richiesti per aggiornare il client.
 
-## P1.2 in sviluppo su branch separato (25/10/2026)
+## Evoluzione storica: P1.2, integrata successivamente su main
 
 La versione successiva estende la proiezione aggiungendo i blocchi temporali distinti dalle scadenze. Serve API `timeBlockSchema:1` e Flyway V8 prima di aggiornare client: [P1-TIME-BLOCKING.md](P1-TIME-BLOCKING.md). Fino al merge e al rollout, le funzioni P1.2 **non sono presenti nella release attuale**.

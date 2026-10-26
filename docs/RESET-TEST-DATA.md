@@ -1,7 +1,7 @@
 # Reset coordinato dei soli dati di test — Simple Notes
 
 <!-- CURRENT-STATUS-REF -->
-> **Stato codice (25/10/2026):** P1.7 Android integrata su `main` (Flutter `0.11.0+13`, Flyway V10/Drift V8): promemoria nativi inexact e opt-in, CI verde, **senza collaudo reale**. Windows ZIP senza notifiche finché non è pronto MSIX. Ultimo Coolify verificato V8, V9/V10 non attestati. **Fonte unica:** [CURRENT-STATUS.md](CURRENT-STATUS.md). I riferimenti storici più sotto non documentano un deploy attuale.
+> **Snapshot storico:** le versioni, PR, prove e prossimi passi riportati di seguito si riferiscono all'incremento originario, non allo stato attuale. Al 26/10/2026 `main` include **P1.8 / Flutter 0.13.0+15**, CI verde; backend GitHub Flyway V10, Coolify reale verificato fino a V8, device E2E non attestati. Per decisioni operative usare [CURRENT-STATUS.md](CURRENT-STATUS.md) e [P1-RELEASE-BATCH.md](P1-RELEASE-BATCH.md).
 
 
 **ESEGUITO E VERIFICATO DALL'UTENTE il 25 ottobre 2026. Non ripetere questa procedura per continuare lo sviluppo.** È un'operazione distruttiva, autorizzata dall'utente **solo per i dati di test** (24/10/2026). Non riutilizzare questi comandi quando ci saranno dati reali. Il reset comprende task, liste, note visibili ed eliminate, operazioni e storico sync su PostgreSQL e SQLite su entrambi i dispositivi. **Preserva** l'account Google `app_user`, le sessioni backend, lo schema e le migrazioni Flyway e gli altri database della VPS.

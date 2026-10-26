@@ -1,7 +1,7 @@
 # Audit applicazione di design.md — UI condivisa Flutter
 
 <!-- CURRENT-STATUS-REF -->
-> **Stato codice (25/10/2026):** P1.7 Android integrata su `main` (Flutter `0.11.0+13`, Flyway V10/Drift V8): promemoria nativi inexact e opt-in, CI verde, **senza collaudo reale**. Windows ZIP senza notifiche finché non è pronto MSIX. Ultimo Coolify verificato V8, V9/V10 non attestati. **Fonte unica:** [CURRENT-STATUS.md](CURRENT-STATUS.md). I riferimenti storici più sotto non documentano un deploy attuale.
+> **Riferimento corrente (26/10/2026):** `main` contiene Flutter **0.13.0+15** (P1.8, CI verde) e backend fino a Flyway **V10**; Coolify reale attestato solo fino a **V8**. Le sezioni precedenti datate sono cronologia o descrizione delle singole versioni. Consultare [CURRENT-STATUS](CURRENT-STATUS.md) e [runbook V10](P1-RELEASE-BATCH.md) prima di operazioni reali; nessun deploy/test hardware confermato.
 
 
 > **Stato reale 24/10/2026:** PostgreSQL `simplenotes` 17.11, Flyway V1–V7 riuscite, backup `simple-notes-20261024T132857Z-271921.dump` con SHA256 valido e restore isolato PASS. Copia offsite non effettuata per scelta dell'utente. Restano da verificare l'API autenticata (`taskDueSchema:1`) e il collaudo T4.2 Windows↔Android con Flutter `0.4.0+4`. Non ripetere backup, migrazioni o deploy automaticamente. [T4.2](T4-DEVICE-SYNC.md).
@@ -87,3 +87,7 @@ Le schermate sopra risiedono in **un unico client Flutter**, quindi condividono 
 Il lavoro UI è in GitHub, **non equivale a test visivi reali o rilascio web**. La [CI Flutter 40047841376](https://github.com/andreadada/simple-notes/actions/runs/40047841376) sul commit `59e13bc` ha superato **flutter analyze e flutter test**, incluso il test di apertura del menu account Forui. Le build native Windows/Android erano ancora in corso all'ultima verifica. I popover Forui per account, priorità e lista comandano esplicitamente i rispettivi controller. Non confondere questi risultati con validazione visuale o con compatibilità browser end-to-end.
 
 Riferimenti: [design.md](../design.md), [Forui](ui-forui.md), [roadmap](../project.md), [status P0](P0-STATUS.md).
+
+## Aggiornamento audit P1.8 (26 ottobre 2026)
+
+La Matrice Eisenhower usa Forui per card/menu e `InlineEditableTitle` per il titolo; due colonne su desktop e una su mobile. Le modifiche di priorità/scadenza/completamento passano da `LocalStore`. La CI Flutter di PR #8 è verde, ma non documenta una verifica visiva su hardware o compatibilità degli upgrade MSIX. [Specifica P1.8](P1-EISENHOWER.md).

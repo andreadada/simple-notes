@@ -1,7 +1,7 @@
 # Simple Notes — UI e design system Forui
 
 <!-- CURRENT-STATUS-REF -->
-> **Stato codice (25/10/2026):** P1.7 Android integrata su `main` (Flutter `0.11.0+13`, Flyway V10/Drift V8): promemoria nativi inexact e opt-in, CI verde, **senza collaudo reale**. Windows ZIP senza notifiche finché non è pronto MSIX. Ultimo Coolify verificato V8, V9/V10 non attestati. **Fonte unica:** [CURRENT-STATUS.md](CURRENT-STATUS.md). I riferimenti storici più sotto non documentano un deploy attuale.
+> **Riferimento corrente (26/10/2026):** `main` contiene Flutter **0.13.0+15** (P1.8, CI verde) e backend fino a Flyway **V10**; Coolify reale attestato solo fino a **V8**. Le sezioni precedenti datate sono cronologia o descrizione delle singole versioni. Consultare [CURRENT-STATUS](CURRENT-STATUS.md) e [runbook V10](P1-RELEASE-BATCH.md) prima di operazioni reali; nessun deploy/test hardware confermato.
 
 
 > **Stato reale 24/10/2026:** PostgreSQL `simplenotes` 17.11, Flyway V1–V7 riuscite, backup `simple-notes-20261024T132857Z-271921.dump` con SHA256 valido e restore isolato PASS. Copia offsite non effettuata per scelta dell'utente. Restano da verificare l'API autenticata (`taskDueSchema:1`) e il collaudo T4.2 Windows↔Android con Flutter `0.4.0+4`. Non ripetere backup, migrazioni o deploy automaticamente. [T4.2](T4-DEVICE-SYNC.md).
@@ -119,3 +119,7 @@ Questa pagina documenta il *codice introdotto*; non dichiara che il passaggio di
 - `FCalendar.grid` usa un header personalizzato compatto con pulsanti **Forui** per navigare tra mesi/anni; quello predefinito sforava di 26 px in una finestra stretta.
 - `NotesEditorControllerScope` mantiene i `TextEditingController` attivi fino allo smontaggio completo della route; chiamare `.whenComplete(controller.dispose)` subito dopo `showFDialog` li liberava prima della fine dell'animazione e causava eccezioni in Flutter.
 - Analisi e test widget del commit `cc0a6328` riusciti nella [CI Flutter 39977182371](https://github.com/andreadada/simple-notes/actions/runs/39977182371). Verificare separatamente anche le build native Windows/Android, ancora in esecuzione all'ultima osservazione.
+
+## P1.8 — Vista Matrice Eisenhower (26 ottobre 2026)
+
+La nuova vista Forui ha quattro quadranti responsive (2 colonne desktop, 1 mobile), titolo editabile inline e selector di priorità e scadenza tramite componenti esistenti. Le modifiche vanno in SQLite/outbox, mai in uno stato separato. È nel codice Flutter 0.13 su `main` e ha CI verde; prove visive Android/Windows rimangono aperte. [Specifica P1.8](P1-EISENHOWER.md).

@@ -1,7 +1,7 @@
 # Simple Notes — Architettura applicativa
 
 <!-- CURRENT-STATUS-REF -->
-> **Stato codice (25/10/2026):** P1.7 Android integrata su `main` (Flutter `0.11.0+13`, Flyway V10/Drift V8): promemoria nativi inexact e opt-in, CI verde, **senza collaudo reale**. Windows ZIP senza notifiche finché non è pronto MSIX. Ultimo Coolify verificato V8, V9/V10 non attestati. **Fonte unica:** [CURRENT-STATUS.md](CURRENT-STATUS.md). I riferimenti storici più sotto non documentano un deploy attuale.
+> **Riferimento corrente (26/10/2026):** `main` contiene Flutter **0.13.0+15** (P1.8, CI verde) e backend fino a Flyway **V10**; Coolify reale attestato solo fino a **V8**. Le sezioni precedenti datate sono cronologia o descrizione delle singole versioni. Consultare [CURRENT-STATUS](CURRENT-STATUS.md) e [runbook V10](P1-RELEASE-BATCH.md) prima di operazioni reali; nessun deploy/test hardware confermato.
 
 ## Componenti del codice attuale
 
@@ -26,7 +26,11 @@
 
 La UI è **Forui-first**. I campi testuali già mostrati sono editabili inline; `InlineTextMetrics.fieldWidth` misura i glifi dell'underline e `inputWidth` garantisce spazio cursore, impedendo clipping. Ogni edit salva tramite `LocalStore` e outbox, non nel solo widget. Le selezioni complesse e le eliminazioni usano dialog/sheet Forui.
 
-Target supportati nel codice: Windows desktop e Android; il web browser non è pronto per via di dipendenze native e OAuth. Le CI coprono test/build, **non** la sincronizzazione su due installazioni reali.
+Target supportati nel codice: Windows desktop e Android (notifiche Windows abilitate soltanto con MSIX, non ZIP/EXE). Matrice Eisenhower P1.8 su entrambi, derivata dai campi task attuali e senza nuova migrazione; il web browser non è pronto per via di dipendenze native e OAuth. Le CI coprono test/build, **non** la sincronizzazione su due installazioni reali.
+
+## P1.7–P1.8 (aggiornamento architetturale)
+
+La pianificazione promemoria P1.7 è device-local (opt-in/ledger), Android inexact e Windows soltanto MSIX. La Matrice P1.8 è una proiezione pura di `LocalTask` basata su `TaskDue` e priorità, con modifiche via `LocalStore`/SQLite/outbox; non introduce un modello remoto né schema aggiuntivo.
 
 ## Stato operativo e documenti
 

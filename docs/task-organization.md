@@ -1,5 +1,5 @@
 <!-- CURRENT-STATUS-REF -->
-> **Stato codice (25/10/2026):** P1.7 Android integrata su `main` (Flutter `0.11.0+13`, Flyway V10/Drift V8): promemoria nativi inexact e opt-in, CI verde, **senza collaudo reale**. Windows ZIP senza notifiche finché non è pronto MSIX. Ultimo Coolify verificato V8, V9/V10 non attestati. **Fonte unica:** [CURRENT-STATUS.md](CURRENT-STATUS.md). I riferimenti storici più sotto non documentano un deploy attuale.
+> **Riferimento corrente (26/10/2026):** `main` contiene Flutter **0.13.0+15** (P1.8, CI verde) e backend fino a Flyway **V10**; Coolify reale attestato solo fino a **V8**. Le sezioni precedenti datate sono cronologia o descrizione delle singole versioni. Consultare [CURRENT-STATUS](CURRENT-STATUS.md) e [runbook V10](P1-RELEASE-BATCH.md) prima di operazioni reali; nessun deploy/test hardware confermato.
 
 <!-- Vincolo UI aggiornato 24/10/2026: tutti i titoli di liste, task e subtasks usano la stessa logica inline-first. La sottolineatura non deve eccedere la larghezza del valore (o dell'hint) +~1px, nessun grigio di riempimento; placeholder semitrasparente (~72%). Utilizzare InlineTextMetrics.fieldWidth in notes_theme.dart, non minWidth artificiale o Expanded TextField full-width. Regole: ../design.md, ui-forui.md e ui-design-audit.md. -->
 # Organizzazione attività (P0) — liste, priorità, tag e sottotask
@@ -57,3 +57,7 @@ La migrazione schema v4 è incrementale e usa default: priorità 0, tag e sottot
 ## UX obbligatoria — titoli inline
 
 I valori testuali semplici già mostrati devono essere **normalmente editabili nello stesso punto**: il titolo di lista nell'header è già `InlineEditableTitle`. Clicca il testo, scrivi, salva con Invio o perdita di focus, annulla con Esc; senza pulsante `Rinomina`. Titolo corto = campo compatto, non un input largo quanto la pagina. La modifica richiama `LocalStore.renameList()` e viene registrata nella stessa outbox della precedente rinomina. Applicare progressivamente a titoli di task/note quando non comporta regressioni; mantenere dialog per le modifiche multi-campo. Regola generale: [design.md](../design.md) e [ui-forui.md](ui-forui.md).
+
+## P1.8 — Riutilizzo dei campi di organizzazione
+
+La matrice Eisenhower deriva **importanza** dalle priorità task già esistenti (`P2`/`P3`) e **urgenza** da `due` (date-only civile o istante entro 48h). Non aggiunge campi né migrazioni; scegliere un quadrante non assegna attività a una persona. [Specifiche aggiornate](P1-EISENHOWER.md).

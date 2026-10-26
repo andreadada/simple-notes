@@ -1,6 +1,6 @@
 # Simple Notes — Passaggio di consegne (handoff)
 
-> **Stato 26/10/2026:** P1.9 **Kanban integrato in `main`** con [PR #10](https://github.com/andreadada/simple-notes/pull/10) (Flutter `0.14.0+16`, [CI PR verde](https://github.com/andreadada/simple-notes/actions/runs/40328803094)). P1.10 **Pomodoro locale in sviluppo sul branch** `feature/p1-10-pomodoro-focus` (`0.15.0+17`), CI/merge e device da verificare. Backend repository Flyway V10/Drift V8; ultimo Coolify reale attestato **V8**, nessun deploy/reset. [Stato canonico](CURRENT-STATUS.md).
+> **Stato aggiornato 26/10/2026:** P1.10 Pomodoro `0.15.0+17` integrata su main (CI verde), Habit Tracker P1.11 `0.16.0+18` solo sul branch `feature/p1-11-habit-tracker` (CI/merge ancora da validare). Pomodoro e abitudini restano **locali, non sincronizzati**; repository Flyway V10, VPS Coolify attestata V8, nessun deploy/reset. [Stato](CURRENT-STATUS.md), [Operazioni](OPERATIONS.md), [P1.11](P1-HABITS.md).
 
 <!-- CURRENT-STATUS-REF -->
 
@@ -260,3 +260,7 @@ Nuova guida [task-organization.md](task-organization.md): liste sincronizzate co
 
 ## Vincolo UI deciso il 23 ottobre 2026 — inline editing first
 Per titoli e altri valori testuali semplici, **preferire la modifica direttamente sul testo** a pulsanti `Rinomina`/dialog. Il titolo lista è editabile in header grazie a `InlineEditableTitle`; Invio/blur salvano, Esc annulla, SQLite/outbox invariati. Non reintrodurre la rinomina tramite modal salvo necessità motivata. Specifiche aggiornate in `design.md`, `docs/ui-forui.md`, `AGENTS.md`.
+
+## Handoff P1.11 (26/10/2026)
+
+PR #11 Pomodoro è stata integrata con CI verde. Il branch `feature/p1-11-habit-tracker` introduce HabitsBoard/HabitsState, check-in quotidiani, streak e archivio locale per owner con test di dominio/widget. Flutter 0.16.0+18, CI e merge da verificare. Nessun deploy/reset; ultima VPS Flyway V8 attestata, backend repo V10. [Guida operativa](OPERATIONS.md) · [Specifica](P1-HABITS.md).

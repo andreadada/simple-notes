@@ -1,7 +1,7 @@
 # Backend — Coolify
 
 <!-- CURRENT-STATUS-REF -->
-> **Riferimento corrente (26/10/2026):** `main` contiene Flutter **0.13.0+15** (P1.8, CI verde) e backend fino a Flyway **V10**; Coolify reale attestato solo fino a **V8**. Le sezioni precedenti datate sono cronologia o descrizione delle singole versioni. Consultare [CURRENT-STATUS](../docs/CURRENT-STATUS.md) e [runbook V10](../docs/P1-RELEASE-BATCH.md) prima di operazioni reali; nessun deploy/test hardware confermato.
+> **Stato aggiornato 26/10/2026:** P1.10 Pomodoro `0.15.0+17` integrata su main (CI verde), Habit Tracker P1.11 `0.16.0+18` solo sul branch `feature/p1-11-habit-tracker` (CI/merge ancora da validare). Pomodoro e abitudini restano **locali, non sincronizzati**; repository Flyway V10, VPS Coolify attestata V8, nessun deploy/reset. [Stato](../docs/CURRENT-STATUS.md), [Operazioni](../docs/OPERATIONS.md), [P1.11](../docs/P1-HABITS.md).
 
 
 ## Cronologia — rilascio 0.7.0+9 (superato da P1.6)
@@ -130,3 +130,7 @@ Il branch `feature/p1-2-time-blocking` contiene `V8__task_time_blocks.sql` (3 co
 Dopo il merge di P1.2 e P1.3 in `main`, **la presenza del codice non dimostra un deploy Coolify**. Verificare la versione Flyway con `infra/t4-inspect-db.sh`: ora riconosce sia V7 pre-deploy sia V8 dopo il rollout e verifica la presenza delle 3 colonne opzionali del time blocking. Per controllare la capability HTTPS post deploy occorre un token JWT reale e `REQUIRE_TIME_BLOCK_SCHEMA=1 API_BASE_URL=https://api.notes.ddone.it T4_BEARER_TOKEN='TOKEN' bash infra/t4-check-api.sh`. Non pubblicare il token nei log.
 
 Sul VPS, identificare il container PostgreSQL da `docker ps`, mai assumere l'ID storico. Il deploy consigliato usa l'app esistente Coolify Docker Compose (root `docker-compose.yml`, servizi `api` e `db`), senza rimuovere/reinizializzare il volume PostgreSQL. Flyway V8 viene applicato automaticamente al boot della nuova API: controllare log Flyway e health. **Eseguire un backup verificato prima della migrazione**, conservare i segreti Coolify invariati, poi fare smoke test di creazione, spostamento, modifica, sync, Cestino note e scadenze. Nessun reset dati richiesto.
+
+## Gate P1.11 (26 ottobre 2026)
+
+Habit Tracker P1.11 usa soltanto SharedPreferences lato Flutter e non aggiunge variabili, migrazioni PostgreSQL, job né servizi Compose. L'app nel repository continua a richiedere Flyway V10 per le funzioni P1.6; la VPS è attestata fino a V8. Non far partire un deploy per il solo tracker e non cancellare volume, DB o stato locale in preparazione. [Guida operativa](../docs/OPERATIONS.md).

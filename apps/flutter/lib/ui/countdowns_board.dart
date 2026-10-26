@@ -148,7 +148,9 @@ class _CountdownsBoardState extends State<CountdownsBoard>
   Future<void> _editDue(CountdownEvent event) async {
     final next = await showTaskDueEditor(context, initial: event.due);
     if (!mounted || next == null ||
-        next.kind != 'date' && next.kind != 'datetime') return;
+        (next.kind != 'date' && next.kind != 'datetime')) {
+      return;
+    }
     await _save(_state.update(event.id, (existing) =>
         existing.rescheduled(next)));
   }
@@ -173,13 +175,17 @@ class _CountdownsBoardState extends State<CountdownsBoard>
 
   @override
   Widget build(BuildContext context) {
-    if (_loading) return const Center(
-      child: CircularProgressIndicator(key: Key('countdown-loading')));
-    if (_loadError != null) return Center(child: Padding(
-      padding: const EdgeInsets.all(20),
-      child: Text(_loadError!, key: const Key('countdown-load-error'),
-        textAlign: TextAlign.center),
-    ));
+    if (_loading) {
+      return const Center(
+        child: CircularProgressIndicator(key: Key('countdown-loading')));
+    }
+    if (_loadError != null) {
+      return Center(child: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Text(_loadError!, key: const Key('countdown-load-error'),
+          textAlign: TextAlign.center),
+      ));
+    }
 
     final now = DateTime.now();
     final active = _state.active;

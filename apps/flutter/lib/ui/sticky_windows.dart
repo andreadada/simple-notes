@@ -29,6 +29,16 @@ abstract final class StickyConflictGuard {
 abstract final class StickyDesktop {
   static bool get supported => Platform.isWindows;
 
+  static Future<bool> launchSubwindowIfNeeded() async {
+    if (!supported) return false;
+    final controller = await WindowController.fromCurrentEngine();
+    final sticky = parseWindowArguments(controller.arguments);
+    if (sticky == null) return false;
+    runApp(StickyNoteApp(
+      parentId: sticky['parentId']!, noteId: sticky['noteId']!));
+    return true;
+  }
+
   static Map<String, String>? parseWindowArguments(String arguments) {
     try {
       final obj = jsonDecode(arguments);

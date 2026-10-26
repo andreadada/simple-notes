@@ -1,5 +1,7 @@
 # P1.8 — Matrice Eisenhower (vista derivata)
 
+> **Aggiornamento operativo (26/10/2026):** `main` include P1.10 Pomodoro (Flutter `0.15.0+17`, PR #11, CI verde). Habit Tracker P1.11 è **in branch** `feature/p1-11-habit-tracker` (`0.16.0+18`, CI/merge non attestati). Abitudini e Pomodoro hanno storico **locale, non sincronizzato**. Flyway V10 è nel repository ma Coolify è confermato fino a V8; niente deploy o collaudo hardware. Le versioni precedenti riportate sotto sono **storiche**: seguire [stato canonico](CURRENT-STATUS.md), [operazioni](OPERATIONS.md) e [P1.11](P1-HABITS.md).
+
 **Stato 26/10/2026:** **integrata su `main` con PR #8**, Flutter `0.13.0+15`. [Flutter CI 40313588569](https://github.com/andreadada/simple-notes/actions/runs/40313588569) e [Markdown 40313588470](https://github.com/andreadada/simple-notes/actions/runs/40313588470) **verdi**; verifica hardware ancora da effettuare. PR #7 (MSIX Windows) è stata integrata in `main` dopo CI verde [40245561264](https://github.com/andreadada/simple-notes/actions/runs/40245561264). Nessun deploy o reset.
 
 ## Comportamento

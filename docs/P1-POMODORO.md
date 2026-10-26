@@ -1,0 +1,31 @@
+# P1.10 — Pomodoro locale e statistiche
+
+**Stato (26/10/2026):** in sviluppo nel branch `feature/p1-10-pomodoro-focus`, Flutter `0.15.0+17`. P1.9 Kanban PR #10 è stata integrata su `main` dopo [CI Flutter verde](https://github.com/andreadada/simple-notes/actions/runs/40328803094). P1.10 CI/merge/real-device ancora da verificare. Coolify non modificato: ultimo Flyway reale attestato V8, V10 soltanto nel repository.
+
+## Comportamento implementato
+
+- Voce **Pomodoro** nella navigazione Forui su Windows e Android, UI responsive a 1/2 colonne.
+- Timer `25 minuti focus / 5 minuti pausa breve / 15 minuti pausa lunga dopo ogni 4 focus completati`. Avvio, pausa, ripresa, ricomincia e salto della pausa; nessun avanzamento automatico con suoneria e nessuna notifica in background.
+- La scadenza del timer è un **istante UTC persistente**, non il numero di tick: dopo sospensione, navigazione o riapertura dell'app, il client calcola il tempo residuo; una sessione scaduta durante la chiusura è registrata al prossimo accesso al pannello, **una sola volta** tramite `activeSessionId` stabile.
+- Ogni focus terminato registra un `FocusRecord` (ID, timestamp UTC, 1500 s). Le statistiche mostrano sessioni di oggi, minuti totali e numero di focus completati, più barre per gli ultimi 7 giorni **nel fuso locale del dispositivo**. Storico limitato agli ultimi **500** record, senza cancellare database, task o note.
+- Preferenze `SharedPreferences` isolate per account Google tramite SHA-256 dell'ID utente; account non autenticato usa un profilo separato `signed-out-local`. Cambiare account non espone l'altro timer.
+- Parsing/versionamento esplicito dello stato JSON: se il formato non è valido, l'app **non lo sovrascrive** e mostra un errore. Un fallimento del salvataggio blocca le nuove azioni finché il salvataggio non riesce, per evitare falsi conteggi.
+- La sessione in corso si può azzerare **senza cancellare statistiche già completate**. Sessioni abortite non vengono conteggiate.
+
+## Confini e sicurezza dati
+
+- **Solo locale sul singolo dispositivo.** Non è sincronizzato tra Windows e Android; timer e statistiche sono separati per piattaforma e per account. Non sono task sincronizzati, né allegati a un task.
+- Nessun nuovo endpoint backend, servizio in background, SQLite migration, Flyway migration, outbox, push notification, autorizzazione o modifica alla gestione dell'account.
+- Il passaggio da ZIP a MSIX **potrebbe modificare la directory di SharedPreferences**, così come quella SQLite: non installare un MSIX in sostituzione su un profilo reale prima di confermare la conservazione dei dati.
+- I fusi orari locali e l'orologio del sistema influenzano la visualizzazione giornaliera e un timer basato su UTC; se l'orologio viene cambiato, il risultato può cambiare. Senza esecuzione in background non c'è garanzia di avviso esatto a timer scaduto.
+- Lo storico è limitato agli ultimi 500 record; i contatori `focusCompleted` rimangono conservati. I minuti totali si basano sullo storico conservato (quindi parziali oltre 500).
+
+## Verifiche da completare
+
+1. [ ] Flutter `analyze`, unit/widget `test`, build APK JDK17+21, Windows EXE/MSIX e Markdown **verdi sul commit finale**.
+2. [ ] Desktop e Android reali: 25/5/15, pause, riprese, riapertura dopo timer scaduto, navigate fra schermate e riavvio (niente duplicati).
+3. [ ] Cambio account Google e logout: nessuna statistica di un account visibile dall'altro; profilo locale separato.
+4. [ ] Salvataggio preferenze, corruzione/upgrade incompatibile gestiti senza perdita dati; differenze ZIP/MSIX.
+5. [ ] Eseguire test E2E cloud soltanto al termine del batch, prima dopo attestazione Flyway V10/capability sul server reale.
+
+[Guida operativa](OPERATIONS.md) · [Stato canonico](CURRENT-STATUS.md) · [Roadmap](../project.md).

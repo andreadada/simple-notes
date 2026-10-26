@@ -1,10 +1,10 @@
 # Flutter client — P0 e P1
 
-> **Stato 26/10/2026:** P1.8 **integrata su `main`** (PR #8, Flutter `0.13.0+15`; CI verde), così come P1.7 Android e Windows MSIX. Schema repository Flyway V10 / Drift V8; **ultimo database Coolify attestato V8**, migrazioni V9/V10 reali da verificare. Nessun nuovo deploy né collaudo E2E Windows↔Android sui dispositivi. [Stato canonico](../../docs/CURRENT-STATUS.md).
+> **Stato 26/10/2026:** P1.9 **Kanban integrato in `main`** con [PR #10](https://github.com/andreadada/simple-notes/pull/10) (Flutter `0.14.0+16`, [CI PR verde](https://github.com/andreadada/simple-notes/actions/runs/40328803094)). P1.10 **Pomodoro locale in sviluppo sul branch** `feature/p1-10-pomodoro-focus` (`0.15.0+17`), CI/merge e device da verificare. Backend repository Flyway V10/Drift V8; ultimo Coolify reale attestato **V8**, nessun deploy/reset. [Stato canonico](../../docs/CURRENT-STATUS.md).
 
 <!-- CURRENT-STATUS-REF -->
 
-> **P1.9 candidato (branch):** Kanban per liste e Inbox, drag/drop, menu "Sposta in", campo aggiunta inline, Flutter `0.14.0+16`; non su `main` finché la CI non passa. [Specifica](../../docs/P1-KANBAN.md) e [guida operativa](../../docs/OPERATIONS.md).
+> **P1.9 integrato su main (PR #10):** Kanban per liste e Inbox, drag/drop, menu "Sposta in", campo aggiunta inline, Flutter `0.14.0+16`; CI verde, collaudo reale ancora aperto. [Specifica](../../docs/P1-KANBAN.md) e [guida operativa](../../docs/OPERATIONS.md).
 
 
 ## Cronologia — rilascio 0.7.0+9 (superato da P1.8)
@@ -146,3 +146,7 @@ Liste con create/rename/delete, priorità P1–P3, tag, sottotask, filtri e rice
 **T4.2 build `0.4.1+5`:** per build Windows + Android dalla stessa revisione senza esporre ID OAuth nei commit usare [`tools/t4-build-devices.ps1`](../../tools/t4-build-devices.ps1) e la procedura in [`docs/T4-DEVICE-SYNC.md`](../../docs/T4-DEVICE-SYNC.md). La verifica completa di `taskDueSchema:1` prima dell'upload delle nuove scadenze preserva l'outbox con server parzialmente compatibili. Nessuna installazione o prova hardware è stata eseguita dalla CI.
 
 **Cestino note (0.4.2+6):** eliminazione logica con vista Cestino e ripristino versionato dello stesso UUID. Il server deve esporre `noteRestoreSchema:1`: in caso contrario il client blocca l'upload di restore, mantenendo la coda locale. Una nuova build non è un deploy dell'API. La pulizia volontaria dei dati di test sui tre archivi è descritta in [RESET-TEST-DATA.md](../../docs/RESET-TEST-DATA.md); **non** è stata eseguita automaticamente.
+
+## P1.10 — Pomodoro (branch)
+
+Timer focus 25/5/15 con stato salvato su SharedPreferences, isolato per account Google, statistiche locali (non cloud) e UI Forui. Config Flutter `0.15.0+17`; integrazione server nulla. [Specifica](../../docs/P1-POMODORO.md).

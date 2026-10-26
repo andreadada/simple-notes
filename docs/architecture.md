@@ -1,7 +1,7 @@
 # Simple Notes — Architettura applicativa
 
 <!-- CURRENT-STATUS-REF -->
-> **Riferimento corrente (26/10/2026):** `main` contiene Flutter **0.13.0+15** (P1.8, CI verde) e backend fino a Flyway **V10**; Coolify reale attestato solo fino a **V8**. Le sezioni precedenti datate sono cronologia o descrizione delle singole versioni. Consultare [CURRENT-STATUS](CURRENT-STATUS.md) e [runbook V10](P1-RELEASE-BATCH.md) prima di operazioni reali; nessun deploy/test hardware confermato.
+> **Stato 26/10/2026:** P1.9 **Kanban integrato in `main`** con [PR #10](https://github.com/andreadada/simple-notes/pull/10) (Flutter `0.14.0+16`, [CI PR verde](https://github.com/andreadada/simple-notes/actions/runs/40328803094)). P1.10 **Pomodoro locale in sviluppo sul branch** `feature/p1-10-pomodoro-focus` (`0.15.0+17`), CI/merge e device da verificare. Backend repository Flyway V10/Drift V8; ultimo Coolify reale attestato **V8**, nessun deploy/reset. [Stato canonico](CURRENT-STATUS.md).
 
 ## Componenti del codice attuale
 
@@ -40,6 +40,10 @@ La pianificazione promemoria P1.7 è device-local (opt-in/ledger), Android inexa
 
 **Deploy non attestato:** VPS verificata fino a V8 il 25/10; migrazioni V9/V10, capability di produzione e acceptance Windows↔Android devono essere controllate prima del prossimo rilascio. Non eseguire reset, cancellare volumi o assumere che `main` sia già su Coolify.
 
-## P1.9 — Kanban per liste (candidato)
+## P1.9 — Kanban per liste (integrato su main)
 
-Il board non introduce stato sincronizzato nuovo: proietta `LocalData` in Inbox + liste esistenti, aggiorna `task.listId` tramite `LocalStore.setTaskList` e conserva la outbox esistente. La UI usa Forui, gesti drag/drop o menu accessibile e input rapidi inline. In sviluppo su branch, da verificare in CI ed E2E. [Specifica](P1-KANBAN.md).
+Il board non introduce stato sincronizzato nuovo: proietta `LocalData` in Inbox + liste esistenti, aggiorna `task.listId` tramite `LocalStore.setTaskList` e conserva la outbox esistente. La UI usa Forui, gesti drag/drop o menu accessibile e input rapidi inline. Integrato su main con PR #10 e CI verde; device E2E ancora da verificare. [Specifica](P1-KANBAN.md).
+
+## P1.10 — Timer Pomodoro (branch, device-only)
+
+Timer 25/5/15 e statistiche locali, identità Google isolata nelle chiavi SharedPreferences, ID sessione per impedire doppi conteggi. Nessun endpoint, outbox, SQLite/Flyway schema o sync dedicata. La CI del branch e i test device restano separati dalla compilazione di P1.9. [Specifiche](P1-POMODORO.md).

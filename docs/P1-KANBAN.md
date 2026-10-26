@@ -1,6 +1,6 @@
 # P1.9 — Kanban per liste con drag & drop
 
-**Stato (26/10/2026):** implementazione in branch `feature/p1-9-kanban-operational-docs`, Flutter `0.14.0+16`; CI finale, merge, deploy e test dispositivi devono essere verificati distintamente. Backend Flyway V10 e Drift V8 invariati.
+**Stato (26/10/2026):** **integrata su main con PR #10**, Flutter `0.14.0+16`; [CI Flutter verde](https://github.com/andreadada/simple-notes/actions/runs/40328803094) e [Markdown verde](https://github.com/andreadada/simple-notes/actions/runs/40328803015). Deploy e test dispositivi reali **non attestati**. Backend Flyway V10 e Drift V8 invariati.
 
 ## Implementazione
 
@@ -21,7 +21,7 @@
 
 ## Gate
 
-1. [ ] CI Flutter analyze/test, Windows EXE+MSIX, APK JDK17/21 e Markdown verdi sullo SHA finale.
+1. [x] CI Flutter analyze/test, Windows EXE+MSIX, APK JDK17/21 e Markdown verdi sulla PR #10; [ ] verifica post-merge main.
 2. [ ] Test interazione su Windows/Android: drag drop, pressione prolungata mobile, menu Sposta in, nuova attività, rinomina inline, completamento ricorrente.
 3. [ ] Sync su due dispositivi, stessa account identity, pending=0, offline/online e cancellazione delle liste.
 4. [ ] Verificare Flyway V10/capability su Coolify **prima** di aggiornare i client.

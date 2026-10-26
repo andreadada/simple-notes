@@ -1,10 +1,12 @@
 # Simple Notes — Passaggio di consegne (handoff)
 
-> **Stato 26/10/2026:** P1.8 **integrata su `main`** (PR #8, Flutter `0.13.0+15`; CI verde), così come P1.7 Android e Windows MSIX. Schema repository Flyway V10 / Drift V8; **ultimo database Coolify attestato V8**, migrazioni V9/V10 reali da verificare. Nessun nuovo deploy né collaudo E2E Windows↔Android sui dispositivi. [Stato canonico](CURRENT-STATUS.md).
+> **Stato 26/10/2026:** P1.9 **Kanban integrato in `main`** con [PR #10](https://github.com/andreadada/simple-notes/pull/10) (Flutter `0.14.0+16`, [CI PR verde](https://github.com/andreadada/simple-notes/actions/runs/40328803094)). P1.10 **Pomodoro locale in sviluppo sul branch** `feature/p1-10-pomodoro-focus` (`0.15.0+17`), CI/merge e device da verificare. Backend repository Flyway V10/Drift V8; ultimo Coolify reale attestato **V8**, nessun deploy/reset. [Stato canonico](CURRENT-STATUS.md).
 
 <!-- CURRENT-STATUS-REF -->
 
-> **P1.9 in sviluppo (26/10/2026):** [Guida operativa aggiornata](OPERATIONS.md), [Kanban per liste](P1-KANBAN.md) nel branch `feature/p1-9-kanban-operational-docs`. Flutter 0.14.0+16 candidato; nessun nuovo schema o deploy. CI e merge da confermare.
+> **P1.10 in sviluppo:** Pomodoro `0.15.0+17` per dispositivo/account, timer UTC e stats locali. [Specifica](P1-POMODORO.md); CI e test reali da completare.
+
+> **P1.9 integrata su main con PR #10 (26/10/2026):** [Guida operativa aggiornata](OPERATIONS.md), [Kanban per liste](P1-KANBAN.md) già su main. Flutter 0.14.0+16, CI PR verde; nessun nuovo schema/deploy. Device E2E ancora aperti.
 
 
 ## Cronologia — rilascio 0.7.0+9 (superato da P1.8)

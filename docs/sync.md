@@ -1,7 +1,7 @@
 # Delta Sync v1 — protocollo e storia degli incrementi
 
 <!-- CURRENT-STATUS-REF -->
-> **Riferimento corrente (26/10/2026):** `main` contiene Flutter **0.13.0+15** (P1.8, CI verde) e backend fino a Flyway **V10**; Coolify reale attestato solo fino a **V8**. Le sezioni precedenti datate sono cronologia o descrizione delle singole versioni. Consultare [CURRENT-STATUS](CURRENT-STATUS.md) e [runbook V10](P1-RELEASE-BATCH.md) prima di operazioni reali; nessun deploy/test hardware confermato.
+> **Stato 26/10/2026:** P1.9 **Kanban integrato in `main`** con [PR #10](https://github.com/andreadada/simple-notes/pull/10) (Flutter `0.14.0+16`, [CI PR verde](https://github.com/andreadada/simple-notes/actions/runs/40328803094)). P1.10 **Pomodoro locale in sviluppo sul branch** `feature/p1-10-pomodoro-focus` (`0.15.0+17`), CI/merge e device da verificare. Backend repository Flyway V10/Drift V8; ultimo Coolify reale attestato **V8**, nessun deploy/reset. [Stato canonico](CURRENT-STATUS.md).
 
 
 ## Ultima versione di un elemento / risoluzione conflitto (P0)
@@ -41,3 +41,7 @@ Il task serializza `timeBlock` come `kind:none|range` con `start/end` UTC e `tim
 ## Compatibilità degli incrementi correnti (26 ottobre 2026)
 
 P1.7 (notifiche Android/Windows MSIX) usa planner e ledger locali, senza schema di sincronizzazione. P1.8 (Matrice Eisenhower) legge campi task esistenti `priority` e `due`, modificandoli esclusivamente tramite `LocalStore` e outbox; nessuna nuova migrazione. Prima di un client Flutter 0.13, il backend reale deve avere Flyway V10 e le capability in [P1-RELEASE-BATCH.md](P1-RELEASE-BATCH.md). Per stato CI/distribuzione vedere [CURRENT-STATUS.md](CURRENT-STATUS.md).
+
+## P1.10 — Timer Pomodoro (branch, device-only)
+
+Timer 25/5/15 e statistiche locali, identità Google isolata nelle chiavi SharedPreferences, ID sessione per impedire doppi conteggi. Nessun endpoint, outbox, SQLite/Flyway schema o sync dedicata. La CI del branch e i test device restano separati dalla compilazione di P1.9. [Specifiche](P1-POMODORO.md).

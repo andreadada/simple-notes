@@ -1,7 +1,7 @@
 # Simple Notes — UI e design system Forui
 
 <!-- CURRENT-STATUS-REF -->
-> **Riferimento corrente (26/10/2026):** `main` contiene Flutter **0.13.0+15** (P1.8, CI verde) e backend fino a Flyway **V10**; Coolify reale attestato solo fino a **V8**. Le sezioni precedenti datate sono cronologia o descrizione delle singole versioni. Consultare [CURRENT-STATUS](CURRENT-STATUS.md) e [runbook V10](P1-RELEASE-BATCH.md) prima di operazioni reali; nessun deploy/test hardware confermato.
+> **Stato 26/10/2026:** P1.9 **Kanban integrato in `main`** con [PR #10](https://github.com/andreadada/simple-notes/pull/10) (Flutter `0.14.0+16`, [CI PR verde](https://github.com/andreadada/simple-notes/actions/runs/40328803094)). P1.10 **Pomodoro locale in sviluppo sul branch** `feature/p1-10-pomodoro-focus` (`0.15.0+17`), CI/merge e device da verificare. Backend repository Flyway V10/Drift V8; ultimo Coolify reale attestato **V8**, nessun deploy/reset. [Stato canonico](CURRENT-STATUS.md).
 
 
 > **Stato reale 24/10/2026:** PostgreSQL `simplenotes` 17.11, Flyway V1–V7 riuscite, backup `simple-notes-20261024T132857Z-271921.dump` con SHA256 valido e restore isolato PASS. Copia offsite non effettuata per scelta dell'utente. Restano da verificare l'API autenticata (`taskDueSchema:1`) e il collaudo T4.2 Windows↔Android con Flutter `0.4.0+4`. Non ripetere backup, migrazioni o deploy automaticamente. [T4.2](T4-DEVICE-SYNC.md).
@@ -124,6 +124,10 @@ Questa pagina documenta il *codice introdotto*; non dichiara che il passaggio di
 
 La nuova vista Forui ha quattro quadranti responsive (2 colonne desktop, 1 mobile), titolo editabile inline e selector di priorità e scadenza tramite componenti esistenti. Le modifiche vanno in SQLite/outbox, mai in uno stato separato. È nel codice Flutter 0.13 su `main` e ha CI verde; prove visive Android/Windows rimangono aperte. [Specifica P1.8](P1-EISENHOWER.md).
 
-## P1.9 — Kanban responsive (sviluppo)
+## P1.9 — Kanban responsive (integrato su main)
 
 Card e colonne Forui basate sulle liste già sincronizzate; titoli modificabili inline, input rapidi, drag/drop desktop e long-press Android, con menu alternativo per accessibilità. L'ordine visivo è deterministico; non è ancora previsto il riordino manuale nella stessa colonna. [Specifica](P1-KANBAN.md).
+
+## P1.10 — Timer Pomodoro (branch, device-only)
+
+Timer 25/5/15 e statistiche locali, identità Google isolata nelle chiavi SharedPreferences, ID sessione per impedire doppi conteggi. Nessun endpoint, outbox, SQLite/Flyway schema o sync dedicata. La CI del branch e i test device restano separati dalla compilazione di P1.9. [Specifiche](P1-POMODORO.md).

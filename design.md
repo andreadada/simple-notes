@@ -1,6 +1,6 @@
 # Simple Notes — Design & Product Specification
 
-> **Stato 26/10/2026:** P1.9 **Kanban integrato in `main`** con [PR #10](https://github.com/andreadada/simple-notes/pull/10) (Flutter `0.14.0+16`, [CI PR verde](https://github.com/andreadada/simple-notes/actions/runs/40328803094)). P1.10 **Pomodoro locale in sviluppo sul branch** `feature/p1-10-pomodoro-focus` (`0.15.0+17`), CI/merge e device da verificare. Backend repository Flyway V10/Drift V8; ultimo Coolify reale attestato **V8**, nessun deploy/reset. [Stato canonico](docs/CURRENT-STATUS.md).
+> **Stato 26/10/2026:** P1.10 Pomodoro **integrata su `main`** con [PR #11](https://github.com/andreadada/simple-notes/pull/11) (Flutter `0.15.0+17`, CI verde). P1.11 Habit Tracker **in sviluppo su branch** `feature/p1-11-habit-tracker` (`0.16.0+18`, CI/merge da verificare); storico locale, **non sincronizzato tra dispositivi**. Backend repo Flyway V10/Drift V8; ultima VPS Coolify attestata V8, nessun nuovo deploy/reset. [Stato canonico](docs/CURRENT-STATUS.md).
 
 <!-- CURRENT-STATUS-REF -->
 
@@ -178,6 +178,10 @@ Qualsiasi feature con sola UI o solo endpoint **non** è completata.
 ### Implementazione organizzazione P0 (23 ottobre 2026)
 Le liste personalizzate persistenti, priorità, tag e sottotask sono ora nel codice client/server con migrazioni e UI Forui. La roadmap di P0 e i limiti dei test sono in [task-organization.md](docs/task-organization.md). Le funzioni di calendario, ricorrenze, notifiche e filtri complessi restano progettuali, non operative.
 
-## P1.10 — Pomodoro (in sviluppo, device-only)
+## P1.10 — Pomodoro (main, device-only)
 
 Schermata responsive Forui con cronometro e barra di avanzamento, controlli Avvia/Pausa/Ricomincia e Salta pausa, statistiche locali a 7 giorni. Timer del singolo account/dispositivo e storico non sincronizzato; non chiedere permessi notifiche e non modificare database task. Nessun dialogo di rinomina: il design rule inline resta invariato. [Specifica](docs/P1-POMODORO.md).
+
+## P1.11 — Habit Tracker (branch)
+
+Forui e modifica titolo direttamente, un check-in giornaliero + ultimi 7 giorni; conteggi 7/30 giorni, streak fino a ieri se oggi non segnato, niente ore inventate. Archiviazione non distruttiva e ripristino; niente conferma per il check-in reversibile. I dati sono locali per account e **non** sincronizzati; interfaccia adattiva scorrevole su Android. [Specifica](docs/P1-HABITS.md).

@@ -10,6 +10,7 @@ import 'ui/calendar_board.dart';
 import 'ui/eisenhower_board.dart';
 import 'ui/kanban_board.dart';
 import 'ui/pomodoro_board.dart';
+import 'ui/habits_board.dart';
 import 'ui/task_blocks_panel.dart';
 import 'ui/task_recurrence_panel.dart';
 import 'ui/reminder_controller.dart';
@@ -78,7 +79,7 @@ class SimpleNotesApp extends StatelessWidget {
       );
 }
 
-enum Section { today, next7, inbox, everything, completed, calendar, eisenhower, kanban, pomodoro, notes, trash }
+enum Section { today, next7, inbox, everything, completed, calendar, eisenhower, kanban, pomodoro, habits, notes, trash }
 
 extension SectionLabel on Section {
   String get label => switch (this) {
@@ -91,6 +92,7 @@ extension SectionLabel on Section {
         Section.eisenhower => 'Matrice Eisenhower',
         Section.kanban => 'Kanban',
         Section.pomodoro => 'Pomodoro',
+        Section.habits => 'Abitudini',
         Section.notes => 'Note',
         Section.trash => 'Cestino',
       };
@@ -104,6 +106,7 @@ extension SectionLabel on Section {
         Section.eisenhower => Icons.grid_view_outlined,
         Section.kanban => Icons.view_kanban_outlined,
         Section.pomodoro => Icons.timer_outlined,
+        Section.habits => Icons.local_fire_department_outlined,
         Section.notes => Icons.sticky_note_2_outlined,
         Section.trash => Icons.restore_from_trash_outlined,
       };
@@ -150,7 +153,7 @@ class _NotesHomeState extends ConsumerState<NotesHome> {
           Section.completed => t.completed,
           Section.inbox => !t.completed && t.listId == null,
           Section.everything => !t.completed,
-          Section.calendar || Section.eisenhower || Section.kanban || Section.pomodoro || Section.notes || Section.trash => false,
+          Section.calendar || Section.eisenhower || Section.kanban || Section.pomodoro || Section.habits || Section.notes || Section.trash => false,
         }).toList()..sort((a, b) => a.createdAt.compareTo(b.createdAt));
   }
 
@@ -420,7 +423,8 @@ class _NotesHomeState extends ConsumerState<NotesHome> {
         FSidebarGroup(
           label: const Text('ORGANIZZA'),
           children: [
-            for (final s in Section.values.where((s) => s != Section.pomodoro))
+            for (final s in Section.values.where((s) =>
+                s != Section.pomodoro && s != Section.habits))
               FSidebarItem(
                 key: Key('nav-${s.name}'),
                 selected: section == s,
@@ -487,6 +491,20 @@ class _NotesHomeState extends ConsumerState<NotesHome> {
                 if (!desktop) Navigator.maybePop(context);
               },
             ),
+            FSidebarItem(
+              key: const Key('nav-habits'),
+              selected: section == Section.habits,
+              icon: const Icon(Icons.local_fire_department_outlined, size: 20),
+              label: const Text('Abitudini'),
+              onPress: () {
+                setState(() {
+                  section = Section.habits;
+                  activeListId = null;
+                  selectedId = null;
+                });
+                if (!desktop) Navigator.maybePop(context);
+              },
+            ),
           ],
         ),
       ],
@@ -530,7 +548,7 @@ class _NotesHomeState extends ConsumerState<NotesHome> {
                           .renameList(activeList.id, title),
                     )),
             ),
-          if (section != Section.calendar && section != Section.eisenhower && section != Section.kanban && section != Section.pomodoro && section != Section.notes && section != Section.trash)
+          if (section != Section.calendar && section != Section.eisenhower && section != Section.kanban && section != Section.pomodoro && section != Section.habits && section != Section.notes && section != Section.trash)
             Padding(
               padding: const EdgeInsets.fromLTRB(16, 0, 16, 4),
               child: FTextField(
@@ -545,7 +563,7 @@ class _NotesHomeState extends ConsumerState<NotesHome> {
 
               ),
             ),
-          if (section != Section.calendar && section != Section.eisenhower && section != Section.kanban && section != Section.pomodoro && section != Section.notes && section != Section.trash)
+          if (section != Section.calendar && section != Section.eisenhower && section != Section.kanban && section != Section.pomodoro && section != Section.habits && section != Section.notes && section != Section.trash)
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 5),
               child: Row(children: [
@@ -573,7 +591,7 @@ class _NotesHomeState extends ConsumerState<NotesHome> {
                 ],
               ]),
             ),
-          if (section != Section.calendar && section != Section.eisenhower && section != Section.kanban && section != Section.pomodoro && section != Section.notes && section != Section.trash)
+          if (section != Section.calendar && section != Section.eisenhower && section != Section.kanban && section != Section.pomodoro && section != Section.habits && section != Section.notes && section != Section.trash)
             Padding(
               padding: const EdgeInsets.fromLTRB(16, 8, 16, 12),
               child: Row(children: [
@@ -655,6 +673,11 @@ class _NotesHomeState extends ConsumerState<NotesHome> {
           else if (section == Section.pomodoro)
             Expanded(child: PomodoroBoard(
               key: ValueKey('pomodoro-${cloud.userId ?? 'guest'}'),
+              ownerId: cloud.userId,
+            ))
+          else if (section == Section.habits)
+            Expanded(child: HabitsBoard(
+              key: ValueKey('habits-${cloud.userId ?? 'guest'}'),
               ownerId: cloud.userId,
             ))
           else if (section == Section.trash)

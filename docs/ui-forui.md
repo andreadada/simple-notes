@@ -1,7 +1,7 @@
 # Simple Notes — UI e design system Forui
 
 <!-- CURRENT-STATUS-REF -->
-> **Stato 26/10/2026:** P1.9 **Kanban integrato in `main`** con [PR #10](https://github.com/andreadada/simple-notes/pull/10) (Flutter `0.14.0+16`, [CI PR verde](https://github.com/andreadada/simple-notes/actions/runs/40328803094)). P1.10 **Pomodoro locale in sviluppo sul branch** `feature/p1-10-pomodoro-focus` (`0.15.0+17`), CI/merge e device da verificare. Backend repository Flyway V10/Drift V8; ultimo Coolify reale attestato **V8**, nessun deploy/reset. [Stato canonico](CURRENT-STATUS.md).
+> **Stato aggiornato 26/10/2026:** P1.10 Pomodoro `0.15.0+17` integrata su main (CI verde), Habit Tracker P1.11 `0.16.0+18` solo sul branch `feature/p1-11-habit-tracker` (CI/merge ancora da validare). Pomodoro e abitudini restano **locali, non sincronizzati**; repository Flyway V10, VPS Coolify attestata V8, nessun deploy/reset. [Stato](CURRENT-STATUS.md), [Operazioni](OPERATIONS.md), [P1.11](P1-HABITS.md).
 
 
 > **Stato reale 24/10/2026:** PostgreSQL `simplenotes` 17.11, Flyway V1–V7 riuscite, backup `simple-notes-20261024T132857Z-271921.dump` con SHA256 valido e restore isolato PASS. Copia offsite non effettuata per scelta dell'utente. Restano da verificare l'API autenticata (`taskDueSchema:1`) e il collaudo T4.2 Windows↔Android con Flutter `0.4.0+4`. Non ripetere backup, migrazioni o deploy automaticamente. [T4.2](T4-DEVICE-SYNC.md).
@@ -131,3 +131,7 @@ Card e colonne Forui basate sulle liste già sincronizzate; titoli modificabili 
 ## P1.10 — Timer Pomodoro (branch, device-only)
 
 Timer 25/5/15 e statistiche locali, identità Google isolata nelle chiavi SharedPreferences, ID sessione per impedire doppi conteggi. Nessun endpoint, outbox, SQLite/Flyway schema o sync dedicata. La CI del branch e i test device restano separati dalla compilazione di P1.9. [Specifiche](P1-POMODORO.md).
+
+## P1.11 — Abitudini in Forui
+
+Vista mobile/desktop con elenco scorrevole di card, checkbox oggi, selettori delle date civili recenti, creazione rapida, nome editabile inline e archivio reversibile. Non introdurre modali per rinomina né controlli che eliminino lo storico. Le statistiche sono locali per dispositivo e non sono una dashboard cloud. [Specifica](P1-HABITS.md).

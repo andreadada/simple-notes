@@ -1,5 +1,5 @@
 <!-- CURRENT-STATUS-REF -->
-> **Riferimento corrente (26/10/2026):** `main` contiene Flutter **0.13.0+15** (P1.8, CI verde) e backend fino a Flyway **V10**; Coolify reale attestato solo fino a **V8**. Le sezioni precedenti datate sono cronologia o descrizione delle singole versioni. Consultare [CURRENT-STATUS](CURRENT-STATUS.md) e [runbook V10](P1-RELEASE-BATCH.md) prima di operazioni reali; nessun deploy/test hardware confermato.
+> **Stato aggiornato 26/10/2026:** P1.10 Pomodoro `0.15.0+17` integrata su main (CI verde), Habit Tracker P1.11 `0.16.0+18` solo sul branch `feature/p1-11-habit-tracker` (CI/merge ancora da validare). Pomodoro e abitudini restano **locali, non sincronizzati**; repository Flyway V10, VPS Coolify attestata V8, nessun deploy/reset. [Stato](CURRENT-STATUS.md), [Operazioni](OPERATIONS.md), [P1.11](P1-HABITS.md).
 
 <!-- Vincolo UI aggiornato 24/10/2026: tutti i titoli di liste, task e subtasks usano la stessa logica inline-first. La sottolineatura non deve eccedere la larghezza del valore (o dell'hint) +~1px, nessun grigio di riempimento; placeholder semitrasparente (~72%). Utilizzare InlineTextMetrics.fieldWidth in notes_theme.dart, non minWidth artificiale o Expanded TextField full-width. Regole: ../design.md, ui-forui.md e ui-design-audit.md. -->
 # Organizzazione attività (P0) — liste, priorità, tag e sottotask
@@ -61,3 +61,7 @@ I valori testuali semplici già mostrati devono essere **normalmente editabili n
 ## P1.8 — Riutilizzo dei campi di organizzazione
 
 La matrice Eisenhower deriva **importanza** dalle priorità task già esistenti (`P2`/`P3`) e **urgenza** da `due` (date-only civile o istante entro 48h). Non aggiunge campi né migrazioni; scegliere un quadrante non assegna attività a una persona. [Specifiche aggiornate](P1-EISENHOWER.md).
+
+## Ambito Habit Tracker (P1.11)
+
+Le abitudini quotidiane non sono tag, sottotask o task ricorrenti: il loro storico viene salvato su SharedPreferences per dispositivo/owner, con check-in civili e streak, **non** via LocalStore o sincronizzazione task. Le liste Kanban e le ricorrenze rimangono invariate. [Specifiche](P1-HABITS.md).

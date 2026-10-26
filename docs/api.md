@@ -1,7 +1,7 @@
 # Simple Notes API v1
 
 <!-- CURRENT-STATUS-REF -->
-> **Stato 26/10/2026:** P1.9 **Kanban integrato in `main`** con [PR #10](https://github.com/andreadada/simple-notes/pull/10) (Flutter `0.14.0+16`, [CI PR verde](https://github.com/andreadada/simple-notes/actions/runs/40328803094)). P1.10 **Pomodoro locale in sviluppo sul branch** `feature/p1-10-pomodoro-focus` (`0.15.0+17`), CI/merge e device da verificare. Backend repository Flyway V10/Drift V8; ultimo Coolify reale attestato **V8**, nessun deploy/reset. [Stato canonico](CURRENT-STATUS.md).
+> **Allineamento operativo — 26/10/2026:** `main` = P1.10 Pomodoro `0.15.0+17` (PR #11, CI verde); P1.11 Habit Tracker `0.16.0+18` **solo branch**, CI/merge non confermati. Entrambe le funzioni hanno storico locale, **non sincronizzato**. Repo Flyway V10 / Coolify attestato V8, nessun deploy o test hardware nuovo. [Stato](CURRENT-STATUS.md) · [Guida operativa](OPERATIONS.md) · [Specifiche P1.11](P1-HABITS.md).
 
 
 ## Auth
@@ -53,3 +53,7 @@ Il backend presente in `main` contiene Flyway V10 e le capability `taskDueSchema
 ## P1.10 — Timer Pomodoro (branch, device-only)
 
 Timer 25/5/15 e statistiche locali, identità Google isolata nelle chiavi SharedPreferences, ID sessione per impedire doppi conteggi. Nessun endpoint, outbox, SQLite/Flyway schema o sync dedicata. La CI del branch e i test device restano separati dalla compilazione di P1.9. [Specifiche](P1-POMODORO.md).
+
+## P1.10/P1.11 — Contratto attuale (26/10/2026)
+
+Il Pomodoro P1.10 (main) e Habit Tracker P1.11 (branch) non aggiungono API, DTO, capability o migrazioni backend. I dati restano in SharedPreferences per dispositivo e account; **non esiste endpoint di sync abitudini**, né storico Pomodoro sincronizzato. [Stato](CURRENT-STATUS.md).

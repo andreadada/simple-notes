@@ -1,8 +1,8 @@
-# Rollout coordinato — Simple Notes backend V10 e client P1.9 (P1.10 candidato)
+# Rollout coordinato — Simple Notes backend V10 e client P1.10 (P1.11 candidato)
 
-> **Stato 26/10/2026:** P1.9 **Kanban integrato in `main`** con [PR #10](https://github.com/andreadada/simple-notes/pull/10) (Flutter `0.14.0+16`, [CI PR verde](https://github.com/andreadada/simple-notes/actions/runs/40328803094)). P1.10 **Pomodoro locale in sviluppo sul branch** `feature/p1-10-pomodoro-focus` (`0.15.0+17`), CI/merge e device da verificare. Backend repository Flyway V10/Drift V8; ultimo Coolify reale attestato **V8**, nessun deploy/reset. [Stato canonico](CURRENT-STATUS.md).
+> **Stato 26/10/2026:** P1.10 Pomodoro **integrata su `main`** con [PR #11](https://github.com/andreadada/simple-notes/pull/11) (Flutter `0.15.0+17`, CI verde). P1.11 Habit Tracker **in sviluppo su branch** `feature/p1-11-habit-tracker` (`0.16.0+18`, CI/merge da verificare); storico locale, **non sincronizzato tra dispositivi**. Backend repo Flyway V10/Drift V8; ultima VPS Coolify attestata V8, nessun nuovo deploy/reset. [Stato canonico](CURRENT-STATUS.md).
 
-**Stato:** runbook per backend P1.6 Flyway V10 e client P1.9 `0.14.0+16` (P1.10 candidato `0.15.0+17`) (**PR #6–#8 integrate su main**, CI verde); le PR #5 e #6 sono su `main`, ma nessun deploy né nuova installazione sui dispositivi è stato attestato da questa attività. L'utente ha scelto di effettuare personalmente il deploy Coolify **dopo** il gruppo di incrementi. I comandi sono istruzioni di sola lettura salvo il pulsante **Redeploy** esplicitamente indicato.
+**Stato:** runbook per backend P1.6 Flyway V10 e client P1.10 `0.15.0+17` (P1.11 candidato `0.16.0+18`) (**PR #6–#8 integrate su main**, CI verde); le PR #5 e #6 sono su `main`, ma nessun deploy né nuova installazione sui dispositivi è stato attestato da questa attività. L'utente ha scelto di effettuare personalmente il deploy Coolify **dopo** il gruppo di incrementi. I comandi sono istruzioni di sola lettura salvo il pulsante **Redeploy** esplicitamente indicato.
 
 ## Prima di agire
 
@@ -54,7 +54,7 @@ FAILED_MIGRATIONS=0
 
 Health deve restituire `{"status":"UP"}`. Su endpoint autenticato `/api/v1/capabilities` verificare **`taskDueSchema:1`**, **`timeBlockSchema:1`**, **`timeBlocksSchema:1`** e **`recurrenceSchema:1`**, usando JWT in locale: **non inserire token nei messaggi, screenshot o log**. Il semplice health UP non dimostra tutte le capability.
 
-## 4 — Client Flutter 0.14.0+16 (0.15 candidato) soltanto quando backend è compatibile
+## 4 — Client Flutter 0.15.0+17 (0.16 candidato) soltanto quando backend è compatibile
 
 Sul PC con repository aggiornato su `main`:
 
@@ -79,7 +79,7 @@ Verificare con lo **stesso account Google**: dati Windows↔Android, note e cest
 - Un downgrade del codice **non** annulla in sicurezza migrazioni Flyway già applicate. Non tentare di tornare a V8 cancellando manualmente le colonne.
 - In caso di migration ERROR o HTTP426 fermarsi e diagnosticare, mantenendo i dati/operazioni in coda: evitare azioni distruttive.
 
-## Gate P1.8–P1.10 prima del rollout
+## Gate P1.8–P1.11 prima del rollout
 
 La [Matrice Eisenhower](P1-EISENHOWER.md) è una proiezione dei task senza migrazioni; CI/merge PR #8 già completati. Prima del rollout eseguire un solo collaudo batch della navigazione in quattro quadranti, edit inline, mapping P2/P3, scadenze civili e sync. Il packaging MSIX Windows richiede verifica di identità, firma e compatibilità SQLite/OAuth: non sostituire alla cieca un ZIP con MSIX. Nessun reset è autorizzato.
 
@@ -87,6 +87,10 @@ La [Matrice Eisenhower](P1-EISENHOWER.md) è una proiezione dei task senza migra
 
 Il percorso iniziale consolidato è nella [guida operativa](OPERATIONS.md). La [P1.9 Kanban](P1-KANBAN.md), ora integrata su main, usa soltanto `listId` e `completed`: **nessuna nuova migrazione oltre Flyway V10/Drift V8**. Dopo CI+merge, includere drag/drop Windows/Android e test offline→online nei gate E2E del batch. Non installare client da un branch senza CI verde, e non installare MSIX sul profilo Windows esistente prima di verificare percorso SQLite/OAuth e firma.
 
-### P1.10 (candidate, device-only)
+### P1.10 (main, device-only)
 
 [Pomodoro](P1-POMODORO.md) salva timer e statistiche su SharedPreferences (per owner/dispositivo), non sul DB; nessun nuovo gate Flyway oltre V10. Verificare che installazioni e transizione ZIP→MSIX preservino **sia** SQLite sia SharedPreferences/secure storage. Non promettere sync delle statistiche. Prima dell'upgrade su dispositivi reali sono necessari CI del branch, merge e collaudo locale.
+
+### P1.11 Habit Tracker (candidate, device-only)
+
+[Habit Tracker P1.11](P1-HABITS.md) aggiunge check-in su date civili, streak, archivio e statistiche **solo locali** su SharedPreferences per owner. Nessun Flyway/Drift aggiuntivo. Includere test di preservazione SharedPreferences e separazione account nel collaudo di batch; NON dichiarare sync tra Windows e Android. 

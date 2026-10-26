@@ -1,6 +1,6 @@
 # Flutter client — P0 e P1
 
-> **Stato 26/10/2026:** P1.9 **Kanban integrato in `main`** con [PR #10](https://github.com/andreadada/simple-notes/pull/10) (Flutter `0.14.0+16`, [CI PR verde](https://github.com/andreadada/simple-notes/actions/runs/40328803094)). P1.10 **Pomodoro locale in sviluppo sul branch** `feature/p1-10-pomodoro-focus` (`0.15.0+17`), CI/merge e device da verificare. Backend repository Flyway V10/Drift V8; ultimo Coolify reale attestato **V8**, nessun deploy/reset. [Stato canonico](../../docs/CURRENT-STATUS.md).
+> **Stato 26/10/2026:** P1.10 Pomodoro **integrata su `main`** con [PR #11](https://github.com/andreadada/simple-notes/pull/11) (Flutter `0.15.0+17`, CI verde). P1.11 Habit Tracker **in sviluppo su branch** `feature/p1-11-habit-tracker` (`0.16.0+18`, CI/merge da verificare); storico locale, **non sincronizzato tra dispositivi**. Backend repo Flyway V10/Drift V8; ultima VPS Coolify attestata V8, nessun nuovo deploy/reset. [Stato canonico](../../docs/CURRENT-STATUS.md).
 
 <!-- CURRENT-STATUS-REF -->
 
@@ -147,6 +147,10 @@ Liste con create/rename/delete, priorità P1–P3, tag, sottotask, filtri e rice
 
 **Cestino note (0.4.2+6):** eliminazione logica con vista Cestino e ripristino versionato dello stesso UUID. Il server deve esporre `noteRestoreSchema:1`: in caso contrario il client blocca l'upload di restore, mantenendo la coda locale. Una nuova build non è un deploy dell'API. La pulizia volontaria dei dati di test sui tre archivi è descritta in [RESET-TEST-DATA.md](../../docs/RESET-TEST-DATA.md); **non** è stata eseguita automaticamente.
 
-## P1.10 — Pomodoro (branch)
+## P1.10 — Pomodoro (main, PR #11)
 
 Timer focus 25/5/15 con stato salvato su SharedPreferences, isolato per account Google, statistiche locali (non cloud) e UI Forui. Config Flutter `0.15.0+17`; integrazione server nulla. [Specifica](../../docs/P1-POMODORO.md).
+
+## P1.11 — Abitudini (branch)
+
+Flutter `0.16.0+18` candidato: abitudini quotidiane con check-in, streak, dashboard oggi/7/30 giorni, archivio e restore. Solo SharedPreferences per Google owner; nessuna migrazione server, senza sync fra dispositivi. [Specifica](../../docs/P1-HABITS.md).

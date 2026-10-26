@@ -28,3 +28,7 @@
 5. [ ] Installazione Windows ZIP vs MSIX solo dopo verifica non distruttiva SQLite/OAuth.
 
 [Stato canonico](CURRENT-STATUS.md) · [Guida operativa](OPERATIONS.md) · [Roadmap](../project.md).
+
+## Stato successivo (26 ottobre 2026)
+
+P1.10 Pomodoro è integrata su main e P1.11 Habit Tracker è in sviluppo in branch. Il Kanban P1.9 rimane invariato, usa le liste sincronizzate; lo storico locale di Habit Tracker e Pomodoro non modifica lo schema di sync. [Stato](CURRENT-STATUS.md) · [Habit Tracker](P1-HABITS.md).

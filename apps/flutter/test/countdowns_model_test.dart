@@ -15,9 +15,9 @@ TaskDue timed(DateTime instant) => TaskDue.timed(
 void main() {
   test('Civil countdown does not invent midnight or cross DST hours', () {
     final now = DateTime(2026, 10, 25, 23, 58);
-    expect(CountdownClock.remaining(dated('2026-10-26'), now), '1 giorni');
+    expect(CountdownClock.remaining(dated('2026-10-26'), now), '1 giorno');
     expect(CountdownClock.remaining(dated('2026-10-25'), now), 'Oggi');
-    expect(CountdownClock.remaining(dated('2026-10-24'), now), 'Da 1 giorni');
+    expect(CountdownClock.remaining(dated('2026-10-24'), now), 'Da 1 giorno');
     expect(CountdownClock.civilDaysBetween(
       DateTime(2026, 3, 28), DateTime(2026, 3, 30)), 2);
     expect(CountdownClock.overdue(dated('2026-10-25'), now), false);

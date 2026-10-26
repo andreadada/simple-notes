@@ -4,6 +4,8 @@
 
 <!-- CURRENT-STATUS-REF -->
 
+> **P1.9 (branch):** Kanban con colonne derivanti dalle liste sincronizzate, drag/drop desktop, long-press mobile, menu accessibile, titoli e inserimenti inline Forui. Nessuna nuova semantica di stato delle task. [Specifiche](docs/P1-KANBAN.md) · [Operazioni](docs/OPERATIONS.md).
+
 
 ## Cronologia — rilascio 0.7.0+9 (superato da P1.8)
 

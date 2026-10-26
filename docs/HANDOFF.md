@@ -4,6 +4,8 @@
 
 <!-- CURRENT-STATUS-REF -->
 
+> **P1.9 in sviluppo (26/10/2026):** [Guida operativa aggiornata](OPERATIONS.md), [Kanban per liste](P1-KANBAN.md) nel branch `feature/p1-9-kanban-operational-docs`. Flutter 0.14.0+16 candidato; nessun nuovo schema o deploy. CI e merge da confermare.
+
 
 ## Cronologia — rilascio 0.7.0+9 (superato da P1.8)
 

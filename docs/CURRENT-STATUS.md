@@ -1,6 +1,6 @@
 # Stato corrente — Simple Notes
 
-**Aggiornato il 26 ottobre 2026** dopo PR #8. Questa è la fonte di verità per il codice e per le verifiche *effettivamente attestabili*; i runbook T2/T3/T4 e le vecchie release sono cronologia, non istruzioni correnti.
+**Aggiornato il 26 ottobre 2026**; P1.8 su main, P1.9 Kanban in sviluppo su branch. Questa è la fonte di verità per il codice e per le verifiche *effettivamente attestabili*; i runbook T2/T3/T4 e le vecchie release sono cronologia, non istruzioni correnti.
 
 ## Stato verificato
 
@@ -27,7 +27,7 @@
 | P1.7 Android | Scheduler nativo **inexact**, opt-in, ledger, annullamento prima del logout, testo privacy-safe | Reboot, Doze, permessi, cancellazione e notifiche reali |
 | P1.7 Windows | Scheduling solo con identità **MSIX**, packaging CI e opt-in; eseguibile ZIP/EXE **senza** notifiche | Firma/installer attendibile, accesso SQLite/OAuth preesistenti, cancellazione affidabile su PC |
 | P1.8 | Matrice Eisenhower a quattro quadranti, responsive, lettura di priorità/scadenza e modifica inline; nessuna migrazione | Test UI e sync su dispositivi reali |
-| P2/P3 | Non avviate | Kanban, Pomodoro, habit, integrazioni, funzioni smart, secondo roadmap |
+| P1.9 Kanban | **In sviluppo su branch** `feature/p1-9-kanban-operational-docs` (Flutter `0.14.0+16`): liste + Inbox, drag/drop, spostamento accessibile, editor inline; nessuna migrazione | Verifica CI, merge, prova E2E hardware |\n| P2/P3 | Non avviate | Pomodoro, habit, integrazioni, funzioni smart, secondo roadmap |
 
 La matrice P1.8 **non** introduce un campo autonomo di importanza/urgenza: `priority >= 2` indica importante; è urgente la scadenza con istante entro 48h, mentre per `date-only` contano oggi/domani/giorni trascorsi. Il quadrante "Delega" non assegna attività ad altri account.
 
@@ -42,6 +42,6 @@ La matrice P1.8 **non** introduce un campo autonomo di importanza/urgenza: `prio
 
 - [Roadmap e Edit Timespan](../project.md), [regole agenti](../AGENTS.md), [UX](../design.md)
 - [P1.8 Matrice](P1-EISENHOWER.md), [P1.7 Android](P1-REMINDERS-FOUNDATION.md), [P1.7 Windows MSIX](P1-WINDOWS-MSIX.md)
-- [Runbook rollout backend V10](P1-RELEASE-BATCH.md), [sync](sync.md), [API](api.md), [dispositivi](T4-DEVICE-SYNC.md), [handoff storico](HANDOFF.md)
+- [Guida operativa](OPERATIONS.md), [specifica P1.9 Kanban](P1-KANBAN.md), [runbook rollout backend V10](P1-RELEASE-BATCH.md), [sync](sync.md), [API](api.md), [dispositivi](T4-DEVICE-SYNC.md), [handoff storico](HANDOFF.md)
 
-**Prossima sequenza:** CI post-merge / documentazione → verifica del backend V10 su Coolify → controllo non distruttivo del passaggio ZIP→MSIX → installazioni → un collaudo E2E Windows/Android. L'utente gestisce personalmente il deploy Coolify.
+**Prossima sequenza:** CI e merge P1.9 / documentazione → verifica del backend V10 su Coolify → controllo non distruttivo del passaggio ZIP→MSIX → installazioni → un collaudo E2E Windows/Android. L'utente gestisce personalmente il deploy Coolify.

@@ -156,7 +156,7 @@ class _NotesHomeState extends ConsumerState<NotesHome> {
           Section.completed => t.completed,
           Section.inbox => !t.completed && t.listId == null,
           Section.everything => !t.completed,
-          Section.calendar || Section.eisenhower || Section.kanban || Section.pomodoro || Section.habits || Section.notes || Section.trash => false,
+          Section.calendar || Section.eisenhower || Section.kanban || Section.pomodoro || Section.habits || Section.countdowns || Section.notes || Section.trash => false,
         }).toList()..sort((a, b) => a.createdAt.compareTo(b.createdAt));
   }
 

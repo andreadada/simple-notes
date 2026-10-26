@@ -2,7 +2,7 @@
 
 > **Stato 26/10/2026:** `main` include P1.12 Countdown ([PR #13](https://github.com/andreadada/simple-notes/pull/13), Flutter `0.17.0+19`, CI verde). P1.13 obiettivi settimanali è **in branch** `feature/p1-13-weekly-habit-goals` (`0.18.0+20`, CI/merge/device da verificare). P1.10–P1.13 sono dati locali per account/dispositivo, non sincronizzati. Backend GitHub Flyway V10; ultima VPS Coolify attestata V8. Nessun deploy/reset. [Stato](CURRENT-STATUS.md) · [P1.13](P1-WEEKLY-HABITS.md).
 
-**Stato:** runbook per backend P1.6 Flyway V10 e client P1.12 `0.17.0+19` (P1.13 candidata `0.18.0+20`) (**PR #6–#8 integrate su main**, CI verde); le PR #5 e #6 sono su `main`, ma nessun deploy né nuova installazione sui dispositivi è stato attestato da questa attività. L'utente ha scelto di effettuare personalmente il deploy Coolify **dopo** il gruppo di incrementi. I comandi sono istruzioni di sola lettura salvo il pulsante **Redeploy** esplicitamente indicato.
+**Stato:** runbook per backend P1.6 Flyway V10 e client P1.12 `0.17.0+19` (P1.13 candidata `0.18.0+20`) (**P1.1–P1.12 integrate su main, fino alla PR #13, CI verde**); nessun deploy né nuova installazione sui dispositivi è stato attestato da questa attività. L'utente ha scelto di effettuare personalmente il deploy Coolify **dopo** il gruppo di incrementi. I comandi sono istruzioni di sola lettura salvo il pulsante **Redeploy** esplicitamente indicato.
 
 ## Prima di agire
 

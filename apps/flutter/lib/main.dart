@@ -491,6 +491,20 @@ class _NotesHomeState extends ConsumerState<NotesHome> {
                 if (!desktop) Navigator.maybePop(context);
               },
             ),
+            FSidebarItem(
+              key: const Key('nav-habits'),
+              selected: section == Section.habits,
+              icon: const Icon(Icons.local_fire_department_outlined, size: 20),
+              label: const Text('Abitudini'),
+              onPress: () {
+                setState(() {
+                  section = Section.habits;
+                  activeListId = null;
+                  selectedId = null;
+                });
+                if (!desktop) Navigator.maybePop(context);
+              },
+            ),
           ],
         ),
       ],

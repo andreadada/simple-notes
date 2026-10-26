@@ -1,11 +1,10 @@
 # Simple Notes
 
-> **Incremento in verifica (26/10/2026, branch `feature/p1-7-windows-msix-reminders`):** Flutter `0.12.0+14` aggiunge notifiche Windows solo con identità MSIX (EXE/ZIP escluso), opt-in locale e annullamento tramite ledger; configurazione pacchetto MSIX e job CI di packaging. **Non mergiato, non distribuito, CI e test Windows reali ancora da verificare**. Lo stato su `main` resta P1.7 Android `0.11.0+13`; Coolify non modificato. Vedere [specifica Windows](docs/P1-WINDOWS-MSIX.md).
+> **Stato sviluppo 26/10/2026:** P1.7 Windows **integrata su `main`** (PR #7, Flutter `0.12.0+14`, [CI verde](https://github.com/andreadada/simple-notes/actions/runs/40245561264)); package MSIX/non-EXE, **nessun test hardware/installazione**. P1.8 Matrice Eisenhower sviluppata su branch `feature/p1-8-eisenhower-matrix` (Flutter `0.13.0+15`, [specifica](docs/P1-EISENHOWER.md)), **CI e merge da verificare**. Ultimo Coolify attestato Flyway V8; V9/V10 reali non verificati; nessun deploy/reset in questa attività.
 
 App offline-first per **Windows 11 e Android** dedicata ad attività, note e pianificazione. Flutter/Forui con Drift SQLite locale, Google OAuth e sincronizzazione con Spring Boot/PostgreSQL su Coolify.
 
 <!-- CURRENT-STATUS-REF -->
-> **Stato di riferimento (25/10/2026):** P1.1–P1.6 e **P1.7 Android** integrate su `main`; Flutter `0.11.0+13`, Drift V8, Flyway V10. P1.7 Android offre promemoria locali **opt-in e inexact** nel codice, CI verde, non ancora provati su un telefono reale; **Windows non notifica** senza MSIX/package identity. Ultima VPS verificata: Flyway V8; V9/V10 e collaudo Windows↔Android del batch non attestati. Lo stato verificabile e i gate sono in **[docs/CURRENT-STATUS.md](docs/CURRENT-STATUS.md)**.
 
 ## Funzionalità presenti nel codice
 

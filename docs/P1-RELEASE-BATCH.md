@@ -1,8 +1,8 @@
 # Rollout coordinato — Simple Notes backend V10 e client P1.7 Android
 
-> **Incremento in verifica (26/10/2026, branch `feature/p1-7-windows-msix-reminders`):** Flutter `0.12.0+14` aggiunge notifiche Windows solo con identità MSIX (EXE/ZIP escluso), opt-in locale e annullamento tramite ledger; configurazione pacchetto MSIX e job CI di packaging. **Non mergiato, non distribuito, CI e test Windows reali ancora da verificare**. Lo stato su `main` resta P1.7 Android `0.11.0+13`; Coolify non modificato. Vedere [specifica Windows](P1-WINDOWS-MSIX.md).
+> **Stato sviluppo 26/10/2026:** P1.7 Windows **integrata su `main`** (PR #7, Flutter `0.12.0+14`, [CI verde](https://github.com/andreadada/simple-notes/actions/runs/40245561264)); package MSIX/non-EXE, **nessun test hardware/installazione**. P1.8 Matrice Eisenhower sviluppata su branch `feature/p1-8-eisenhower-matrix` (Flutter `0.13.0+15`, [specifica](P1-EISENHOWER.md)), **CI e merge da verificare**. Ultimo Coolify attestato Flyway V8; V9/V10 reali non verificati; nessun deploy/reset in questa attività.
 
-**Stato:** runbook per backend P1.6 V10 e client P1.7 Android `0.11.0+13`; le PR #5 e #6 sono su `main`, ma nessun deploy né nuova installazione sui dispositivi è stato attestato da questa attività. L'utente ha scelto di effettuare personalmente il deploy Coolify **dopo** il gruppo di incrementi. I comandi sono istruzioni di sola lettura salvo il pulsante **Redeploy** esplicitamente indicato.
+**Stato:** runbook per backend P1.6 V10 e client P1.7/P1.8 (PR #7 su main, P1.8 ancora sul branch, Flutter 0.13 candidato); le PR #5 e #6 sono su `main`, ma nessun deploy né nuova installazione sui dispositivi è stato attestato da questa attività. L'utente ha scelto di effettuare personalmente il deploy Coolify **dopo** il gruppo di incrementi. I comandi sono istruzioni di sola lettura salvo il pulsante **Redeploy** esplicitamente indicato.
 
 ## Prima di agire
 
@@ -78,3 +78,7 @@ Verificare con lo **stesso account Google**: dati Windows↔Android, note e cest
 - P1.6 di per sé non genera notifiche a client chiuso. P1.7 introduce notifiche **solo Android** opt-in e inexact (CI verde, test real-device da completare); il client Windows ZIP non le attiva. Vedere [P1-REMINDERS-FOUNDATION.md](P1-REMINDERS-FOUNDATION.md).
 - Un downgrade del codice **non** annulla in sicurezza migrazioni Flyway già applicate. Non tentare di tornare a V8 cancellando manualmente le colonne.
 - In caso di migration ERROR o HTTP426 fermarsi e diagnosticare, mantenendo i dati/operazioni in coda: evitare azioni distruttive.
+
+## Gate P1.8 prima del rollout
+
+La [Matrice Eisenhower](P1-EISENHOWER.md) è una proiezione dei task senza migrazioni. Prima del rollout verificare CI/merge del branch, quindi un solo collaudo batch della navigazione in quattro quadranti, edit inline, mapping P2/P3, scadenze civili e sync. Il packaging MSIX Windows richiede verifica di identità, firma e compatibilità SQLite/OAuth: non sostituire alla cieca un ZIP con MSIX. Nessun reset è autorizzato.

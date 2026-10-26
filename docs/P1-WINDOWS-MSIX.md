@@ -1,6 +1,6 @@
 # P1.7 Windows — MSIX e promemoria opt-in
 
-**Stato 26/10/2026:** implementazione in branch `feature/p1-7-windows-msix-reminders`, non verificata in CI/device e non rilasciata. Backend Flyway V10 e Drift V8 invariati. Non installare i nuovi client fino a verifica dell'API Coolify.
+**Stato 26/10/2026:** **integrata in `main` con PR #7** (merge `34106c4`, Flutter `0.12.0+14`, [CI 40245561264 verde](https://github.com/andreadada/simple-notes/actions/runs/40245561264)); **non installata o verificata su PC reale**, non rilasciata. Backend Flyway V10 e Drift V8 invariati. Non installare i nuovi client fino a verifica dell'API Coolify.
 
 ## Implementazione
 
@@ -12,7 +12,7 @@
 
 ## Gate aperti prima del merge e dell'installazione
 
-1. [ ] Flutter analyze/test e build Windows + Android JDK17/21 verdi sul commit finale; verificare artefatto MSIX reale nella CI. Non interpretare il solo file YAML come build riuscita.
+1. [x] Flutter analyze/test, build Windows/Android JDK17/21 e packaging MSIX CI verdi su PR #7; [ ] verificare installazione/pacchetto MSIX reale e aggiornamento coerente. Non interpretare il solo file YAML come build riuscita.
 2. [ ] Installa **solo in ambiente di prova** un MSIX firmato da un certificato di test attendibile, senza promuovere un certificato auto-generato a produzione. Verifica `hasPackageIdentity` true e menu opt-in. Controlla compatibilità OAuth, SQLite/Drift e percorso dati rispetto alla vecchia installazione ZIP **prima** di trasferire utenti reali: MSIX può usare un percorso differente.
 3. [ ] Verifica notifica su Windows con app chiusa, riavvio, risveglio e lock screen; modifica/completa/elimina task e conferma cancellazione nativa e mancanza duplicati; prova logout/cambio account e disattivazione.
 4. [ ] Verifica lo stato inattivo per EXE/ZIP senza package identity e per ogni piattaforma non supportata.

@@ -1,6 +1,6 @@
 # P1.7 — Promemoria Android e pianificazione cross-platform
 
-> **Incremento in verifica (26/10/2026, branch `feature/p1-7-windows-msix-reminders`):** Flutter `0.12.0+14` aggiunge notifiche Windows solo con identità MSIX (EXE/ZIP escluso), opt-in locale e annullamento tramite ledger; configurazione pacchetto MSIX e job CI di packaging. **Non mergiato, non distribuito, CI e test Windows reali ancora da verificare**. Lo stato su `main` resta P1.7 Android `0.11.0+13`; Coolify non modificato. Vedere [specifica Windows](P1-WINDOWS-MSIX.md).
+> **Stato sviluppo 26/10/2026:** P1.7 Windows **integrata su `main`** (PR #7, Flutter `0.12.0+14`, [CI verde](https://github.com/andreadada/simple-notes/actions/runs/40245561264)); package MSIX/non-EXE, **nessun test hardware/installazione**. P1.8 Matrice Eisenhower sviluppata su branch `feature/p1-8-eisenhower-matrix` (Flutter `0.13.0+15`, [specifica](P1-EISENHOWER.md)), **CI e merge da verificare**. Ultimo Coolify attestato Flyway V8; V9/V10 reali non verificati; nessun deploy/reset in questa attività.
 
 **Stato del codice (25 ottobre 2026):** P1.7 Android integrata su `main` con [PR #6](https://github.com/andreadada/simple-notes/pull/6), merge `df40b93e`. CI Flutter **verde** ([run 40231569864](https://github.com/andreadada/simple-notes/actions/runs/40231569864)) su test, Windows release e APK JDK17/21. **Nessun test fisico Android**, deploy e delivery Windows da attestare.
 
@@ -16,7 +16,7 @@
 
 ## Cosa NON è ancora completo
 
-- **Windows:** ZIP/EXE non possiede la package identity necessaria per annullare affidabilmente toast schedulati; scheduling disattivato su Windows. Serve MSIX o adapter verificato prima di abilitarlo.
+- **Windows:** PR #7 ha aggiunto scheduling opt-in solo in MSIX (CI verde), il client ZIP/EXE resta disabilitato. Test installazione, identità, storage e annullamento su PC reale ancora pendenti. Vedere [P1-WINDOWS-MSIX.md](P1-WINDOWS-MSIX.md).
 - Nessuna precisione al minuto promessa su Android: modalità `inexactAllowWhileIdle` e limiti OEM/Doze. Testare permessi Android 13+, riavvio del dispositivo, battery optimization e comportamento a schermo spento.
 - Nessun reminder per una sola data civile senza orario. Nessuno snooze, deep link tap-to-open, scelta del lead per task o opzione di privacy configurabile.
 - Preferenza **device-local**, non sincronizzata fra dispositivi; la registrazione su un telefono non crea automaticamente notifiche sull'altro.

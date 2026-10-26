@@ -1,15 +1,14 @@
 # Simple Notes — Progetto e roadmap
 
-> **Incremento in verifica (26/10/2026, branch `feature/p1-7-windows-msix-reminders`):** Flutter `0.12.0+14` aggiunge notifiche Windows solo con identità MSIX (EXE/ZIP escluso), opt-in locale e annullamento tramite ledger; configurazione pacchetto MSIX e job CI di packaging. **Non mergiato, non distribuito, CI e test Windows reali ancora da verificare**. Lo stato su `main` resta P1.7 Android `0.11.0+13`; Coolify non modificato. Vedere [specifica Windows](docs/P1-WINDOWS-MSIX.md).
+> **Stato sviluppo 26/10/2026:** P1.7 Windows **integrata su `main`** (PR #7, Flutter `0.12.0+14`, [CI verde](https://github.com/andreadada/simple-notes/actions/runs/40245561264)); package MSIX/non-EXE, **nessun test hardware/installazione**. P1.8 Matrice Eisenhower sviluppata su branch `feature/p1-8-eisenhower-matrix` (Flutter `0.13.0+15`, [specifica](docs/P1-EISENHOWER.md)), **CI e merge da verificare**. Ultimo Coolify attestato Flyway V8; V9/V10 reali non verificati; nessun deploy/reset in questa attività.
 
 <!-- CURRENT-STATUS-REF -->
-> **Stato del codice 25/10/2026:** P1.1–P1.6 e P1.7 Android integrate su `main` (Flutter `0.11.0+13`, Drift V8, Flyway V10). P1.7 Android ha opt-in, permessi e scheduler locale inexact, **non collaudato su telefono reale**; Windows non notifica senza MSIX. Ultimo server Coolify verificato V8; V9/V10 e batch E2E non attestati. **Fonte unica:** [docs/CURRENT-STATUS.md](docs/CURRENT-STATUS.md).
 
 **Obiettivo:** Windows 11 + Android offline-first, Google OAuth, Flutter/Forui/Drift + Spring Boot/PostgreSQL su Coolify. Regole UX in [design.md](design.md); deploy sicuro in [P1-RELEASE-BATCH.md](docs/P1-RELEASE-BATCH.md). Le checklist sotto includono traguardi storici: `[x]` significa **codice verificato nella CI o prova specifica**, non distribuzione sul VPS.
 
 ## Gate corrente (non eseguito)
 
-- [x] P1.7 Android con scheduler inexact, ledger, opt-in e CI verde (PR #6). [ ] Prova fisica Android app chiusa/reboot e controllo permessi; [ ] packaging MSIX e promemoria Windows.
+- [x] P1.7 Android con scheduler inexact, ledger, opt-in e CI verde (PR #6). [ ] Prova fisica Android app chiusa/reboot e controllo permessi; [x] codice packaging MSIX + promemoria Windows integrato (PR #7, CI verde); [ ] test fisici MSIX/identità/dati e firma pubblica.
 - [ ] Verificare Flyway V10, health **e** capability su Coolify prima di nuovi client.
 - [ ] Eseguire il collaudo E2E Windows↔Android **solo a fine batch**, preservando database e dati locali.
 - [ ] Concludere hardening, signing, offsite secondo decisione esplicita prima di release pubblica.
@@ -115,7 +114,7 @@
 - [x] **P1.5 Pianificazione rapida e filtri**: PR #4 unita in `main` (Flutter `0.9.0+11`, CI verde), hardware non collaudato. [Specifica](docs/P1-QUICK-PLANNING.md).
 - [x] **P1.6 Ricorrenze**: PR #5 integrata, Flutter 0.10/Flyway V10/Drift V8, CI completa verde; deploy ancora da verificare. [Specifica](docs/P1-RECURRENCE.md).
 - [x] **P1.7 Android nel codice**: PR #6 integrata, Flutter 0.11, scheduler inexact e ledger opt-in; CI verde, test fisici non eseguiti. [ ] Promemoria Windows con MSIX e cancellazione affidabile. [Specifica](docs/P1-REMINDERS-FOUNDATION.md).
-- [ ] Eisenhower Matrix a quattro quadranti.
+- [ ] **P1.8 Matrice Eisenhower:** 4 quadranti responsive, classificazione automatica P2/P3 + scadenza 48h, editor inline/Forui e test nel branch (Flutter 0.13); CI finale, merge e device E2E ancora da verificare. [Specifica](docs/P1-EISENHOWER.md).
 - [ ] Kanban con drag & drop.
 - [ ] Pomodoro/cronometro e statistiche.
 - [ ] Habit tracker, streak, check-in e countdown.
@@ -289,3 +288,5 @@ Esempio: `2026-10-21 14:20 CEST | commit abc1234 | Aggiunto modulo promemoria e 
 - 2026-10-25 | docs(p1.7) | Allineati i 31 file Markdown, `CURRENT-STATUS.md` e runbook V10: distinguere codice, CI e distribuzione reale; prossimo gate Windows MSIX e Android E2E finale. Nessun reset o deploy.
 
 - 2026-10-26 | feat(p1.7-windows) | Branch Windows MSIX: opt-in limitato a package identity, scheduler/ledger condiviso con Android, packaging MSIX CI; nessun dato cancellato, nessun deploy, verifica CI e test Windows reali ancora aperti.
+
+- 2026-10-26 | feat(p1.8) | Quattro quadranti Eisenhower calcolati dai campi task correnti, Forui Windows/Android, modifica inline titolo/priorità/scadenza, conferma completamento, test della logica. Branch `feature/p1-8-eisenhower-matrix`, Flutter 0.13, CI+merge ancora da verificare. Nessuna migrazione, reset o deploy.

@@ -15,8 +15,8 @@ abstract final class CountdownClock {
       final local = due.displayLocal!;
       final days = civilDaysBetween(now.toLocal(), local);
       if (days == 0) return 'Oggi';
-      if (days > 0) return '$days giorni';
-      return 'Da ${-days} giorni';
+      if (days > 0) return '$days ${days == 1 ? 'giorno' : 'giorni'}';
+      return 'Da ${-days} ${days == -1 ? 'giorno' : 'giorni'}';
     }
     final at = due.instant;
     if (at == null) throw const FormatException('Countdown senza data');

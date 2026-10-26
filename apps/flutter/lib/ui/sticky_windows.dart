@@ -14,6 +14,19 @@ import 'notes_theme.dart';
 
 /// A detached note never opens its own SQLite/Drift engine.
 /// All reads and writes go through the main window's LocalStore/outbox.
+abstract final class StickyConflictGuard {
+  static void ensureUnchanged(LocalNote note, String field,
+      String expected) {
+    if (field != 'title' && field != 'body') {
+      throw StateError('Campo sticky non supportato');
+    }
+    final current = field == 'title' ? note.title : note.body;
+    if (current != expected) {
+      throw StateError('Nota modificata altrove: ricarica prima.');
+    }
+  }
+}
+
 abstract final class StickyDesktop {
   static bool get supported => Platform.isWindows;
 
@@ -59,12 +72,8 @@ abstract final class StickyDesktop {
               (field != 'title' && field != 'body')) {
             throw StateError('Aggiornamento non valido');
           }
-          final previous = field == 'title' ? note.title : note.body;
-          if (previous != expected) {
-            // Don't silently overwrite a newer change made on another device
-            // or through the regular Notes screen.
-            throw StateError('Nota modificata altrove: ricarica prima.');
-          }
+          // Do not silently overwrite an update made in the main view or sync.
+          StickyConflictGuard.ensureUnchanged(note, field as String, expected);
           if (field == 'title') {
             await ref.read(localStoreProvider.notifier).renameNote(id, value);
           } else {

@@ -283,7 +283,7 @@ class _NotesHomeState extends ConsumerState<NotesHome> {
                 title: Text(reminders.busy ? 'Aggiornamento promemoria...' :
                   reminders.enabled
                     ? 'Disattiva promemoria (${reminders.pending})'
-                    : 'Attiva promemoria Android'),
+                    : 'Attiva promemoria ${ReminderController.platformLabel}'),
                 prefix: const Icon(Icons.notifications_outlined, size: 18),
                 enabled: !reminders.busy,
                 onPress: () => accountAction('reminders'),

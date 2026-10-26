@@ -125,6 +125,16 @@ jobs:
       - name: Build Windows executable
         working-directory: apps/flutter
         run: flutter build windows --release
+      - name: Build development MSIX (do not install or trust signing cert)
+        working-directory: apps/flutter
+        shell: pwsh
+        run: dart run msix:create --build-windows false
+      - uses: actions/upload-artifact@v4
+        with:
+          name: simple-notes-windows-msix-test
+          path: apps/flutter/build/windows/**/*.msix
+          if-no-files-found: error
+          retention-days: 7
       - uses: actions/upload-artifact@v4
         with:
           name: simple-notes-windows-release

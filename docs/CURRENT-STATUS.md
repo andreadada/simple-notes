@@ -1,5 +1,7 @@
 # Stato corrente — Simple Notes
 
+> **Incremento in verifica (26/10/2026, branch `feature/p1-7-windows-msix-reminders`):** Flutter `0.12.0+14` aggiunge notifiche Windows solo con identità MSIX (EXE/ZIP escluso), opt-in locale e annullamento tramite ledger; configurazione pacchetto MSIX e job CI di packaging. **Non mergiato, non distribuito, CI e test Windows reali ancora da verificare**. Lo stato su `main` resta P1.7 Android `0.11.0+13`; Coolify non modificato. Vedere [specifica Windows](P1-WINDOWS-MSIX.md).
+
 **Aggiornamento:** 25 ottobre 2026, dopo merge P1.7 Android PR #6. Questo documento è la fonte di verità per la versione del codice; i file T2/T3/T4 e P0/P1 precedenti costituiscono storico tecnico, non lo stato operativo attuale.
 
 ## Codice e distribuzione

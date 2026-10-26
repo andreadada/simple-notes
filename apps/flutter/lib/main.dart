@@ -420,7 +420,7 @@ class _NotesHomeState extends ConsumerState<NotesHome> {
         FSidebarGroup(
           label: const Text('ORGANIZZA'),
           children: [
-            for (final s in Section.values)
+            for (final s in Section.values.where((s) => s != Section.pomodoro))
               FSidebarItem(
                 key: Key('nav-${s.name}'),
                 selected: section == s,
@@ -464,6 +464,27 @@ class _NotesHomeState extends ConsumerState<NotesHome> {
               onPress: () {
                 if (!desktop) Navigator.maybePop(context);
                 showListEditor();
+              },
+            ),
+          ],
+        ),
+        // Keep the frequent task/list actions in view on short desktops.
+        // Pomodoro remains accessible in the scrollable sidebar below lists.
+        FSidebarGroup(
+          label: const Text('FOCUS'),
+          children: [
+            FSidebarItem(
+              key: const Key('nav-pomodoro'),
+              selected: section == Section.pomodoro,
+              icon: const Icon(Icons.timer_outlined, size: 20),
+              label: const Text('Pomodoro'),
+              onPress: () {
+                setState(() {
+                  section = Section.pomodoro;
+                  activeListId = null;
+                  selectedId = null;
+                });
+                if (!desktop) Navigator.maybePop(context);
               },
             ),
           ],

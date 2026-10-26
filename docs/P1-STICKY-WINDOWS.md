@@ -9,7 +9,7 @@
 - Il bridge riconosce ogni richiesta per `noteId`, rifiuta campi non validi e modifiche su note cancellate o spostate nel cestino. Per titolo e corpo richiede il valore atteso: se la nota è stata modificata sulla schermata principale o dalla sincronizzazione, non sovrascrive automaticamente e invita a **Ricaricare**. Ciò non sostituisce il controllo versioni backend.
 - Se una finestra per la stessa nota è già aperta dal medesimo processo principale, viene mostrata quella; non viene avviato un terzo editor concorrente. Alla chiusura della finestra principale, le richieste del pop-out falliscono in modo esplicito.
 - Registrazione plugin degli engine secondari tramite callback nativa in `apps/flutter/windows/runner/flutter_window.cpp` (file Windows runner tracciato): il Windows scaffold restante continua a venire generato da Flutter quando mancante. Nessuna migrazione Flyway/Drift e nessun nuovo dato `SharedPreferences`.
-- Su Android **non compare** il comando pop-out; l'editor note esistente rimane invariato.
+- Su Android **non compare** il comando pop-out; l'editor note esistente rimane invariato. L'entrypoint usa un import condizionale verso uno **stub web**, evitando che un build Flutter Web importi il plugin Windows o `dart:io`.
 
 ## Limiti della prima versione
 

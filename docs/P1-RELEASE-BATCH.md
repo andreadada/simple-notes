@@ -91,7 +91,7 @@ Il percorso iniziale consolidato è nella [guida operativa](OPERATIONS.md). La [
 
 [Pomodoro](P1-POMODORO.md) salva timer e statistiche su SharedPreferences (per owner/dispositivo), non sul DB; nessun nuovo gate Flyway oltre V10. Verificare che installazioni e transizione ZIP→MSIX preservino **sia** SQLite sia SharedPreferences/secure storage. Non promettere sync delle statistiche. Prima dell'upgrade su dispositivi reali sono necessari CI del branch, merge e collaudo locale.
 
-### P1.11 Habit Tracker (candidate, device-only)
+### P1.11 Habit Tracker (integrato su main, device-only)
 
 [Habit Tracker P1.11](P1-HABITS.md) aggiunge check-in su date civili, streak, archivio e statistiche **solo locali** su SharedPreferences per owner. Nessun Flyway/Drift aggiuntivo. Includere test di preservazione SharedPreferences e separazione account nel collaudo di batch; NON dichiarare sync tra Windows e Android. 
 

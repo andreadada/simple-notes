@@ -1,6 +1,6 @@
 # AGENTS.md — Istruzioni operative per agenti AI
 
-> **Stato 26/10/2026:** P1.8 **integrata su `main`** (PR #8, Flutter `0.13.0+15`; CI verde), così come P1.7 Android e Windows MSIX. Schema repository Flyway V10 / Drift V8; **ultimo database Coolify attestato V8**, migrazioni V9/V10 reali da verificare. Nessun nuovo deploy né collaudo E2E Windows↔Android sui dispositivi. [Stato canonico](docs/CURRENT-STATUS.md).
+> **Stato 26/10/2026:** P1.9 **Kanban integrato in `main`** con [PR #10](https://github.com/andreadada/simple-notes/pull/10) (Flutter `0.14.0+16`, [CI PR verde](https://github.com/andreadada/simple-notes/actions/runs/40328803094)). P1.10 **Pomodoro locale in sviluppo sul branch** `feature/p1-10-pomodoro-focus` (`0.15.0+17`), CI/merge e device da verificare. Backend repository Flyway V10/Drift V8; ultimo Coolify reale attestato **V8**, nessun deploy/reset. [Stato canonico](docs/CURRENT-STATUS.md).
 
 <!-- CURRENT-STATUS-REF -->
 
@@ -18,7 +18,7 @@
 - Le migrazioni Flyway e Drift sono **additive**, preservano dati reali e offline e vanno testate con fixture esistenti. Non confondere schema su `main` (Flyway V10/Drift V8) con schema realmente applicato su Coolify.
 - `TaskDue` ha semantiche `none/date/datetime/legacy`; date-only **non** significa mezzanotte UTC. Conservare IANA/DST, fold/gap, independence delle scadenze dai time block; fino a 12 slot per task e ricorrenze versione P1.6.
 - Prima di inviare nuovi payload, verificare `GET /api/v1/capabilities` con JWT: `taskDueSchema:1`, `timeBlockSchema:1`, `timeBlocksSchema:1`, `recurrenceSchema:1`. HTTP **426** blocca la sync conservando l'outbox; HTTP **409** è un conflitto, non un successo. Non usare CRUD legacy per simulare delta-sync.
-- P1.7 (PR #6/#7) integra planner UTC, riconciliazione/ledger, permesso Android opt-in e scheduler inexact; **Windows MSIX** è nel codice, ZIP/EXE non pianifica notifiche. P1.8 (PR #8) include la Matrice Eisenhower con proiezione da priorità/scadenze e modifica inline. P1.9 Kanban è un board per **liste sincronizzate** in branch: drag/drop cambia soltanto `listId`; non dichiarare stati workflow separati né drag interno riordinabile. **Non** dichiarare delivery reale Android/Windows, persistenza ZIP→MSIX, snooze o deep-link verificati: mancano test fisici.
+- P1.7 (PR #6/#7) integra planner UTC, riconciliazione/ledger, permesso Android opt-in e scheduler inexact; **Windows MSIX** è nel codice, ZIP/EXE non pianifica notifiche. P1.8 (PR #8) include la Matrice Eisenhower con proiezione da priorità/scadenze e modifica inline. P1.9 Kanban è un board per **liste sincronizzate**, integrato su main (PR #10): drag/drop cambia soltanto `listId`; non dichiarare stati workflow separati né drag interno riordinabile. **Non** dichiarare delivery reale Android/Windows, persistenza ZIP→MSIX, snooze o deep-link verificati: mancano test fisici.
 
 ## Regole di design obbligatorie
 
@@ -36,3 +36,7 @@
 - Deploy e prove hardware restano distinti dalle CI. Runbook attuale [P1-RELEASE-BATCH](docs/P1-RELEASE-BATCH.md): inventario DB, backup secondo policy approvata, backend V10 e capability/health prima di Flutter 0.10+, E2E Windows↔Android in batch. Nessun deploy tacito.
 - L'offsite non è stato eseguito per scelta dell'utente; backup/restore storico del 24/10 non prova la sicurezza o la freschezza di un nuovo rilascio.
 - Prima di concludere, verificare lo SHA effettivo su `main`, gli esiti dei job e il contenuto dei documenti aggiornati; registrare chiaramente le prove mancanti.
+
+## P1.10 locale
+
+Pomodoro (P1.10) è **device-only**, in branch: non aggiungere attributi o sessioni alla sync task, nessun API/DB migration. La preferenza JSON per owner è versionata, scadenza UTC e record deduplicato; un errore di parse **non** deve sovrascrivere i dati. Nessuna promessa di notifiche a timer chiuso. [Specifica](docs/P1-POMODORO.md).

@@ -797,7 +797,7 @@ class _NotesHomeState extends ConsumerState<NotesHome> {
                                 try {
                                   await StickyDesktop.open(ref, note.id);
                                 } catch (_) {
-                                  if (!mounted) return;
+                                  if (!context.mounted) return;
                                   ScaffoldMessenger.maybeOf(context)?.showSnackBar(
                                     const SnackBar(content: Text(
                                       'Impossibile aprire la finestra Sticky Note.')));

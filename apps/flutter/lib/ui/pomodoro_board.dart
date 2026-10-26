@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:ui' show FontFeature;
 
 import 'package:crypto/crypto.dart';
 import 'package:flutter/material.dart';

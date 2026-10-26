@@ -300,7 +300,7 @@ class _CountdownsBoardState extends State<CountdownsBoard>
                       child: const Text('Ripristina'),
                     ),
                   ]),
-                ))),
+                )),
               ),
         ],
         if (_saveError != null)

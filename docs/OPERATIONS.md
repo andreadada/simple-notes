@@ -1,8 +1,8 @@
 # Guida operativa — Simple Notes
 
-> **Stato 26/10/2026:** `main` include P1.11 Habit Tracker ([PR #12](https://github.com/andreadada/simple-notes/pull/12), Flutter `0.16.0+18`, CI verde). P1.12 Countdown è **solo in branch** `feature/p1-12-countdowns-main` (`0.17.0+19`), CI/merge/device da verificare. Pomodoro/Habits/Countdown sono locali per dispositivo, non sincronizzati. Repo Flyway V10, ultima VPS Coolify attestata V8; nessun deploy o reset. [Stato](CURRENT-STATUS.md) · [P1.12](P1-COUNTDOWNS.md).
+> **Stato 26/10/2026:** `main` include P1.12 Countdown ([PR #13](https://github.com/andreadada/simple-notes/pull/13), Flutter `0.17.0+19`, CI verde). P1.13 obiettivi settimanali è **in branch** `feature/p1-13-weekly-habit-goals` (`0.18.0+20`, CI/merge/device da verificare). P1.10–P1.13 sono dati locali per account/dispositivo, non sincronizzati. Backend GitHub Flyway V10; ultima VPS Coolify attestata V8. Nessun deploy/reset. [Stato](CURRENT-STATUS.md) · [P1.13](P1-WEEKLY-HABITS.md).
 
-**Fonte operativa** per il checkout locale Windows, CI, Coolify, Android e Windows ZIP/MSIX. **Ultimo stato verificabile (26/10/2026):** Flutter 0.16.0+18 P1.11 su `main`, CI verde; backend repository Flyway V10/Drift V8; **ultima VPS confermata Flyway V8**. L'incremento P1.12 Countdown è in sviluppo nel branch `feature/p1-12-countdowns-main` (Flutter 0.17.0+19); una PR e una build non sono un deploy. Leggere sempre [CURRENT-STATUS.md](CURRENT-STATUS.md) per lo stato successivo.
+**Fonte operativa** per il checkout locale Windows, CI, Coolify, Android e Windows ZIP/MSIX. **Ultimo stato verificabile (26/10/2026):** Flutter 0.17.0+19 P1.12 su `main`, CI verde; backend repository Flyway V10/Drift V8; **ultima VPS confermata Flyway V8**. L'incremento P1.13 Weekly Habit Goals è in sviluppo nel branch `feature/p1-13-weekly-habit-goals` (Flutter 0.18.0+20); una PR e una build non sono un deploy. Leggere sempre [CURRENT-STATUS.md](CURRENT-STATUS.md) per lo stato successivo.
 
 ## 0. Regola fondamentale
 
@@ -95,7 +95,7 @@ DB_CONTAINER=<ID_DB_CORRENTE> EXPECTED_POSTGRES_DB=simplenotes bash infra/t4-ins
 curl -fsS https://api.notes.ddone.it/actuator/health
 ```
 
-Per i client P1.8–P1.12 si attendono `FLYWAY_LATEST=10`, `FAILED_MIGRATIONS=0`, health `UP` e capability autenticate `taskDueSchema:1`, `timeBlockSchema:1`, `timeBlocksSchema:1`, `recurrenceSchema:1`. Usare JWT solo localmente, senza incollarli nei log/chat. Un health `UP` non basta.
+Per i client P1.8–P1.13 si attendono `FLYWAY_LATEST=10`, `FAILED_MIGRATIONS=0`, health `UP` e capability autenticate `taskDueSchema:1`, `timeBlockSchema:1`, `timeBlocksSchema:1`, `recurrenceSchema:1`. Usare JWT solo localmente, senza incollarli nei log/chat. Un health `UP` non basta.
 
 ## 6. Un solo collaudo batch Windows ↔ Android
 
@@ -121,3 +121,7 @@ Provare sul profilo di test: una abitudine, check-in/undo, streak ieri/oggi, arc
 ## P1.12 — Countdown e integrità dei dati
 
 Countdown riutilizza l'editor `TaskDue` e salva solo SharedPreferences device/owner: **non** è una nuova funzionalità cloud. Per i test verificare data civile vs istante IANA/DST, modifica titolo inline, cambio data, archivio/restore, login e riapertura. Nessun reset dati, nessuna notifica quando l'app è chiusa. Prima di ZIP→MSIX verificare anche la persistenza di preferenze e secure storage, non solo SQLite. [Specifica](P1-COUNTDOWNS.md).
+
+## P1.13 — Obiettivi settimanali senza perdita dati
+
+Il JSON `simple_notes.habits.v1.<ownerHash>` usa sempre schema 1: le abitudini precedenti senza `weeklyTarget` devono rimanere leggibili con default 7. Prima di aggiornare su dispositivi reali, testare su profilo di prova almeno una vecchia abitudine, cambiare obiettivo 3/7, verificare che tutte le date e l'archivio restino identici; verificare il rollover della settimana e DST. **Mai azzerare SharedPreferences per risolvere incompatibilità.** [P1.13](P1-WEEKLY-HABITS.md).

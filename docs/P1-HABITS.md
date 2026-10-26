@@ -1,6 +1,6 @@
 # P1.11 — Habit Tracker locale
 
-> **STATO OPERATIVO 26/10/2026:** P1.11 Habit Tracker (Flutter `0.16.0+18`, PR #12) è integrata su main con CI verde. Countdown P1.12 (`0.17.0+19`) è **in branch**, CI/merge/device da verificare. Pomodoro, Habits e Countdown sono dati **locali per account/dispositivo**, senza cloud sync né nuove migrazioni. Repo Flyway V10, VPS Coolify attestata V8. Nessun deploy/reset. [Stato](CURRENT-STATUS.md) · [Countdown](P1-COUNTDOWNS.md).
+> **Stato 26/10/2026:** `main` include P1.12 Countdown ([PR #13](https://github.com/andreadada/simple-notes/pull/13), Flutter `0.17.0+19`, CI verde). P1.13 obiettivi settimanali è **in branch** `feature/p1-13-weekly-habit-goals` (`0.18.0+20`, CI/merge/device da verificare). P1.10–P1.13 sono dati locali per account/dispositivo, non sincronizzati. Backend GitHub Flyway V10; ultima VPS Coolify attestata V8. Nessun deploy/reset. [Stato](CURRENT-STATUS.md) · [P1.13](P1-WEEKLY-HABITS.md).
 
 **Stato 26/10/2026:** **integrata su main con PR #12**, Flutter `0.16.0+18`, [Flutter CI verde](https://github.com/andreadada/simple-notes/actions/runs/40364300062) e [Markdown CI verde](https://github.com/andreadada/simple-notes/actions/runs/40364300000). P1.10 Pomodoro è integrata in `main` (PR #11), dopo [CI Flutter](https://github.com/andreadada/simple-notes/actions/runs/40347771381) e Markdown verdi. **P1.11 è integrata nel repo, ma non verificata installata sui dispositivi reali.** Backend GitHub Flyway V10/Drift V8 invariati; ultima versione Coolify confermata V8.
 
@@ -31,3 +31,7 @@
 5. [ ] Un unico collaudo cumulativo Windows↔Android dopo aver confermato server, firme e packaging, **senza reset dei dati**; le abitudini restano volutamente separate su ciascun device.
 
 [Stato canonico](CURRENT-STATUS.md) · [Guida operativa](OPERATIONS.md) · [Roadmap](../project.md) · [Design](../design.md).
+
+## P1.13 (estensione candidata)
+
+Nella [P1.13](P1-WEEKLY-HABITS.md) ogni abitudine riceve un obiettivo facoltativo 1–7 check-in/settimana, da UI Forui, senza modificare lo storico check-in. Il modello P1.11 senza campo `weeklyTarget` usa default 7 in lettura per compatibilità; avanzamento e streak di settimane sono locali al dispositivo. L'estensione è ancora sul branch e richiede CI/merge/hardware.

@@ -1,6 +1,6 @@
 # Simple Notes — Progetto e roadmap
 
-> **Stato 26/10/2026:** P1.10 Pomodoro **integrata su `main`** con [PR #11](https://github.com/andreadada/simple-notes/pull/11) (Flutter `0.15.0+17`, CI verde). P1.11 Habit Tracker **in sviluppo su branch** `feature/p1-11-habit-tracker` (`0.16.0+18`, CI/merge da verificare); storico locale, **non sincronizzato tra dispositivi**. Backend repo Flyway V10/Drift V8; ultima VPS Coolify attestata V8, nessun nuovo deploy/reset. [Stato canonico](docs/CURRENT-STATUS.md).
+> **Stato 26/10/2026:** `main` include P1.11 Habit Tracker ([PR #12](https://github.com/andreadada/simple-notes/pull/12), Flutter `0.16.0+18`, CI verde). P1.12 Countdown è **solo in branch** `feature/p1-12-countdowns-main` (`0.17.0+19`), CI/merge/device da verificare. Pomodoro/Habits/Countdown sono locali per dispositivo, non sincronizzati. Repo Flyway V10, ultima VPS Coolify attestata V8; nessun deploy o reset. [Stato](docs/CURRENT-STATUS.md) · [P1.12](docs/P1-COUNTDOWNS.md).
 
 <!-- CURRENT-STATUS-REF -->
 
@@ -117,8 +117,9 @@
 - [x] **P1.8 Matrice Eisenhower nel codice:** PR #8 integrata su `main`, Flutter `0.13.0+15`; 4 quadranti responsive, classificazione P2/P3 e scadenza, editing inline/Forui, test CI verdi. [ ] Test E2E Windows/Android reali. [Specifica](docs/P1-EISENHOWER.md).
 - [x] **P1.9 Kanban per liste:** [PR #10](https://github.com/andreadada/simple-notes/pull/10) su main, Flutter `0.14.0+16`, CI verde. Inbox/liste, drag/drop Windows/Android, menu spostamento, editor e aggiunta inline. [ ] Device E2E non ancora verificati. [Specifica](docs/P1-KANBAN.md).
 - [x] **P1.10 Pomodoro locale e statistiche:** PR #11 integrata su main, Flutter `0.15.0+17`, CI verde; timer 25/5/15, pausa/ripresa, dati per account e statistiche device-only. Test reali/upgrade ancora aperti. **Statistiche device-only, non sincronizzate.** [Specifica](docs/P1-POMODORO.md).
-- [ ] **P1.11 Habit Tracker locale:** check-in giornalieri, streak, statistiche 7/30 giorni, archivio senza cancellazione, UI Forui Windows/Android nel branch `feature/p1-11-habit-tracker` (Flutter `0.16.0+18`). CI/merge/device ancora aperti; [specifica](docs/P1-HABITS.md). Nessuna sincronizzazione cloud in questa prima versione.
-- [ ] Countdown avanzati (separati dal Pomodoro), obiettivi settimanali e habit sync cross-device.
+- [x] **P1.11 Habit Tracker locale:** PR #12 integrata su `main`, Flutter `0.16.0+18`, CI verde; check-in e streak, 7/30 giorni, archiviazione e dati **solo locali**. Test hardware ancora aperti. [Specifica](docs/P1-HABITS.md).
+- [ ] **P1.12 Countdown eventi:** data civile o ora precisa IANA, editing titolo, ordinamento e archivio ripristinabile in branch `feature/p1-12-countdowns-main` (Flutter `0.17.0+19`); CI/merge/E2E ancora aperti. [Specifica](docs/P1-COUNTDOWNS.md).
+- [ ] Obiettivi settimanali Habit, habit sync cross-device e notifiche Countdown (futuri, non implementati).
 - [ ] Sticky Notes in finestre Windows indipendenti.
 - [ ] UI responsive, scorciatoie, tray, temi.
 
@@ -299,3 +300,5 @@ Esempio: `2026-10-21 14:20 CEST | commit abc1234 | Aggiunto modulo promemoria e 
 - 2026-10-26 | feat(p1.10) | PR #10 P1.9 Kanban integrata dopo CI verde. Nuovo branch P1.10 Pomodoro: state machine 25/5/15, dedup session ID, UTC deadline e recupero al rientro, SharedPreferences per owner, statistiche di 7 giorni; nessuna modifica a SQLite/Flyway, Coolify o outbox. CI/merge/test hardware da verificare. [Specifica](docs/P1-POMODORO.md).
 
 - 2026-10-26 | feat(p1.11) | PR #11 Pomodoro integrata in main, CI verde. Nuovo branch Habit Tracker 0.16: check-in su date civili, streak, archivio ripristinabile, proprietario locale isolato, nessun Flyway/Drift/Cloud change. Allineamento documentazione, CI/merge e device test restano distinti; nessun deploy o reset. [Specifica](docs/P1-HABITS.md).
+
+- 2026-10-26 | feat(p1.12) | PR #12 P1.11 merged dopo CI Flutter/Markdown verde. Countdown civili/IANA, store local owner-scoped, archivio reversibile e test sul branch `feature/p1-12-countdowns-main`, Flutter 0.17.0+19. Nessun deploy/reset o migrazione; CI e prove hardware aperte. [Specifica](docs/P1-COUNTDOWNS.md).

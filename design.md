@@ -1,6 +1,6 @@
 # Simple Notes — Design & Product Specification
 
-> **Stato 26/10/2026:** P1.10 Pomodoro **integrata su `main`** con [PR #11](https://github.com/andreadada/simple-notes/pull/11) (Flutter `0.15.0+17`, CI verde). P1.11 Habit Tracker **in sviluppo su branch** `feature/p1-11-habit-tracker` (`0.16.0+18`, CI/merge da verificare); storico locale, **non sincronizzato tra dispositivi**. Backend repo Flyway V10/Drift V8; ultima VPS Coolify attestata V8, nessun nuovo deploy/reset. [Stato canonico](docs/CURRENT-STATUS.md).
+> **Stato 26/10/2026:** `main` include P1.11 Habit Tracker ([PR #12](https://github.com/andreadada/simple-notes/pull/12), Flutter `0.16.0+18`, CI verde). P1.12 Countdown è **solo in branch** `feature/p1-12-countdowns-main` (`0.17.0+19`), CI/merge/device da verificare. Pomodoro/Habits/Countdown sono locali per dispositivo, non sincronizzati. Repo Flyway V10, ultima VPS Coolify attestata V8; nessun deploy o reset. [Stato](docs/CURRENT-STATUS.md) · [P1.12](docs/P1-COUNTDOWNS.md).
 
 <!-- CURRENT-STATUS-REF -->
 
@@ -185,3 +185,7 @@ Schermata responsive Forui con cronometro e barra di avanzamento, controlli Avvi
 ## P1.11 — Habit Tracker (branch)
 
 Forui e modifica titolo direttamente, un check-in giornaliero + ultimi 7 giorni; conteggi 7/30 giorni, streak fino a ieri se oggi non segnato, niente ore inventate. Archiviazione non distruttiva e ripristino; niente conferma per il check-in reversibile. I dati sono locali per account e **non** sincronizzati; interfaccia adattiva scorrevole su Android. [Specifica](docs/P1-HABITS.md).
+
+## P1.12 — Countdown
+
+Nuova vista Forui nel gruppo Focus: card con titolo inline modificabile, pulsante per data/ora tramite selettore esistente, tempo residuo e archivio non distruttivo. Distingue `Oggi` da `Scaduto` senza mezzanotte implicita. UI adattiva, dati locali per account/dispositivo, nessuna notifica ad app chiusa. [Specifica](docs/P1-COUNTDOWNS.md).

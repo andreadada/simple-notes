@@ -1,7 +1,7 @@
 # P0 — Scadenze, date-only e fusi orari
 
 <!-- CURRENT-STATUS-REF -->
-> **Cronologia tecnica (snapshot 2026):** le istruzioni legate a Flyway V7/V8 e alle vecchie versioni Flutter non sono un rollout aggiornato. Ora `main` include Flutter **0.13.0+15** (P1.8, CI verde) e backend Flyway **V10** nel repository; su Coolify la versione più recente attestata rimane **V8**. Consultare [CURRENT-STATUS](CURRENT-STATUS.md) e [runbook V10](P1-RELEASE-BATCH.md); non ripetere reset o deploy storici.
+> **Snapshot storico, NON runbook attuale — 26/10/2026:** `main` = P1.10 Pomodoro `0.15.0+17` (PR #11, CI verde); P1.11 Habit Tracker `0.16.0+18` **solo branch**, CI/merge non confermati. Entrambe le funzioni hanno storico locale, **non sincronizzato**. Repo Flyway V10 / Coolify attestato V8, nessun deploy o test hardware nuovo. [Stato](CURRENT-STATUS.md) · [Guida operativa](OPERATIONS.md) · [Specifiche P1.11](P1-HABITS.md).
 
 
 > **Stato reale 24/10/2026:** PostgreSQL `simplenotes` 17.11, Flyway V1–V7 riuscite, backup `simple-notes-20261024T132857Z-271921.dump` con SHA256 valido e restore isolato PASS. Copia offsite non effettuata per scelta dell'utente. Restano da verificare l'API autenticata (`taskDueSchema:1`) e il collaudo T4.2 Windows↔Android con Flutter `0.4.0+4`. Non ripetere backup, migrazioni o deploy automaticamente. [T4.2](T4-DEVICE-SYNC.md).
@@ -143,3 +143,7 @@ Il backend deve verificare che `instant` concordi con data/ora/`timeZone`/`offse
 - [ ] P0 aggiornata e edit timespan registrato; ricorrenze/notifiche non spacciate per completate.
 
 **File target:** `apps/flutter/lib/data/{models.dart,app_database.dart,local_store.dart}`, `apps/flutter/lib/sync/cloud_sync.dart`, `apps/flutter/lib/ui/notes_dialogs.dart`, `apps/flutter/lib/main.dart`, test Flutter; `services/api/.../task/TaskEntity.java`, `services/api/.../sync/SyncService.java`, nuovi value object e migrazione V7, test Java; documenti API/sync. Nessun file di codice è cambiato con questo documento.
+
+## P1.11 — Date civili nelle abitudini
+
+I check-in di Habit Tracker sono stringhe `YYYY-MM-DD` nel calendario locale. Il giorno successivo è calcolato tramite `DateTime(year, month, day + 1)`, non sommando 24 ore UTC: DST gap/fold non devono modificare il giorno assegnato. Non condividono la semantica di `TaskDue.datetime` e non sono sincronizzati. [Specifica](P1-HABITS.md).

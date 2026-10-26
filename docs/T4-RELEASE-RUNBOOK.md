@@ -1,7 +1,7 @@
 # T4 — Rilascio controllato Simple Notes (Coolify/PostgreSQL)
 
 <!-- CURRENT-STATUS-REF -->
-> **Cronologia tecnica (snapshot 2026):** le istruzioni legate a Flyway V7/V8 e alle vecchie versioni Flutter non sono un rollout aggiornato. Ora `main` include Flutter **0.13.0+15** (P1.8, CI verde) e backend Flyway **V10** nel repository; su Coolify la versione più recente attestata rimane **V8**. Consultare [CURRENT-STATUS](CURRENT-STATUS.md) e [runbook V10](P1-RELEASE-BATCH.md); non ripetere reset o deploy storici.
+> **Snapshot storico, NON runbook attuale — 26/10/2026:** `main` = P1.10 Pomodoro `0.15.0+17` (PR #11, CI verde); P1.11 Habit Tracker `0.16.0+18` **solo branch**, CI/merge non confermati. Entrambe le funzioni hanno storico locale, **non sincronizzato**. Repo Flyway V10 / Coolify attestato V8, nessun deploy o test hardware nuovo. [Stato](CURRENT-STATUS.md) · [Guida operativa](OPERATIONS.md) · [Specifiche P1.11](P1-HABITS.md).
 
 
 ## Stato reale verificato e T4.2 (24 ottobre 2026)

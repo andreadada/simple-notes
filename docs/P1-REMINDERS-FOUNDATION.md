@@ -1,6 +1,6 @@
 # P1.7 — Promemoria Android e pianificazione cross-platform
 
-> **Stato 26/10/2026:** P1.8 **integrata su `main`** (PR #8, Flutter `0.13.0+15`; CI verde), così come P1.7 Android e Windows MSIX. Schema repository Flyway V10 / Drift V8; **ultimo database Coolify attestato V8**, migrazioni V9/V10 reali da verificare. Nessun nuovo deploy né collaudo E2E Windows↔Android sui dispositivi. [Stato canonico](CURRENT-STATUS.md).
+> **Allineamento operativo — 26/10/2026:** `main` = P1.10 Pomodoro `0.15.0+17` (PR #11, CI verde); P1.11 Habit Tracker `0.16.0+18` **solo branch**, CI/merge non confermati. Entrambe le funzioni hanno storico locale, **non sincronizzato**. Repo Flyway V10 / Coolify attestato V8, nessun deploy o test hardware nuovo. [Stato](CURRENT-STATUS.md) · [Guida operativa](OPERATIONS.md) · [Specifiche P1.11](P1-HABITS.md).
 
 **Stato del codice (25 ottobre 2026):** P1.7 Android integrata su `main` con [PR #6](https://github.com/andreadada/simple-notes/pull/6), merge `df40b93e`. CI Flutter **verde** ([run 40231569864](https://github.com/andreadada/simple-notes/actions/runs/40231569864)) su test, Windows release e APK JDK17/21. **Nessun test fisico Android**, deploy e delivery Windows da attestare.
 

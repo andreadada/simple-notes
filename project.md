@@ -22,7 +22,7 @@
 - [ ] Distinguere layout Windows e Android; testare accessibilità, ridimensionamento e dark/light.
 - [x] **Design rule inline-edit first:** se un titolo/nome/attributo semplice è già visibile, renderlo editabile sul posto, senza bottone/modale Rinomina. Invio/blur salva, Esc annulla; validazione e SQLite/outbox sempre obbligatori. Eccezioni per form complessi o distruttivi.
 - [x] **Design rule larghezza esatta:** testo senza sfondo, sottolineatura neutra solo larga quanto valore/placeholder (non il contenitore; ~1px per cursore), blu al focus, placeholder semitrasparente (~72%). Implementazione condivisa `InlineTextMetrics.fieldWidth` in `notes_theme.dart`, utilizzata da titolo, descrizione, note, tag, sottotask e input task rapido; vedi `design.md` / `docs/ui-forui.md`. Il codice è nel commit `7303d45`; CI e test real-device da registrare separatamente.
-- [x] **Fondamenta promemoria:** fusi IANA/DST, ricorrenze, deduplicazione e delivery Android P1.7 implementate; prove hardware ancora pendenti. Windows MSIX sviluppato nel branch P1.7 Windows, CI e installazione reali da verificare.
+- [x] **Fondamenta promemoria:** fusi IANA/DST, ricorrenze, deduplicazione e delivery Android P1.7 implementate; prove hardware ancora pendenti. Windows MSIX integrato su `main` in PR #7 (CI verde), installazione reale da verificare.
 - [ ] Eseguire test unitari, integrazione, offline/online e ripristino backup prima dei rilasci.
 - [ ] Aggiornare **Edit Timespan** in fondo ad ogni commit che modifica il progetto.
 
@@ -113,8 +113,8 @@
 - [x] **P1.4 Multi-block + riepilogo**: PR #3 integrata in main; 12 slot per attività, Flyway V9/Drift V7, CI superate. Deploy e collaudo hardware ancora da verificare. [Specifica](docs/P1-MULTI-BLOCKS.md).
 - [x] **P1.5 Pianificazione rapida e filtri**: PR #4 unita in `main` (Flutter `0.9.0+11`, CI verde), hardware non collaudato. [Specifica](docs/P1-QUICK-PLANNING.md).
 - [x] **P1.6 Ricorrenze**: PR #5 integrata, Flutter 0.10/Flyway V10/Drift V8, CI completa verde; deploy ancora da verificare. [Specifica](docs/P1-RECURRENCE.md).
-- [x] **P1.7 Android nel codice**: PR #6 integrata, Flutter 0.11, scheduler inexact e ledger opt-in; CI verde, test fisici non eseguiti. [ ] Promemoria Windows con MSIX e cancellazione affidabile. [Specifica](docs/P1-REMINDERS-FOUNDATION.md).
-- [ ] **P1.8 Matrice Eisenhower:** 4 quadranti responsive, classificazione automatica P2/P3 + scadenza 48h, editor inline/Forui e test nel branch (Flutter 0.13); CI finale, merge e device E2E ancora da verificare. [Specifica](docs/P1-EISENHOWER.md).
+- [x] **P1.7 Android nel codice**: PR #6 integrata, Flutter 0.11, scheduler inexact e ledger opt-in; CI verde, test fisici non eseguiti. [x] Windows MSIX integrato con PR #7 (Flutter 0.12, CI verde), [ ] cancellazione e upgrade reali da verificare. [Specifica](docs/P1-REMINDERS-FOUNDATION.md).
+- [x] **P1.8 Matrice Eisenhower nel codice:** PR #8 integrata su `main`, Flutter `0.13.0+15`; 4 quadranti responsive, classificazione P2/P3 e scadenza, editing inline/Forui, test CI verdi. [ ] Test E2E Windows/Android reali. [Specifica](docs/P1-EISENHOWER.md).
 - [ ] Kanban con drag & drop.
 - [ ] Pomodoro/cronometro e statistiche.
 - [ ] Habit tracker, streak, check-in e countdown.
@@ -290,3 +290,5 @@ Esempio: `2026-10-21 14:20 CEST | commit abc1234 | Aggiunto modulo promemoria e 
 - 2026-10-26 | feat(p1.7-windows) | Branch Windows MSIX: opt-in limitato a package identity, scheduler/ledger condiviso con Android, packaging MSIX CI; nessun dato cancellato, nessun deploy, verifica CI e test Windows reali ancora aperti.
 
 - 2026-10-26 | feat(p1.8) | Quattro quadranti Eisenhower calcolati dai campi task correnti, Forui Windows/Android, modifica inline titolo/priorità/scadenza, conferma completamento, test della logica. Branch `feature/p1-8-eisenhower-matrix`, Flutter 0.13, CI+merge ancora da verificare. Nessuna migrazione, reset o deploy.
+
+- 2026-10-26 | docs(audit) | PR #8 P1.8 integrata su main dopo CI Windows/Android e Markdown verdi. Audit dei 32 documenti Markdown: stato canonico unico, status storici chiariti, roadmap e rollout versioni aggiornati. Coolify resta non attestato oltre V8; nessun deploy o reset.

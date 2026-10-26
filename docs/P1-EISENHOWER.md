@@ -1,6 +1,6 @@
 # P1.8 — Matrice Eisenhower (vista derivata)
 
-**Stato 26/10/2026:** branch `feature/p1-8-eisenhower-matrix`, Flutter `0.13.0+15`; implementazione e test di dominio aggiunti, CI e verifica hardware ancora da confermare. PR #7 (MSIX Windows) è stata integrata in `main` dopo CI verde [40245561264](https://github.com/andreadada/simple-notes/actions/runs/40245561264). Nessun deploy o reset.
+**Stato 26/10/2026:** **integrata su `main` con PR #8**, Flutter `0.13.0+15`. [Flutter CI 40313588569](https://github.com/andreadada/simple-notes/actions/runs/40313588569) e [Markdown 40313588470](https://github.com/andreadada/simple-notes/actions/runs/40313588470) **verdi**; verifica hardware ancora da effettuare. PR #7 (MSIX Windows) è stata integrata in `main` dopo CI verde [40245561264](https://github.com/andreadada/simple-notes/actions/runs/40245561264). Nessun deploy o reset.
 
 ## Comportamento
 
@@ -20,10 +20,10 @@
 
 ## Gate
 
-1. [ ] CI Flutter `analyze`, `test`, APK JDK17/21, Windows EXE/MSIX e docs link **verdi sullo SHA finale**.
+1. [x] CI Flutter `analyze`, `test`, APK JDK17/21, Windows EXE/MSIX e docs link **verdi sulla PR #8**; [ ] verifica run post-merge `main`.
 2. [ ] Mobile: verificare a larghezza stretta che testo, comandi e Forui popup non taglino contenuto; desktop: due colonne e pannello dettagli; tastiera/lettore schermo.
 3. [ ] Due device: cambiare priorità, scadenza, titolo e completamento, sincronizzare, verificare quadranti ricostruiti su Windows e Android; simulare offline e retry, nessuna duplicazione outbox.
 4. [ ] Verificare migrato Coolify Flyway V10 e capability prima di installare Flutter P1.8; **non deployare automaticamente**.
-5. [ ] Solo dopo verifica, valutare feature successive: drag/drop quadranti con modello `important`/`urgent` esplicito o gestione di progetti Kanban.
+5. [ ] Solo dopo verifica dei gate reali, valutare feature successive: drag/drop quadranti con modello `important`/`urgent` esplicito o gestione di progetti Kanban.
 
 [Stato canonico](CURRENT-STATUS.md) · [Roadmap](../project.md) · [Runbook](P1-RELEASE-BATCH.md).

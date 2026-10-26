@@ -1,58 +1,47 @@
 # Stato corrente — Simple Notes
 
-> **Stato sviluppo 26/10/2026:** P1.7 Windows **integrata su `main`** (PR #7, Flutter `0.12.0+14`, [CI verde](https://github.com/andreadada/simple-notes/actions/runs/40245561264)); package MSIX/non-EXE, **nessun test hardware/installazione**. P1.8 Matrice Eisenhower sviluppata su branch `feature/p1-8-eisenhower-matrix` (Flutter `0.13.0+15`, [specifica](P1-EISENHOWER.md)), **CI e merge da verificare**. Ultimo Coolify attestato Flyway V8; V9/V10 reali non verificati; nessun deploy/reset in questa attività.
+**Aggiornato il 26 ottobre 2026** dopo PR #8. Questa è la fonte di verità per il codice e per le verifiche *effettivamente attestabili*; i runbook T2/T3/T4 e le vecchie release sono cronologia, non istruzioni correnti.
 
-**Aggiornamento:** 26 ottobre 2026, dopo merge P1.7 Windows PR #7. P1.8 in sviluppo su branch. Questo documento è la fonte di verità per la versione del codice; i file T2/T3/T4 e P0/P1 precedenti costituiscono storico tecnico, non lo stato operativo attuale.
+## Stato verificato
 
-## Codice e distribuzione
-
-| Contesto | Stato |
+| Area | Stato |
 |---|---|
-| `main` | P1.1–P1.6, P1.7 Android e Windows MSIX integrate (PR #6/#7, Flutter `0.12.0+14`); P1.8 in branch `feature/p1-8-eisenhower-matrix` (`0.13.0+15`), CI da verificare |
-| Backend su `main` | Migrazioni Flyway fino a **V10** e capability `recurrenceSchema:1` oltre a `timeBlocksSchema:1`, oltre a time blocking e date-only |
-| Drift client su `main` | Schema **V8** |
-| Incremento **P1.7** | Android (PR #6) opt-in inexact; Windows (PR #7) opt-in solo con package identity MSIX. CI Android/Windows/MSIX verde sul commit di PR #7; **device reali e upgrade MSIX non collaudati**, Windows ZIP sempre disabilitato |
-| VPS Coolify | **Ultima verifica effettivamente fornita dall'utente:** Flyway V8, PostgreSQL17, `BLOCK_COLUMNS=3`, `FAILED_MIGRATIONS=0`, health `UP` alle 12:02 circa del 25/10/2026. La presenza di V9/V10 sulla VPS non è stata verificata. |
-| Windows/Android | CI Flutter `0.12.0+14` verde: analyze/test, Windows EXE e MSIX, APK JDK17/21 ([run 40245561264](https://github.com/andreadada/simple-notes/actions/runs/40245561264)). Installazione e verifica E2E **non confermate**. Non supporre che i client siano già alla versione di `main`. |
-| Collaudo | Aggregato alla fine di più incrementi, secondo richiesta. Nessun reset dei dati; non ripetere test hardware a ogni feature. |
+| `main` | P0 + P1.1–P1.8 **nel codice**; ultima integrazione [PR #8](https://github.com/andreadada/simple-notes/pull/8), commit `c122f30` |
+| Flutter | **`0.13.0+15`**; Android e Windows, Forui, Riverpod, Drift offline-first |
+| Backend del repository | Spring Boot, PostgreSQL 17, Flyway **V1–V10** versionate e capability `taskDueSchema:1`, `timeBlockSchema:1`, `timeBlocksSchema:1`, `recurrenceSchema:1` |
+| Database client | Drift/SQLite **V8**; outbox persistente, tombstone e sync con protezione conflitti/versioni |
+| CI `main` P1.7 Windows | [Flutter run 40312228553](https://github.com/andreadada/simple-notes/actions/runs/40312228553) **verde** |
+| CI P1.8 PR #8 | [Flutter run 40313588569](https://github.com/andreadada/simple-notes/actions/runs/40313588569) **verde**: analyze/test, APK JDK17+21, Windows EXE+MSIX; [Markdown run 40313588470](https://github.com/andreadada/simple-notes/actions/runs/40313588470) **verde**. Controllare anche i nuovi run `main` dopo il merge |
+| Coolify reale | **Ultima verifica comunicata:** PostgreSQL 17, Flyway **V8**, health `UP` il 25/10/2026. Migrazioni **V9/V10 e capability su VPS non attestate**. L'eventuale auto-deploy richiede controllo reale, non supposizioni |
+| Client installati | **Non attestati** su versione `0.13.0+15`; non affermare che il PC/telefono abbiano già queste funzioni |
+| E2E hardware | Test completo Windows↔Android, offline/retry/conflitti, notifiche Android e Windows MSIX **ancora da eseguire** |
+| Release | Nessun nuovo deploy Coolify, installazione, reset PostgreSQL/SQLite o modifica dei volumi effettuati nell'audit |
 
-Le CI verificano il codice e producono artefatti, **non** dimostrano un deploy. La disponibilità di una nuova versione su `main` può innescare l'auto-deploy Coolify, se attivo: leggere il commit dell'immagine e verificare il DB prima di aggiornare i client.
+## Funzionalità implementate
 
-## Matrice incrementi
-
-| Fase | Implementazione | Gate ancora aperto |
+| Incremento | Codice su `main` | Restante gate |
 |---|---|---|
-| P0 | Auth Google, task/note/liste, auto-sync, outbox, protezione conflitti, Forui, edit inline e diagnostica | Test end-to-end Windows ↔ Android / hardening |
-| T2/T3/T4 | Date-only/timezone IANA, Flyway V7 e health, Flyway V8 verificata | Collaudo dispositivi e compatibilità in produzione |
-| P1.1 | Giorno/settimana/mese | Prova UI reale |
-| P1.2–P1.3 | Singolo time block, drag/resize, DST, Flyway V8 | Prova UX sui dispositivi |
-| P1.4 | Fino a 12 blocchi per task, V9/Drift V7, summary ore, API 426 legacy | Flyway V9 reale e prova multi-device |
-| P1.5 | Filtri e pianificazione rapida, Flutter 0.9, nessuna migrazione | Prova UI reale |
-| P1.6 | Ricorrenze giornaliere/settimanali/mensili integrate in `main`, V10/Drift V8 | Deploy Coolify e acceptance hardware |
-| P1.7 Android | Opt-in, permessi Android, reminder inexact, ledger e riconciliazione integrati con PR #6; CI verde | Prove vere Android (app chiusa, Doze/reboot, permessi negati, logout, DST) |
-| P1.7 Windows | MSIX+opt-in integrati su `main`; ZIP/EXE disabilitato, nessuno snooze | Prove MSIX installato, gestione SQLite/OAuth e cancel nativi su PC |\n| P1.8 Matrice Eisenhower | Quattro quadranti derivati da priorità/scadenza, editing inline, Forui responsive **solo nel branch** | CI su SHA finale, merge e device E2E |
-| P2/P3 | Estensioni web/condivisione/export e ulteriori fasi | Pianificate |
+| P0 | Google OAuth, task/note/liste, priorità/tag/sottotask, cestino, auto-sync foreground e conflitti Forui, modifica inline | Prova E2E su due dispositivi; hardening |
+| P1.1–P1.3 | Calendario giorno/settimana/mese, blocchi orari, drag/resize e gestione DST | UX su hardware |
+| P1.4–P1.6 | Max 12 time block/task, quick planner, filtri, ricorrenze daily/weekly/monthly; Flyway V9/V10 e Drift V7/V8 | Server reale V9/V10 e compatibilità client |
+| P1.7 Android | Scheduler nativo **inexact**, opt-in, ledger, annullamento prima del logout, testo privacy-safe | Reboot, Doze, permessi, cancellazione e notifiche reali |
+| P1.7 Windows | Scheduling solo con identità **MSIX**, packaging CI e opt-in; eseguibile ZIP/EXE **senza** notifiche | Firma/installer attendibile, accesso SQLite/OAuth preesistenti, cancellazione affidabile su PC |
+| P1.8 | Matrice Eisenhower a quattro quadranti, responsive, lettura di priorità/scadenza e modifica inline; nessuna migrazione | Test UI e sync su dispositivi reali |
+| P2/P3 | Non avviate | Kanban, Pomodoro, habit, integrazioni, funzioni smart, secondo roadmap |
 
-## Regole vincolanti
+La matrice P1.8 **non** introduce un campo autonomo di importanza/urgenza: `priority >= 2` indica importante; è urgente la scadenza con istante entro 48h, mentre per `date-only` contano oggi/domani/giorni trascorsi. Il quadrante "Delega" non assegna attività ad altri account.
 
-1. **Modifica inline:** titolo e attributi visualizzati direttamente editabili dove praticabile; non introdurre schermate «Rinomina» non necessarie.
-2. **Forui** come base UI, finestre e picker; non creare dialog Material incoerenti.
-3. **Offline-first e account:** preservare dati locali, outbox/operation ID, remoteVersion, cursor e boundOwner; nessun reset/installazione distruttiva, mai eliminare i volumi Coolify.
-4. **Backward protection:** capability autenticata prima di nuovi payload, rifiuto HTTP 426 per client legacy che eliminerebbero attributi moderni; non considerare i 409 conflitti un successo.
-5. **Release:** aggiornare server Flyway/capability, verificare stato DB e API, poi client; test hardware solo in un gate batch quando richiesto.
-6. Non modificare i dati di produzione dalla CI; i test PostgreSQL/Testcontainers usano DB isolati.
+## Regole permanenti
 
-## Riferimenti chiave
+1. **Forui-first, editing inline:** titolo/nome/attributi semplici visibili editabili direttamente; underline della sola lunghezza del testo.
+2. **Offline-first:** ogni modifica locale preserva SQLite/outbox, cursor, UUID, boundOwner e idempotenza; HTTP 409 non è 426.
+3. **Versioni diverse:** codice, CI, deploy e installazione reale non sono equivalenti. Non scambiare un backup storico per un backup nuovo.
+4. **Rilascio sicuro:** verificare schema Flyway **V10** e capability sulla VPS, poi installare client; E2E in batch. Non effettuare `down -v`, reset, reinstallazioni distruttive o spostamenti dati MSIX non testati.
 
-- [Roadmap completa](../project.md)
-- [Regole prodotto](../design.md), [regole agenti](../AGENTS.md)
-- [P1.4 multi-block](P1-MULTI-BLOCKS.md), [P1.5 quick planning](P1-QUICK-PLANNING.md), [P1.6 recurrence](P1-RECURRENCE.md), [P1.7 reminder Android](P1-REMINDERS-FOUNDATION.md)
-- [Protocollo sync](sync.md), [API](api.md), [database e VPS](../infra/README.md)
-- [Runbook deploy batch P1.6 V10](P1-RELEASE-BATCH.md), [rilascio storico V8](P1-RELEASE-0.7.0.md) e [test su dispositivi](T4-DEVICE-SYNC.md)
+## Riferimenti operativi
 
-## Compiti aperti prima del prossimo rilascio
+- [Roadmap e Edit Timespan](../project.md), [regole agenti](../AGENTS.md), [UX](../design.md)
+- [P1.8 Matrice](P1-EISENHOWER.md), [P1.7 Android](P1-REMINDERS-FOUNDATION.md), [P1.7 Windows MSIX](P1-WINDOWS-MSIX.md)
+- [Runbook rollout backend V10](P1-RELEASE-BATCH.md), [sync](sync.md), [API](api.md), [dispositivi](T4-DEVICE-SYNC.md), [handoff storico](HANDOFF.md)
 
-- P1.6 integrata in repository e P1.7 Android integrata con PR #6 (CI Flutter verdi). Verificare deployment backend V10 prima di installare client 0.12/0.13.
-- P1.7 Android: scheduling nativo opt-in **implementato**, **mai attestato su dispositivo**. Windows MSIX nel codice dopo PR #7, ma manca test fisico e firma release; non pubblicizzare la delivery come attestata su entrambe le piattaforme.
-- Verificare automaticamente la migrazione Flyway più recente *effettivamente deployata* prima di installare la successiva versione Flutter.
-- Fare un collaudo E2E Windows/Android una sola volta a fine gruppo: login, note, task, scadenze, multi-block, sync offline/online, conflitti, cancellazione/restore, ricorrenze, reminder Android se attivati, permessi, logout/cancel; verifica notifiche Windows solo su installazione MSIX firmata, senza perdita dati.
+**Prossima sequenza:** CI post-merge / documentazione → verifica del backend V10 su Coolify → controllo non distruttivo del passaggio ZIP→MSIX → installazioni → un collaudo E2E Windows/Android. L'utente gestisce personalmente il deploy Coolify.

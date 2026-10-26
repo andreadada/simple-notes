@@ -1,6 +1,6 @@
 # AGENTS.md — Istruzioni operative per agenti AI
 
-> **Stato operativo (26/10/2026):** P1.13 obiettivi settimanali su `main` (PR #14, Flutter `0.18.0+20`, CI verde). P1.14 finestre Sticky Windows è **solo nel branch** `feature/p1-14-sticky-windows` (`0.19.0+21`, CI/merge/device da verificare). Repo Flyway V10; ultima VPS attestata V8. Nessun deploy/reset. [Stato](docs/CURRENT-STATUS.md) · [P1.14](docs/P1-STICKY-WINDOWS.md).
+> **Stato operativo (26/10/2026):** P1.14 Sticky Windows integrata su `main` ([PR #15](https://github.com/andreadada/simple-notes/pull/15), Flutter `0.19.0+21`, CI verde). P1.15 scorciatoie Windows **solo su branch** `feature/p1-15-desktop-shortcuts` (`0.20.0+22`); CI finale, merge, device da verificare. Backend GitHub Flyway V10, VPS ultima attestazione V8; nessun deploy/reset. [Stato](docs/CURRENT-STATUS.md) · [P1.15](docs/P1-DESKTOP-SHORTCUTS.md).
 
 <!-- CURRENT-STATUS-REF -->
 
@@ -56,3 +56,7 @@ Il modello `LocalHabit.weeklyTarget` è retrocompatibile con JSON schema 1 P1.11
 ## P1.14 — Windows Sticky
 
 Le finestre detached NON aprono SQLite/Drift, OAuth o AutoSync. Usare il bridge al processo main e il suo LocalStore/outbox con controllo della vecchia stringa, così le modifiche stale non sovrascrivono automaticamente i dati. Bootstrap child prima di AppDatabase, plugin registrato su ogni engine; funzione solo Windows, richiede prova reale. [Specifica](docs/P1-STICKY-WINDOWS.md).
+
+## P1.15 — Shortcuts Windows
+
+Solo Ctrl+combinazioni esplicite, solo nella finestra attiva Windows. Mai consumare Ctrl+C/V/Z/A o digitazioni ordinarie; nessuna hotkey globale. `Ctrl+Shift+T` mette a fuoco l'input senza scrivere in DB; `Ctrl+Shift+N` usa LocalStore/outbox già esistente. La guida è un dialogo Forui. [Specifiche](docs/P1-DESKTOP-SHORTCUTS.md).

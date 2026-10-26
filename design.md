@@ -1,6 +1,6 @@
 # Simple Notes — Design & Product Specification
 
-> **Stato operativo (26/10/2026):** P1.13 obiettivi settimanali su `main` (PR #14, Flutter `0.18.0+20`, CI verde). P1.14 finestre Sticky Windows è **solo nel branch** `feature/p1-14-sticky-windows` (`0.19.0+21`, CI/merge/device da verificare). Repo Flyway V10; ultima VPS attestata V8. Nessun deploy/reset. [Stato](docs/CURRENT-STATUS.md) · [P1.14](docs/P1-STICKY-WINDOWS.md).
+> **Stato operativo (26/10/2026):** P1.14 Sticky Windows integrata su `main` ([PR #15](https://github.com/andreadada/simple-notes/pull/15), Flutter `0.19.0+21`, CI verde). P1.15 scorciatoie Windows **solo su branch** `feature/p1-15-desktop-shortcuts` (`0.20.0+22`); CI finale, merge, device da verificare. Backend GitHub Flyway V10, VPS ultima attestazione V8; nessun deploy/reset. [Stato](docs/CURRENT-STATUS.md) · [P1.15](docs/P1-DESKTOP-SHORTCUTS.md).
 
 <!-- CURRENT-STATUS-REF -->
 
@@ -197,3 +197,7 @@ In ogni card Habit, Forui menu per 1–7 giorni/settimana, progress bar e streak
 ## P1.14 — Sticky Windows
 
 Nella card Note un'icona pop-out visibile solo su Windows apre una finestra distinta con titolo e contenuto già editabili inline. La finestra usa lo stile Forui, il tasto Ricarica e un errore chiaro su conflitto; nessuna modale di rinomina. Il main resta proprietario del database e della sync. [Specifica](docs/P1-STICKY-WINDOWS.md).
+
+## P1.15 — Keyboard-first desktop
+
+Ctrl+1..5 cambia schermata, Ctrl+Shift+T dà focus al nuovo task, Ctrl+Shift+N crea una nota, Ctrl+/ apre la guida Forui. Un'icona discreta nell'header Windows rende le scorciatoie scopribili. La regola edit inline non cambia e Android non reagisce ai comandi Windows. [Specifiche](docs/P1-DESKTOP-SHORTCUTS.md).

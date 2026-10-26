@@ -1,6 +1,6 @@
 # Rollout coordinato — Simple Notes backend V10 e client P1.13 (P1.14 candidata)
 
-> **Stato operativo (26/10/2026):** P1.13 obiettivi settimanali su `main` (PR #14, Flutter `0.18.0+20`, CI verde). P1.14 finestre Sticky Windows è **solo nel branch** `feature/p1-14-sticky-windows` (`0.19.0+21`, CI/merge/device da verificare). Repo Flyway V10; ultima VPS attestata V8. Nessun deploy/reset. [Stato](CURRENT-STATUS.md) · [P1.14](P1-STICKY-WINDOWS.md).
+> **Stato operativo (26/10/2026):** P1.14 Sticky Windows integrata su `main` ([PR #15](https://github.com/andreadada/simple-notes/pull/15), Flutter `0.19.0+21`, CI verde). P1.15 scorciatoie Windows **solo su branch** `feature/p1-15-desktop-shortcuts` (`0.20.0+22`); CI finale, merge, device da verificare. Backend GitHub Flyway V10, VPS ultima attestazione V8; nessun deploy/reset. [Stato](CURRENT-STATUS.md) · [P1.15](P1-DESKTOP-SHORTCUTS.md).
 
 **Stato:** runbook per backend P1.6 Flyway V10 e client P1.13 `0.18.0+20` (P1.14 candidata `0.19.0+21`) (**P1.1–P1.12 integrate su main, fino alla PR #13, CI verde**); nessun deploy né nuova installazione sui dispositivi è stato attestato da questa attività. L'utente ha scelto di effettuare personalmente il deploy Coolify **dopo** il gruppo di incrementi. I comandi sono istruzioni di sola lettura salvo il pulsante **Redeploy** esplicitamente indicato.
 
@@ -106,3 +106,7 @@ Il percorso iniziale consolidato è nella [guida operativa](OPERATIONS.md). La [
 ### P1.14 — Gate desktop multi-engine
 
 [Sticky Windows](P1-STICKY-WINDOWS.md) non introduce migrazioni: il runner Windows registra plugin sul second engine e il child non apre database/OAuth. Prima di installare MSIX/ZIP reale: verifica DLL, apertura pop-out, modifiche via LocalStore/outbox principale, conflitti, chiusura main e assenza di data loss. Nessun deploy automatico.
+
+### P1.15 — Gate keyboard Windows
+
+[P1.15](P1-DESKTOP-SHORTCUTS.md) non richiede backend, DB schema o dipendenze native nuove. I shortcut sono interni alla finestra Windows, l'azione Nuova nota usa il normale LocalStore/outbox. Collaudare focus e combinazioni di editing, CI Windows/MSIX e regression Android. Restano necessari i gate server-first Flyway V10 per la release cumulativa e la conservazione dati ZIP→MSIX.

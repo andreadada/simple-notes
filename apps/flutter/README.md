@@ -1,6 +1,6 @@
 # Flutter client — P0 e P1
 
-> **Stato operativo (26/10/2026):** P1.13 obiettivi settimanali su `main` (PR #14, Flutter `0.18.0+20`, CI verde). P1.14 finestre Sticky Windows è **solo nel branch** `feature/p1-14-sticky-windows` (`0.19.0+21`, CI/merge/device da verificare). Repo Flyway V10; ultima VPS attestata V8. Nessun deploy/reset. [Stato](../../docs/CURRENT-STATUS.md) · [P1.14](../../docs/P1-STICKY-WINDOWS.md).
+> **Stato operativo (26/10/2026):** P1.14 Sticky Windows integrata su `main` ([PR #15](https://github.com/andreadada/simple-notes/pull/15), Flutter `0.19.0+21`, CI verde). P1.15 scorciatoie Windows **solo su branch** `feature/p1-15-desktop-shortcuts` (`0.20.0+22`); CI finale, merge, device da verificare. Backend GitHub Flyway V10, VPS ultima attestazione V8; nessun deploy/reset. [Stato](../../docs/CURRENT-STATUS.md) · [P1.15](../../docs/P1-DESKTOP-SHORTCUTS.md).
 
 <!-- CURRENT-STATUS-REF -->
 
@@ -166,3 +166,7 @@ Flutter `0.18.0+20` candidato. `LocalHabit.weeklyTarget` 1–7 con default retro
 ## P1.14 — Sticky Notes Windows
 
 `desktop_multi_window ^0.3.1` crea una finestra indipendente per nota Windows; `flutter_window.cpp` registra i plugin nel nuovo engine, che non apre AppDatabase né OAuth. Tutte le modifiche passano dal LocalStore/outbox principale con optimistic guard. Android resta invariato. Nuova build Flutter candidata 0.19, CI/real-device in verifica. [Specifica](../../docs/P1-STICKY-WINDOWS.md).
+
+## P1.15 — Scorciatoie Windows (branch)
+
+Flutter `0.20.0+22` candidata. `DesktopShortcutPolicy` gestisce Ctrl+1..5, Ctrl+Shift+T/N, Ctrl+/; `NotesHome` riutilizza la navigazione e LocalStore esistenti, con help Forui. Nessuna API, DB migration o plugin OS. [Specifiche](../../docs/P1-DESKTOP-SHORTCUTS.md).

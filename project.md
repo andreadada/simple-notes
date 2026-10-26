@@ -1,6 +1,6 @@
 # Simple Notes — Progetto e roadmap
 
-> **Stato operativo (26/10/2026):** P1.13 obiettivi settimanali su `main` (PR #14, Flutter `0.18.0+20`, CI verde). P1.14 finestre Sticky Windows è **solo nel branch** `feature/p1-14-sticky-windows` (`0.19.0+21`, CI/merge/device da verificare). Repo Flyway V10; ultima VPS attestata V8. Nessun deploy/reset. [Stato](docs/CURRENT-STATUS.md) · [P1.14](docs/P1-STICKY-WINDOWS.md).
+> **Stato operativo (26/10/2026):** P1.14 Sticky Windows integrata su `main` ([PR #15](https://github.com/andreadada/simple-notes/pull/15), Flutter `0.19.0+21`, CI verde). P1.15 scorciatoie Windows **solo su branch** `feature/p1-15-desktop-shortcuts` (`0.20.0+22`); CI finale, merge, device da verificare. Backend GitHub Flyway V10, VPS ultima attestazione V8; nessun deploy/reset. [Stato](docs/CURRENT-STATUS.md) · [P1.15](docs/P1-DESKTOP-SHORTCUTS.md).
 
 <!-- CURRENT-STATUS-REF -->
 
@@ -121,8 +121,9 @@
 - [x] **P1.12 Countdown eventi:** PR #13 integrata su `main`, Flutter `0.17.0+19`, CI verde; data civile/ora IANA, edit inline, archivio reversibile. Device test e upgrade dati ancora aperti. [Specifica](docs/P1-COUNTDOWNS.md).
 - [x] **P1.13 Obiettivi settimanali Habit:** PR #14 integrata su `main`, Flutter `0.18.0+20`, CI verde; target 1–7 giorni, streak e storico JSON retrocompatibile. Test fisici aperti. [Specifica](docs/P1-WEEKLY-HABITS.md).
 - [ ] Habit sync cross-device e notifiche Countdown (futuri, non implementati).
-- [ ] **P1.14 Sticky Notes Windows:** pop-out indipendente di note esistenti con edit inline tramite LocalStore principale, solo branch `feature/p1-14-sticky-windows`, Flutter `0.19.0+21`; CI/merge/device da verificare. [Specifica](docs/P1-STICKY-WINDOWS.md).
-- [ ] UI responsive, scorciatoie, tray, temi.
+- [x] **P1.14 Sticky Notes Windows:** PR #15 su `main`, Flutter `0.19.0+21`, CI verde; editing inline in finestre indipendenti con stesso LocalStore. Device ancora da collaudare. [Specifica](docs/P1-STICKY-WINDOWS.md).
+- [ ] **P1.15 Scorciatoie desktop:** Ctrl+1..5, Ctrl+Shift+T/N, Ctrl+/ e help Forui nel branch `feature/p1-15-desktop-shortcuts`, Flutter candidata `0.20.0+22`. CI/merge/test hardware aperti. [Specifica](docs/P1-DESKTOP-SHORTCUTS.md).
+- [ ] UI responsive, tray Windows, temi.
 
 ## P2 — Estensioni
 - [ ] Timeline/Gantt e filtri avanzati.
@@ -307,3 +308,5 @@ Esempio: `2026-10-21 14:20 CEST | commit abc1234 | Aggiunto modulo promemoria e 
 - 2026-10-26 | feat(p1.13) | Countdown PR #13 integrata su main, CI verde. Implementati nel branch settimanale 1–7 giorni, barra, streak lunedì–domenica e migrazione compatibile da P1.11 JSON schema 1; Flutter 0.18.0+20, nessuna nuova API/Flyway/Drift né deploy. CI/merge/device da verificare. [P1.13](docs/P1-WEEKLY-HABITS.md).
 
 - 2026-10-26 | feat(p1.14) | P1.13 PR #14 merged dopo CI verde. Branch Sticky Windows 0.19: plugin desktop multiwindow, runner nativo registrazione engine, bootstrap subwindow senza DB, edit titolo/corpo via LocalStore principale con guard conflitti, test e doc. Nessun deploy/reset. [Specifica](docs/P1-STICKY-WINDOWS.md).
+
+- 2026-10-26 | feat(p1.15) | P1.14 PR #15 merged dopo CI verde. Nuova P1.15 Windows: navigazione tastiera, nuova nota via LocalStore, focus nuovo task e help Forui, test policy/widget, versione 0.20.0+22. Nessun deploy, migration o reset. [Specifiche](docs/P1-DESKTOP-SHORTCUTS.md).

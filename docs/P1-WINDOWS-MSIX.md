@@ -1,6 +1,6 @@
 # P1.7 Windows — MSIX e promemoria opt-in
 
-> **SNAPSHOT STORICO / GATE 26/10/2026:** `main` include P1.11 Habit Tracker (Flutter `0.16.0+18`, PR #12, CI verde); Countdown P1.12 `0.17.0+19` è **solo su branch**. Funzioni Pomodoro/Habits/Countdown **device-only**, nessuna sync o nuova migration; repo Flyway V10, server Coolify ultimo attestato V8. Nessun deploy/reset. Le istruzioni precedenti descrivono verifiche e versioni storiche, **non** l'attuale rilascio. [Stato](CURRENT-STATUS.md) · [Operazioni](OPERATIONS.md) · [Countdown](P1-COUNTDOWNS.md).
+> **STATO OPERATIVO — 26/10/2026:** `main` include P1.12 Countdown (`0.17.0+19`, PR #13, CI verde). P1.13 settimanale (`0.18.0+20`) è **solo nel branch**, CI/merge/device non attestati; `weeklyTarget` 1–7 non cancella check-in. Le funzioni Pomodoro/Habits/Countdown sono locali e non sincronizzate. Schema repo Flyway V10, Coolify attestato V8; nessun deploy/reset. [Stato](CURRENT-STATUS.md) · [Operazioni](OPERATIONS.md) · [P1.13](P1-WEEKLY-HABITS.md).
 
 **Stato 26/10/2026:** **integrata in `main` con PR #7** (merge `34106c4`, Flutter `0.12.0+14`, [CI 40245561264 verde](https://github.com/andreadada/simple-notes/actions/runs/40245561264)); **non installata o verificata su PC reale**, non rilasciata. Backend Flyway V10 e Drift V8 invariati. La release corrente del codice su `main` è ora Flutter `0.13.0+15` (PR #8); non installare nuovi client fino a verifica dell'API Coolify e compatibilità dell'upgrade MSIX.
 

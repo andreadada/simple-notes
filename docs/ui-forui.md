@@ -1,7 +1,7 @@
 # Simple Notes — UI e design system Forui
 
 <!-- CURRENT-STATUS-REF -->
-> **STATO OPERATIVO 26/10/2026:** P1.11 Habit Tracker (Flutter `0.16.0+18`, PR #12) è integrata su main con CI verde. Countdown P1.12 (`0.17.0+19`) è **in branch**, CI/merge/device da verificare. Pomodoro, Habits e Countdown sono dati **locali per account/dispositivo**, senza cloud sync né nuove migrazioni. Repo Flyway V10, VPS Coolify attestata V8. Nessun deploy/reset. [Stato](CURRENT-STATUS.md) · [Countdown](P1-COUNTDOWNS.md).
+> **STATO OPERATIVO — 26/10/2026:** `main` include P1.12 Countdown (`0.17.0+19`, PR #13, CI verde). P1.13 settimanale (`0.18.0+20`) è **solo nel branch**, CI/merge/device non attestati; `weeklyTarget` 1–7 non cancella check-in. Le funzioni Pomodoro/Habits/Countdown sono locali e non sincronizzate. Schema repo Flyway V10, Coolify attestato V8; nessun deploy/reset. [Stato](CURRENT-STATUS.md) · [Operazioni](OPERATIONS.md) · [P1.13](P1-WEEKLY-HABITS.md).
 
 
 > **Stato reale 24/10/2026:** PostgreSQL `simplenotes` 17.11, Flyway V1–V7 riuscite, backup `simple-notes-20261024T132857Z-271921.dump` con SHA256 valido e restore isolato PASS. Copia offsite non effettuata per scelta dell'utente. Restano da verificare l'API autenticata (`taskDueSchema:1`) e il collaudo T4.2 Windows↔Android con Flutter `0.4.0+4`. Non ripetere backup, migrazioni o deploy automaticamente. [T4.2](T4-DEVICE-SYNC.md).
@@ -139,3 +139,7 @@ Vista mobile/desktop con elenco scorrevole di card, checkbox oggi, selettori del
 ## P1.12 — Countdown in Forui
 
 Card ordinate per scadenza con titolo `InlineEditableTitle`, nuovo evento tramite data/ora in `showTaskDueEditor` e input `InlineQuickAdd`, archivio/ripristino senza cancellare. Nessuna modale superflua per rinomina. Non anticipare notifiche a app chiusa. [Specifica](P1-COUNTDOWNS.md).
+
+## P1.13 — Weekly Habit UI
+
+`FPopoverMenu` permette 1–7 giorni/settimana direttamente nella card, `LinearProgressIndicator` riflette il target e testo streak mostra le settimane raggiunte. Titolo `InlineEditableTitle` invariato. Menù non crea nuove task né riscrive check-in o preferenze di altri owner. [P1.13](P1-WEEKLY-HABITS.md).

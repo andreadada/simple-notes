@@ -1,7 +1,7 @@
 # Backend — Coolify
 
 <!-- CURRENT-STATUS-REF -->
-> **STATO OPERATIVO 26/10/2026:** P1.11 Habit Tracker (Flutter `0.16.0+18`, PR #12) è integrata su main con CI verde. Countdown P1.12 (`0.17.0+19`) è **in branch**, CI/merge/device da verificare. Pomodoro, Habits e Countdown sono dati **locali per account/dispositivo**, senza cloud sync né nuove migrazioni. Repo Flyway V10, VPS Coolify attestata V8. Nessun deploy/reset. [Stato](../docs/CURRENT-STATUS.md) · [Countdown](../docs/P1-COUNTDOWNS.md).
+> **STATO OPERATIVO — 26/10/2026:** `main` include P1.12 Countdown (`0.17.0+19`, PR #13, CI verde). P1.13 settimanale (`0.18.0+20`) è **solo nel branch**, CI/merge/device non attestati; `weeklyTarget` 1–7 non cancella check-in. Le funzioni Pomodoro/Habits/Countdown sono locali e non sincronizzate. Schema repo Flyway V10, Coolify attestato V8; nessun deploy/reset. [Stato](../docs/CURRENT-STATUS.md) · [Operazioni](../docs/OPERATIONS.md) · [P1.13](../docs/P1-WEEKLY-HABITS.md).
 
 
 ## Cronologia — rilascio 0.7.0+9 (superato da P1.6)
@@ -138,3 +138,7 @@ Habit Tracker P1.11 usa soltanto SharedPreferences lato Flutter e non aggiunge v
 ## P1.12 — Nessuna migrazione da applicare
 
 La fase Countdown V1 è solo UI Flutter/SharedPreferences. Non aggiunge risorse Coolify, credenziali, Compose, backend, endpoint, Flyway o volumi. La verifica Flyway V10 sulla VPS resta richiesta per il rilascio cumulativo delle funzioni cloud precedenti (ultima attestazione V8). Nessun reset o deploy automatico. [Operazioni](../docs/OPERATIONS.md).
+
+## Gate P1.13 — Nessuna nuova migrazione
+
+Gli obiettivi settimanali Habit sono solo Flutter/SharedPreferences e restano device-only. Non aggiungere Compose, nuove risorse, variabili, backup distruttivi o migrazioni. Per il rilascio cumulativo verificare comunque Flyway V10 sul server reale (ultima attestazione V8), senza deploy/volumi automatici. [Guida](../docs/OPERATIONS.md) · [P1.13](../docs/P1-WEEKLY-HABITS.md).

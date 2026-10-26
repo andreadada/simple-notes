@@ -8,6 +8,7 @@ import 'ui/notes_dialogs.dart';
 import 'ui/task_due_editor.dart';
 import 'ui/calendar_board.dart';
 import 'ui/eisenhower_board.dart';
+import 'ui/kanban_board.dart';
 import 'ui/task_blocks_panel.dart';
 import 'ui/task_recurrence_panel.dart';
 import 'ui/reminder_controller.dart';
@@ -76,7 +77,7 @@ class SimpleNotesApp extends StatelessWidget {
       );
 }
 
-enum Section { today, next7, inbox, everything, completed, calendar, eisenhower, notes, trash }
+enum Section { today, next7, inbox, everything, completed, calendar, eisenhower, kanban, notes, trash }
 
 extension SectionLabel on Section {
   String get label => switch (this) {
@@ -87,6 +88,7 @@ extension SectionLabel on Section {
         Section.completed => 'Completati',
         Section.calendar => 'Calendario',
         Section.eisenhower => 'Matrice Eisenhower',
+        Section.kanban => 'Kanban',
         Section.notes => 'Note',
         Section.trash => 'Cestino',
       };
@@ -98,6 +100,7 @@ extension SectionLabel on Section {
         Section.completed => Icons.check_circle_outline,
         Section.calendar => Icons.calendar_month_outlined,
         Section.eisenhower => Icons.grid_view_outlined,
+        Section.kanban => Icons.view_kanban_outlined,
         Section.notes => Icons.sticky_note_2_outlined,
         Section.trash => Icons.restore_from_trash_outlined,
       };
@@ -144,7 +147,7 @@ class _NotesHomeState extends ConsumerState<NotesHome> {
           Section.completed => t.completed,
           Section.inbox => !t.completed && t.listId == null,
           Section.everything => !t.completed,
-          Section.calendar || Section.eisenhower || Section.notes || Section.trash => false,
+          Section.calendar || Section.eisenhower || Section.kanban || Section.notes || Section.trash => false,
         }).toList()..sort((a, b) => a.createdAt.compareTo(b.createdAt));
   }
 
@@ -503,7 +506,7 @@ class _NotesHomeState extends ConsumerState<NotesHome> {
                           .renameList(activeList.id, title),
                     )),
             ),
-          if (section != Section.calendar && section != Section.eisenhower && section != Section.notes && section != Section.trash)
+          if (section != Section.calendar && section != Section.eisenhower && section != Section.kanban && section != Section.notes && section != Section.trash)
             Padding(
               padding: const EdgeInsets.fromLTRB(16, 0, 16, 4),
               child: FTextField(
@@ -518,7 +521,7 @@ class _NotesHomeState extends ConsumerState<NotesHome> {
 
               ),
             ),
-          if (section != Section.calendar && section != Section.eisenhower && section != Section.notes && section != Section.trash)
+          if (section != Section.calendar && section != Section.eisenhower && section != Section.kanban && section != Section.notes && section != Section.trash)
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 5),
               child: Row(children: [
@@ -546,7 +549,7 @@ class _NotesHomeState extends ConsumerState<NotesHome> {
                 ],
               ]),
             ),
-          if (section != Section.calendar && section != Section.eisenhower && section != Section.notes && section != Section.trash)
+          if (section != Section.calendar && section != Section.eisenhower && section != Section.kanban && section != Section.notes && section != Section.trash)
             Padding(
               padding: const EdgeInsets.fromLTRB(16, 8, 16, 12),
               child: Row(children: [
@@ -617,6 +620,14 @@ class _NotesHomeState extends ConsumerState<NotesHome> {
               setState(() => selectedId = task.id);
               if (!wideDetails) showTaskDetails(task);
             }))
+          else if (section == Section.kanban)
+            Expanded(child: KanbanBoard(
+              onCreateList: showListEditor,
+              onOpenTask: (task) {
+                setState(() => selectedId = task.id);
+                if (!wideDetails) showTaskDetails(task);
+              },
+            ))
           else if (section == Section.trash)
             Expanded(child: ListView(
               padding: const EdgeInsets.all(16),

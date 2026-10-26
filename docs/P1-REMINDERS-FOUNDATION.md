@@ -1,6 +1,6 @@
 # P1.7 — Promemoria Android e pianificazione cross-platform
 
-> **Stato sviluppo 26/10/2026:** P1.7 Windows **integrata su `main`** (PR #7, Flutter `0.12.0+14`, [CI verde](https://github.com/andreadada/simple-notes/actions/runs/40245561264)); package MSIX/non-EXE, **nessun test hardware/installazione**. P1.8 Matrice Eisenhower sviluppata su branch `feature/p1-8-eisenhower-matrix` (Flutter `0.13.0+15`, [specifica](P1-EISENHOWER.md)), **CI e merge da verificare**. Ultimo Coolify attestato Flyway V8; V9/V10 reali non verificati; nessun deploy/reset in questa attività.
+> **Stato 26/10/2026:** P1.8 **integrata su `main`** (PR #8, Flutter `0.13.0+15`; CI verde), così come P1.7 Android e Windows MSIX. Schema repository Flyway V10 / Drift V8; **ultimo database Coolify attestato V8**, migrazioni V9/V10 reali da verificare. Nessun nuovo deploy né collaudo E2E Windows↔Android sui dispositivi. [Stato canonico](CURRENT-STATUS.md).
 
 **Stato del codice (25 ottobre 2026):** P1.7 Android integrata su `main` con [PR #6](https://github.com/andreadada/simple-notes/pull/6), merge `df40b93e`. CI Flutter **verde** ([run 40231569864](https://github.com/andreadada/simple-notes/actions/runs/40231569864)) su test, Windows release e APK JDK17/21. **Nessun test fisico Android**, deploy e delivery Windows da attestare.
 
@@ -29,7 +29,7 @@
 2. Su Android autentica Google, verifica `boundOwnerId`, attiva dal menu, accetta permesso; conferma pending schedulati e ricezione reale con app chiusa.
 3. Task data-only (nessun allarme), con orario, più time block, ricorrenza avanzata, DST fold/gap, modifica/cancellazione/completamento e assenza di duplicati.
 4. Disattiva e verifica annullamento; riattiva e cambia account, verifica nessuna notifica del precedente; nega il permesso e conferma che lo stato non diventa «attivo».
-5. Effettua E2E Windows↔Android **insieme** al batch finale P1.6, non in ogni commit. Su Windows il menu reminder non deve offrire attivazione non supportata.
+5. Effettua E2E Windows↔Android **insieme** al batch P1.8, non in ogni commit. Su Windows il menu reminder deve offrire opt-in solo se installato come MSIX (mai sull'EXE/ZIP).
 6. Server Coolify **prima dei client**: ultima Flyway verificata V8; V9/V10 e capability `recurrenceSchema:1` devono essere confermate dall'utente, seguendo [P1-RELEASE-BATCH.md](P1-RELEASE-BATCH.md).
 
-**Divieti:** non effettuare deploy o reset; non pubblicizzare P1.7 come notifiche Windows, esatte Android o test su device superati. Stato operativo prevalente: [CURRENT-STATUS.md](CURRENT-STATUS.md).
+**Divieti:** non effettuare deploy o reset; non pubblicizzare P1.7 come notifiche Windows **già testate**, esatte Android o test su device superati. Stato operativo prevalente: [CURRENT-STATUS.md](CURRENT-STATUS.md).

@@ -1,7 +1,7 @@
 # P1.5 — Pianificazione rapida e filtri calendario
 
 <!-- CURRENT-STATUS-REF -->
-> **Stato codice (25/10/2026):** P1.7 Android integrata su `main` (Flutter `0.11.0+13`, Flyway V10/Drift V8): promemoria nativi inexact e opt-in, CI verde, **senza collaudo reale**. Windows ZIP senza notifiche finché non è pronto MSIX. Ultimo Coolify verificato V8, V9/V10 non attestati. **Fonte unica:** [CURRENT-STATUS.md](CURRENT-STATUS.md). I riferimenti storici più sotto non documentano un deploy attuale.
+> **Snapshot storico:** le versioni, PR, prove e prossimi passi riportati di seguito si riferiscono all'incremento originario, non allo stato attuale. Al 26/10/2026 `main` include **P1.8 / Flutter 0.13.0+15**, CI verde; backend GitHub Flyway V10, Coolify reale verificato fino a V8, device E2E non attestati. Per decisioni operative usare [CURRENT-STATUS.md](CURRENT-STATUS.md) e [P1-RELEASE-BATCH.md](P1-RELEASE-BATCH.md).
 
 
 **Stato codice:** integrata in `main` con PR #4, Flutter `0.9.0+11` e CI Flutter verde. Nessuna migrazione aggiuntiva; deploy e prove hardware non attestati.
@@ -28,7 +28,7 @@
 ## Verifiche e prerequisiti
 
 - P1.5 riusa **Flyway V9/Drift V7** di P1.4. Il backend deve esporre `timeBlocksSchema:1`; il client fallisce in modo sicuro lasciando l'outbox in attesa se il server non è aggiornato. Nessuna nuova capability.
-- CI dell'ultimo commit: Flutter analyze, test widget/unit, Windows release, Android JDK 17/21. Non segnarla verde finché l'ultimo run non è completato.
+- CI dell'incremento P1.5: Flutter analyze, test widget/unit, Windows release, Android JDK 17/21. Per i risultati correnti consultare [CURRENT-STATUS.md](CURRENT-STATUS.md).
 - Collaudo combinato da effettuare **solo alla fine di più incrementi** secondo il workflow concordato: primo slot su giorno selezionato, filtri, priorità, ricerca, due date indipendente, blocchi multipli, modifiche offline e sincronizzazione Windows↔Android. Il server già verificato dall'utente sulla VPS era Flyway V8; **non dichiarare V9 reale senza una nuova ispezione**.
 - Se si decidesse di integrare P1.5 in main, ricordare che una CI verde e un merge GitHub non costituiscono verifica dell'installazione su Coolify/dispositivi.
 

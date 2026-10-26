@@ -1,5 +1,7 @@
 # P1.6 — Ricorrenze versionate
 
+> **Snapshot storico:** le versioni, PR, prove e prossimi passi riportati di seguito si riferiscono all'incremento originario, non allo stato attuale. Al 26/10/2026 `main` include **P1.8 / Flutter 0.13.0+15**, CI verde; backend GitHub Flyway V10, Coolify reale verificato fino a V8, device E2E non attestati. Per decisioni operative usare [CURRENT-STATUS.md](CURRENT-STATUS.md) e [P1-RELEASE-BATCH.md](P1-RELEASE-BATCH.md).
+
 **Stato codice:** integrata su `main` con PR #5 (CI complete verdi), Flutter `0.10.0+12`. **Il deploy non è stato verificato.** Backend Flyway **V10** additiva, Drift **V8** additiva.
 
 ## Requisiti implementati

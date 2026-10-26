@@ -1,11 +1,11 @@
 # Flutter client — P0 e P1
 
-> **Stato sviluppo 26/10/2026:** P1.7 Windows **integrata su `main`** (PR #7, Flutter `0.12.0+14`, [CI verde](https://github.com/andreadada/simple-notes/actions/runs/40245561264)); package MSIX/non-EXE, **nessun test hardware/installazione**. P1.8 Matrice Eisenhower sviluppata su branch `feature/p1-8-eisenhower-matrix` (Flutter `0.13.0+15`, [specifica](../../docs/P1-EISENHOWER.md)), **CI e merge da verificare**. Ultimo Coolify attestato Flyway V8; V9/V10 reali non verificati; nessun deploy/reset in questa attività.
+> **Stato 26/10/2026:** P1.8 **integrata su `main`** (PR #8, Flutter `0.13.0+15`; CI verde), così come P1.7 Android e Windows MSIX. Schema repository Flyway V10 / Drift V8; **ultimo database Coolify attestato V8**, migrazioni V9/V10 reali da verificare. Nessun nuovo deploy né collaudo E2E Windows↔Android sui dispositivi. [Stato canonico](../../docs/CURRENT-STATUS.md).
 
 <!-- CURRENT-STATUS-REF -->
 
 
-## Cronologia — rilascio 0.7.0+9 (superato da P1.6)
+## Cronologia — rilascio 0.7.0+9 (superato da P1.8)
 
 **Codice integrato su `main`**: PR #1 P1.2 (time blocking + Flyway V8 + Drift V6) e PR #2 P1.3 (drag/resize e timeline) unite con successo. La CI dei branch è verde; le build automatiche successive al merge sono da controllare separatamente. **Coolify e PostgreSQL reali NON sono stati aggiornati/verificati da questa chat; non dichiarare Flyway V8 già applicata, né l'app installata su Windows/Android.** Per il rollout serve verificare backend `timeBlockSchema:1` e Flyway V8 prima di aggiornare i client. Non eseguire reset degli archivi: l'utente ha già concluso il reset dei soli dati di test. **Runbook attuale:** [P1-RELEASE-0.7.0.md](../../docs/P1-RELEASE-0.7.0.md).
 

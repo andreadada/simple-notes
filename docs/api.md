@@ -1,7 +1,7 @@
 # Simple Notes API v1
 
 <!-- CURRENT-STATUS-REF -->
-> **Stato codice (25/10/2026):** P1.7 Android integrata su `main` (Flutter `0.11.0+13`, Flyway V10/Drift V8): promemoria nativi inexact e opt-in, CI verde, **senza collaudo reale**. Windows ZIP senza notifiche finché non è pronto MSIX. Ultimo Coolify verificato V8, V9/V10 non attestati. **Fonte unica:** [CURRENT-STATUS.md](CURRENT-STATUS.md). I riferimenti storici più sotto non documentano un deploy attuale.
+> **Riferimento corrente (26/10/2026):** `main` contiene Flutter **0.13.0+15** (P1.8, CI verde) e backend fino a Flyway **V10**; Coolify reale attestato solo fino a **V8**. Le sezioni precedenti datate sono cronologia o descrizione delle singole versioni. Consultare [CURRENT-STATUS](CURRENT-STATUS.md) e [runbook V10](P1-RELEASE-BATCH.md) prima di operazioni reali; nessun deploy/test hardware confermato.
 
 
 ## Auth
@@ -45,3 +45,7 @@ Test automatici T2/T3 per data-only, DST, doppio SQLite, outbox, Drift v4→v5 e
 ## Contratto P1.2 — timeBlock (versione storica, integrata su main)
 
 **Per il payload corrente di task multi-slot e ricorrenze, vedere [P1-MULTI-BLOCKS.md](P1-MULTI-BLOCKS.md) e [P1-RECURRENCE.md](P1-RECURRENCE.md).** Il seguente schema è la forma singolo-blocco di P1.2 mantenuta per compatibilità. Su `POST /api/v1/sync/apply` per `entityType:task`, payload opzionale `timeBlock`: `{"kind":"none"}` oppure `{"kind":"range","start":"2026-10-26T08:00:00Z","end":"2026-10-26T09:30:00Z","timeZone":"Europe/Rome"}`. Il blocco è indipendente dal campo `due`. Durata 1 minuto–24h, fuso IANA valido. `GET /api/v1/capabilities` annuncia `timeBlockSchema:1` soltanto con backend V8 aggiornato. Un vecchio client senza `timeBlock` su task già pianificato riceve HTTP 426. Nuovi client non inviano upsert senza capability, preservano outbox. Dettagli: [P1-TIME-BLOCKING.md](P1-TIME-BLOCKING.md). Non attestare deploy.
+
+## Aggiornamento contratto corrente (26 ottobre 2026)
+
+Il backend presente in `main` contiene Flyway V10 e le capability `taskDueSchema:1`, `timeBlockSchema:1`, `timeBlocksSchema:1`, `recurrenceSchema:1` (consultare [P1-RELEASE-BATCH.md](P1-RELEASE-BATCH.md)). La Matrice Eisenhower P1.8 non aggiunge endpoint/campi. Le notifiche P1.7 sono locali per dispositivo e non creano un endpoint di scheduling. La versione Flyway/capability effettivamente deployata su Coolify **deve ancora essere verificata**.

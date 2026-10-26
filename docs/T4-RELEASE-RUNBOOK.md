@@ -1,7 +1,7 @@
 # T4 — Rilascio controllato Simple Notes (Coolify/PostgreSQL)
 
 <!-- CURRENT-STATUS-REF -->
-> **Stato codice (25/10/2026):** P1.7 Android integrata su `main` (Flutter `0.11.0+13`, Flyway V10/Drift V8): promemoria nativi inexact e opt-in, CI verde, **senza collaudo reale**. Windows ZIP senza notifiche finché non è pronto MSIX. Ultimo Coolify verificato V8, V9/V10 non attestati. **Fonte unica:** [CURRENT-STATUS.md](CURRENT-STATUS.md). I riferimenti storici più sotto non documentano un deploy attuale.
+> **Cronologia tecnica (snapshot 2026):** le istruzioni legate a Flyway V7/V8 e alle vecchie versioni Flutter non sono un rollout aggiornato. Ora `main` include Flutter **0.13.0+15** (P1.8, CI verde) e backend Flyway **V10** nel repository; su Coolify la versione più recente attestata rimane **V8**. Consultare [CURRENT-STATUS](CURRENT-STATUS.md) e [runbook V10](P1-RELEASE-BATCH.md); non ripetere reset o deploy storici.
 
 
 ## Stato reale verificato e T4.2 (24 ottobre 2026)

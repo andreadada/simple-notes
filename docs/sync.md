@@ -1,7 +1,7 @@
 # Delta Sync v1 — protocollo e storia degli incrementi
 
 <!-- CURRENT-STATUS-REF -->
-> **Stato codice (25/10/2026):** P1.7 Android integrata su `main` (Flutter `0.11.0+13`, Flyway V10/Drift V8): promemoria nativi inexact e opt-in, CI verde, **senza collaudo reale**. Windows ZIP senza notifiche finché non è pronto MSIX. Ultimo Coolify verificato V8, V9/V10 non attestati. **Fonte unica:** [CURRENT-STATUS.md](CURRENT-STATUS.md). I riferimenti storici più sotto non documentano un deploy attuale.
+> **Riferimento corrente (26/10/2026):** `main` contiene Flutter **0.13.0+15** (P1.8, CI verde) e backend fino a Flyway **V10**; Coolify reale attestato solo fino a **V8**. Le sezioni precedenti datate sono cronologia o descrizione delle singole versioni. Consultare [CURRENT-STATUS](CURRENT-STATUS.md) e [runbook V10](P1-RELEASE-BATCH.md) prima di operazioni reali; nessun deploy/test hardware confermato.
 
 
 ## Ultima versione di un elemento / risoluzione conflitto (P0)
@@ -37,3 +37,7 @@ Per dettagli, limiti e sequenza di deploy: [task-organization.md](task-organizat
 ## P1.2 — protezione dei blocchi orari
 
 Il task serializza `timeBlock` come `kind:none|range` con `start/end` UTC e `timeZone` IANA. Qualsiasi task upsert nuovo verifica prima `timeBlockSchema:1` via API capabilities; fallimento conserva la coda. Il server, dopo Flyway V8, rifiuta con 426 aggiornamenti legacy privi di `timeBlock` se l'entità ha un blocco esistente. La scadenza `due` non è collegata al blocco. [P1-TIME-BLOCKING.md](P1-TIME-BLOCKING.md).
+
+## Compatibilità degli incrementi correnti (26 ottobre 2026)
+
+P1.7 (notifiche Android/Windows MSIX) usa planner e ledger locali, senza schema di sincronizzazione. P1.8 (Matrice Eisenhower) legge campi task esistenti `priority` e `due`, modificandoli esclusivamente tramite `LocalStore` e outbox; nessuna nuova migrazione. Prima di un client Flutter 0.13, il backend reale deve avere Flyway V10 e le capability in [P1-RELEASE-BATCH.md](P1-RELEASE-BATCH.md). Per stato CI/distribuzione vedere [CURRENT-STATUS.md](CURRENT-STATUS.md).

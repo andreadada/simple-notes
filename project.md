@@ -1,6 +1,6 @@
 # Simple Notes — Progetto e roadmap
 
-> **Stato 26/10/2026:** `main` include P1.12 Countdown ([PR #13](https://github.com/andreadada/simple-notes/pull/13), Flutter `0.17.0+19`, CI verde). P1.13 obiettivi settimanali è **in branch** `feature/p1-13-weekly-habit-goals` (`0.18.0+20`, CI/merge/device da verificare). P1.10–P1.13 sono dati locali per account/dispositivo, non sincronizzati. Backend GitHub Flyway V10; ultima VPS Coolify attestata V8. Nessun deploy/reset. [Stato](docs/CURRENT-STATUS.md) · [P1.13](docs/P1-WEEKLY-HABITS.md).
+> **Stato operativo (26/10/2026):** P1.13 obiettivi settimanali su `main` (PR #14, Flutter `0.18.0+20`, CI verde). P1.14 finestre Sticky Windows è **solo nel branch** `feature/p1-14-sticky-windows` (`0.19.0+21`, CI/merge/device da verificare). Repo Flyway V10; ultima VPS attestata V8. Nessun deploy/reset. [Stato](docs/CURRENT-STATUS.md) · [P1.14](docs/P1-STICKY-WINDOWS.md).
 
 <!-- CURRENT-STATUS-REF -->
 
@@ -119,9 +119,9 @@
 - [x] **P1.10 Pomodoro locale e statistiche:** PR #11 integrata su main, Flutter `0.15.0+17`, CI verde; timer 25/5/15, pausa/ripresa, dati per account e statistiche device-only. Test reali/upgrade ancora aperti. **Statistiche device-only, non sincronizzate.** [Specifica](docs/P1-POMODORO.md).
 - [x] **P1.11 Habit Tracker locale:** PR #12 integrata su `main`, Flutter `0.16.0+18`, CI verde; check-in e streak, 7/30 giorni, archiviazione e dati **solo locali**. Test hardware ancora aperti. [Specifica](docs/P1-HABITS.md).
 - [x] **P1.12 Countdown eventi:** PR #13 integrata su `main`, Flutter `0.17.0+19`, CI verde; data civile/ora IANA, edit inline, archivio reversibile. Device test e upgrade dati ancora aperti. [Specifica](docs/P1-COUNTDOWNS.md).
-- [ ] **P1.13 Obiettivi settimanali Habit:** scegliere 1–7 giorni/settimana, progressi e streak settimanali nel branch `feature/p1-13-weekly-habit-goals`, Flutter candidato `0.18.0+20`. CI/merge/device da verificare. [Specifica](docs/P1-WEEKLY-HABITS.md).
+- [x] **P1.13 Obiettivi settimanali Habit:** PR #14 integrata su `main`, Flutter `0.18.0+20`, CI verde; target 1–7 giorni, streak e storico JSON retrocompatibile. Test fisici aperti. [Specifica](docs/P1-WEEKLY-HABITS.md).
 - [ ] Habit sync cross-device e notifiche Countdown (futuri, non implementati).
-- [ ] Sticky Notes in finestre Windows indipendenti.
+- [ ] **P1.14 Sticky Notes Windows:** pop-out indipendente di note esistenti con edit inline tramite LocalStore principale, solo branch `feature/p1-14-sticky-windows`, Flutter `0.19.0+21`; CI/merge/device da verificare. [Specifica](docs/P1-STICKY-WINDOWS.md).
 - [ ] UI responsive, scorciatoie, tray, temi.
 
 ## P2 — Estensioni
@@ -305,3 +305,5 @@ Esempio: `2026-10-21 14:20 CEST | commit abc1234 | Aggiunto modulo promemoria e 
 - 2026-10-26 | feat(p1.12) | PR #12 P1.11 merged dopo CI Flutter/Markdown verde. Countdown civili/IANA, store local owner-scoped, archivio reversibile e test sul branch `feature/p1-12-countdowns-main`, Flutter 0.17.0+19. Nessun deploy/reset o migrazione; CI e prove hardware aperte. [Specifica](docs/P1-COUNTDOWNS.md).
 
 - 2026-10-26 | feat(p1.13) | Countdown PR #13 integrata su main, CI verde. Implementati nel branch settimanale 1–7 giorni, barra, streak lunedì–domenica e migrazione compatibile da P1.11 JSON schema 1; Flutter 0.18.0+20, nessuna nuova API/Flyway/Drift né deploy. CI/merge/device da verificare. [P1.13](docs/P1-WEEKLY-HABITS.md).
+
+- 2026-10-26 | feat(p1.14) | P1.13 PR #14 merged dopo CI verde. Branch Sticky Windows 0.19: plugin desktop multiwindow, runner nativo registrazione engine, bootstrap subwindow senza DB, edit titolo/corpo via LocalStore principale con guard conflitti, test e doc. Nessun deploy/reset. [Specifica](docs/P1-STICKY-WINDOWS.md).

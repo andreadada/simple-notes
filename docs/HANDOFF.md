@@ -1,6 +1,6 @@
 # Simple Notes — Passaggio di consegne (handoff)
 
-> **STATO OPERATIVO — 26/10/2026:** P1.12 Countdown `0.17.0+19` ([PR #13](https://github.com/andreadada/simple-notes/pull/13)) integrata su `main` e CI verde. P1.13 Weekly Habit `0.18.0+20` **solo nel branch** `feature/p1-13-weekly-habit-goals`, CI/merge/device ancora da verificare. Pomodoro/Habits/Countdown sono **locali per device/owner**, non sincronizzati. Repository Flyway V10, ultima VPS Coolify attestata V8; nessun deploy/reset. [Stato](CURRENT-STATUS.md) · [Operazioni](OPERATIONS.md) · [P1.13](P1-WEEKLY-HABITS.md).
+> **Stato operativo (26/10/2026):** P1.13 obiettivi settimanali su `main` (PR #14, Flutter `0.18.0+20`, CI verde). P1.14 finestre Sticky Windows è **solo nel branch** `feature/p1-14-sticky-windows` (`0.19.0+21`, CI/merge/device da verificare). Repo Flyway V10; ultima VPS attestata V8. Nessun deploy/reset. [Stato](CURRENT-STATUS.md) · [P1.14](P1-STICKY-WINDOWS.md).
 
 <!-- CURRENT-STATUS-REF -->
 
@@ -272,3 +272,7 @@ P1.11 Habit Tracker PR #12 merged/CI verde. Countdown P1.12 in branch `feature/p
 ## Handoff P1.13 (26/10/2026)
 
 P1.12 PR #13 è integrata su main con CI Flutter/Markdown verdi. La P1.13 estende gli Habit con `weeklyTarget` 1–7, default 7 retrocompatibile nel JSON schema 1, calcolo settimane civili/streak, menu Forui e test. Branch `feature/p1-13-weekly-habit-goals`, Flutter `0.18.0+20`; CI/merge/device ancora aperti. Nessuna migrazione, deploy o reset. [Specifica](P1-WEEKLY-HABITS.md).
+
+## Handoff P1.14 (26/10/2026)
+
+P1.13 PR #14 merged, Flutter 0.18, CI verde. Nuovo branch P1.14 Sticky Windows 0.19 con plugin, runner callback per engine, note detached senza DB/OAuth, bridge verso LocalStore principale e guardia stale. CI/hardware/merge ancora da verificare; nessun deploy, reset o nuove migration. [Specifica](P1-STICKY-WINDOWS.md).

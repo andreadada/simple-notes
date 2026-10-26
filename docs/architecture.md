@@ -1,7 +1,7 @@
 # Simple Notes — Architettura applicativa
 
 <!-- CURRENT-STATUS-REF -->
-> **STATO OPERATIVO — 26/10/2026:** `main` include P1.12 Countdown (`0.17.0+19`, PR #13, CI verde). P1.13 settimanale (`0.18.0+20`) è **solo nel branch**, CI/merge/device non attestati; `weeklyTarget` 1–7 non cancella check-in. Le funzioni Pomodoro/Habits/Countdown sono locali e non sincronizzate. Schema repo Flyway V10, Coolify attestato V8; nessun deploy/reset. [Stato](CURRENT-STATUS.md) · [Operazioni](OPERATIONS.md) · [P1.13](P1-WEEKLY-HABITS.md).
+> **Stato operativo (26/10/2026):** P1.13 obiettivi settimanali su `main` (PR #14, Flutter `0.18.0+20`, CI verde). P1.14 finestre Sticky Windows è **solo nel branch** `feature/p1-14-sticky-windows` (`0.19.0+21`, CI/merge/device da verificare). Repo Flyway V10; ultima VPS attestata V8. Nessun deploy/reset. [Stato](CURRENT-STATUS.md) · [P1.14](P1-STICKY-WINDOWS.md).
 
 ## Componenti del codice attuale
 
@@ -59,3 +59,7 @@ Il modello Habit Tracker `LocalHabit/HabitsState` serializza un documento versio
 ## P1.13 — Weekly Habit (solo branch)
 
 `LocalHabit.weeklyTarget` 1–7 viene serializzato nello stesso JSON schema 1 delle abitudini locali, chiave SharedPreferences per owner. `HabitWeek` calcola settimane civili lunedì–domenica e streak senza introdurre timestamp, processi periodici in background o nuove tabelle. La modifica obiettivo non riscrive i check-in. [P1.13](P1-WEEKLY-HABITS.md).
+
+## P1.14 — Sticky Notes Windows
+
+Finestre Flutter separate senza Drift/SQLite proprio: via method channel leggono e aggiornano le note esistenti nel main engine, che conserva ID, outbox, conflitti e sync. La guardia contro valori stale evita sovrascritture silenziose; nessuna migration/API nuova. [Specifica](P1-STICKY-WINDOWS.md).

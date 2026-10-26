@@ -1,8 +1,8 @@
 # Guida operativa — Simple Notes
 
-> **Stato 26/10/2026:** `main` include P1.12 Countdown ([PR #13](https://github.com/andreadada/simple-notes/pull/13), Flutter `0.17.0+19`, CI verde). P1.13 obiettivi settimanali è **in branch** `feature/p1-13-weekly-habit-goals` (`0.18.0+20`, CI/merge/device da verificare). P1.10–P1.13 sono dati locali per account/dispositivo, non sincronizzati. Backend GitHub Flyway V10; ultima VPS Coolify attestata V8. Nessun deploy/reset. [Stato](CURRENT-STATUS.md) · [P1.13](P1-WEEKLY-HABITS.md).
+> **Stato operativo (26/10/2026):** P1.13 obiettivi settimanali su `main` (PR #14, Flutter `0.18.0+20`, CI verde). P1.14 finestre Sticky Windows è **solo nel branch** `feature/p1-14-sticky-windows` (`0.19.0+21`, CI/merge/device da verificare). Repo Flyway V10; ultima VPS attestata V8. Nessun deploy/reset. [Stato](CURRENT-STATUS.md) · [P1.14](P1-STICKY-WINDOWS.md).
 
-**Fonte operativa** per il checkout locale Windows, CI, Coolify, Android e Windows ZIP/MSIX. **Ultimo stato verificabile (26/10/2026):** Flutter 0.17.0+19 P1.12 su `main`, CI verde; backend repository Flyway V10/Drift V8; **ultima VPS confermata Flyway V8**. L'incremento P1.13 Weekly Habit Goals è in sviluppo nel branch `feature/p1-13-weekly-habit-goals` (Flutter 0.18.0+20); una PR e una build non sono un deploy. Leggere sempre [CURRENT-STATUS.md](CURRENT-STATUS.md) per lo stato successivo.
+**Fonte operativa** per il checkout locale Windows, CI, Coolify, Android e Windows ZIP/MSIX. **Ultimo stato verificabile (26/10/2026):** Flutter 0.18.0+20 P1.13 su `main`, CI verde; backend repository Flyway V10/Drift V8; **ultima VPS confermata Flyway V8**. L'incremento P1.14 Sticky Windows è in sviluppo nel branch `feature/p1-14-sticky-windows` (Flutter 0.19.0+21); una PR e una build non sono un deploy. Leggere sempre [CURRENT-STATUS.md](CURRENT-STATUS.md) per lo stato successivo.
 
 ## 0. Regola fondamentale
 
@@ -125,3 +125,7 @@ Countdown riutilizza l'editor `TaskDue` e salva solo SharedPreferences device/ow
 ## P1.13 — Obiettivi settimanali senza perdita dati
 
 Il JSON `simple_notes.habits.v1.<ownerHash>` usa sempre schema 1: le abitudini precedenti senza `weeklyTarget` devono rimanere leggibili con default 7. Prima di aggiornare su dispositivi reali, testare su profilo di prova almeno una vecchia abitudine, cambiare obiettivo 3/7, verificare che tutte le date e l'archivio restino identici; verificare il rollover della settimana e DST. **Mai azzerare SharedPreferences per risolvere incompatibilità.** [P1.13](P1-WEEKLY-HABITS.md).
+
+## P1.14 — Prova Windows Sticky non distruttiva
+
+Aprire dalla sezione Note due finestre diverse, verificare che editor e outbox del main siano aggiornati al salvataggio, provare due aperture della stessa nota e un conflitto su titolo/corpo. Le finestre detached non aprono un secondo DB. ZIP Windows deve contenere EXE, DLL, plugin; MSIX solo in profilo di prova con firme e path verificati. Android non offre il pop-out. Non reinstallare/reset SQLite per riparare problemi multiwindow. [Specifica](P1-STICKY-WINDOWS.md).

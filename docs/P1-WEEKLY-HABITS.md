@@ -1,6 +1,8 @@
 # P1.13 — Obiettivi settimanali Habit Tracker
 
-**Stato 26/10/2026:** implementazione sul branch `feature/p1-13-weekly-habit-goals`, Flutter candidata `0.18.0+20`; CI, merge, test su hardware e installazione non sono ancora attestati. P1.12 Countdown [PR #13](https://github.com/andreadada/simple-notes/pull/13) è integrata su `main` (`0.17.0+19`) con [Flutter CI verde](https://github.com/andreadada/simple-notes/actions/runs/40368229874) e [docs verdi](https://github.com/andreadada/simple-notes/actions/runs/40368230012).
+> **Stato operativo (26/10/2026):** P1.13 obiettivi settimanali su `main` (PR #14, Flutter `0.18.0+20`, CI verde). P1.14 finestre Sticky Windows è **solo nel branch** `feature/p1-14-sticky-windows` (`0.19.0+21`, CI/merge/device da verificare). Repo Flyway V10; ultima VPS attestata V8. Nessun deploy/reset. [Stato](CURRENT-STATUS.md) · [P1.14](P1-STICKY-WINDOWS.md).
+
+**Stato 26/10/2026:** **integrata su `main` con PR #14**, Flutter `0.18.0+20`, [CI Flutter](https://github.com/andreadada/simple-notes/actions/runs/40371894259) e [Markdown](https://github.com/andreadada/simple-notes/actions/runs/40371894390) verdi; hardware/installazione non attestati. P1.12 Countdown [PR #13](https://github.com/andreadada/simple-notes/pull/13) è integrata su `main` (`0.17.0+19`) con [Flutter CI verde](https://github.com/andreadada/simple-notes/actions/runs/40368229874) e [docs verdi](https://github.com/andreadada/simple-notes/actions/runs/40368230012).
 
 ## Cosa aggiunge
 

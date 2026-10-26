@@ -1,6 +1,6 @@
 # AGENTS.md — Istruzioni operative per agenti AI
 
-> **Stato 26/10/2026:** `main` include P1.12 Countdown ([PR #13](https://github.com/andreadada/simple-notes/pull/13), Flutter `0.17.0+19`, CI verde). P1.13 obiettivi settimanali è **in branch** `feature/p1-13-weekly-habit-goals` (`0.18.0+20`, CI/merge/device da verificare). P1.10–P1.13 sono dati locali per account/dispositivo, non sincronizzati. Backend GitHub Flyway V10; ultima VPS Coolify attestata V8. Nessun deploy/reset. [Stato](docs/CURRENT-STATUS.md) · [P1.13](docs/P1-WEEKLY-HABITS.md).
+> **Stato operativo (26/10/2026):** P1.13 obiettivi settimanali su `main` (PR #14, Flutter `0.18.0+20`, CI verde). P1.14 finestre Sticky Windows è **solo nel branch** `feature/p1-14-sticky-windows` (`0.19.0+21`, CI/merge/device da verificare). Repo Flyway V10; ultima VPS attestata V8. Nessun deploy/reset. [Stato](docs/CURRENT-STATUS.md) · [P1.14](docs/P1-STICKY-WINDOWS.md).
 
 <!-- CURRENT-STATUS-REF -->
 
@@ -52,3 +52,7 @@ Usare `TaskDue.dateOnly` per date civili senza inventare midnight UTC, oppure `T
 ## P1.13 — Obiettivi settimanali Habit
 
 Il modello `LocalHabit.weeklyTarget` è retrocompatibile con JSON schema 1 P1.11, default 7. Non eliminare check-in o scrivere a server/outbox; solo SharedPreferences locale e isolata per owner. Settimane lunedì–domenica per data civile (no UTC midnight), streak corrente incompleto eredita settimana precedente. Widget Forui nella card, nessun Rename/modal superfluo. [P1.13](docs/P1-WEEKLY-HABITS.md).
+
+## P1.14 — Windows Sticky
+
+Le finestre detached NON aprono SQLite/Drift, OAuth o AutoSync. Usare il bridge al processo main e il suo LocalStore/outbox con controllo della vecchia stringa, così le modifiche stale non sovrascrivono automaticamente i dati. Bootstrap child prima di AppDatabase, plugin registrato su ogni engine; funzione solo Windows, richiede prova reale. [Specifica](docs/P1-STICKY-WINDOWS.md).

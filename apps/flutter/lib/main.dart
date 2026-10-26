@@ -548,7 +548,7 @@ class _NotesHomeState extends ConsumerState<NotesHome> {
                           .renameList(activeList.id, title),
                     )),
             ),
-          if (section != Section.calendar && section != Section.eisenhower && section != Section.kanban && section != Section.pomodoro && section != Section.notes && section != Section.trash)
+          if (section != Section.calendar && section != Section.eisenhower && section != Section.kanban && section != Section.pomodoro && section != Section.habits && section != Section.notes && section != Section.trash)
             Padding(
               padding: const EdgeInsets.fromLTRB(16, 0, 16, 4),
               child: FTextField(
@@ -563,7 +563,7 @@ class _NotesHomeState extends ConsumerState<NotesHome> {
 
               ),
             ),
-          if (section != Section.calendar && section != Section.eisenhower && section != Section.kanban && section != Section.pomodoro && section != Section.notes && section != Section.trash)
+          if (section != Section.calendar && section != Section.eisenhower && section != Section.kanban && section != Section.pomodoro && section != Section.habits && section != Section.notes && section != Section.trash)
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 5),
               child: Row(children: [
@@ -591,7 +591,7 @@ class _NotesHomeState extends ConsumerState<NotesHome> {
                 ],
               ]),
             ),
-          if (section != Section.calendar && section != Section.eisenhower && section != Section.kanban && section != Section.pomodoro && section != Section.notes && section != Section.trash)
+          if (section != Section.calendar && section != Section.eisenhower && section != Section.kanban && section != Section.pomodoro && section != Section.habits && section != Section.notes && section != Section.trash)
             Padding(
               padding: const EdgeInsets.fromLTRB(16, 8, 16, 12),
               child: Row(children: [

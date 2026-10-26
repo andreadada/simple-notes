@@ -65,6 +65,8 @@ void main() {
     await tester.pumpAndSettle();
 
     await tester.pumpWidget(const SizedBox.shrink());
+    // Flutter widget-test invariants run before addTearDown callbacks.
+    debugDefaultTargetPlatformOverride = null;
     await database.close();
   });
 
@@ -90,6 +92,8 @@ void main() {
     expect(find.byKey(const Key('new-note')), findsNothing);
     expect(find.byKey(const Key('desktop-shortcuts-help')), findsNothing);
     await tester.pumpWidget(const SizedBox.shrink());
+    // Flutter widget-test invariants run before addTearDown callbacks.
+    debugDefaultTargetPlatformOverride = null;
     await database.close();
   });
 }

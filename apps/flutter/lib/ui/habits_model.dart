@@ -31,6 +31,7 @@ class LocalHabit {
     required this.title,
     required this.createdDay,
     this.archived = false,
+    this.weeklyTarget = 7,
     Iterable<String> checkIns = const [],
   }) : checkIns = Set.unmodifiable(checkIns) {
     if (id.isEmpty || title.trim().isEmpty || title.length > 120 ||
@@ -38,6 +39,9 @@ class LocalHabit {
       throw const FormatException('ID o titolo abitudine non valido');
     }
     HabitDay.parse(createdDay);
+    if (weeklyTarget < 1 || weeklyTarget > 7) {
+      throw const FormatException('Obiettivo settimanale non valido');
+    }
     if (this.checkIns.length > 5000) {
       throw const FormatException('Troppi check-in');
     }
@@ -53,17 +57,25 @@ class LocalHabit {
   final String title;
   final String createdDay;
   final bool archived;
+  final int weeklyTarget;
   final Set<String> checkIns;
 
   bool checked(DateTime day) => checkIns.contains(HabitDay.of(day));
 
   LocalHabit renamed(String text) => LocalHabit(
     id: id, title: text.trim(), createdDay: createdDay,
-    archived: archived, checkIns: checkIns);
+    archived: archived, weeklyTarget: weeklyTarget,
+    checkIns: checkIns);
 
   LocalHabit withArchived(bool value) => LocalHabit(
     id: id, title: title, createdDay: createdDay,
-    archived: value, checkIns: checkIns);
+    archived: value, weeklyTarget: weeklyTarget,
+    checkIns: checkIns);
+
+  /// Changes only the desired check-in count; never erases a previous day.
+  LocalHabit withWeeklyTarget(int value) => LocalHabit(
+    id: id, title: title, createdDay: createdDay,
+    archived: archived, weeklyTarget: value, checkIns: checkIns);
 
   LocalHabit toggle(DateTime day, DateTime today) {
     final target = HabitDay.of(day);
@@ -75,7 +87,8 @@ class LocalHabit {
     if (!next.add(target)) next.remove(target);
     return LocalHabit(
       id: id, title: title, createdDay: createdDay,
-      archived: archived, checkIns: next);
+      archived: archived, weeklyTarget: weeklyTarget,
+      checkIns: next);
   }
 
   /// A streak remains intact until a day is missed. An unchecked today does
@@ -105,6 +118,7 @@ class LocalHabit {
     'title': title,
     'createdDay': createdDay,
     'archived': archived,
+    'weeklyTarget': weeklyTarget,
     'checkIns': checkIns.toList()..sort(),
   };
 
@@ -113,15 +127,18 @@ class LocalHabit {
     final title = json['title'];
     final created = json['createdDay'];
     final archived = json['archived'];
+    // Backward compatible with P1.11 JSON schema 1.
+    final target = json['weeklyTarget'] ?? 7;
     final days = json['checkIns'];
     if (id is! String || title is! String || created is! String ||
-        archived is! bool || days is! List ||
+        archived is! bool || target is! int || days is! List ||
         days.any((x) => x is! String) ||
         days.toSet().length != days.length) {
       throw const FormatException('Abitudine non valida');
     }
     return LocalHabit(id: id, title: title, createdDay: created,
-      archived: archived, checkIns: days.cast<String>());
+      archived: archived, weeklyTarget: target,
+      checkIns: days.cast<String>());
   }
 }
 

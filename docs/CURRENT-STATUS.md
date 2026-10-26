@@ -27,7 +27,8 @@
 | P1.7 Android | Scheduler nativo **inexact**, opt-in, ledger, annullamento prima del logout, testo privacy-safe | Reboot, Doze, permessi, cancellazione e notifiche reali |
 | P1.7 Windows | Scheduling solo con identità **MSIX**, packaging CI e opt-in; eseguibile ZIP/EXE **senza** notifiche | Firma/installer attendibile, accesso SQLite/OAuth preesistenti, cancellazione affidabile su PC |
 | P1.8 | Matrice Eisenhower a quattro quadranti, responsive, lettura di priorità/scadenza e modifica inline; nessuna migrazione | Test UI e sync su dispositivi reali |
-| P1.9 Kanban | **In sviluppo su branch** `feature/p1-9-kanban-operational-docs` (Flutter `0.14.0+16`): liste + Inbox, drag/drop, spostamento accessibile, editor inline; nessuna migrazione | Verifica CI, merge, prova E2E hardware |\n| P2/P3 | Non avviate | Pomodoro, habit, integrazioni, funzioni smart, secondo roadmap |
+| P1.9 Kanban | **In sviluppo su branch** `feature/p1-9-kanban-operational-docs` (Flutter `0.14.0+16`): liste + Inbox, drag/drop, spostamento accessibile, editor inline; nessuna migrazione | Verifica CI, merge, prova E2E hardware |
+| P2/P3 | Non avviate | Pomodoro, habit, integrazioni, funzioni smart, secondo roadmap |
 
 La matrice P1.8 **non** introduce un campo autonomo di importanza/urgenza: `priority >= 2` indica importante; è urgente la scadenza con istante entro 48h, mentre per `date-only` contano oggi/domani/giorni trascorsi. Il quadrante "Delega" non assegna attività ad altri account.
 

@@ -6,7 +6,7 @@
 
 ## Prima di qualsiasi modifica
 
-1. Leggere [CURRENT-STATUS](docs/CURRENT-STATUS.md), [roadmap](project.md), [design](design.md) e la specifica della feature; usare [HANDOFF](docs/HANDOFF.md) solo come cronologia.
+1. Leggere [guida operativa](docs/OPERATIONS.md), [CURRENT-STATUS](docs/CURRENT-STATUS.md), [roadmap](project.md), [design](design.md) e la specifica della feature; usare [HANDOFF](docs/HANDOFF.md) solo come cronologia.
 2. Confrontare il testo con codice, migrazioni, `apps/flutter/pubspec.yaml`, i workflow GitHub e le PR **più recenti**. Distingere sempre **implementato / CI verde / deploy VPS attestato / device E2E attestato**.
 3. L'utente preferisce commit direttamente su `main` quando possibile, lavoro in piccoli incrementi, documentazione aggiornata e test hardware **in un batch finale**, non dopo ogni feature. Non dichiarare effettuato un merge senza verifica GitHub.
 4. Non ripetere domande con risposta documentata. Aggiornare roadmap, handoff e registro `Edit Timespan` per cambiamenti funzionali, mantenendo [CURRENT-STATUS](docs/CURRENT-STATUS.md) fonte unica.
@@ -18,7 +18,7 @@
 - Le migrazioni Flyway e Drift sono **additive**, preservano dati reali e offline e vanno testate con fixture esistenti. Non confondere schema su `main` (Flyway V10/Drift V8) con schema realmente applicato su Coolify.
 - `TaskDue` ha semantiche `none/date/datetime/legacy`; date-only **non** significa mezzanotte UTC. Conservare IANA/DST, fold/gap, independence delle scadenze dai time block; fino a 12 slot per task e ricorrenze versione P1.6.
 - Prima di inviare nuovi payload, verificare `GET /api/v1/capabilities` con JWT: `taskDueSchema:1`, `timeBlockSchema:1`, `timeBlocksSchema:1`, `recurrenceSchema:1`. HTTP **426** blocca la sync conservando l'outbox; HTTP **409** è un conflitto, non un successo. Non usare CRUD legacy per simulare delta-sync.
-- P1.7 (PR #6/#7) integra planner UTC, riconciliazione/ledger, permesso Android opt-in e scheduler inexact; **Windows MSIX** è nel codice, ZIP/EXE non pianifica notifiche. P1.8 (PR #8) include la Matrice Eisenhower con proiezione da priorità/scadenze e modifica inline. **Non** dichiarare delivery reale Android/Windows, persistenza ZIP→MSIX, snooze o deep-link verificati: mancano test fisici.
+- P1.7 (PR #6/#7) integra planner UTC, riconciliazione/ledger, permesso Android opt-in e scheduler inexact; **Windows MSIX** è nel codice, ZIP/EXE non pianifica notifiche. P1.8 (PR #8) include la Matrice Eisenhower con proiezione da priorità/scadenze e modifica inline. P1.9 Kanban è un board per **liste sincronizzate** in branch: drag/drop cambia soltanto `listId`; non dichiarare stati workflow separati né drag interno riordinabile. **Non** dichiarare delivery reale Android/Windows, persistenza ZIP→MSIX, snooze o deep-link verificati: mancano test fisici.
 
 ## Regole di design obbligatorie
 

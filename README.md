@@ -14,11 +14,12 @@ App offline-first per **Windows 11 e Android** dedicata ad attività, note e pia
 - Ricorrenze giornaliere/settimanali/mensili (P1.6). P1.7 aggiunge promemoria opt-in Android e Windows **solo MSIX** (non su EXE/ZIP); funzionamento reale ancora da collaudare.
 
 - Matrice Eisenhower P1.8: quattro quadranti da priorità/scadenza, adattiva e con modifica diretta dei task.
+- Kanban P1.9 per liste con drag/drop, aggiunta rapida e spostamento accessibile: **solo sul branch di sviluppo, non ancora in main**.
 **Implementato su GitHub ≠ distribuito.** Prima di installare client aggiornati verificare su Coolify Flyway V10 e le capability autenticate. Nessun reset, cancellazione di volumi o migrazione manuale per una normale verifica. Il deploy resta un'operazione distinta e controllata dall'utente.
 
 ## Percorso rapido
 
-- [Stato canonico e prossimi gate](docs/CURRENT-STATUS.md)
+- [Stato canonico e prossimi gate](docs/CURRENT-STATUS.md), [guida operativa](docs/OPERATIONS.md), [Kanban P1.9](docs/P1-KANBAN.md)
 - [Roadmap P0–P3](project.md), [regole per agenti](AGENTS.md), [design](design.md)
 - [Handoff e cronologia](docs/HANDOFF.md)
 - [Architettura](docs/architecture.md), [API](docs/api.md), [sync](docs/sync.md)

@@ -39,3 +39,7 @@ La pianificazione promemoria P1.7 è device-local (opt-in/ledger), Android inexa
 - [Runbook V10](P1-RELEASE-BATCH.md), [check dispositivi](T4-DEVICE-SYNC.md), [handoff storico](HANDOFF.md)
 
 **Deploy non attestato:** VPS verificata fino a V8 il 25/10; migrazioni V9/V10, capability di produzione e acceptance Windows↔Android devono essere controllate prima del prossimo rilascio. Non eseguire reset, cancellare volumi o assumere che `main` sia già su Coolify.
+
+## P1.9 — Kanban per liste (candidato)
+
+Il board non introduce stato sincronizzato nuovo: proietta `LocalData` in Inbox + liste esistenti, aggiorna `task.listId` tramite `LocalStore.setTaskList` e conserva la outbox esistente. La UI usa Forui, gesti drag/drop o menu accessibile e input rapidi inline. In sviluppo su branch, da verificare in CI ed E2E. [Specifica](P1-KANBAN.md).

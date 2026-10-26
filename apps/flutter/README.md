@@ -4,6 +4,8 @@
 
 <!-- CURRENT-STATUS-REF -->
 
+> **P1.9 candidato (branch):** Kanban per liste e Inbox, drag/drop, menu "Sposta in", campo aggiunta inline, Flutter `0.14.0+16`; non su `main` finché la CI non passa. [Specifica](../../docs/P1-KANBAN.md) e [guida operativa](../../docs/OPERATIONS.md).
+
 
 ## Cronologia — rilascio 0.7.0+9 (superato da P1.8)
 

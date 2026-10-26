@@ -79,6 +79,10 @@ Verificare con lo **stesso account Google**: dati Windows↔Android, note e cest
 - Un downgrade del codice **non** annulla in sicurezza migrazioni Flyway già applicate. Non tentare di tornare a V8 cancellando manualmente le colonne.
 - In caso di migration ERROR o HTTP426 fermarsi e diagnosticare, mantenendo i dati/operazioni in coda: evitare azioni distruttive.
 
-## Gate P1.8 prima del rollout
+## Gate P1.8/P1.9 prima del rollout
 
 La [Matrice Eisenhower](P1-EISENHOWER.md) è una proiezione dei task senza migrazioni; CI/merge PR #8 già completati. Prima del rollout eseguire un solo collaudo batch della navigazione in quattro quadranti, edit inline, mapping P2/P3, scadenze civili e sync. Il packaging MSIX Windows richiede verifica di identità, firma e compatibilità SQLite/OAuth: non sostituire alla cieca un ZIP con MSIX. Nessun reset è autorizzato.
+
+## Operazioni correnti e P1.9
+
+Il percorso iniziale consolidato è nella [guida operativa](OPERATIONS.md). La [P1.9 Kanban](P1-KANBAN.md) sul branch corrente usa soltanto `listId` e `completed`: **nessuna nuova migrazione oltre Flyway V10/Drift V8**. Dopo CI+merge, includere drag/drop Windows/Android e test offline→online nei gate E2E del batch. Non installare client da un branch senza CI verde, e non installare MSIX sul profilo Windows esistente prima di verificare percorso SQLite/OAuth e firma.

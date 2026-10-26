@@ -123,3 +123,7 @@ Questa pagina documenta il *codice introdotto*; non dichiara che il passaggio di
 ## P1.8 — Vista Matrice Eisenhower (26 ottobre 2026)
 
 La nuova vista Forui ha quattro quadranti responsive (2 colonne desktop, 1 mobile), titolo editabile inline e selector di priorità e scadenza tramite componenti esistenti. Le modifiche vanno in SQLite/outbox, mai in uno stato separato. È nel codice Flutter 0.13 su `main` e ha CI verde; prove visive Android/Windows rimangono aperte. [Specifica P1.8](P1-EISENHOWER.md).
+
+## P1.9 — Kanban responsive (sviluppo)
+
+Card e colonne Forui basate sulle liste già sincronizzate; titoli modificabili inline, input rapidi, drag/drop desktop e long-press Android, con menu alternativo per accessibilità. L'ordine visivo è deterministico; non è ancora previsto il riordino manuale nella stessa colonna. [Specifica](P1-KANBAN.md).

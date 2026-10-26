@@ -115,7 +115,7 @@
 - [x] **P1.6 Ricorrenze**: PR #5 integrata, Flutter 0.10/Flyway V10/Drift V8, CI completa verde; deploy ancora da verificare. [Specifica](docs/P1-RECURRENCE.md).
 - [x] **P1.7 Android nel codice**: PR #6 integrata, Flutter 0.11, scheduler inexact e ledger opt-in; CI verde, test fisici non eseguiti. [x] Windows MSIX integrato con PR #7 (Flutter 0.12, CI verde), [ ] cancellazione e upgrade reali da verificare. [Specifica](docs/P1-REMINDERS-FOUNDATION.md).
 - [x] **P1.8 Matrice Eisenhower nel codice:** PR #8 integrata su `main`, Flutter `0.13.0+15`; 4 quadranti responsive, classificazione P2/P3 e scadenza, editing inline/Forui, test CI verdi. [ ] Test E2E Windows/Android reali. [Specifica](docs/P1-EISENHOWER.md).
-- [ ] Kanban con drag & drop.
+- [ ] **P1.9 Kanban per liste:** Inbox + liste, drag & drop Windows/Android, menu di spostamento, inserimento e modifica inline in sviluppo sul branch `feature/p1-9-kanban-operational-docs` (Flutter `0.14.0+16`). CI/merge/E2E non ancora confermati. [Specifica](docs/P1-KANBAN.md).
 - [ ] Pomodoro/cronometro e statistiche.
 - [ ] Habit tracker, streak, check-in e countdown.
 - [ ] Sticky Notes in finestre Windows indipendenti.
@@ -292,3 +292,5 @@ Esempio: `2026-10-21 14:20 CEST | commit abc1234 | Aggiunto modulo promemoria e 
 - 2026-10-26 | feat(p1.8) | Quattro quadranti Eisenhower calcolati dai campi task correnti, Forui Windows/Android, modifica inline titolo/priorità/scadenza, conferma completamento, test della logica. Branch `feature/p1-8-eisenhower-matrix`, Flutter 0.13, CI+merge ancora da verificare. Nessuna migrazione, reset o deploy.
 
 - 2026-10-26 | docs(audit) | PR #8 P1.8 integrata su main dopo CI Windows/Android e Markdown verdi. Audit dei 32 documenti Markdown: stato canonico unico, status storici chiariti, roadmap e rollout versioni aggiornati. Coolify resta non attestato oltre V8; nessun deploy o reset.
+
+- 2026-10-26 | feat(p1.9)+docs | Branch P1.9 Kanban per liste esistenti (cross-column drag/drop, alternativa menu, inline edits, outbox invariata), Flutter 0.14.0+16; nuova guida [OPERATIONS.md](docs/OPERATIONS.md) per Windows/Coolify/Android e gates reali, nessun deploy/reset. CI, merge ed E2E da confermare.

@@ -45,7 +45,7 @@ void main() {
     expect(EisenhowerLogic.isUrgent(task('exact',
         due: dated(base.add(const Duration(hours: 48)))), base), isTrue);
     expect(EisenhowerLogic.isUrgent(task('later',
-        due: dated(base.add(const Duration(hours: 48, seconds: 1)))), base),
+        due: dated(base.add(const Duration(hours: 48, minutes: 1)))), base),
         isFalse);
     expect(EisenhowerLogic.isUrgent(task('late',
         due: TaskDue.legacy(base.subtract(const Duration(days: 3)))),

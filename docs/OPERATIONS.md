@@ -114,7 +114,7 @@ Su **stesso account Google**, dopo aver attestato la compatibilità server:
 
 Il timer Pomodoro persiste in `SharedPreferences` con chiave locale per owner. Non eseguire reset/clear storage per testarli; usare un profilo di prova. Non trattare statistiche del Pomodoro come sincronizzate né come dati del database PostgreSQL. Vedere [specifica P1.10](P1-POMODORO.md).
 
-## P1.11 (branch): verifiche non distruttive
+## P1.11 (main): verifiche non distruttive
 
 Provare sul profilo di test: una abitudine, check-in/undo, streak ieri/oggi, archivio/restore, re-login e cambio account, fuso DST e giorno civile. Le abitudini salvate in SharedPreferences non sono dati cloud. Non cancellare preferenze/SQLite di un profilo reale, specialmente nel passaggio ZIP→MSIX; verificare la continuità di entrambi. [Dettagli](P1-HABITS.md).
 

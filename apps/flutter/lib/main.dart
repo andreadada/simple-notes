@@ -1,7 +1,4 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
-import 'package:desktop_multi_window/desktop_multi_window.dart';
 import 'package:forui/forui.dart';
 import 'ui/notes_theme.dart';
 import 'ui/inline_editable_title.dart';
@@ -15,7 +12,8 @@ import 'ui/kanban_board.dart';
 import 'ui/pomodoro_board.dart';
 import 'ui/habits_board.dart';
 import 'ui/countdowns_board.dart';
-import 'ui/sticky_windows.dart';
+import 'ui/sticky_windows.dart'
+    if (dart.library.html) 'ui/sticky_windows_web.dart';
 import 'ui/task_blocks_panel.dart';
 import 'ui/task_recurrence_panel.dart';
 import 'ui/reminder_controller.dart';
@@ -34,15 +32,7 @@ import 'sync/auto_sync.dart';
 Future<void> main(List<String> args) async {
   WidgetsFlutterBinding.ensureInitialized();
   // Detached engines MUST NOT initialize SQLite, OAuth or sync.
-  if (Platform.isWindows) {
-    final controller = await WindowController.fromCurrentEngine();
-    final sticky = StickyDesktop.parseWindowArguments(controller.arguments);
-    if (sticky != null) {
-      runApp(StickyNoteApp(
-        parentId: sticky['parentId']!, noteId: sticky['noteId']!));
-      return;
-    }
-  }
+  if (await StickyDesktop.launchSubwindowIfNeeded()) return;
   final preferences = await SharedPreferences.getInstance();
   final database = AppDatabase();
   await database.migrateLegacy(preferences);

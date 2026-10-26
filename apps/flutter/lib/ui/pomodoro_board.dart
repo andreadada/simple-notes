@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:ui' show FontFeature;
 
 import 'package:crypto/crypto.dart';
 import 'package:flutter/material.dart';
@@ -176,7 +177,7 @@ class _PomodoroBoardState extends State<PomodoroBoard>
     final now = DateTime.now();
     final seconds = _value.secondsLeft(now);
     final total = _value.phase.durationSeconds;
-    final progress = (1 - seconds / total).clamp(0.0, 1.0);
+    final progress = (1 - seconds / total).clamp(0.0, 1.0).toDouble();
     final days = List.generate(7, (index) =>
       DateTime(now.year, now.month, now.day - (6 - index)));
     final maxDaily = days.fold<int>(1, (max, day) {

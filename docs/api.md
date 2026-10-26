@@ -1,7 +1,7 @@
 # Simple Notes API v1
 
 <!-- CURRENT-STATUS-REF -->
-> **Allineamento operativo — 26/10/2026:** `main` = P1.10 Pomodoro `0.15.0+17` (PR #11, CI verde); P1.11 Habit Tracker `0.16.0+18` **solo branch**, CI/merge non confermati. Entrambe le funzioni hanno storico locale, **non sincronizzato**. Repo Flyway V10 / Coolify attestato V8, nessun deploy o test hardware nuovo. [Stato](CURRENT-STATUS.md) · [Guida operativa](OPERATIONS.md) · [Specifiche P1.11](P1-HABITS.md).
+> **STATO OPERATIVO 26/10/2026:** P1.11 Habit Tracker (Flutter `0.16.0+18`, PR #12) è integrata su main con CI verde. Countdown P1.12 (`0.17.0+19`) è **in branch**, CI/merge/device da verificare. Pomodoro, Habits e Countdown sono dati **locali per account/dispositivo**, senza cloud sync né nuove migrazioni. Repo Flyway V10, VPS Coolify attestata V8. Nessun deploy/reset. [Stato](CURRENT-STATUS.md) · [Countdown](P1-COUNTDOWNS.md).
 
 
 ## Auth
@@ -57,3 +57,7 @@ Timer 25/5/15 e statistiche locali, identità Google isolata nelle chiavi Shared
 ## P1.10/P1.11 — Contratto attuale (26/10/2026)
 
 Il Pomodoro P1.10 (main) e Habit Tracker P1.11 (branch) non aggiungono API, DTO, capability o migrazioni backend. I dati restano in SharedPreferences per dispositivo e account; **non esiste endpoint di sync abitudini**, né storico Pomodoro sincronizzato. [Stato](CURRENT-STATUS.md).
+
+## P1.12 — Nessun contratto API aggiuntivo
+
+Countdown è device-only in SharedPreferences per account. Non esiste endpoint per eventi Countdown, push, condivisione o sincronizzazione; riutilizza il parser locale TaskDue solo lato Flutter. Backend ancora Flyway V10 nel repository, deploy reale non attestato oltre V8. [Specifica](P1-COUNTDOWNS.md).

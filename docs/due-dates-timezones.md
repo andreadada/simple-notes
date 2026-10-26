@@ -1,7 +1,7 @@
 # P0 — Scadenze, date-only e fusi orari
 
 <!-- CURRENT-STATUS-REF -->
-> **Snapshot storico, NON runbook attuale — 26/10/2026:** `main` = P1.10 Pomodoro `0.15.0+17` (PR #11, CI verde); P1.11 Habit Tracker `0.16.0+18` **solo branch**, CI/merge non confermati. Entrambe le funzioni hanno storico locale, **non sincronizzato**. Repo Flyway V10 / Coolify attestato V8, nessun deploy o test hardware nuovo. [Stato](CURRENT-STATUS.md) · [Guida operativa](OPERATIONS.md) · [Specifiche P1.11](P1-HABITS.md).
+> **STATO OPERATIVO 26/10/2026:** P1.11 Habit Tracker (Flutter `0.16.0+18`, PR #12) è integrata su main con CI verde. Countdown P1.12 (`0.17.0+19`) è **in branch**, CI/merge/device da verificare. Pomodoro, Habits e Countdown sono dati **locali per account/dispositivo**, senza cloud sync né nuove migrazioni. Repo Flyway V10, VPS Coolify attestata V8. Nessun deploy/reset. [Stato](CURRENT-STATUS.md) · [Countdown](P1-COUNTDOWNS.md).
 
 
 > **Stato reale 24/10/2026:** PostgreSQL `simplenotes` 17.11, Flyway V1–V7 riuscite, backup `simple-notes-20261024T132857Z-271921.dump` con SHA256 valido e restore isolato PASS. Copia offsite non effettuata per scelta dell'utente. Restano da verificare l'API autenticata (`taskDueSchema:1`) e il collaudo T4.2 Windows↔Android con Flutter `0.4.0+4`. Non ripetere backup, migrazioni o deploy automaticamente. [T4.2](T4-DEVICE-SYNC.md).
@@ -147,3 +147,7 @@ Il backend deve verificare che `instant` concordi con data/ora/`timeZone`/`offse
 ## P1.11 — Date civili nelle abitudini
 
 I check-in di Habit Tracker sono stringhe `YYYY-MM-DD` nel calendario locale. Il giorno successivo è calcolato tramite `DateTime(year, month, day + 1)`, non sommando 24 ore UTC: DST gap/fold non devono modificare il giorno assegnato. Non condividono la semantica di `TaskDue.datetime` e non sono sincronizzati. [Specifica](P1-HABITS.md).
+
+## P1.12 — Scadenze Countdown
+
+I Countdown data-only confrontano **giorni civili** senza inventare mezzanotte UTC; quelli con ora confrontano **istanti UTC** ottenuti dal fuso IANA/DST dell'editor `showTaskDueEditor`. Questo modello è locale e non sincronizzato, distinto dalle scadenze task versionate. [Specifica](P1-COUNTDOWNS.md).

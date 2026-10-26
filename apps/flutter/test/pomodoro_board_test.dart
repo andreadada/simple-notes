@@ -49,8 +49,10 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text('Pausa'), findsOneWidget);
     await tester.tap(find.byKey(const Key('pomodoro-reset')));
-    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 350));
     await tester.pumpWidget(const SizedBox.shrink());
+    // Forui's button ripple uses delayed 100 ms tap timers.
+    await tester.pump(const Duration(milliseconds: 350));
   });
 
   testWidgets('Layout renders on narrow Android-sized screens', (tester) async {

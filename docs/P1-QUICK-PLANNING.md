@@ -1,7 +1,7 @@
 # P1.5 — Pianificazione rapida e filtri calendario
 
 <!-- CURRENT-STATUS-REF -->
-> **SNAPSHOT STORICO — 26/10/2026:** P1.12 Countdown `0.17.0+19` ([PR #13](https://github.com/andreadada/simple-notes/pull/13)) integrata su `main` e CI verde. P1.13 Weekly Habit `0.18.0+20` **solo nel branch** `feature/p1-13-weekly-habit-goals`, CI/merge/device ancora da verificare. Pomodoro/Habits/Countdown sono **locali per device/owner**, non sincronizzati. Repository Flyway V10, ultima VPS Coolify attestata V8; nessun deploy/reset. I dettagli sotto restano uno storico e non la procedura corrente. [Stato](CURRENT-STATUS.md) · [Operazioni](OPERATIONS.md) · [P1.13](P1-WEEKLY-HABITS.md).
+> **Riferimento 26/10/2026:** `main` integra P1.13 Weekly Habit (PR #14, Flutter `0.18.0+20`, CI verde). P1.14 Sticky Windows è nel branch `feature/p1-14-sticky-windows` (Flutter candidata `0.19.0+21`), CI/merge e prova PC da verificare. Nessun deploy/reset; repo Flyway V10 e VPS attestata V8. Questa guida conserva informazioni dell'incremento originario: consultare lo [stato operativo](CURRENT-STATUS.md), le [operazioni](OPERATIONS.md) e la [P1.14](P1-STICKY-WINDOWS.md) per le decisioni correnti.
 
 
 **Stato codice:** integrata in `main` con PR #4, Flutter `0.9.0+11` e CI Flutter verde. Nessuna migrazione aggiuntiva; deploy e prove hardware non attestati.

@@ -1,7 +1,7 @@
 # Backend — Coolify
 
 <!-- CURRENT-STATUS-REF -->
-> **Stato operativo — 26/10/2026:** P1.14 Sticky Notes Windows integrata su `main` (PR #15, Flutter `0.19.0+21`, CI verde); P1.15 scorciatoie Windows è **in branch** `feature/p1-15-desktop-shortcuts` (`0.20.0+22`), CI/merge/hardware aperti. Repo Flyway V10, ultima VPS attestata V8, nessun deploy/reset. [Stato](../docs/CURRENT-STATUS.md) · [Operazioni](../docs/OPERATIONS.md) · [P1.15](../docs/P1-DESKTOP-SHORTCUTS.md).
+> **Stato operativo 28/10/2026:** P1.15 keyboard `0.20.0+22` integrata su `main` (PR #16, CI verde). P1.16 Responsive `0.21.0+23` **solo in branch**, CI/merge/device da attestare. Backend repo Flyway V10, ultima VPS attestata V8; nessun deploy/reset. [Stato](../docs/CURRENT-STATUS.md) · [Operazioni](../docs/OPERATIONS.md) · [P1.16](../docs/P1-RESPONSIVE.md).
 
 
 ## Cronologia — rilascio 0.7.0+9 (superato da P1.6)
@@ -150,3 +150,7 @@ Le finestre Windows separate usano le note sincronizzate attraverso LocalStore d
 ## P1.15 — Nessun intervento su Coolify
 
 Le scorciatoie sono solo UI Flutter Windows, senza servizi, migrazioni, chiavi Google, variabili o volumi. Il server reale va confermato Flyway V10 separatamente prima dell'installazione cumulativa dei client (ultima attestazione V8). Niente deploy/reset per P1.15. [Specifica](../docs/P1-DESKTOP-SHORTCUTS.md).
+
+## P1.16 — Nessun cambio infrastrutturale
+
+Adaptive notes è solo disposizione Flutter senza backend, compose/env, nuove migration, credenziali, storage o volumi. Resta necessario confermare Flyway V10 sulla VPS prima di distribuire il client cumulativo (ultima attestazione V8). Niente deploy/reset per questa fase. [P1.16](../docs/P1-RESPONSIVE.md).

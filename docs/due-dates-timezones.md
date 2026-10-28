@@ -1,7 +1,7 @@
 # P0 — Scadenze, date-only e fusi orari
 
 <!-- CURRENT-STATUS-REF -->
-> **Snapshot storico — 26/10/2026:** P1.14 Sticky Notes Windows integrata su `main` (PR #15, Flutter `0.19.0+21`, CI verde); P1.15 scorciatoie Windows è **in branch** `feature/p1-15-desktop-shortcuts` (`0.20.0+22`), CI/merge/hardware aperti. Repo Flyway V10, ultima VPS attestata V8, nessun deploy/reset. Procedure sottostanti storiche. [Stato](CURRENT-STATUS.md) · [Operazioni](OPERATIONS.md) · [P1.15](P1-DESKTOP-SHORTCUTS.md).
+> **Stato operativo 28/10/2026:** P1.15 keyboard `0.20.0+22` integrata su `main` (PR #16, CI verde). P1.16 Responsive `0.21.0+23` **solo in branch**, CI/merge/device da attestare. Backend repo Flyway V10, ultima VPS attestata V8; nessun deploy/reset. [Stato](CURRENT-STATUS.md) · [Operazioni](OPERATIONS.md) · [P1.16](P1-RESPONSIVE.md).
 
 
 > **Stato reale 24/10/2026:** PostgreSQL `simplenotes` 17.11, Flyway V1–V7 riuscite, backup `simple-notes-20261024T132857Z-271921.dump` con SHA256 valido e restore isolato PASS. Copia offsite non effettuata per scelta dell'utente. Restano da verificare l'API autenticata (`taskDueSchema:1`) e il collaudo T4.2 Windows↔Android con Flutter `0.4.0+4`. Non ripetere backup, migrazioni o deploy automaticamente. [T4.2](T4-DEVICE-SYNC.md).
@@ -155,3 +155,7 @@ I Countdown data-only confrontano **giorni civili** senza inventare mezzanotte U
 ## P1.13 — Settimane civili
 
 Il calcolo Habit per settimana usa giorno civile locale, inizio lunedì, `DateTime(year, month, day ± 7)`, evitando lo slittamento DST di 23/25 ore. Non ha relazione con scadenze task `TaskDue.datetime`, orari UTC o recurrences Flyway. [P1.13](P1-WEEKLY-HABITS.md).
+
+## P1.16 — Solo disposizione
+
+Il layout responsive non tocca semantica di `TaskDue`, data civile, ora UTC/IANA, DST, promemoria o ricorrenze. Le prove 320/390px includono soltanto che l'editor rapido della scadenza resti visibile. [P1.16](P1-RESPONSIVE.md).

@@ -1,8 +1,8 @@
-# Rollout coordinato — Simple Notes backend V10 e client P1.13 (P1.14 candidata)
+# Rollout coordinato — Simple Notes backend V10 e client P1.15 (P1.16 candidata)
 
 > **Stato operativo 28/10/2026:** P1.15 Keyboard Shortcuts integrata in `main` ([PR #16](https://github.com/andreadada/simple-notes/pull/16), Flutter `0.20.0+22`, CI verde); P1.16 responsive **solo sul branch** `feature/p1-16-responsive-layout` (`0.21.0+23`, CI/merge/device da attestare). Backend repository Flyway V10, VPS Coolify ultima attestazione V8; nessun deploy/reset. [Stato](CURRENT-STATUS.md) · [P1.16](P1-RESPONSIVE.md).
 
-**Stato:** runbook per backend P1.6 Flyway V10 e client P1.13 `0.18.0+20` (P1.14 candidata `0.19.0+21`) (**P1.1–P1.12 integrate su main, fino alla PR #13, CI verde**); nessun deploy né nuova installazione sui dispositivi è stato attestato da questa attività. L'utente ha scelto di effettuare personalmente il deploy Coolify **dopo** il gruppo di incrementi. I comandi sono istruzioni di sola lettura salvo il pulsante **Redeploy** esplicitamente indicato.
+**Stato:** runbook per backend P1.6 Flyway V10 e client P1.15 `0.20.0+22` (P1.16 candidata `0.21.0+23`) (**P1.1–P1.15 integrate in main, fino alla PR #16, CI verde**); nessun deploy né nuova installazione sui dispositivi è stato attestato da questa attività. L'utente ha scelto di effettuare personalmente il deploy Coolify **dopo** il gruppo di incrementi. I comandi sono istruzioni di sola lettura salvo il pulsante **Redeploy** esplicitamente indicato.
 
 ## Prima di agire
 
@@ -54,7 +54,7 @@ FAILED_MIGRATIONS=0
 
 Health deve restituire `{"status":"UP"}`. Su endpoint autenticato `/api/v1/capabilities` verificare **`taskDueSchema:1`**, **`timeBlockSchema:1`**, **`timeBlocksSchema:1`** e **`recurrenceSchema:1`**, usando JWT in locale: **non inserire token nei messaggi, screenshot o log**. Il semplice health UP non dimostra tutte le capability.
 
-## 4 — Client Flutter 0.18.0+20 (0.19 candidata) soltanto quando backend è compatibile
+## 4 — Client Flutter 0.20.0+22 (0.21 candidata) soltanto quando backend è compatibile
 
 Sul PC con repository aggiornato su `main`:
 
@@ -79,7 +79,7 @@ Verificare con lo **stesso account Google**: dati Windows↔Android, note e cest
 - Un downgrade del codice **non** annulla in sicurezza migrazioni Flyway già applicate. Non tentare di tornare a V8 cancellando manualmente le colonne.
 - In caso di migration ERROR o HTTP426 fermarsi e diagnosticare, mantenendo i dati/operazioni in coda: evitare azioni distruttive.
 
-## Gate P1.8–P1.14 prima del rollout
+## Gate P1.8–P1.16 prima del rollout
 
 La [Matrice Eisenhower](P1-EISENHOWER.md) è una proiezione dei task senza migrazioni; CI/merge PR #8 già completati. Prima del rollout eseguire un solo collaudo batch della navigazione in quattro quadranti, edit inline, mapping P2/P3, scadenze civili e sync. Il packaging MSIX Windows richiede verifica di identità, firma e compatibilità SQLite/OAuth: non sostituire alla cieca un ZIP con MSIX. Nessun reset è autorizzato.
 

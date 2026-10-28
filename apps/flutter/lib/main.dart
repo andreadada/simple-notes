@@ -699,7 +699,10 @@ Ctrl+/ · Questo elenco'''),
                       priorityFilter == 1 ? null : priorityFilter! - 1),
                   prefix: const Icon(Icons.flag_outlined, size: 16),
                   child: Text(priorityFilter == null
-                    ? 'Tutte le priorità' : 'Priorità P${priorityFilter!}'),
+                    ? (MediaQuery.sizeOf(context).width < 400
+                        ? 'Tutte' : 'Tutte le priorità')
+                    : (MediaQuery.sizeOf(context).width < 400
+                        ? 'P${priorityFilter!}' : 'Priorità P${priorityFilter!}')),
                 ),
                 if (activeListId != null) ...[
                   const SizedBox(width: 8),

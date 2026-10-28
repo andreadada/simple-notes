@@ -1,6 +1,6 @@
 # Simple Notes — Passaggio di consegne (handoff)
 
-> **Stato operativo (26/10/2026):** P1.13 obiettivi settimanali su `main` (PR #14, Flutter `0.18.0+20`, CI verde). P1.14 finestre Sticky Windows è **solo nel branch** `feature/p1-14-sticky-windows` (`0.19.0+21`, CI/merge/device da verificare). Repo Flyway V10; ultima VPS attestata V8. Nessun deploy/reset. [Stato](CURRENT-STATUS.md) · [P1.14](P1-STICKY-WINDOWS.md).
+> **Stato operativo (26/10/2026):** P1.14 Sticky Windows integrata su `main` ([PR #15](https://github.com/andreadada/simple-notes/pull/15), Flutter `0.19.0+21`, CI verde). P1.15 scorciatoie Windows **solo su branch** `feature/p1-15-desktop-shortcuts` (`0.20.0+22`); CI finale, merge, device da verificare. Backend GitHub Flyway V10, VPS ultima attestazione V8; nessun deploy/reset. [Stato](CURRENT-STATUS.md) · [P1.15](P1-DESKTOP-SHORTCUTS.md).
 
 <!-- CURRENT-STATUS-REF -->
 
@@ -276,3 +276,7 @@ P1.12 PR #13 è integrata su main con CI Flutter/Markdown verdi. La P1.13 estend
 ## Handoff P1.14 (26/10/2026)
 
 P1.13 PR #14 merged, Flutter 0.18, CI verde. Nuovo branch P1.14 Sticky Windows 0.19 con plugin, runner callback per engine, note detached senza DB/OAuth, bridge verso LocalStore principale e guardia stale. CI/hardware/merge ancora da verificare; nessun deploy, reset o nuove migration. [Specifica](P1-STICKY-WINDOWS.md).
+
+## Handoff P1.15 (26/10/2026)
+
+P1.14 Sticky PR #15 merged in main con CI verde. P1.15 candidata `feature/p1-15-desktop-shortcuts`, Flutter 0.20.0+22: navigazione Ctrl+1..5, focus task Ctrl+Shift+T, nuova nota Ctrl+Shift+N e help Ctrl+/ Forui, test policy/widget. CI/merge/hardware aperti, server VPS ancora attestato V8 vs repo V10. Nessun deploy/reset. [Specifica](P1-DESKTOP-SHORTCUTS.md).

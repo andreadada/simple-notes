@@ -1,6 +1,11 @@
+import 'dart:async';
+
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:forui/forui.dart';
 import 'ui/notes_theme.dart';
+import 'ui/desktop_shortcuts.dart';
 import 'ui/inline_editable_title.dart';
 import 'ui/inline_editable_body.dart';
 import 'ui/inline_quick_add.dart';
@@ -140,6 +145,87 @@ class _NotesHomeState extends ConsumerState<NotesHome> {
     newTaskFocus.dispose();
     newTask.dispose();
     super.dispose();
+  }
+
+  // Keyboard shortcuts affect only this visible Windows app, not the OS.
+  void _shortcutNavigate(Section next) {
+    setState(() {
+      section = next;
+      selectedId = null;
+      activeListId = null;
+      priorityFilter = null;
+    });
+  }
+
+  void _shortcutNewTask() {
+    _shortcutNavigate(Section.inbox);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) newTaskFocus.requestFocus();
+    });
+  }
+
+  Future<void> _shortcutNewNote() async {
+    _shortcutNavigate(Section.notes);
+    try {
+      await ref.read(localStoreProvider.notifier).addNote();
+    } catch (_) {
+      if (!mounted) return;
+      ScaffoldMessenger.maybeOf(context)?.showSnackBar(
+        const SnackBar(content: Text('Impossibile creare la nota.')),
+      );
+    }
+  }
+
+  void _showDesktopShortcuts() {
+    showFDialog<void>(
+      context: context,
+      builder: (ctx, style, animation) => NotesDialog(
+        style: style, animation: animation,
+        title: const Text('Scorciatoie Windows'),
+        body: const Text('''Ctrl+1 · Inbox
+Ctrl+2 · Oggi
+Ctrl+3 · Prossimi 7 giorni
+Ctrl+4 · Tutto
+Ctrl+5 · Note
+Ctrl+Shift+T · Nuova attività
+Ctrl+Shift+N · Nuova nota
+Ctrl+/ · Questo elenco'''),
+        actions: [
+          FButton(
+            key: const Key('shortcuts-dismiss'),
+            onPress: () => Navigator.pop(ctx),
+            child: const Text('Chiudi'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  KeyEventResult _handleDesktopKey(FocusNode node, KeyEvent event) {
+    final command = DesktopShortcutPolicy.forKey(
+      event, HardwareKeyboard.instance,
+      desktop: defaultTargetPlatform == TargetPlatform.windows,
+    );
+    if (command == null) return KeyEventResult.ignored;
+    switch (command) {
+      case DesktopCommand.inbox:
+        _shortcutNavigate(Section.inbox);
+      case DesktopCommand.today:
+        _shortcutNavigate(Section.today);
+      case DesktopCommand.upcoming:
+        _shortcutNavigate(Section.next7);
+      case DesktopCommand.allTasks:
+        _shortcutNavigate(Section.everything);
+      case DesktopCommand.notes:
+        _shortcutNavigate(Section.notes);
+      case DesktopCommand.newTask:
+        _shortcutNewTask();
+      case DesktopCommand.newNote:
+        unawaited(_shortcutNewNote());
+      case DesktopCommand.help:
+        _showDesktopShortcuts();
+    }
+    return KeyEventResult.handled;
   }
 
   Future<void> submitTask() async {
@@ -531,7 +617,10 @@ class _NotesHomeState extends ConsumerState<NotesHome> {
         ),
       ],
     );
-    return Scaffold(
+    return Focus(
+      autofocus: desktop && defaultTargetPlatform == TargetPlatform.windows,
+      onKeyEvent: _handleDesktopKey,
+      child: Scaffold(
       appBar: desktop ? null : AppBar(
         title: activeList == null
           ? Text(pageTitle)
@@ -558,8 +647,19 @@ class _NotesHomeState extends ConsumerState<NotesHome> {
               padding: const EdgeInsets.fromLTRB(25, 26, 25, 12),
               child: Align(alignment: Alignment.centerLeft,
                 child: activeList == null
-                  ? Text(pageTitle, style: const TextStyle(
-                      fontSize: 23, fontWeight: FontWeight.bold))
+                  ? Row(mainAxisSize: MainAxisSize.min, children: [
+                      Text(pageTitle, style: const TextStyle(
+                        fontSize: 23, fontWeight: FontWeight.bold)),
+                      if (defaultTargetPlatform == TargetPlatform.windows) ...[
+                        const SizedBox(width: 12),
+                        IconButton(
+                          key: const Key('desktop-shortcuts-help'),
+                          icon: const Icon(Icons.keyboard_outlined, size: 19),
+                          tooltip: 'Scorciatoie (Ctrl+/)',
+                          onPressed: _showDesktopShortcuts,
+                        ),
+                      ],
+                    ])
                   : InlineEditableTitle(
                       key: ValueKey('inline-list-title-${activeList.id}'),
                       value: activeList.title,
@@ -873,7 +973,7 @@ class _NotesHomeState extends ConsumerState<NotesHome> {
             }),
           )),
       ]),
-    );
+    ));
   }
 
   Widget taskDetails(LocalTask task) => Padding(

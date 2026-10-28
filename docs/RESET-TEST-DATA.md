@@ -1,7 +1,7 @@
 # Reset coordinato dei soli dati di test — Simple Notes
 
 <!-- CURRENT-STATUS-REF -->
-> **Snapshot storico 26/10/2026:** P1.13 Weekly Habits su `main` (PR #14, Flutter `0.18.0+20`, CI verde); P1.14 Sticky Windows **in branch** `feature/p1-14-sticky-windows` (Flutter candidata `0.19.0+21`, CI/merge/device non attestati). Repo Flyway V10, ultimo Coolify confermato V8, nessun deploy/reset. [Stato](CURRENT-STATUS.md) · [Guida operativa](OPERATIONS.md) · [Sticky Windows](P1-STICKY-WINDOWS.md).
+> **Snapshot storico — 26/10/2026:** P1.14 Sticky Notes Windows integrata su `main` (PR #15, Flutter `0.19.0+21`, CI verde); P1.15 scorciatoie Windows è **in branch** `feature/p1-15-desktop-shortcuts` (`0.20.0+22`), CI/merge/hardware aperti. Repo Flyway V10, ultima VPS attestata V8, nessun deploy/reset. Procedure sottostanti storiche. [Stato](CURRENT-STATUS.md) · [Operazioni](OPERATIONS.md) · [P1.15](P1-DESKTOP-SHORTCUTS.md).
 
 
 **ESEGUITO E VERIFICATO DALL'UTENTE il 25 ottobre 2026. Non ripetere questa procedura per continuare lo sviluppo.** È un'operazione distruttiva, autorizzata dall'utente **solo per i dati di test** (24/10/2026). Non riutilizzare questi comandi quando ci saranno dati reali. Il reset comprende task, liste, note visibili ed eliminate, operazioni e storico sync su PostgreSQL e SQLite su entrambi i dispositivi. **Preserva** l'account Google `app_user`, le sessioni backend, lo schema e le migrazioni Flyway e gli altri database della VPS.

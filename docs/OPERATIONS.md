@@ -1,6 +1,6 @@
 # Guida operativa — Simple Notes
 
-> **Stato operativo (26/10/2026):** P1.13 obiettivi settimanali su `main` (PR #14, Flutter `0.18.0+20`, CI verde). P1.14 finestre Sticky Windows è **solo nel branch** `feature/p1-14-sticky-windows` (`0.19.0+21`, CI/merge/device da verificare). Repo Flyway V10; ultima VPS attestata V8. Nessun deploy/reset. [Stato](CURRENT-STATUS.md) · [P1.14](P1-STICKY-WINDOWS.md).
+> **Stato operativo (26/10/2026):** P1.14 Sticky Windows integrata su `main` ([PR #15](https://github.com/andreadada/simple-notes/pull/15), Flutter `0.19.0+21`, CI verde). P1.15 scorciatoie Windows **solo su branch** `feature/p1-15-desktop-shortcuts` (`0.20.0+22`); CI finale, merge, device da verificare. Backend GitHub Flyway V10, VPS ultima attestazione V8; nessun deploy/reset. [Stato](CURRENT-STATUS.md) · [P1.15](P1-DESKTOP-SHORTCUTS.md).
 
 **Fonte operativa** per il checkout locale Windows, CI, Coolify, Android e Windows ZIP/MSIX. **Ultimo stato verificabile (26/10/2026):** Flutter 0.18.0+20 P1.13 su `main`, CI verde; backend repository Flyway V10/Drift V8; **ultima VPS confermata Flyway V8**. L'incremento P1.14 Sticky Windows è in sviluppo nel branch `feature/p1-14-sticky-windows` (Flutter 0.19.0+21); una PR e una build non sono un deploy. Leggere sempre [CURRENT-STATUS.md](CURRENT-STATUS.md) per lo stato successivo.
 
@@ -129,3 +129,7 @@ Il JSON `simple_notes.habits.v1.<ownerHash>` usa sempre schema 1: le abitudini p
 ## P1.14 — Prova Windows Sticky non distruttiva
 
 Aprire dalla sezione Note due finestre diverse, verificare che editor e outbox del main siano aggiornati al salvataggio, provare due aperture della stessa nota e un conflitto su titolo/corpo. Le finestre detached non aprono un secondo DB. ZIP Windows deve contenere EXE, DLL, plugin; MSIX solo in profilo di prova con firme e path verificati. Android non offre il pop-out. Non reinstallare/reset SQLite per riparare problemi multiwindow. [Specifica](P1-STICKY-WINDOWS.md).
+
+## P1.15 — Verifica scorciatoie Windows
+
+Su Windows testare `Ctrl+1..5`, `Ctrl+Shift+T` (focus nuovo task senza inserimento), `Ctrl+Shift+N` (nota creata in LocalStore/outbox), `Ctrl+/` e tasto icona tastiera (help Forui). Verificare Ctrl+C/V/Z/A mentre si modifica un titolo, tastiera italiana, dialoghi e rientro in sticky pop-out. Android deve restare invariato. No deploy/reset per la P1.15. [Specifica](P1-DESKTOP-SHORTCUTS.md).

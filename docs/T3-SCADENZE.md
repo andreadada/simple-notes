@@ -1,7 +1,7 @@
 # T3 — Scadenze Forui, fusi IANA e calendario civile
 
 <!-- CURRENT-STATUS-REF -->
-> **Snapshot storico — 26/10/2026:** P1.14 Sticky Notes Windows integrata su `main` (PR #15, Flutter `0.19.0+21`, CI verde); P1.15 scorciatoie Windows è **in branch** `feature/p1-15-desktop-shortcuts` (`0.20.0+22`), CI/merge/hardware aperti. Repo Flyway V10, ultima VPS attestata V8, nessun deploy/reset. Procedure sottostanti storiche. [Stato](CURRENT-STATUS.md) · [Operazioni](OPERATIONS.md) · [P1.15](P1-DESKTOP-SHORTCUTS.md).
+> **Snapshot storico 28/10/2026:** P1.15 Shortcuts `0.20.0+22` integrata su `main` via [PR #16](https://github.com/andreadada/simple-notes/pull/16), CI verde. P1.16 Responsive `0.21.0+23` è **solo in branch** `feature/p1-16-responsive-layout`, CI/merge/device non confermati. Repo Flyway V10, VPS attestata fino a V8; nessun deploy/reset. [Stato](CURRENT-STATUS.md) · [Operazioni](OPERATIONS.md) · [P1.16](P1-RESPONSIVE.md).
 
 
 > Stato al 24/10: codice T3 implementato; **Flyway V7 verificata sul DB reale e dump/restore isolato PASS**. API autenticata e prove fisiche Windows↔Android ancora non confermate. Verificare gli esiti più recenti in [GitHub Actions](https://github.com/andreadada/simple-notes/actions/workflows/flutter-ci.yml).

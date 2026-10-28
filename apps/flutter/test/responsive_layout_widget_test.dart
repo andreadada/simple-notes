@@ -36,7 +36,9 @@ void main() {
       for (final n in notes)
         find.byKey(Key('responsive-note-card-${n.id}')),
     ];
-    for (final card in cards) expect(card, findsOneWidget);
+    for (final card in cards) {
+      expect(card, findsOneWidget);
+    }
     expect(tester.getTopLeft(cards[0]).dy, tester.getTopLeft(cards[1]).dy);
     expect(tester.getTopLeft(cards[1]).dy, tester.getTopLeft(cards[2]).dy);
     expect(tester.takeException(), isNull);

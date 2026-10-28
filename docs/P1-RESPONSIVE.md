@@ -7,7 +7,7 @@
 - **Note in layout fluido**, mantenendo gli stessi ID, titolo e corpo editabili inline e la stessa sincronizzazione tramite LocalStore/outbox. Una griglia `Wrap` dispone le card secondo lo spazio effettivamente disponibile, con altezza libera (senza tagliare note lunghe): **1 colonna** con meno di 700 logical px di contenuto, **2** da 700 a 1119, **3** da 1120 in poi.
 - `NotesResponsivePolicy` centralizza i gate esistenti per la sidebar (**950 px viewport**) e i dettagli task laterali (**1200 px viewport**); le dimensioni di ogni card dipendono dalla larghezza **residua dopo** sidebar/padding, non dal device type o da orientamento fittizio.
 - Il comando nuova nota, il pop-out Sticky Windows e le azioni elimina restano invariati e accessibili; le card passano tra 1/2/3 colonne senza riscrivere dati, senza ricreare identità o svuotare input.
-- La vista attività resta invariata su viewport piccoli, con input e selettore data già presenti. Le note mantengono altezza **intrinseca**: non usare `GridView` a `childAspectRatio` fisso perché potrebbe ritagliare contenuti.
+- La vista attività mantiene input e selettore data su viewport piccoli; **sotto 400 px** il filtro priorità mostra l'etichetta compatta `Tutte` o `P1/P2/P3` per prevenire overflow, senza cambiare i valori del filtro. Le note mantengono altezza **intrinseca**: non usare `GridView` a `childAspectRatio` fisso perché potrebbe ritagliare contenuti.
 - Unit test a soglie, 0px/width safe, formule di larghezza. Widget test su viewport **320, 390, 1110 e 1600 logical px**, tre note e controllo overflow.
 
 ## Non incluso

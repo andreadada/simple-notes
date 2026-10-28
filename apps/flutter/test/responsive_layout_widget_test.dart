@@ -79,6 +79,7 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.byKey(const Key('task-input')), findsOneWidget);
     expect(find.byKey(const Key('quick-due-editor')), findsOneWidget);
+    expect(find.text('Tutte'), findsOneWidget);
     expect(tester.takeException(), isNull);
     await tester.pumpWidget(const SizedBox.shrink());
     await db.close();

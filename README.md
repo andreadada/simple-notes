@@ -1,6 +1,6 @@
 # Simple Notes
 
-> **Stato operativo (26/10/2026):** P1.14 Sticky Windows integrata su `main` ([PR #15](https://github.com/andreadada/simple-notes/pull/15), Flutter `0.19.0+21`, CI verde). P1.15 scorciatoie Windows **solo su branch** `feature/p1-15-desktop-shortcuts` (`0.20.0+22`); CI finale, merge, device da verificare. Backend GitHub Flyway V10, VPS ultima attestazione V8; nessun deploy/reset. [Stato](docs/CURRENT-STATUS.md) · [P1.15](docs/P1-DESKTOP-SHORTCUTS.md).
+> **Stato operativo 28/10/2026:** P1.15 Keyboard Shortcuts integrata in `main` ([PR #16](https://github.com/andreadada/simple-notes/pull/16), Flutter `0.20.0+22`, CI verde); P1.16 responsive **solo sul branch** `feature/p1-16-responsive-layout` (`0.21.0+23`, CI/merge/device da attestare). Backend repository Flyway V10, VPS Coolify ultima attestazione V8; nessun deploy/reset. [Stato](docs/CURRENT-STATUS.md) · [P1.16](docs/P1-RESPONSIVE.md).
 
 App offline-first per **Windows 11 e Android** dedicata ad attività, note e pianificazione. Flutter/Forui con Drift SQLite locale, Google OAuth e sincronizzazione con Spring Boot/PostgreSQL su Coolify.
 
@@ -45,3 +45,7 @@ La fase Sticky Windows P1.14 è documentata in [P1-STICKY-WINDOWS.md](docs/P1-ST
 ## P1.15 — Scorciatoie (branch)
 
 Windows: `Ctrl+1..5` navigazione, `Ctrl+Shift+T` nuova attività, `Ctrl+Shift+N` nuova nota, `Ctrl+/` guida Forui. Android invariato; nessuna migrazione. [Specifica](docs/P1-DESKTOP-SHORTCUTS.md).
+
+## P1.16 — Responsive (branch)
+
+Le note si dispongono in **1, 2 o 3 colonne** secondo lo spazio del contenuto Windows/Android, senza tagliare il corpo né cambiare lo storico o la sincronizzazione. Flutter candidata `0.21.0+23`; CI/merge/device da verificare. [Specifiche](docs/P1-RESPONSIVE.md).

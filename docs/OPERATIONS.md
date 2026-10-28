@@ -1,8 +1,8 @@
 # Guida operativa — Simple Notes
 
-> **Stato operativo (26/10/2026):** P1.14 Sticky Windows integrata su `main` ([PR #15](https://github.com/andreadada/simple-notes/pull/15), Flutter `0.19.0+21`, CI verde). P1.15 scorciatoie Windows **solo su branch** `feature/p1-15-desktop-shortcuts` (`0.20.0+22`); CI finale, merge, device da verificare. Backend GitHub Flyway V10, VPS ultima attestazione V8; nessun deploy/reset. [Stato](CURRENT-STATUS.md) · [P1.15](P1-DESKTOP-SHORTCUTS.md).
+> **Stato operativo 28/10/2026:** P1.15 Keyboard Shortcuts integrata in `main` ([PR #16](https://github.com/andreadada/simple-notes/pull/16), Flutter `0.20.0+22`, CI verde); P1.16 responsive **solo sul branch** `feature/p1-16-responsive-layout` (`0.21.0+23`, CI/merge/device da attestare). Backend repository Flyway V10, VPS Coolify ultima attestazione V8; nessun deploy/reset. [Stato](CURRENT-STATUS.md) · [P1.16](P1-RESPONSIVE.md).
 
-**Fonte operativa** per il checkout locale Windows, CI, Coolify, Android e Windows ZIP/MSIX. **Ultimo stato verificabile (26/10/2026):** Flutter 0.18.0+20 P1.13 su `main`, CI verde; backend repository Flyway V10/Drift V8; **ultima VPS confermata Flyway V8**. L'incremento P1.14 Sticky Windows è in sviluppo nel branch `feature/p1-14-sticky-windows` (Flutter 0.19.0+21); una PR e una build non sono un deploy. Leggere sempre [CURRENT-STATUS.md](CURRENT-STATUS.md) per lo stato successivo.
+**Fonte operativa** per il checkout locale Windows, CI, Coolify, Android e Windows ZIP/MSIX. **Ultimo stato verificabile (26/10/2026):** Flutter 0.20.0+22 P1.15 su `main`, CI verde; backend repository Flyway V10/Drift V8; **ultima VPS confermata Flyway V8**. P1.16 Responsive è candidata nel branch `feature/p1-16-responsive-layout` (Flutter 0.21.0+23); una PR e una build non sono un deploy. Leggere sempre [CURRENT-STATUS.md](CURRENT-STATUS.md) per lo stato successivo.
 
 ## 0. Regola fondamentale
 
@@ -133,3 +133,7 @@ Aprire dalla sezione Note due finestre diverse, verificare che editor e outbox d
 ## P1.15 — Verifica scorciatoie Windows
 
 Su Windows testare `Ctrl+1..5`, `Ctrl+Shift+T` (focus nuovo task senza inserimento), `Ctrl+Shift+N` (nota creata in LocalStore/outbox), `Ctrl+/` e tasto icona tastiera (help Forui). Verificare Ctrl+C/V/Z/A mentre si modifica un titolo, tastiera italiana, dialoghi e rientro in sticky pop-out. Android deve restare invariato. No deploy/reset per la P1.15. [Specifica](P1-DESKTOP-SHORTCUTS.md).
+
+## P1.16 — Collaudo viewport non distruttivo
+
+Su PC Windows: creare tre note con titoli e corpi diversi, verificare passaggio da una a due e tre colonne al ridimensionamento senza taglio o cambio ID, continuando a modificare inline, aprendo una sticky e verificando la sync normale delle note. Android: larghezze 320 e 390 px, landscape, tastiera aperta e task input/due. La griglia non salva niente al resize. Nessun reset, deploy o cambi di schema: [P1.16](P1-RESPONSIVE.md).

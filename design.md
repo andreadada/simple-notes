@@ -1,6 +1,6 @@
 # Simple Notes — Design & Product Specification
 
-> **Stato operativo (26/10/2026):** P1.14 Sticky Windows integrata su `main` ([PR #15](https://github.com/andreadada/simple-notes/pull/15), Flutter `0.19.0+21`, CI verde). P1.15 scorciatoie Windows **solo su branch** `feature/p1-15-desktop-shortcuts` (`0.20.0+22`); CI finale, merge, device da verificare. Backend GitHub Flyway V10, VPS ultima attestazione V8; nessun deploy/reset. [Stato](docs/CURRENT-STATUS.md) · [P1.15](docs/P1-DESKTOP-SHORTCUTS.md).
+> **Stato operativo 28/10/2026:** P1.15 Keyboard Shortcuts integrata in `main` ([PR #16](https://github.com/andreadada/simple-notes/pull/16), Flutter `0.20.0+22`, CI verde); P1.16 responsive **solo sul branch** `feature/p1-16-responsive-layout` (`0.21.0+23`, CI/merge/device da attestare). Backend repository Flyway V10, VPS Coolify ultima attestazione V8; nessun deploy/reset. [Stato](docs/CURRENT-STATUS.md) · [P1.16](docs/P1-RESPONSIVE.md).
 
 <!-- CURRENT-STATUS-REF -->
 
@@ -201,3 +201,7 @@ Nella card Note un'icona pop-out visibile solo su Windows apre una finestra dist
 ## P1.15 — Keyboard-first desktop
 
 Ctrl+1..5 cambia schermata, Ctrl+Shift+T dà focus al nuovo task, Ctrl+Shift+N crea una nota, Ctrl+/ apre la guida Forui. Un'icona discreta nell'header Windows rende le scorciatoie scopribili. La regola edit inline non cambia e Android non reagisce ai comandi Windows. [Specifiche](docs/P1-DESKTOP-SHORTCUTS.md).
+
+## P1.16 — Note a larghezza adattiva
+
+Vista Note: una colonna stretta, due medie, tre molto larghe, con spazi regolari da 12 logical px, card ad altezza intrinseca per testi lunghi. Titolo e contenuto restano **direttamente editabili**, senza modale di rinomina; pop-out Sticky solo Windows e pulsanti di archivio invariati. Il breakpoint usa lo spazio effettivo dopo sidebar/padding. [Specifiche](docs/P1-RESPONSIVE.md).

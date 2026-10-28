@@ -1,6 +1,6 @@
 # Rollout coordinato — Simple Notes backend V10 e client P1.13 (P1.14 candidata)
 
-> **Stato operativo (26/10/2026):** P1.14 Sticky Windows integrata su `main` ([PR #15](https://github.com/andreadada/simple-notes/pull/15), Flutter `0.19.0+21`, CI verde). P1.15 scorciatoie Windows **solo su branch** `feature/p1-15-desktop-shortcuts` (`0.20.0+22`); CI finale, merge, device da verificare. Backend GitHub Flyway V10, VPS ultima attestazione V8; nessun deploy/reset. [Stato](CURRENT-STATUS.md) · [P1.15](P1-DESKTOP-SHORTCUTS.md).
+> **Stato operativo 28/10/2026:** P1.15 Keyboard Shortcuts integrata in `main` ([PR #16](https://github.com/andreadada/simple-notes/pull/16), Flutter `0.20.0+22`, CI verde); P1.16 responsive **solo sul branch** `feature/p1-16-responsive-layout` (`0.21.0+23`, CI/merge/device da attestare). Backend repository Flyway V10, VPS Coolify ultima attestazione V8; nessun deploy/reset. [Stato](CURRENT-STATUS.md) · [P1.16](P1-RESPONSIVE.md).
 
 **Stato:** runbook per backend P1.6 Flyway V10 e client P1.13 `0.18.0+20` (P1.14 candidata `0.19.0+21`) (**P1.1–P1.12 integrate su main, fino alla PR #13, CI verde**); nessun deploy né nuova installazione sui dispositivi è stato attestato da questa attività. L'utente ha scelto di effettuare personalmente il deploy Coolify **dopo** il gruppo di incrementi. I comandi sono istruzioni di sola lettura salvo il pulsante **Redeploy** esplicitamente indicato.
 
@@ -110,3 +110,7 @@ Il percorso iniziale consolidato è nella [guida operativa](OPERATIONS.md). La [
 ### P1.15 — Gate keyboard Windows
 
 [P1.15](P1-DESKTOP-SHORTCUTS.md) non richiede backend, DB schema o dipendenze native nuove. I shortcut sono interni alla finestra Windows, l'azione Nuova nota usa il normale LocalStore/outbox. Collaudare focus e combinazioni di editing, CI Windows/MSIX e regression Android. Restano necessari i gate server-first Flyway V10 per la release cumulativa e la conservazione dati ZIP→MSIX.
+
+### P1.16 — Responsive (solo client)
+
+[Specifiche P1.16](P1-RESPONSIVE.md): nuove soglie di disposizione card Note e test responsive, nessuna modifica a Flyway/Drift, server o outbox. Aggiungere verifica Windows resize e Android 320/390 px al collaudo cumulativo non distruttivo; il rollout richiede ancora Flyway V10/capability effettive sul server e verifica conservativa ZIP→MSIX.

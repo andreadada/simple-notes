@@ -1,6 +1,6 @@
 # Flutter client — P0 e P1
 
-> **Stato operativo (26/10/2026):** P1.14 Sticky Windows integrata su `main` ([PR #15](https://github.com/andreadada/simple-notes/pull/15), Flutter `0.19.0+21`, CI verde). P1.15 scorciatoie Windows **solo su branch** `feature/p1-15-desktop-shortcuts` (`0.20.0+22`); CI finale, merge, device da verificare. Backend GitHub Flyway V10, VPS ultima attestazione V8; nessun deploy/reset. [Stato](../../docs/CURRENT-STATUS.md) · [P1.15](../../docs/P1-DESKTOP-SHORTCUTS.md).
+> **Stato operativo 28/10/2026:** P1.15 Keyboard Shortcuts integrata in `main` ([PR #16](https://github.com/andreadada/simple-notes/pull/16), Flutter `0.20.0+22`, CI verde); P1.16 responsive **solo sul branch** `feature/p1-16-responsive-layout` (`0.21.0+23`, CI/merge/device da attestare). Backend repository Flyway V10, VPS Coolify ultima attestazione V8; nessun deploy/reset. [Stato](../../docs/CURRENT-STATUS.md) · [P1.16](../../docs/P1-RESPONSIVE.md).
 
 <!-- CURRENT-STATUS-REF -->
 
@@ -170,3 +170,7 @@ Flutter `0.18.0+20` candidato. `LocalHabit.weeklyTarget` 1–7 con default retro
 ## P1.15 — Scorciatoie Windows (branch)
 
 Flutter `0.20.0+22` candidata. `DesktopShortcutPolicy` gestisce Ctrl+1..5, Ctrl+Shift+T/N, Ctrl+/; `NotesHome` riutilizza la navigazione e LocalStore esistenti, con help Forui. Nessuna API, DB migration o plugin OS. [Specifiche](../../docs/P1-DESKTOP-SHORTCUTS.md).
+
+## P1.16 — Responsive layout candidate
+
+`NotesResponsivePolicy` centralizza sidebar viewport 950px e dettagli 1200px, e colonne card per larghezza contenuto: 1 sotto 700px, 2 da 700px, 3 da 1120px. `Wrap` mantiene l'altezza intrinseca delle card e gli editor inline. Test Flutter a 320/390/1110/1600 px, nessun nuovo backend o storage. [Specifiche](../../docs/P1-RESPONSIVE.md).

@@ -19,7 +19,7 @@ App offline-first per **Windows 11 e Android** dedicata ad attività, note e pia
 - Habit Tracker P1.11 (**main**, PR #12): abitudini quotidiane, streak, check-in, storico/archivio locali, senza cloud sync.
 - Countdown P1.12 (**main**, PR #13): eventi a data civile o ora IANA, titolo inline e archivio; locale, non sincronizzato.
 - P1.13 (**main**, PR #14): obiettivi Habit 1–7 giorni alla settimana e streak settimanali, storico locale preservato.
-- P1.14 (**branch**): apri note sincronizzate in finestre Windows indipendenti, editing inline attraverso il processo principale.
+- P1.14 (**main**, PR #15): apri note sincronizzate in finestre Windows indipendenti, editing inline attraverso il processo principale.
 **Implementato su GitHub ≠ distribuito.** Prima di installare client aggiornati verificare su Coolify Flyway V10 e le capability autenticate. Nessun reset, cancellazione di volumi o migrazione manuale per una normale verifica. Il deploy resta un'operazione distinta e controllata dall'utente.
 
 ## Percorso rapido
@@ -42,7 +42,7 @@ Le GitHub Actions coprono Flutter, backend, Compose e link Markdown. I test auto
 
 La fase Sticky Windows P1.14 è documentata in [P1-STICKY-WINDOWS.md](docs/P1-STICKY-WINDOWS.md); non è ancora attestata su hardware.
 
-## P1.15 — Scorciatoie (branch)
+## P1.15 — Scorciatoie (main, PR #16)
 
 Windows: `Ctrl+1..5` navigazione, `Ctrl+Shift+T` nuova attività, `Ctrl+Shift+N` nuova nota, `Ctrl+/` guida Forui. Android invariato; nessuna migrazione. [Specifica](docs/P1-DESKTOP-SHORTCUTS.md).
 

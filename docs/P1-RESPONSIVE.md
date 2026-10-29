@@ -1,6 +1,8 @@
 # P1.16 — Layout responsive Windows e Android
 
-**Stato 28/10/2026:** candidata su `feature/p1-16-responsive-layout`, Flutter `0.21.0+23`. P1.15 Keyboard shortcuts è integrata su `main` tramite [PR #16](https://github.com/andreadada/simple-notes/pull/16), Flutter `0.20.0+22`, CI Flutter/Markdown verde. La P1.16 richiede CI finale, PR/merge e test visivo su hardware. Nessun deploy Coolify o reset.
+> **Stato operativo 29/10/2026:** P1.16 Responsive su `main` ([PR #17](https://github.com/andreadada/simple-notes/pull/17), Flutter `0.21.0+23`, CI verde). P1.17 Windows Tray **solo sul branch** `feature/p1-17-windows-tray` (`0.22.0+24`, CI/merge/device da verificare). Repo Flyway V10, VPS attestata fino a V8; nessun deploy/reset. [Stato](CURRENT-STATUS.md) · [Tray](P1-WINDOWS-TRAY.md).
+
+**Stato 28/10/2026:** **integrata su `main` con PR #17**, Flutter `0.21.0+23`, [CI Flutter verde](https://github.com/andreadada/simple-notes/actions/runs/40761227373) e [Markdown verde](https://github.com/andreadada/simple-notes/actions/runs/40761227307). P1.15 Keyboard shortcuts è integrata su `main` tramite [PR #16](https://github.com/andreadada/simple-notes/pull/16), Flutter `0.20.0+22`, CI Flutter/Markdown verde. La P1.16 ha superato CI e merge; il collaudo visivo hardware resta aperto. Nessun deploy Coolify o reset.
 
 ## Modifiche reali
 

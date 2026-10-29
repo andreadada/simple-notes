@@ -1,6 +1,6 @@
 # Flutter client — P0 e P1
 
-> **Stato operativo 28/10/2026:** P1.15 Keyboard Shortcuts integrata in `main` ([PR #16](https://github.com/andreadada/simple-notes/pull/16), Flutter `0.20.0+22`, CI verde); P1.16 responsive **solo sul branch** `feature/p1-16-responsive-layout` (`0.21.0+23`, CI/merge/device da attestare). Backend repository Flyway V10, VPS Coolify ultima attestazione V8; nessun deploy/reset. [Stato](../../docs/CURRENT-STATUS.md) · [P1.16](../../docs/P1-RESPONSIVE.md).
+> **Stato operativo 29/10/2026:** P1.16 Responsive su `main` ([PR #17](https://github.com/andreadada/simple-notes/pull/17), Flutter `0.21.0+23`, CI verde). P1.17 Windows Tray **solo sul branch** `feature/p1-17-windows-tray` (`0.22.0+24`, CI/merge/device da verificare). Repo Flyway V10, VPS attestata fino a V8; nessun deploy/reset. [Stato](../../docs/CURRENT-STATUS.md) · [Tray](../../docs/P1-WINDOWS-TRAY.md).
 
 <!-- CURRENT-STATUS-REF -->
 
@@ -174,3 +174,7 @@ Flutter `0.20.0+22` candidata. `DesktopShortcutPolicy` gestisce Ctrl+1..5, Ctrl+
 ## P1.16 — Responsive layout candidate
 
 `NotesResponsivePolicy` centralizza sidebar viewport 950px e dettagli 1200px, e colonne card per larghezza contenuto: 1 sotto 700px, 2 da 700px, 3 da 1120px. `Wrap` mantiene l'altezza intrinseca delle card e gli editor inline. Test Flutter a 320/390/1110/1600 px, nessun nuovo backend o storage. [Specifiche](../../docs/P1-RESPONSIVE.md).
+
+## P1.17 — System tray Windows candidata
+
+`tray_manager ^0.8.0`, `window_manager ^0.5.2`; `WindowsTray.initialize` solo main, `TrayClosePolicy` fail-open; click/menu Apri ed Esci, X/hide. L'engine Sticky e Android non hanno tray. Flutter `0.22.0+24`, nessuna migration. [Specifica](../../docs/P1-WINDOWS-TRAY.md).

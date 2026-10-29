@@ -1,12 +1,12 @@
 # Simple Notes — Progetto e roadmap
 
-> **Stato operativo 29/10/2026:** P1.16 Responsive su `main` ([PR #17](https://github.com/andreadada/simple-notes/pull/17), Flutter `0.21.0+23`, CI verde). P1.17 Windows Tray **solo sul branch** `feature/p1-17-windows-tray` (`0.22.0+24`, CI/merge/device da verificare). Repo Flyway V10, VPS attestata fino a V8; nessun deploy/reset. [Stato](docs/CURRENT-STATUS.md) · [Tray](docs/P1-WINDOWS-TRAY.md).
+> **Stato operativo 29/10/2026:** P1.17 Windows Tray integrata in `main` ([PR #18](https://github.com/andreadada/simple-notes/pull/18), Flutter `0.22.0+24`, CI Flutter/Markdown verde); prove fisiche Windows/Android e rilascio cumulativo non ancora attestati. Backend repo Flyway V10, VPS ultima attestazione V8; nessun deploy/reset. [Stato](docs/CURRENT-STATUS.md) · [Tray](docs/P1-WINDOWS-TRAY.md).
 
 <!-- CURRENT-STATUS-REF -->
 
 **Obiettivo:** Windows 11 + Android offline-first, Google OAuth, Flutter/Forui/Drift + Spring Boot/PostgreSQL su Coolify. Regole UX in [design.md](design.md); deploy sicuro in [P1-RELEASE-BATCH.md](docs/P1-RELEASE-BATCH.md). Le checklist sotto includono traguardi storici: `[x]` significa **codice verificato nella CI o prova specifica**, non distribuzione sul VPS.
 
-## Gate corrente (non eseguito)
+## Gate corrente (CI P1.17 superata; distribuzione non eseguita)
 
 - [x] P1.7 Android con scheduler inexact, ledger, opt-in e CI verde (PR #6). [ ] Prova fisica Android app chiusa/reboot e controllo permessi; [x] codice packaging MSIX + promemoria Windows integrato (PR #7, CI verde); [ ] test fisici MSIX/identità/dati e firma pubblica.
 - [ ] Verificare Flyway V10, health **e** capability su Coolify prima di nuovi client.
@@ -124,7 +124,7 @@
 - [x] **P1.14 Sticky Notes Windows:** PR #15 su `main`, Flutter `0.19.0+21`, CI verde; editing inline in finestre indipendenti con stesso LocalStore. Device ancora da collaudare. [Specifica](docs/P1-STICKY-WINDOWS.md).
 - [x] **P1.15 Scorciatoie desktop:** PR #16 integrata su `main`, Flutter `0.20.0+22`, CI Flutter/Markdown verde; Ctrl+1..5, Ctrl+Shift+T/N, Ctrl+/ guida Forui. Test PC reale da fare. [Specifica](docs/P1-DESKTOP-SHORTCUTS.md).
 - [x] **P1.16 Responsive Windows/Android:** PR #17 merged su `main`, Flutter `0.21.0+23`, CI verde. Test hardware aperti. [Specifica](docs/P1-RESPONSIVE.md).
-- [ ] **P1.17 Windows Tray:** icona tray, hide-on-close, riapri e uscita esplicita; branch `feature/p1-17-windows-tray`, Flutter candidata `0.22.0+24`, CI/merge/hardware aperti. [Specifica](docs/P1-WINDOWS-TRAY.md).
+- [x] **P1.17 Windows Tray:** [PR #18](https://github.com/andreadada/simple-notes/pull/18) integrata su `main` (merge `66927c7`), Flutter `0.22.0+24`; Flutter analyze/test, Windows EXE/MSIX, Android JDK17/21 e Markdown CI verdi. Test hardware e release ancora aperti. [Specifica](docs/P1-WINDOWS-TRAY.md).
 - [ ] Temi chiaro/scuro e altre rifiniture future.
 
 ## P2 — Estensioni
@@ -316,3 +316,5 @@ Esempio: `2026-10-21 14:20 CEST | commit abc1234 | Aggiunto modulo promemoria e 
 - 2026-10-28 | feat(p1.16) | PR #16 scorciatoie Windows merged con CI Flutter e Markdown verdi. P1.16 responsive 0.21: griglia note Wrap a 1/2/3 colonne con larghezza contenuto, inline editing/outbox invariati, test 320/390/1110/1600. Nessuna migrazione/deploy/reset. [Specifica](docs/P1-RESPONSIVE.md).
 
 - 2026-10-29 | feat(p1.17) | P1.16 PR #17 merged con CI verde. P1.17 Windows Tray: sistema hide, restore e uscita esplicita, isolamento Sticky, fallback su plugin; nessuna migration, deploy o reset. [Specifica](docs/P1-WINDOWS-TRAY.md).
+
+- 2026-10-29 02:10 CET | commit 66927c7 | PR #18 P1.17 Tray integrata su main dopo CI completa verde; documentazione operativa riallineata; Coolify e test reali ancora aperti.

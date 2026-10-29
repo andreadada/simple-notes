@@ -1,10 +1,10 @@
 # Simple Notes — Passaggio di consegne (handoff)
 
-> **Stato operativo 29/10/2026:** P1.16 Responsive su `main` ([PR #17](https://github.com/andreadada/simple-notes/pull/17), Flutter `0.21.0+23`, CI verde). P1.17 Windows Tray **solo sul branch** `feature/p1-17-windows-tray` (`0.22.0+24`, CI/merge/device da verificare). Repo Flyway V10, VPS attestata fino a V8; nessun deploy/reset. [Stato](CURRENT-STATUS.md) · [Tray](P1-WINDOWS-TRAY.md).
+> **Stato operativo 29/10/2026:** P1.17 Windows Tray integrata in `main` ([PR #18](https://github.com/andreadada/simple-notes/pull/18), Flutter `0.22.0+24`, CI Flutter/Markdown verde); prove fisiche Windows/Android e rilascio cumulativo non ancora attestati. Backend repo Flyway V10, VPS ultima attestazione V8; nessun deploy/reset. [Stato](CURRENT-STATUS.md) · [Tray](P1-WINDOWS-TRAY.md).
 
 <!-- CURRENT-STATUS-REF -->
 
-> **P1.10 in sviluppo:** Pomodoro `0.15.0+17` per dispositivo/account, timer UTC e stats locali. [Specifica](P1-POMODORO.md); CI e test reali da completare.
+> **Cronologia P1.10 (superata):** Pomodoro `0.15.0+17` per dispositivo/account, timer UTC e stats locali. [Specifica](P1-POMODORO.md); CI e test reali da completare.
 
 > **P1.9 integrata su main con PR #10 (26/10/2026):** [Guida operativa aggiornata](OPERATIONS.md), [Kanban per liste](P1-KANBAN.md) già su main. Flutter 0.14.0+16, CI PR verde; nessun nuovo schema/deploy. Device E2E ancora aperti.
 
@@ -287,4 +287,4 @@ P1.15 PR #16 merged, Flutter/Markdown CI verde, principale 0.20. P1.16 Responsiv
 
 ## Handoff P1.17 (29/10/2026)
 
-P1.16 PR #17 merged con CI verde. P1.17 tray Windows candidata nel branch `feature/p1-17-windows-tray`, Flutter 0.22: icona/Apri/Esci, hide-on-close, fallback fail-open e isolamento engine Sticky; test Windows reali e CI/merge aperti. Flyway repo V10, VPS ultima attestazione V8; nessun deploy/reset. [Specifica](P1-WINDOWS-TRAY.md).
+P1.16 PR #17 integrata. **P1.17 PR #18 merged su main** (commit `66927c7`, Flutter `0.22.0+24`), con Flutter CI #40797207231 e Markdown #40797207130 tutte verdi: tray Windows, hide/restore/Esci, fallback e isolamento Sticky. Prove ZIP/MSIX e dispositivi reali da eseguire nel batch finale; Flyway repo V10 vs ultima VPS V8 attestata. Nessun deploy, reset, alterazione dati o installazione. [Specifica](P1-WINDOWS-TRAY.md).

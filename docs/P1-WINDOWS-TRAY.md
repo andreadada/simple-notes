@@ -1,6 +1,6 @@
 # P1.17 — Windows System Tray
 
-**Stato 29/10/2026:** candidata nel branch `feature/p1-17-windows-tray`, Flutter `0.22.0+24`, Windows MSIX di sviluppo `0.22.0.0`. La P1.16 Responsive [PR #17](https://github.com/andreadada/simple-notes/pull/17) è integrata su `main` (Flutter `0.21.0+23`) con [CI Flutter verde](https://github.com/andreadada/simple-notes/actions/runs/40761227373) e [Markdown verde](https://github.com/andreadada/simple-notes/actions/runs/40761227307). CI/merge e test Windows reali P1.17 ancora da verificare. Nessun deploy/reset.
+**Stato 29/10/2026:** P1.17 **integrata su `main`** con [PR #18](https://github.com/andreadada/simple-notes/pull/18) (merge `66927c7`), Flutter `0.22.0+24` e MSIX sviluppo `0.22.0.0`. [Flutter CI verde](https://github.com/andreadada/simple-notes/actions/runs/40797207231) per analyze/test, Windows EXE/MSIX e Android JDK17/JDK21; [Markdown verde](https://github.com/andreadada/simple-notes/actions/runs/40797207130). Test reali Windows/Android, deploy e rilascio ancora aperti. Nessun reset.
 
 ## Comportamento e implementazione
 
@@ -22,7 +22,7 @@
 
 ## Gate di rilascio
 
-1. [ ] CI sull'ultimo SHA: Flutter analyze/test, Windows EXE/MSIX, Android JDK17+21, link Markdown verdi.
+1. [x] CI verificata sullo SHA della PR #18: Flutter analyze/test, Windows EXE/MSIX, Android JDK17+21 e Markdown tutti verdi; merge su `main` confermato.
 2. [ ] Test funzionale Windows ZIP/MSIX in ambiente di prova, incluse le azioni del menu, chiusura app e persistenza sessione quando nascosta.
 3. [ ] Verifica assenza di seconda tray nelle Sticky Windows e regressione Android.
 4. [ ] Convalida server-first e batch Windows↔Android con dati reali senza reinstallazioni/reset.

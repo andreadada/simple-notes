@@ -1,8 +1,8 @@
-# Rollout coordinato — Simple Notes backend V10 e client P1.16 (P1.17 candidata)
+# Rollout coordinato — Simple Notes backend V10 e client P1.17
 
-> **Stato operativo 29/10/2026:** P1.16 Responsive su `main` ([PR #17](https://github.com/andreadada/simple-notes/pull/17), Flutter `0.21.0+23`, CI verde). P1.17 Windows Tray **solo sul branch** `feature/p1-17-windows-tray` (`0.22.0+24`, CI/merge/device da verificare). Repo Flyway V10, VPS attestata fino a V8; nessun deploy/reset. [Stato](CURRENT-STATUS.md) · [Tray](P1-WINDOWS-TRAY.md).
+> **Stato operativo 29/10/2026:** P1.17 Windows Tray integrata in `main` ([PR #18](https://github.com/andreadada/simple-notes/pull/18), Flutter `0.22.0+24`, CI Flutter/Markdown verde); prove fisiche Windows/Android e rilascio cumulativo non ancora attestati. Backend repo Flyway V10, VPS ultima attestazione V8; nessun deploy/reset. [Stato](CURRENT-STATUS.md) · [Tray](P1-WINDOWS-TRAY.md).
 
-**Stato:** runbook per backend P1.6 Flyway V10 e client P1.16 `0.21.0+23` (P1.17 candidata `0.22.0+24`) (**P1.1–P1.15 integrate in main, fino alla PR #16, CI verde**); nessun deploy né nuova installazione sui dispositivi è stato attestato da questa attività. L'utente ha scelto di effettuare personalmente il deploy Coolify **dopo** il gruppo di incrementi. I comandi sono istruzioni di sola lettura salvo il pulsante **Redeploy** esplicitamente indicato.
+**Stato:** runbook per backend Flyway V10 e client P1.17 `0.22.0+24` (**P1.1–P1.17 integrate in `main`, PR #18, CI Flutter/Markdown verdi**). Non è attestato un deploy Coolify, un'installazione o un collaudo cumulativo; l'utente intende effettuare personalmente il deploy dopo gli incrementi. I comandi sono read-only salvo la procedura Redeploy espressamente distinta.
 
 ## Prima di agire
 

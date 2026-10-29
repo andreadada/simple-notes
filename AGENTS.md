@@ -1,6 +1,6 @@
 # AGENTS.md — Istruzioni operative per agenti AI
 
-> **Stato operativo 29/10/2026:** P1.16 Responsive su `main` ([PR #17](https://github.com/andreadada/simple-notes/pull/17), Flutter `0.21.0+23`, CI verde). P1.17 Windows Tray **solo sul branch** `feature/p1-17-windows-tray` (`0.22.0+24`, CI/merge/device da verificare). Repo Flyway V10, VPS attestata fino a V8; nessun deploy/reset. [Stato](docs/CURRENT-STATUS.md) · [Tray](docs/P1-WINDOWS-TRAY.md).
+> **Stato operativo 29/10/2026:** P1.17 Windows Tray integrata in `main` ([PR #18](https://github.com/andreadada/simple-notes/pull/18), Flutter `0.22.0+24`, CI Flutter/Markdown verde); prove fisiche Windows/Android e rilascio cumulativo non ancora attestati. Backend repo Flyway V10, VPS ultima attestazione V8; nessun deploy/reset. [Stato](docs/CURRENT-STATUS.md) · [Tray](docs/P1-WINDOWS-TRAY.md).
 
 <!-- CURRENT-STATUS-REF -->
 
@@ -65,6 +65,6 @@ Solo Ctrl+combinazioni esplicite, solo nella finestra attiva Windows. Mai consum
 
 Derivare il numero di colonne **dalla larghezza utile del contenuto**, non dalla piattaforma; mantenere dimensione verticale intrinseca delle note, titolo/corpo inline, comandi Sticky e LocalStore/outbox. Un resize non deve produrre writes, cambiare ID o cancellare i dati. Unit + widget test 320–1600px e nessun overflow. [Specifica](docs/P1-RESPONSIVE.md).
 
-## P1.17 — Tray Windows
+## P1.17 — Tray Windows (PR #18 su main, CI verde)
 
 Solo processo main/Windows: le Sticky separate **non** inizializzano la tray né un DB. La X nasconde soltanto quando la tray è stata registrata; fallimento plugin = close normale. Esci dal menu disabilita prevent-close, libera la tray e chiude normalmente. Nessun autostart, nuovo server, reset dati o toast native Windows ZIP. [Specifica](docs/P1-WINDOWS-TRAY.md).

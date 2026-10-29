@@ -6,6 +6,8 @@ import 'package:flutter/services.dart';
 import 'package:forui/forui.dart';
 import 'ui/notes_theme.dart';
 import 'ui/desktop_shortcuts.dart';
+import 'ui/windows_tray.dart'
+    if (dart.library.html) 'ui/windows_tray_stub.dart';
 import 'ui/responsive_layout.dart';
 import 'ui/inline_editable_title.dart';
 import 'ui/inline_editable_body.dart';
@@ -39,6 +41,9 @@ Future<void> main(List<String> args) async {
   WidgetsFlutterBinding.ensureInitialized();
   // Detached engines MUST NOT initialize SQLite, OAuth or sync.
   if (await StickyDesktop.launchSubwindowIfNeeded()) return;
+  // Detached sticky engines return above and never initialize the tray.
+  // Native plugin failure leaves the standard close behavior in place.
+  await WindowsTray.initialize();
   final preferences = await SharedPreferences.getInstance();
   final database = AppDatabase();
   await database.migrateLegacy(preferences);
@@ -659,6 +664,20 @@ Ctrl+/ · Questo elenco'''),
                           tooltip: 'Scorciatoie (Ctrl+/)',
                           onPressed: _showDesktopShortcuts,
                         ),
+                        if (WindowsTray.available)
+                          IconButton(
+                            key: const Key('windows-hide-to-tray'),
+                            tooltip: 'Nascondi nell’area di notifica',
+                            icon: const Icon(Icons.arrow_downward, size: 19),
+                            onPressed: () async {
+                              final hidden = await WindowsTray.hide();
+                              if (!hidden && context.mounted) {
+                                ScaffoldMessenger.maybeOf(context)?.showSnackBar(
+                                  const SnackBar(content: Text(
+                                    'Impossibile nascondere Simple Notes.')));
+                              }
+                            },
+                          ),
                       ],
                     ])
                   : InlineEditableTitle(

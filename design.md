@@ -1,6 +1,6 @@
 # Simple Notes — Design & Product Specification
 
-> **Stato operativo 28/10/2026:** P1.15 Keyboard Shortcuts integrata in `main` ([PR #16](https://github.com/andreadada/simple-notes/pull/16), Flutter `0.20.0+22`, CI verde); P1.16 responsive **solo sul branch** `feature/p1-16-responsive-layout` (`0.21.0+23`, CI/merge/device da attestare). Backend repository Flyway V10, VPS Coolify ultima attestazione V8; nessun deploy/reset. [Stato](docs/CURRENT-STATUS.md) · [P1.16](docs/P1-RESPONSIVE.md).
+> **Stato operativo 29/10/2026:** P1.16 Responsive su `main` ([PR #17](https://github.com/andreadada/simple-notes/pull/17), Flutter `0.21.0+23`, CI verde). P1.17 Windows Tray **solo sul branch** `feature/p1-17-windows-tray` (`0.22.0+24`, CI/merge/device da verificare). Repo Flyway V10, VPS attestata fino a V8; nessun deploy/reset. [Stato](docs/CURRENT-STATUS.md) · [Tray](docs/P1-WINDOWS-TRAY.md).
 
 <!-- CURRENT-STATUS-REF -->
 
@@ -205,3 +205,7 @@ Ctrl+1..5 cambia schermata, Ctrl+Shift+T dà focus al nuovo task, Ctrl+Shift+N c
 ## P1.16 — Note a larghezza adattiva
 
 Vista Note: una colonna stretta, due medie, tre molto larghe, con spazi regolari da 12 logical px, card ad altezza intrinseca per testi lunghi. Titolo e contenuto restano **direttamente editabili**, senza modale di rinomina; pop-out Sticky solo Windows e pulsanti di archivio invariati. Il breakpoint usa lo spazio effettivo dopo sidebar/padding. [Specifiche](docs/P1-RESPONSIVE.md).
+
+## P1.17 — Tray Windows
+
+Piccolo pulsante nell'header Windows per nascondere. Se la tray è attiva la X nasconde; click sull'icona o menu Apri mostrano la stessa finestra; menu **Esci** la chiude. Nessuna nuova modale o rinomina; UI Forui/edit inline invariati. [Specifica](docs/P1-WINDOWS-TRAY.md).

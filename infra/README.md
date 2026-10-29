@@ -1,7 +1,7 @@
 # Backend — Coolify
 
 <!-- CURRENT-STATUS-REF -->
-> **Stato operativo 28/10/2026:** P1.15 keyboard `0.20.0+22` integrata su `main` (PR #16, CI verde). P1.16 Responsive `0.21.0+23` **solo in branch**, CI/merge/device da attestare. Backend repo Flyway V10, ultima VPS attestata V8; nessun deploy/reset. [Stato](../docs/CURRENT-STATUS.md) · [Operazioni](../docs/OPERATIONS.md) · [P1.16](../docs/P1-RESPONSIVE.md).
+> **Stato operativo 29/10/2026:** P1.16 Responsive integrata su `main` ([PR #17](https://github.com/andreadada/simple-notes/pull/17), Flutter `0.21.0+23`, CI verde). P1.17 Windows Tray candidata su `feature/p1-17-windows-tray`, Flutter `0.22.0+24`, CI/merge/device aperti. Repo Flyway V10, ultima VPS attestata V8, nessun deploy/reset. [Stato](../docs/CURRENT-STATUS.md) · [Operazioni](../docs/OPERATIONS.md) · [Tray](../docs/P1-WINDOWS-TRAY.md).
 
 
 ## Cronologia — rilascio 0.7.0+9 (superato da P1.6)
@@ -154,3 +154,7 @@ Le scorciatoie sono solo UI Flutter Windows, senza servizi, migrazioni, chiavi G
 ## P1.16 — Nessun cambio infrastrutturale
 
 Adaptive notes è solo disposizione Flutter senza backend, compose/env, nuove migration, credenziali, storage o volumi. Resta necessario confermare Flyway V10 sulla VPS prima di distribuire il client cumulativo (ultima attestazione V8). Niente deploy/reset per questa fase. [P1.16](../docs/P1-RESPONSIVE.md).
+
+## P1.17 — Nessuna modifica Coolify
+
+Tray è solo client Windows: nessuna nuova risorsa server, volume, Compose env, key, API o migration. Per il rollout cumulativo controllare comunque Flyway V10 reale (ultima attestazione V8). Nessun deploy/reset per questa fase. [Specifica](../docs/P1-WINDOWS-TRAY.md).

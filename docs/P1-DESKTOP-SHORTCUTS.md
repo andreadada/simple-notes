@@ -1,6 +1,6 @@
 # P1.15 — Scorciatoie tastiera Windows
 
-> **Stato operativo 28/10/2026:** P1.15 Keyboard Shortcuts integrata in `main` ([PR #16](https://github.com/andreadada/simple-notes/pull/16), Flutter `0.20.0+22`, CI verde); P1.16 responsive **solo sul branch** `feature/p1-16-responsive-layout` (`0.21.0+23`, CI/merge/device da attestare). Backend repository Flyway V10, VPS Coolify ultima attestazione V8; nessun deploy/reset. [Stato](CURRENT-STATUS.md) · [P1.16](P1-RESPONSIVE.md).
+> **Stato operativo 29/10/2026:** P1.16 Responsive integrata su `main` ([PR #17](https://github.com/andreadada/simple-notes/pull/17), Flutter `0.21.0+23`, CI verde). P1.17 Windows Tray candidata su `feature/p1-17-windows-tray`, Flutter `0.22.0+24`, CI/merge/device aperti. Repo Flyway V10, ultima VPS attestata V8, nessun deploy/reset. [Stato](CURRENT-STATUS.md) · [Operazioni](OPERATIONS.md) · [Tray](P1-WINDOWS-TRAY.md).
 
 **Stato 26/10/2026:** **integrata in `main` con PR #16**, Flutter `0.20.0+22`, [CI Flutter verde](https://github.com/andreadada/simple-notes/actions/runs/40384676154) e [Markdown verde](https://github.com/andreadada/simple-notes/actions/runs/40384676062). P1.14 Sticky Notes [PR #15](https://github.com/andreadada/simple-notes/pull/15) è integrata su `main` (Flutter `0.19.0+21`, [Flutter CI verde](https://github.com/andreadada/simple-notes/actions/runs/40377359849) e [Markdown verde](https://github.com/andreadada/simple-notes/actions/runs/40377360259)). CI/merge P1.15 confermati; installazione e prove fisiche ancora da verificare.
 

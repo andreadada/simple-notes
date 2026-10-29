@@ -1,6 +1,6 @@
 # P1.7 Windows — MSIX e promemoria opt-in
 
-> **Stato operativo 28/10/2026:** P1.15 Shortcuts `0.20.0+22` integrata su `main` via [PR #16](https://github.com/andreadada/simple-notes/pull/16), CI verde. P1.16 Responsive `0.21.0+23` è **solo in branch** `feature/p1-16-responsive-layout`, CI/merge/device non confermati. Repo Flyway V10, VPS attestata fino a V8; nessun deploy/reset. [Stato](CURRENT-STATUS.md) · [Operazioni](OPERATIONS.md) · [P1.16](P1-RESPONSIVE.md).
+> **Stato operativo 29/10/2026:** P1.16 Responsive su `main` (PR #17, Flutter `0.21.0+23`, CI verde); P1.17 Windows Tray `0.22.0+24` **in branch** e CI/merge/device da verificare. Repo Flyway V10, VPS Coolify attestata V8, nessun deploy/reset. [Stato](CURRENT-STATUS.md) · [Operazioni](OPERATIONS.md) · [P1.17](P1-WINDOWS-TRAY.md).
 
 **Stato 26/10/2026:** **integrata in `main` con PR #7** (merge `34106c4`, Flutter `0.12.0+14`, [CI 40245561264 verde](https://github.com/andreadada/simple-notes/actions/runs/40245561264)); **non installata o verificata su PC reale**, non rilasciata. Backend Flyway V10 e Drift V8 invariati. La release corrente del codice su `main` è ora Flutter `0.13.0+15` (PR #8); non installare nuovi client fino a verifica dell'API Coolify e compatibilità dell'upgrade MSIX.
 
@@ -44,3 +44,7 @@ Il comando MSIX è **packaging, non installazione**. I valori `publisher`, `iden
 ## P1.16 — Gate visuale e dati per ZIP→MSIX
 
 Verificare note a 1/2/3 colonne, editor inline e sticky pop-out con resize, oltre alla continuità SQLite/outbox, secure storage, SharedPreferences e identità MSIX. La P1.16 modifica soltanto layout Flutter; non autorizza reinstallazioni o reset. [Specifiche](P1-RESPONSIVE.md).
+
+## P1.17 — Nuova icona tray su ZIP/MSIX
+
+Verificare X→tray, click/menu→riapri, Esci→processo terminato e nessuna icona orfana con ZIP completo/MSIX di test. Preservare identità/publisher, SQLite/outbox, secure storage e SharedPreferences; il ZIP non ottiene toast MSIX grazie alla sola icona. [Specifica](P1-WINDOWS-TRAY.md).

@@ -1,8 +1,8 @@
 # Guida operativa — Simple Notes
 
-> **Stato operativo 28/10/2026:** P1.15 Keyboard Shortcuts integrata in `main` ([PR #16](https://github.com/andreadada/simple-notes/pull/16), Flutter `0.20.0+22`, CI verde); P1.16 responsive **solo sul branch** `feature/p1-16-responsive-layout` (`0.21.0+23`, CI/merge/device da attestare). Backend repository Flyway V10, VPS Coolify ultima attestazione V8; nessun deploy/reset. [Stato](CURRENT-STATUS.md) · [P1.16](P1-RESPONSIVE.md).
+> **Stato operativo 29/10/2026:** P1.16 Responsive su `main` ([PR #17](https://github.com/andreadada/simple-notes/pull/17), Flutter `0.21.0+23`, CI verde). P1.17 Windows Tray **solo sul branch** `feature/p1-17-windows-tray` (`0.22.0+24`, CI/merge/device da verificare). Repo Flyway V10, VPS attestata fino a V8; nessun deploy/reset. [Stato](CURRENT-STATUS.md) · [Tray](P1-WINDOWS-TRAY.md).
 
-**Fonte operativa** per il checkout locale Windows, CI, Coolify, Android e Windows ZIP/MSIX. **Ultimo stato verificabile (28/10/2026):** Flutter 0.20.0+22 P1.15 su `main`, CI verde; backend repository Flyway V10/Drift V8; **ultima VPS confermata Flyway V8**. P1.16 Responsive è candidata nel branch `feature/p1-16-responsive-layout` (Flutter 0.21.0+23); una PR e una build non sono un deploy. Leggere sempre [CURRENT-STATUS.md](CURRENT-STATUS.md) per lo stato successivo.
+**Fonte operativa** per il checkout locale Windows, CI, Coolify, Android e Windows ZIP/MSIX. **Ultimo stato verificabile (28/10/2026):** Flutter 0.21.0+23 P1.16 su `main`, CI verde; backend repository Flyway V10/Drift V8; **ultima VPS confermata Flyway V8**. P1.17 Windows Tray è candidata nel branch `feature/p1-17-windows-tray` (Flutter 0.22.0+24); una PR e una build non sono un deploy. Leggere sempre [CURRENT-STATUS.md](CURRENT-STATUS.md) per lo stato successivo.
 
 ## 0. Regola fondamentale
 
@@ -137,3 +137,7 @@ Su Windows testare `Ctrl+1..5`, `Ctrl+Shift+T` (focus nuovo task senza inserimen
 ## P1.16 — Collaudo viewport non distruttivo
 
 Su PC Windows: creare tre note con titoli e corpi diversi, verificare passaggio da una a due e tre colonne al ridimensionamento senza taglio o cambio ID, continuando a modificare inline, aprendo una sticky e verificando la sync normale delle note. Android: larghezze 320 e 390 px, landscape, tastiera aperta e task input/due. La griglia non salva niente al resize. Nessun reset, deploy o cambi di schema: [P1.16](P1-RESPONSIVE.md).
+
+## P1.17 — Verifica tray Windows non distruttiva
+
+Nel ZIP completo con EXE/DLL: X→tray senza uscire, click/menu Apri→stessa finestra, menu Esci→terminazione completa senza icona orfana. Provare insieme a una Sticky senza seconda tray; se il plugin non si avvia, X deve funzionare normalmente. In MSIX usare profilo di prova e preservare SQLite, outbox, secure storage, SharedPreferences, firma/identity. Nessun deploy/reset. [Specifica](P1-WINDOWS-TRAY.md).

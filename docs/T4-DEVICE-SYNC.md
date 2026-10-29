@@ -1,7 +1,7 @@
 ## Cronologia — rilascio 0.7.0+9 (superato da P1.6)
 
 <!-- CURRENT-STATUS-REF -->
-> **Snapshot storico 28/10/2026:** P1.15 Shortcuts `0.20.0+22` integrata su `main` via [PR #16](https://github.com/andreadada/simple-notes/pull/16), CI verde. P1.16 Responsive `0.21.0+23` è **solo in branch** `feature/p1-16-responsive-layout`, CI/merge/device non confermati. Repo Flyway V10, VPS attestata fino a V8; nessun deploy/reset. [Stato](CURRENT-STATUS.md) · [Operazioni](OPERATIONS.md) · [P1.16](P1-RESPONSIVE.md).
+> **Snapshot storico 29/10/2026:** P1.16 Responsive su `main` (PR #17, Flutter `0.21.0+23`, CI verde); P1.17 Windows Tray `0.22.0+24` **in branch** e CI/merge/device da verificare. Repo Flyway V10, VPS Coolify attestata V8, nessun deploy/reset. [Stato](CURRENT-STATUS.md) · [Operazioni](OPERATIONS.md) · [P1.17](P1-WINDOWS-TRAY.md).
 
 
 **Codice integrato su `main`**: PR #1 P1.2 (time blocking + Flyway V8 + Drift V6) e PR #2 P1.3 (drag/resize e timeline) unite con successo. La CI dei branch è verde; le build automatiche successive al merge sono da controllare separatamente. **Coolify e PostgreSQL reali NON sono stati aggiornati/verificati da questa chat; non dichiarare Flyway V8 già applicata, né l'app installata su Windows/Android.** Per il rollout serve verificare backend `timeBlockSchema:1` e Flyway V8 prima di aggiornare i client. Non eseguire reset degli archivi: l'utente ha già concluso il reset dei soli dati di test. **Runbook attuale:** [P1-RELEASE-0.7.0.md](P1-RELEASE-0.7.0.md).

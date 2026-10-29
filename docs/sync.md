@@ -1,7 +1,7 @@
 # Delta Sync v1 — protocollo e storia degli incrementi
 
 <!-- CURRENT-STATUS-REF -->
-> **Stato operativo 28/10/2026:** P1.15 keyboard `0.20.0+22` integrata su `main` (PR #16, CI verde). P1.16 Responsive `0.21.0+23` **solo in branch**, CI/merge/device da attestare. Backend repo Flyway V10, ultima VPS attestata V8; nessun deploy/reset. [Stato](CURRENT-STATUS.md) · [Operazioni](OPERATIONS.md) · [P1.16](P1-RESPONSIVE.md).
+> **Stato operativo 29/10/2026:** P1.16 Responsive integrata su `main` ([PR #17](https://github.com/andreadada/simple-notes/pull/17), Flutter `0.21.0+23`, CI verde). P1.17 Windows Tray candidata su `feature/p1-17-windows-tray`, Flutter `0.22.0+24`, CI/merge/device aperti. Repo Flyway V10, ultima VPS attestata V8, nessun deploy/reset. [Stato](CURRENT-STATUS.md) · [Operazioni](OPERATIONS.md) · [Tray](P1-WINDOWS-TRAY.md).
 
 
 ## Ultima versione di un elemento / risoluzione conflitto (P0)
@@ -69,3 +69,7 @@ I comandi app-local selezionano viste già presenti o invocano i metodi normali 
 ## P1.16 — Layout senza API o sync nuove
 
 La griglia responsive è una proiezione della lista `LocalNote` esistente e non crea nuovi DTO, endpoint, cursor, outbox, richieste o migrazioni. La modifica di titolo/corpo usa il LocalStore già sincronizzato; cambiare larghezza schermo non invia mutazioni. [Specifica](P1-RESPONSIVE.md).
+
+## P1.17 — Tray Windows senza server né sync nuove
+
+Hide/restore/quit della finestra non crea entità, endpoint, migrazione, cursor, outbox o credenziali. Il LocalStore/sync già esistente rimane attivo mentre il processo main è nascosto. Il comando Esci chiude il processo; nessun secondo DB nell'engine Sticky. [P1.17](P1-WINDOWS-TRAY.md).

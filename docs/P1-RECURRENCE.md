@@ -1,6 +1,6 @@
 # P1.6 — Ricorrenze versionate
 
-> **Snapshot aggiornato 28/10/2026:** P1.15 Keyboard Shortcuts integrata su `main` ([PR #16](https://github.com/andreadada/simple-notes/pull/16), Flutter `0.20.0+22`, CI verde). P1.16 Responsive note è **solo in branch** `feature/p1-16-responsive-layout` (Flutter `0.21.0+23`), CI/merge/hardware da verificare. Backend repository Flyway V10; ultima VPS Coolify attestata V8. Nessun deploy/reset. Le versioni e i gate precedenti sotto sono **storici**, per le operazioni correnti leggere [Stato](CURRENT-STATUS.md), [Guida](OPERATIONS.md), [P1.16](P1-RESPONSIVE.md).
+> **Snapshot storico 29/10/2026:** P1.16 Responsive su `main` (PR #17, Flutter `0.21.0+23`, CI verde); P1.17 Windows Tray `0.22.0+24` **in branch** e CI/merge/device da verificare. Repo Flyway V10, VPS Coolify attestata V8, nessun deploy/reset. [Stato](CURRENT-STATUS.md) · [Operazioni](OPERATIONS.md) · [P1.17](P1-WINDOWS-TRAY.md).
 
 **Stato codice:** integrata su `main` con PR #5 (CI complete verdi), Flutter `0.10.0+12`. **Il deploy non è stato verificato.** Backend Flyway **V10** additiva, Drift **V8** additiva.
 

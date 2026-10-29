@@ -1,6 +1,6 @@
 # P1.13 — Obiettivi settimanali Habit Tracker
 
-> **Stato operativo 28/10/2026:** P1.15 Shortcuts `0.20.0+22` integrata su `main` via [PR #16](https://github.com/andreadada/simple-notes/pull/16), CI verde. P1.16 Responsive `0.21.0+23` è **solo in branch** `feature/p1-16-responsive-layout`, CI/merge/device non confermati. Repo Flyway V10, VPS attestata fino a V8; nessun deploy/reset. [Stato](CURRENT-STATUS.md) · [Operazioni](OPERATIONS.md) · [P1.16](P1-RESPONSIVE.md).
+> **Stato operativo 29/10/2026:** P1.16 Responsive su `main` (PR #17, Flutter `0.21.0+23`, CI verde); P1.17 Windows Tray `0.22.0+24` **in branch** e CI/merge/device da verificare. Repo Flyway V10, VPS Coolify attestata V8, nessun deploy/reset. [Stato](CURRENT-STATUS.md) · [Operazioni](OPERATIONS.md) · [P1.17](P1-WINDOWS-TRAY.md).
 
 **Stato 26/10/2026:** **integrata su `main` con PR #14**, Flutter `0.18.0+20`, [CI Flutter](https://github.com/andreadada/simple-notes/actions/runs/40371894259) e [Markdown](https://github.com/andreadada/simple-notes/actions/runs/40371894390) verdi; hardware/installazione non attestati. P1.12 Countdown [PR #13](https://github.com/andreadada/simple-notes/pull/13) è integrata su `main` (`0.17.0+19`) con [Flutter CI verde](https://github.com/andreadada/simple-notes/actions/runs/40368229874) e [docs verdi](https://github.com/andreadada/simple-notes/actions/runs/40368230012).
 

@@ -1,6 +1,6 @@
 # P1.14 — Sticky Notes in finestre Windows
 
-> **Stato operativo 28/10/2026:** P1.15 Shortcuts `0.20.0+22` integrata su `main` via [PR #16](https://github.com/andreadada/simple-notes/pull/16), CI verde. P1.16 Responsive `0.21.0+23` è **solo in branch** `feature/p1-16-responsive-layout`, CI/merge/device non confermati. Repo Flyway V10, VPS attestata fino a V8; nessun deploy/reset. [Stato](CURRENT-STATUS.md) · [Operazioni](OPERATIONS.md) · [P1.16](P1-RESPONSIVE.md).
+> **Stato operativo 29/10/2026:** P1.16 Responsive su `main` (PR #17, Flutter `0.21.0+23`, CI verde); P1.17 Windows Tray `0.22.0+24` **in branch** e CI/merge/device da verificare. Repo Flyway V10, VPS Coolify attestata V8, nessun deploy/reset. [Stato](CURRENT-STATUS.md) · [Operazioni](OPERATIONS.md) · [P1.17](P1-WINDOWS-TRAY.md).
 
 **Stato 26/10/2026:** **integrata in `main` con PR #15**, Flutter `0.19.0+21`, [CI Flutter verde](https://github.com/andreadada/simple-notes/actions/runs/40377359849) e [Markdown verde](https://github.com/andreadada/simple-notes/actions/runs/40377360259). Il collaudo Windows reale resta da fare. P1.13 Weekly Habits ([PR #14](https://github.com/andreadada/simple-notes/pull/14)) integrata su `main`, Flutter `0.18.0+20`, [CI Flutter](https://github.com/andreadada/simple-notes/actions/runs/40371894259) e [Markdown](https://github.com/andreadada/simple-notes/actions/runs/40371894390) verdi. Nessun deploy/reset.
 
@@ -33,3 +33,7 @@
 ## P1.16 — Resize della vista note
 
 Le card Note di Windows nella [P1.16 Responsive](P1-RESPONSIVE.md) usano larghezza utile e Wrap 1/2/3 colonne; il pop-out Sticky P1.14, già integrato, rimane un'azione separata e continua a passare dal LocalStore principale, senza un nuovo DB o sync. Prova reale finestre e firme MSIX ancora aperta.
+
+## P1.17 — Tray solo main engine
+
+Il bootstrap Sticky termina prima di inizializzare la tray, quindi ogni finestra separata non crea icone secondarie. Su Windows reale verificare comportamento di Esci con Sticky già aperte, sync note e nessun database duplicato. [P1.17](P1-WINDOWS-TRAY.md).

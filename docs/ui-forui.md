@@ -1,7 +1,7 @@
 # Simple Notes — UI e design system Forui
 
 <!-- CURRENT-STATUS-REF -->
-> **Stato operativo 28/10/2026:** P1.15 keyboard `0.20.0+22` integrata su `main` (PR #16, CI verde). P1.16 Responsive `0.21.0+23` **solo in branch**, CI/merge/device da attestare. Backend repo Flyway V10, ultima VPS attestata V8; nessun deploy/reset. [Stato](CURRENT-STATUS.md) · [Operazioni](OPERATIONS.md) · [P1.16](P1-RESPONSIVE.md).
+> **Stato operativo 29/10/2026:** P1.16 Responsive integrata su `main` ([PR #17](https://github.com/andreadada/simple-notes/pull/17), Flutter `0.21.0+23`, CI verde). P1.17 Windows Tray candidata su `feature/p1-17-windows-tray`, Flutter `0.22.0+24`, CI/merge/device aperti. Repo Flyway V10, ultima VPS attestata V8, nessun deploy/reset. [Stato](CURRENT-STATUS.md) · [Operazioni](OPERATIONS.md) · [Tray](P1-WINDOWS-TRAY.md).
 
 
 > **Stato reale 24/10/2026:** PostgreSQL `simplenotes` 17.11, Flyway V1–V7 riuscite, backup `simple-notes-20261024T132857Z-271921.dump` con SHA256 valido e restore isolato PASS. Copia offsite non effettuata per scelta dell'utente. Restano da verificare l'API autenticata (`taskDueSchema:1`) e il collaudo T4.2 Windows↔Android con Flutter `0.4.0+4`. Non ripetere backup, migrazioni o deploy automaticamente. [T4.2](T4-DEVICE-SYNC.md).
@@ -155,3 +155,7 @@ Icona tastiera nell'header Windows e dialogo Forui tramite Ctrl+/. Ctrl+1..5 cam
 ## P1.16 — Verifica responsive (candidate)
 
 Card Forui Note in `Wrap` a 1/2/3 colonne con larghezza utile reale, `InlineEditableTitle` e `InlineEditableBody` integri, niente clipping verticale. Check desktop 1110/1600 e mobile 320/390 logical px, tastiera, testo lungo, sticky pop-out e resize continuo. La CI widget non sostituisce collaudo grafico fisico. [Specifica](P1-RESPONSIVE.md).
+
+## P1.17 — Tray e finestra principale Windows
+
+L'header Windows contiene un piccolo comando Nascondi quando la tray è pronta; X nasconde, click sulla tray riapre e menu Apri/Esci permette ripristino o uscita esplicita. Niente nuova modale, editing inline invariato. Da verificare focus, più finestre Sticky, icone orfane, X in caso di plugin non disponibile. [P1.17](P1-WINDOWS-TRAY.md).

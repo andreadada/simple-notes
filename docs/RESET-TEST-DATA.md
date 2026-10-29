@@ -1,7 +1,7 @@
 # Reset coordinato dei soli dati di test — Simple Notes
 
 <!-- CURRENT-STATUS-REF -->
-> **Snapshot storico 29/10/2026:** P1.16 Responsive su `main` (PR #17, Flutter `0.21.0+23`, CI verde); P1.17 Windows Tray `0.22.0+24` **in branch** e CI/merge/device da verificare. Repo Flyway V10, VPS Coolify attestata V8, nessun deploy/reset. [Stato](CURRENT-STATUS.md) · [Operazioni](OPERATIONS.md) · [P1.17](P1-WINDOWS-TRAY.md).
+> **Snapshot storico 29/10/2026:** P1.17 Windows Tray integrata in `main` ([PR #18](https://github.com/andreadada/simple-notes/pull/18), Flutter `0.22.0+24`, CI Flutter/Markdown verde); prove fisiche Windows/Android e rilascio cumulativo non attestati. Backend repo Flyway V10, VPS ultima attestazione V8; nessun deploy/reset. Le sezioni originali sottostanti restano storiche; vedere lo stato canonico. [Stato](CURRENT-STATUS.md) · [Tray](P1-WINDOWS-TRAY.md).
 
 
 **ESEGUITO E VERIFICATO DALL'UTENTE il 25 ottobre 2026. Non ripetere questa procedura per continuare lo sviluppo.** È un'operazione distruttiva, autorizzata dall'utente **solo per i dati di test** (24/10/2026). Non riutilizzare questi comandi quando ci saranno dati reali. Il reset comprende task, liste, note visibili ed eliminate, operazioni e storico sync su PostgreSQL e SQLite su entrambi i dispositivi. **Preserva** l'account Google `app_user`, le sessioni backend, lo schema e le migrazioni Flyway e gli altri database della VPS.

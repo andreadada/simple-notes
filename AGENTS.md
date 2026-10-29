@@ -1,6 +1,6 @@
 # AGENTS.md — Istruzioni operative per agenti AI
 
-> **Stato operativo (26/10/2026):** P1.14 Sticky Windows integrata su `main` ([PR #15](https://github.com/andreadada/simple-notes/pull/15), Flutter `0.19.0+21`, CI verde). P1.15 scorciatoie Windows **solo su branch** `feature/p1-15-desktop-shortcuts` (`0.20.0+22`); CI finale, merge, device da verificare. Backend GitHub Flyway V10, VPS ultima attestazione V8; nessun deploy/reset. [Stato](docs/CURRENT-STATUS.md) · [P1.15](docs/P1-DESKTOP-SHORTCUTS.md).
+> **Stato operativo 28/10/2026:** P1.15 Keyboard Shortcuts integrata in `main` ([PR #16](https://github.com/andreadada/simple-notes/pull/16), Flutter `0.20.0+22`, CI verde); P1.16 responsive **solo sul branch** `feature/p1-16-responsive-layout` (`0.21.0+23`, CI/merge/device da attestare). Backend repository Flyway V10, VPS Coolify ultima attestazione V8; nessun deploy/reset. [Stato](docs/CURRENT-STATUS.md) · [P1.16](docs/P1-RESPONSIVE.md).
 
 <!-- CURRENT-STATUS-REF -->
 
@@ -60,3 +60,7 @@ Le finestre detached NON aprono SQLite/Drift, OAuth o AutoSync. Usare il bridge 
 ## P1.15 — Shortcuts Windows
 
 Solo Ctrl+combinazioni esplicite, solo nella finestra attiva Windows. Mai consumare Ctrl+C/V/Z/A o digitazioni ordinarie; nessuna hotkey globale. `Ctrl+Shift+T` mette a fuoco l'input senza scrivere in DB; `Ctrl+Shift+N` usa LocalStore/outbox già esistente. La guida è un dialogo Forui. [Specifiche](docs/P1-DESKTOP-SHORTCUTS.md).
+
+## P1.16 — Layout responsive
+
+Derivare il numero di colonne **dalla larghezza utile del contenuto**, non dalla piattaforma; mantenere dimensione verticale intrinseca delle note, titolo/corpo inline, comandi Sticky e LocalStore/outbox. Un resize non deve produrre writes, cambiare ID o cancellare i dati. Unit + widget test 320–1600px e nessun overflow. [Specifica](docs/P1-RESPONSIVE.md).

@@ -1,7 +1,7 @@
 # P1.2 — Time blocking sincronizzato (prima implementazione)
 
 <!-- CURRENT-STATUS-REF -->
-> **Snapshot storico — 26/10/2026:** P1.14 Sticky Windows su `main`, [PR #15](https://github.com/andreadada/simple-notes/pull/15), Flutter `0.19.0+21`, CI verde. P1.15 Shortcuts Windows in branch `feature/p1-15-desktop-shortcuts`, candidata `0.20.0+22`, CI/merge/device da verificare. Repo Flyway V10, ultima VPS reale attestata V8; nessun deploy/reset. La guida sotto conserva attestazioni storiche, non la procedura attuale. [Stato](CURRENT-STATUS.md) · [Operazioni](OPERATIONS.md) · [Scorciatoie](P1-DESKTOP-SHORTCUTS.md).
+> **Snapshot storico 28/10/2026:** P1.15 Shortcuts `0.20.0+22` integrata su `main` via [PR #16](https://github.com/andreadada/simple-notes/pull/16), CI verde. P1.16 Responsive `0.21.0+23` è **solo in branch** `feature/p1-16-responsive-layout`, CI/merge/device non confermati. Repo Flyway V10, VPS attestata fino a V8; nessun deploy/reset. [Stato](CURRENT-STATUS.md) · [Operazioni](OPERATIONS.md) · [P1.16](P1-RESPONSIVE.md).
 
 
 > **Aggiornamento dopo merge:** P1.2 e P1.3 sono ora su `main` in Flutter `0.7.0+9`; **non significa deploy Coolify**. Procedura di rilascio e gate: [P1-RELEASE-0.7.0.md](P1-RELEASE-0.7.0.md). Le etichette “in sviluppo” sotto sono cronologia del branch.

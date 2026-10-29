@@ -1,5 +1,5 @@
 <!-- CURRENT-STATUS-REF -->
-> **Stato operativo — 26/10/2026:** P1.14 Sticky Notes Windows integrata su `main` (PR #15, Flutter `0.19.0+21`, CI verde); P1.15 scorciatoie Windows è **in branch** `feature/p1-15-desktop-shortcuts` (`0.20.0+22`), CI/merge/hardware aperti. Repo Flyway V10, ultima VPS attestata V8, nessun deploy/reset. [Stato](CURRENT-STATUS.md) · [Operazioni](OPERATIONS.md) · [P1.15](P1-DESKTOP-SHORTCUTS.md).
+> **Stato operativo 28/10/2026:** P1.15 keyboard `0.20.0+22` integrata su `main` (PR #16, CI verde). P1.16 Responsive `0.21.0+23` **solo in branch**, CI/merge/device da attestare. Backend repo Flyway V10, ultima VPS attestata V8; nessun deploy/reset. [Stato](CURRENT-STATUS.md) · [Operazioni](OPERATIONS.md) · [P1.16](P1-RESPONSIVE.md).
 
 <!-- Vincolo UI aggiornato 24/10/2026: tutti i titoli di liste, task e subtasks usano la stessa logica inline-first. La sottolineatura non deve eccedere la larghezza del valore (o dell'hint) +~1px, nessun grigio di riempimento; placeholder semitrasparente (~72%). Utilizzare InlineTextMetrics.fieldWidth in notes_theme.dart, non minWidth artificiale o Expanded TextField full-width. Regole: ../design.md, ui-forui.md e ui-design-audit.md. -->
 # Organizzazione attività (P0) — liste, priorità, tag e sottotask
@@ -73,3 +73,7 @@ Countdown permette date civili e con ora senza creare un task, blocco orario, ri
 ## P1.13 — Obiettivi frequenza Habit
 
 Habit Tracker resta una funzionalità distinta da task ricorrenti, tag, liste e time blocks. L'obiettivo di 1–7 check-in ogni settimana modifica solo `LocalHabit.weeklyTarget` locale; non è una nuova scadenza, ricorrenza backend o assegnazione Kanban. [P1.13](P1-WEEKLY-HABITS.md).
+
+## P1.16 — Note adattive, task invariati
+
+La nuova disposizione note a 1/2/3 colonne non modifica task, liste, Kanban, tag o priorità. Sidebar e dettaglio task mantengono soglie precedenti centralizzate; nessuna scrittura alla variazione della larghezza. [P1.16](P1-RESPONSIVE.md).

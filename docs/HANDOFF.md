@@ -1,6 +1,6 @@
 # Simple Notes — Passaggio di consegne (handoff)
 
-> **Stato operativo (26/10/2026):** P1.14 Sticky Windows integrata su `main` ([PR #15](https://github.com/andreadada/simple-notes/pull/15), Flutter `0.19.0+21`, CI verde). P1.15 scorciatoie Windows **solo su branch** `feature/p1-15-desktop-shortcuts` (`0.20.0+22`); CI finale, merge, device da verificare. Backend GitHub Flyway V10, VPS ultima attestazione V8; nessun deploy/reset. [Stato](CURRENT-STATUS.md) · [P1.15](P1-DESKTOP-SHORTCUTS.md).
+> **Stato operativo 28/10/2026:** P1.15 Keyboard Shortcuts integrata in `main` ([PR #16](https://github.com/andreadada/simple-notes/pull/16), Flutter `0.20.0+22`, CI verde); P1.16 responsive **solo sul branch** `feature/p1-16-responsive-layout` (`0.21.0+23`, CI/merge/device da attestare). Backend repository Flyway V10, VPS Coolify ultima attestazione V8; nessun deploy/reset. [Stato](CURRENT-STATUS.md) · [P1.16](P1-RESPONSIVE.md).
 
 <!-- CURRENT-STATUS-REF -->
 
@@ -280,3 +280,7 @@ P1.13 PR #14 merged, Flutter 0.18, CI verde. Nuovo branch P1.14 Sticky Windows 0
 ## Handoff P1.15 (26/10/2026)
 
 P1.14 Sticky PR #15 merged in main con CI verde. P1.15 candidata `feature/p1-15-desktop-shortcuts`, Flutter 0.20.0+22: navigazione Ctrl+1..5, focus task Ctrl+Shift+T, nuova nota Ctrl+Shift+N e help Ctrl+/ Forui, test policy/widget. CI/merge/hardware aperti, server VPS ancora attestato V8 vs repo V10. Nessun deploy/reset. [Specifica](P1-DESKTOP-SHORTCUTS.md).
+
+## Handoff P1.16 (28/10/2026)
+
+P1.15 PR #16 merged, Flutter/Markdown CI verde, principale 0.20. P1.16 Responsive candidata nel branch `feature/p1-16-responsive-layout`, Flutter 0.21, griglia Wrap note 1–3 colonne secondo larghezza residua, card senza clipping e test responsive. Nessuna migration, installazione, deploy o reset. Ultima VPS Flyway V8 attestata, repo V10. [Specifica](P1-RESPONSIVE.md).

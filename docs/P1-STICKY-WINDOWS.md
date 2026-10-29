@@ -1,6 +1,6 @@
 # P1.14 — Sticky Notes in finestre Windows
 
-> **Stato operativo (26/10/2026):** P1.14 Sticky Windows integrata su `main` ([PR #15](https://github.com/andreadada/simple-notes/pull/15), Flutter `0.19.0+21`, CI verde). P1.15 scorciatoie Windows **solo su branch** `feature/p1-15-desktop-shortcuts` (`0.20.0+22`); CI finale, merge, device da verificare. Backend GitHub Flyway V10, VPS ultima attestazione V8; nessun deploy/reset. [Stato](CURRENT-STATUS.md) · [P1.15](P1-DESKTOP-SHORTCUTS.md).
+> **Stato operativo 28/10/2026:** P1.15 Shortcuts `0.20.0+22` integrata su `main` via [PR #16](https://github.com/andreadada/simple-notes/pull/16), CI verde. P1.16 Responsive `0.21.0+23` è **solo in branch** `feature/p1-16-responsive-layout`, CI/merge/device non confermati. Repo Flyway V10, VPS attestata fino a V8; nessun deploy/reset. [Stato](CURRENT-STATUS.md) · [Operazioni](OPERATIONS.md) · [P1.16](P1-RESPONSIVE.md).
 
 **Stato 26/10/2026:** **integrata in `main` con PR #15**, Flutter `0.19.0+21`, [CI Flutter verde](https://github.com/andreadada/simple-notes/actions/runs/40377359849) e [Markdown verde](https://github.com/andreadada/simple-notes/actions/runs/40377360259). Il collaudo Windows reale resta da fare. P1.13 Weekly Habits ([PR #14](https://github.com/andreadada/simple-notes/pull/14)) integrata su `main`, Flutter `0.18.0+20`, [CI Flutter](https://github.com/andreadada/simple-notes/actions/runs/40371894259) e [Markdown](https://github.com/andreadada/simple-notes/actions/runs/40371894390) verdi. Nessun deploy/reset.
 
@@ -29,3 +29,7 @@
 5. [ ] Prima di **installare nuovi client cumulativi**, il proprietario deve verificare la VPS Flyway V10/capability; ultimo stato attestato V8. Mai resettare database, SQLite/outbox, secure storage, preferenze o volumi.
 
 [Stato](CURRENT-STATUS.md) · [Operazioni](OPERATIONS.md) · [P1.13](P1-WEEKLY-HABITS.md) · [Roadmap](../project.md).
+
+## P1.16 — Resize della vista note
+
+Le card Note di Windows nella [P1.16 Responsive](P1-RESPONSIVE.md) usano larghezza utile e Wrap 1/2/3 colonne; il pop-out Sticky P1.14, già integrato, rimane un'azione separata e continua a passare dal LocalStore principale, senza un nuovo DB o sync. Prova reale finestre e firme MSIX ancora aperta.

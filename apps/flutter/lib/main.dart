@@ -6,6 +6,7 @@ import 'package:flutter/services.dart';
 import 'package:forui/forui.dart';
 import 'ui/notes_theme.dart';
 import 'ui/desktop_shortcuts.dart';
+import 'ui/responsive_layout.dart';
 import 'ui/inline_editable_title.dart';
 import 'ui/inline_editable_body.dart';
 import 'ui/inline_quick_add.dart';
@@ -261,8 +262,8 @@ Ctrl+/ · Questo elenco'''),
     final cloud = ref.watch(cloudAuthProvider);
     final sync = ref.watch(cloudSyncProvider);
     final reminders = ref.watch(reminderControllerProvider);
-    final desktop = MediaQuery.sizeOf(context).width >= 950;
-    final wideDetails = MediaQuery.sizeOf(context).width >= 1200;
+    final desktop = NotesResponsivePolicy.usesSidebar(MediaQuery.sizeOf(context).width);
+    final wideDetails = NotesResponsivePolicy.usesDetails(MediaQuery.sizeOf(context).width);
     final query = searchQuery.trim().toLowerCase();
     final list = visibleTasks(data.tasks)
         .where((task) => (priorityFilter == null ||
@@ -698,7 +699,10 @@ Ctrl+/ · Questo elenco'''),
                       priorityFilter == 1 ? null : priorityFilter! - 1),
                   prefix: const Icon(Icons.flag_outlined, size: 16),
                   child: Text(priorityFilter == null
-                    ? 'Tutte le priorità' : 'Priorità P${priorityFilter!}'),
+                    ? (MediaQuery.sizeOf(context).width < 400
+                        ? 'Tutte' : 'Tutte le priorità')
+                    : (MediaQuery.sizeOf(context).width < 400
+                        ? 'P${priorityFilter!}' : 'Priorità P${priorityFilter!}')),
                 ),
                 if (activeListId != null) ...[
                   const SizedBox(width: 8),
@@ -862,10 +866,18 @@ Ctrl+/ · Questo elenco'''),
                   child: const Text('Nuova nota'),
                 )),
                 const SizedBox(height: 12),
-                for (final note in data.notes)
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 10),
-                    child: FCard(child: Column(
+                LayoutBuilder(builder: (context, bounds) {
+                  final width = NotesResponsivePolicy.noteCardWidth(
+                    bounds.maxWidth);
+                  return Wrap(
+                    spacing: NotesResponsivePolicy.cardGap,
+                    runSpacing: NotesResponsivePolicy.cardGap,
+                    children: [
+                      for (final note in data.notes)
+                        SizedBox(
+                          key: Key('responsive-note-card-${note.id}'),
+                          width: width,
+                          child: FCard(child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Row(children: [
@@ -913,7 +925,10 @@ Ctrl+/ · Questo elenco'''),
                         ),
                       ],
                     )),
-                  ),
+                        ),
+                    ],
+                  );
+                }),
               ],
             ))
           else

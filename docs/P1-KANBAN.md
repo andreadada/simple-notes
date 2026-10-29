@@ -1,6 +1,6 @@
 # P1.9 — Kanban per liste con drag & drop
 
-> **Snapshot storico — 26/10/2026:** P1.14 Sticky Windows su `main`, [PR #15](https://github.com/andreadada/simple-notes/pull/15), Flutter `0.19.0+21`, CI verde. P1.15 Shortcuts Windows in branch `feature/p1-15-desktop-shortcuts`, candidata `0.20.0+22`, CI/merge/device da verificare. Repo Flyway V10, ultima VPS reale attestata V8; nessun deploy/reset. La guida sotto conserva attestazioni storiche, non la procedura attuale. [Stato](CURRENT-STATUS.md) · [Operazioni](OPERATIONS.md) · [Scorciatoie](P1-DESKTOP-SHORTCUTS.md).
+> **Snapshot aggiornato 28/10/2026:** P1.15 Keyboard Shortcuts integrata su `main` ([PR #16](https://github.com/andreadada/simple-notes/pull/16), Flutter `0.20.0+22`, CI verde). P1.16 Responsive note è **solo in branch** `feature/p1-16-responsive-layout` (Flutter `0.21.0+23`), CI/merge/hardware da verificare. Backend repository Flyway V10; ultima VPS Coolify attestata V8. Nessun deploy/reset. Le versioni e i gate precedenti sotto sono **storici**, per le operazioni correnti leggere [Stato](CURRENT-STATUS.md), [Guida](OPERATIONS.md), [P1.16](P1-RESPONSIVE.md).
 
 **Stato (26/10/2026):** **integrata su main con PR #10**, Flutter `0.14.0+16`; [CI Flutter verde](https://github.com/andreadada/simple-notes/actions/runs/40328803094) e [Markdown verde](https://github.com/andreadada/simple-notes/actions/runs/40328803015). Deploy e test dispositivi reali **non attestati**. Backend Flyway V10 e Drift V8 invariati.
 

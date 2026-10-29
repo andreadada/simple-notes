@@ -19,7 +19,9 @@ abstract final class WindowsTray {
   static tray.MenuItem? _quitItem;
   static _TrayWindowListener? _listener;
 
-  static bool get available => supported && _active;
+  static bool get available => supported && _active &&
+      _icon != null && _image != null && _menu != null &&
+      _showItem != null && _quitItem != null;
 
   /// Small blue checkmark icon, embedded as PNG to avoid Windows executable
   /// resource / external asset path differences between ZIP and MSIX.

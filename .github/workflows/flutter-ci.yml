@@ -46,6 +46,10 @@ jobs:
       - name: Static analysis
         working-directory: apps/flutter
         run: flutter analyze
+      - name: Install nativeapi Linux build headers for Flutter widget tests
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends libgtk-3-dev libx11-dev libxi-dev
       - name: Widget tests
         working-directory: apps/flutter
         run: flutter test

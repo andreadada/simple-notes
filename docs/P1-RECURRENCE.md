@@ -1,6 +1,6 @@
 # P1.6 — Ricorrenze versionate
 
-> **Snapshot storico 29/10/2026:** P1.16 Responsive su `main` (PR #17, Flutter `0.21.0+23`, CI verde); P1.17 Windows Tray `0.22.0+24` **in branch** e CI/merge/device da verificare. Repo Flyway V10, VPS Coolify attestata V8, nessun deploy/reset. [Stato](CURRENT-STATUS.md) · [Operazioni](OPERATIONS.md) · [P1.17](P1-WINDOWS-TRAY.md).
+> **Snapshot storico 29/10/2026:** P1.17 Windows Tray integrata in `main` ([PR #18](https://github.com/andreadada/simple-notes/pull/18), Flutter `0.22.0+24`, CI Flutter/Markdown verde); prove fisiche Windows/Android e rilascio cumulativo non attestati. Backend repo Flyway V10, VPS ultima attestazione V8; nessun deploy/reset. Le sezioni originali sottostanti restano storiche; vedere lo stato canonico. [Stato](CURRENT-STATUS.md) · [Tray](P1-WINDOWS-TRAY.md).
 
 **Stato codice:** integrata su `main` con PR #5 (CI complete verdi), Flutter `0.10.0+12`. **Il deploy non è stato verificato.** Backend Flyway **V10** additiva, Drift **V8** additiva.
 

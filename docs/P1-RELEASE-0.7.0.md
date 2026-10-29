@@ -1,7 +1,7 @@
 # Release storica P1.2 + P1.3 — Simple Notes 0.7.0+9
 
 <!-- CURRENT-STATUS-REF -->
-> **Snapshot storico 29/10/2026:** P1.16 Responsive su `main` (PR #17, Flutter `0.21.0+23`, CI verde); P1.17 Windows Tray `0.22.0+24` **in branch** e CI/merge/device da verificare. Repo Flyway V10, VPS Coolify attestata V8, nessun deploy/reset. [Stato](CURRENT-STATUS.md) · [Operazioni](OPERATIONS.md) · [P1.17](P1-WINDOWS-TRAY.md).
+> **Snapshot storico 29/10/2026:** P1.17 Windows Tray integrata in `main` ([PR #18](https://github.com/andreadada/simple-notes/pull/18), Flutter `0.22.0+24`, CI Flutter/Markdown verde); prove fisiche Windows/Android e rilascio cumulativo non attestati. Backend repo Flyway V10, VPS ultima attestazione V8; nessun deploy/reset. Le sezioni originali sottostanti restano storiche; vedere lo stato canonico. [Stato](CURRENT-STATUS.md) · [Tray](P1-WINDOWS-TRAY.md).
 
 
 **Data:** 25 ottobre 2026 · **Codice integrato su `main`**. PR #1 (P1.2) e PR #2 (P1.3) merged. **NON attestare come distribuito:** Coolify, Flyway V8 reale, app Windows/Android reali e prova E2E restano da verificare. Il lavoro GitHub è terminato; il deploy Coolify richiede accesso all'installazione del proprietario.

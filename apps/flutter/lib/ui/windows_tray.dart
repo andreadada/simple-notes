@@ -5,12 +5,18 @@ import 'package:flutter/foundation.dart';
 import 'package:tray_manager/tray_manager.dart' as tray;
 import 'package:window_manager/window_manager.dart';
 
+import 'tray_close_policy.dart';
+
 /// The tray is owned only by the **main** Windows Flutter engine.
 /// The detached Sticky engines return from main() before this is initialized.
 abstract final class WindowsTray {
   static bool get supported => !kIsWeb && Platform.isWindows;
   static bool _active = false;
   static tray.TrayIcon? _icon;
+  static tray.Image? _image;
+  static tray.Menu? _menu;
+  static tray.MenuItem? _showItem;
+  static tray.MenuItem? _quitItem;
   static _TrayWindowListener? _listener;
 
   static bool get available => supported && _active;
@@ -67,6 +73,10 @@ abstract final class WindowsTray {
       await windowManager.setPreventClose(true);
       _listener = listener;
       _icon = newIcon;
+      _image = image;
+      _menu = menu;
+      _showItem = open;
+      _quitItem = quit;
       _active = true;
       return true;
     } catch (_) {
@@ -75,6 +85,10 @@ abstract final class WindowsTray {
       _listener = null;
       _active = false;
       _icon = null;
+      _image = null;
+      _menu = null;
+      _showItem = null;
+      _quitItem = null;
       newIcon?.dispose();
       try {
         await windowManager.setPreventClose(false);
@@ -99,6 +113,13 @@ abstract final class WindowsTray {
     await windowManager.focus();
   }
 
+  static Future<void> handleCloseRequest() async {
+    if (TrayClosePolicy.resolve(isWindows: supported, trayReady: _active) ==
+        TrayCloseAction.hideToTray && !await hide()) {
+      await exitApp();
+    }
+  }
+
   static Future<void> exitApp() async {
     if (!supported) return;
     if (_listener != null) windowManager.removeListener(_listener!);
@@ -106,6 +127,10 @@ abstract final class WindowsTray {
     _active = false;
     final icon = _icon;
     _icon = null;
+    _image = null;
+    _menu = null;
+    _showItem = null;
+    _quitItem = null;
     await windowManager.setPreventClose(false);
     icon?.dispose();
     // The close button hides only while tray mode is enabled. This is a
@@ -117,6 +142,8 @@ abstract final class WindowsTray {
 class _TrayWindowListener extends WindowListener {
   @override
   void onWindowClose() {
-    if (WindowsTray.available) unawaited(WindowsTray.hide());
+    if (WindowsTray.available) {
+      unawaited(WindowsTray.handleCloseRequest());
+    }
   }
 }

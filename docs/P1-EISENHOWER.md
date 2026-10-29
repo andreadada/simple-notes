@@ -1,6 +1,6 @@
 # P1.8 — Matrice Eisenhower (vista derivata)
 
-> **Snapshot 29/10/2026:** P1.16 Responsive integrata in `main` ([PR #17](https://github.com/andreadada/simple-notes/pull/17), Flutter `0.21.0+23`, CI verde); P1.17 Windows Tray `0.22.0+24` **solo in branch**, CI/merge/device aperti. Repo Flyway V10 e VPS Coolify ultima attestazione V8; nessun deploy/reset. Le informazioni originarie sotto restano **storiche**, non runbook attivo. [Stato](CURRENT-STATUS.md) · [Operazioni](OPERATIONS.md) · [P1.17](P1-WINDOWS-TRAY.md).
+> **Snapshot 29/10/2026:** P1.17 Windows Tray integrata in `main` ([PR #18](https://github.com/andreadada/simple-notes/pull/18), Flutter `0.22.0+24`, CI Flutter/Markdown verde); prove fisiche Windows/Android e rilascio cumulativo non attestati. Backend repo Flyway V10, VPS ultima attestazione V8; nessun deploy/reset. Le sezioni originali sottostanti restano storiche; vedere lo stato canonico. [Stato](CURRENT-STATUS.md) · [Tray](P1-WINDOWS-TRAY.md).
 
 **Stato 26/10/2026:** **integrata su `main` con PR #8**, Flutter `0.13.0+15`. [Flutter CI 40313588569](https://github.com/andreadada/simple-notes/actions/runs/40313588569) e [Markdown 40313588470](https://github.com/andreadada/simple-notes/actions/runs/40313588470) **verdi**; verifica hardware ancora da effettuare. PR #7 (MSIX Windows) è stata integrata in `main` dopo CI verde [40245561264](https://github.com/andreadada/simple-notes/actions/runs/40245561264). Nessun deploy o reset.
 

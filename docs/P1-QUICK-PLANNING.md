@@ -1,7 +1,7 @@
 # P1.5 — Pianificazione rapida e filtri calendario
 
 <!-- CURRENT-STATUS-REF -->
-> **Snapshot aggiornato 28/10/2026:** P1.15 Keyboard Shortcuts integrata su `main` ([PR #16](https://github.com/andreadada/simple-notes/pull/16), Flutter `0.20.0+22`, CI verde). P1.16 Responsive note è **solo in branch** `feature/p1-16-responsive-layout` (Flutter `0.21.0+23`), CI/merge/hardware da verificare. Backend repository Flyway V10; ultima VPS Coolify attestata V8. Nessun deploy/reset. Le versioni e i gate precedenti sotto sono **storici**, per le operazioni correnti leggere [Stato](CURRENT-STATUS.md), [Guida](OPERATIONS.md), [P1.16](P1-RESPONSIVE.md).
+> **Snapshot 29/10/2026:** P1.16 Responsive integrata in `main` ([PR #17](https://github.com/andreadada/simple-notes/pull/17), Flutter `0.21.0+23`, CI verde); P1.17 Windows Tray `0.22.0+24` **solo in branch**, CI/merge/device aperti. Repo Flyway V10 e VPS Coolify ultima attestazione V8; nessun deploy/reset. Le informazioni originarie sotto restano **storiche**, non runbook attivo. [Stato](CURRENT-STATUS.md) · [Operazioni](OPERATIONS.md) · [P1.17](P1-WINDOWS-TRAY.md).
 
 
 **Stato codice:** integrata in `main` con PR #4, Flutter `0.9.0+11` e CI Flutter verde. Nessuna migrazione aggiuntiva; deploy e prove hardware non attestati.

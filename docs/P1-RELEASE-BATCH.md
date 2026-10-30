@@ -1,6 +1,6 @@
-# Rollout coordinato — Simple Notes backend V10 e client P1.17
+# Rollout coordinato — Simple Notes backend V10 e client P1.18
 
-> **Stato operativo 29/10/2026:** P1.17 Windows Tray integrata in `main` ([PR #18](https://github.com/andreadada/simple-notes/pull/18), Flutter `0.22.0+24`, CI Flutter/Markdown verde); prove fisiche Windows/Android e rilascio cumulativo non ancora attestati. Backend repo Flyway V10, VPS ultima attestazione V8; nessun deploy/reset. [Stato](CURRENT-STATUS.md) · [Tray](P1-WINDOWS-TRAY.md).
+> **Stato operativo 30/10/2026:** P1.18 Tema Chiaro/Scuro/Sistema integrata su `main` ([PR #19](https://github.com/andreadada/simple-notes/pull/19), Flutter `0.23.0+25`, CI Flutter/Markdown verde); prove fisiche Windows/Android e rilascio cumulativo non attestati. Backend repo Flyway V10, VPS ultima attestazione V8; nessun deploy/reset. [Stato](CURRENT-STATUS.md) · [Tema](P1-APPEARANCE.md).
 
 **Stato:** runbook per backend Flyway V10 e client P1.17 `0.22.0+24` (**P1.1–P1.17 integrate in `main`, PR #18, CI Flutter/Markdown verdi**). Non è attestato un deploy Coolify, un'installazione o un collaudo cumulativo; l'utente intende effettuare personalmente il deploy dopo gli incrementi. I comandi sono read-only salvo la procedura Redeploy espressamente distinta.
 
@@ -119,6 +119,10 @@ Il percorso iniziale consolidato è nella [guida operativa](OPERATIONS.md). La [
 
 [P1.17](P1-WINDOWS-TRAY.md) aggiunge plugin client, hide/restore e voce Esci; nessuna API/migration. Testare tray su ZIP/MSIX reali, sticky e Android invariato, con gate backend-first Flyway V10 ancora aperto e nessun reset.
 
-## P1.18 — Tema chiaro/scuro/sistema (branch di sviluppo, 30/10/2026)
+## P1.18 — Tema chiaro/scuro/sistema (main, PR #19)
 
-Candidato Flutter `0.23.0+25`: preferenza `SharedPreferences` per dispositivo (default legacy Scuro); palette coerenti Material/Forui e modifica dal menu account, senza nuove API, migrazioni o outbox. CI e prove su Windows/Android ancora da attestare sullo SHA finale; nessun deploy/reset. [Specifica](P1-APPEARANCE.md) · [Stato](CURRENT-STATUS.md).
+Integrata in `main` ([PR #19](https://github.com/andreadada/simple-notes/pull/19)), Flutter `0.23.0+25`: preferenza `SharedPreferences` per dispositivo (default legacy Scuro); palette coerenti Material/Forui e modifica dal menu account, senza nuove API, migrazioni o outbox. CI completa sullo SHA finale **verde**; test fisici Windows/Android, installazione e deploy non attestati; nessun reset. [Specifica](P1-APPEARANCE.md) · [Stato](CURRENT-STATUS.md).
+
+### P1.18 — Tema locale (client Flutter 0.23.0+25)
+
+[Specifiche P1.18](P1-APPEARANCE.md): `ThemeMode` Scuro/Chiaro/Sistema con persistenza SharedPreferences device-only, Forui/Material e Sticky. PR #19 su `main`, CI completa verde; test fisici ancora aperti, nessun cambio DB/API. Per un client cumulativo restano obbligatori Flyway V10 reale, capability, backup secondo policy e collaudo senza reset.

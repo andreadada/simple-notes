@@ -4,8 +4,9 @@
 
 | Area | Stato verificato | Gate ancora aperti |
 |---|---|---|
-| `main` | **P0–P1.17 integrate**. [PR #18 Windows Tray](https://github.com/andreadada/simple-notes/pull/18) merged, commit [`66927c7`](https://github.com/andreadada/simple-notes/commit/66927c73171964f7eb302273d7801df89225e1da), Flutter **`0.22.0+24`** | Test su Windows e Android reali |
-| P1.18 in sviluppo | [Branch tema chiaro/scuro/sistema](https://github.com/andreadada/simple-notes/tree/feature/p1-18-theme-modes), candidato Flutter **`0.23.0+25`**: scelta locale per dispositivo, palette Material/Forui e Sticky | CI SHA finale, verifica visiva e test fisici ancora aperti; **non merged** |
+| `main` | **P0–P1.18 integrate**. [PR #18 Windows Tray](https://github.com/andreadada/simple-notes/pull/18) merged, commit [`66927c7`](https://github.com/andreadada/simple-notes/commit/66927c73171964f7eb302273d7801df89225e1da), Flutter **`0.22.0+24`** | Test su Windows e Android reali |
+| P1.18 integrata | [PR #19](https://github.com/andreadada/simple-notes/pull/19) merged, Flutter **`0.23.0+25`**, temi chiaro/scuro/sistema, preferenza locale e Sticky | CI verde; test visivi e su dispositivi fisici ancora aperti |
+| CI P1.18 | [Flutter CI #41067872668](https://github.com/andreadada/simple-notes/actions/runs/41067872668): **success** (148 test, Windows EXE/MSIX, Android JDK17/21). [Markdown #41067872675](https://github.com/andreadada/simple-notes/actions/runs/41067872675): **success** | Non dimostra test fisico, OAuth né upgrade ZIP→MSIX |
 | CI P1.17 | [Flutter CI #40797207231](https://github.com/andreadada/simple-notes/actions/runs/40797207231): **success** per analyze/test, Windows release + MSIX di sviluppo, Android JDK17 e JDK21. [Markdown #40797207130](https://github.com/andreadada/simple-notes/actions/runs/40797207130): **success** | La CI non certifica interazioni fisiche, Google login o notifiche |
 | Backend nel repository | Spring Boot / PostgreSQL 17, Flyway **V10**; client Drift/SQLite **V8** | VPS Coolify ultima attestazione **V8**; V9–V10 reali, health e capability ancora da verificare |
 | Distribuzione | Nessun deploy, installazione o reset PostgreSQL, SQLite, outbox, SharedPreferences eseguito per P1.17 | Upgrade server-first, conservazione dati e collaudo cumulativo |
@@ -17,7 +18,7 @@
 - **P1.10–P1.13:** Pomodoro, Habit Tracker e Countdown **locali per account/dispositivo**, non sincronizzati tra Windows e Android.
 - **P1.14–P1.16:** Sticky Notes Windows con bridge al LocalStore principale, scorciatoie Windows e griglia note responsive 1–3 colonne.
 - **P1.17:** icona nell'area di notifica Windows, X→nascondi, Apri/ripristina ed Esci esplicito; fallback quando plugin non disponibile. **Implementazione + CI verificate, comportamento reale da collaudare**.
-- **P1.18 (branch, non ancora integrata):** modalità Scuro/Chiaro/Sistema e preferenza locale, nessuna modifica SQLite/outbox/server. [Specifica](P1-APPEARANCE.md).
+- **P1.18 (integrata in main, PR #19):** modalità Scuro/Chiaro/Sistema e preferenza locale, nessuna modifica SQLite/outbox/server. [Specifica](P1-APPEARANCE.md).
 - **P2/P3:** temi, integrazioni calendario, import/export, condivisione, funzioni smart opzionali **non implementate**.
 
 ## Gate di rilascio ancora aperti
@@ -30,6 +31,6 @@
 
 [Guida operativa](OPERATIONS.md) · [Specifica Tray](P1-WINDOWS-TRAY.md) · [Runbook server-first](P1-RELEASE-BATCH.md) · [Roadmap](../project.md) · [Handoff](HANDOFF.md).
 
-## Prossimo incremento P1.18 (30/10/2026)
+## P1.18 integrata (30/10/2026)
 
-Non segnare P1.18 completata fino a CI finale verde. Includere nel collaudo cumulativo il tema su Windows/Android, Sticky e rientro con preferenza persistita. [Specifiche](P1-APPEARANCE.md).
+PR #19 merged con CI di codice e documentazione verde sullo SHA finale. Restano il collaudo reale di temi su Windows/Android, Sticky e preferenze dopo riavvio, più il release gate cumulativo backend-first. [Specifica](P1-APPEARANCE.md).

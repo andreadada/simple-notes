@@ -1,6 +1,6 @@
 # Guida operativa — Simple Notes
 
-> **Stato operativo 29/10/2026:** P1.17 Windows Tray integrata in `main` ([PR #18](https://github.com/andreadada/simple-notes/pull/18), Flutter `0.22.0+24`, CI Flutter/Markdown verde); prove fisiche Windows/Android e rilascio cumulativo non ancora attestati. Backend repo Flyway V10, VPS ultima attestazione V8; nessun deploy/reset. [Stato](CURRENT-STATUS.md) · [Tray](P1-WINDOWS-TRAY.md).
+> **Stato operativo 30/10/2026:** P1.18 Tema Chiaro/Scuro/Sistema integrata su `main` ([PR #19](https://github.com/andreadada/simple-notes/pull/19), Flutter `0.23.0+25`, CI Flutter/Markdown verde); prove fisiche Windows/Android e rilascio cumulativo non attestati. Backend repo Flyway V10, VPS ultima attestazione V8; nessun deploy/reset. [Stato](CURRENT-STATUS.md) · [Tema](P1-APPEARANCE.md).
 
 **Fonte operativa** per il checkout locale Windows, CI, Coolify, Android e Windows ZIP/MSIX. **Ultimo stato verificabile (29/10/2026):** P1.17 su `main` con PR #18 (Flutter `0.22.0+24`), CI Flutter/Markdown verdi. Backend repository Flyway V10 / Drift V8, **ultima VPS confermata Flyway V8**; release e collaudo device non attestati. Leggere sempre [CURRENT-STATUS.md](CURRENT-STATUS.md).
 
@@ -142,6 +142,6 @@ Su PC Windows: creare tre note con titoli e corpi diversi, verificare passaggio 
 
 Nel ZIP completo con EXE/DLL: X→tray senza uscire, click/menu Apri→stessa finestra, menu Esci→terminazione completa senza icona orfana. Provare insieme a una Sticky senza seconda tray; se il plugin non si avvia, X deve funzionare normalmente. In MSIX usare profilo di prova e preservare SQLite, outbox, secure storage, SharedPreferences, firma/identity. Nessun deploy/reset. [Specifica](P1-WINDOWS-TRAY.md).
 
-## P1.18 — Tema chiaro/scuro/sistema (branch di sviluppo, 30/10/2026)
+## P1.18 — Tema chiaro/scuro/sistema (main, PR #19)
 
-Candidato Flutter `0.23.0+25`: preferenza `SharedPreferences` per dispositivo (default legacy Scuro); palette coerenti Material/Forui e modifica dal menu account, senza nuove API, migrazioni o outbox. CI e prove su Windows/Android ancora da attestare sullo SHA finale; nessun deploy/reset. [Specifica](P1-APPEARANCE.md) · [Stato](CURRENT-STATUS.md).
+Integrata in `main` ([PR #19](https://github.com/andreadada/simple-notes/pull/19)), Flutter `0.23.0+25`: preferenza `SharedPreferences` per dispositivo (default legacy Scuro); palette coerenti Material/Forui e modifica dal menu account, senza nuove API, migrazioni o outbox. CI completa sullo SHA finale **verde**; test fisici Windows/Android, installazione e deploy non attestati; nessun reset. [Specifica](P1-APPEARANCE.md) · [Stato](CURRENT-STATUS.md).

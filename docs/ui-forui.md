@@ -1,7 +1,7 @@
 # Simple Notes — UI e design system Forui
 
 <!-- CURRENT-STATUS-REF -->
-> **Stato operativo 29/10/2026:** P1.17 Windows Tray integrata in `main` ([PR #18](https://github.com/andreadada/simple-notes/pull/18), Flutter `0.22.0+24`, CI Flutter/Markdown verde); prove fisiche Windows/Android e rilascio cumulativo non attestati. Backend repo Flyway V10, VPS ultima attestazione V8; nessun deploy/reset. [Stato](CURRENT-STATUS.md) · [Tray](P1-WINDOWS-TRAY.md).
+> **Stato operativo 30/10/2026:** P1.18 Tema Chiaro/Scuro/Sistema integrata su `main` ([PR #19](https://github.com/andreadada/simple-notes/pull/19), Flutter `0.23.0+25`, CI Flutter/Markdown verde); prove fisiche Windows/Android e rilascio cumulativo non attestati. Backend repo Flyway V10, VPS ultima attestazione V8; nessun deploy/reset. [Stato](CURRENT-STATUS.md) · [Tema](P1-APPEARANCE.md).
 
 
 > **Stato reale 24/10/2026:** PostgreSQL `simplenotes` 17.11, Flyway V1–V7 riuscite, backup `simple-notes-20261024T132857Z-271921.dump` con SHA256 valido e restore isolato PASS. Copia offsite non effettuata per scelta dell'utente. Restano da verificare l'API autenticata (`taskDueSchema:1`) e il collaudo T4.2 Windows↔Android con Flutter `0.4.0+4`. Non ripetere backup, migrazioni o deploy automaticamente. [T4.2](T4-DEVICE-SYNC.md).
@@ -160,6 +160,6 @@ Card Forui Note in `Wrap` a 1/2/3 colonne con larghezza utile reale, `InlineEdit
 
 L'header Windows contiene un piccolo comando Nascondi quando la tray è pronta; X nasconde, click sulla tray riapre e menu Apri/Esci permette ripristino o uscita esplicita. Niente nuova modale, editing inline invariato. Da verificare focus, più finestre Sticky, icone orfane, X in caso di plugin non disponibile. [P1.17](P1-WINDOWS-TRAY.md).
 
-## P1.18 — Tema chiaro/scuro/sistema (branch di sviluppo, 30/10/2026)
+## P1.18 — Tema chiaro/scuro/sistema (main, PR #19)
 
-Candidato Flutter `0.23.0+25`: preferenza `SharedPreferences` per dispositivo (default legacy Scuro); palette coerenti Material/Forui e modifica dal menu account, senza nuove API, migrazioni o outbox. CI e prove su Windows/Android ancora da attestare sullo SHA finale; nessun deploy/reset. [Specifica](P1-APPEARANCE.md) · [Stato](CURRENT-STATUS.md).
+Integrata in `main` ([PR #19](https://github.com/andreadada/simple-notes/pull/19)), Flutter `0.23.0+25`: preferenza `SharedPreferences` per dispositivo (default legacy Scuro); palette coerenti Material/Forui e modifica dal menu account, senza nuove API, migrazioni o outbox. CI completa sullo SHA finale **verde**; test fisici Windows/Android, installazione e deploy non attestati; nessun reset. [Specifica](P1-APPEARANCE.md) · [Stato](CURRENT-STATUS.md).

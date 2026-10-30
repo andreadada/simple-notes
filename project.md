@@ -1,6 +1,6 @@
 # Simple Notes — Progetto e roadmap
 
-> **Stato operativo 29/10/2026:** P1.17 Windows Tray integrata in `main` ([PR #18](https://github.com/andreadada/simple-notes/pull/18), Flutter `0.22.0+24`, CI Flutter/Markdown verde); prove fisiche Windows/Android e rilascio cumulativo non ancora attestati. Backend repo Flyway V10, VPS ultima attestazione V8; nessun deploy/reset. [Stato](docs/CURRENT-STATUS.md) · [Tray](docs/P1-WINDOWS-TRAY.md).
+> **Stato operativo 30/10/2026:** P1.18 Tema Chiaro/Scuro/Sistema integrata su `main` ([PR #19](https://github.com/andreadada/simple-notes/pull/19), Flutter `0.23.0+25`, CI Flutter/Markdown verde); prove fisiche Windows/Android e rilascio cumulativo non attestati. Backend repo Flyway V10, VPS ultima attestazione V8; nessun deploy/reset. [Stato](docs/CURRENT-STATUS.md) · [Tema](docs/P1-APPEARANCE.md).
 
 <!-- CURRENT-STATUS-REF -->
 
@@ -125,7 +125,7 @@
 - [x] **P1.15 Scorciatoie desktop:** PR #16 integrata su `main`, Flutter `0.20.0+22`, CI Flutter/Markdown verde; Ctrl+1..5, Ctrl+Shift+T/N, Ctrl+/ guida Forui. Test PC reale da fare. [Specifica](docs/P1-DESKTOP-SHORTCUTS.md).
 - [x] **P1.16 Responsive Windows/Android:** PR #17 merged su `main`, Flutter `0.21.0+23`, CI verde. Test hardware aperti. [Specifica](docs/P1-RESPONSIVE.md).
 - [x] **P1.17 Windows Tray:** [PR #18](https://github.com/andreadada/simple-notes/pull/18) integrata su `main` (merge `66927c7`), Flutter `0.22.0+24`; Flutter analyze/test, Windows EXE/MSIX, Android JDK17/21 e Markdown CI verdi. Test hardware e release ancora aperti. [Specifica](docs/P1-WINDOWS-TRAY.md).
-- [ ] **P1.18 Tema chiaro/scuro/sistema**: implementazione su `feature/p1-18-theme-modes`, candidato Flutter `0.23.0+25`; test CI/merge/dispositivi ancora pendenti. [Specifica](docs/P1-APPEARANCE.md).
+- [x] **P1.18 Tema chiaro/scuro/sistema**: PR #19 integrata su `main`, Flutter `0.23.0+25`, CI completa verde (148 test, Windows EXE/MSIX, Android 17/21, Markdown); collaudo hardware e deploy ancora aperti. [Specifica](docs/P1-APPEARANCE.md).
 
 ## P2 — Estensioni
 - [ ] Timeline/Gantt e filtri avanzati.
@@ -320,3 +320,5 @@ Esempio: `2026-10-21 14:20 CEST | commit abc1234 | Aggiunto modulo promemoria e 
 - 2026-10-29 02:10 CET | commit 66927c7 | PR #18 P1.17 Tray integrata su main dopo CI completa verde; documentazione operativa riallineata; Coolify e test reali ancora aperti.
 
 - 2026-10-30 | feat(p1.18) | Tema Scuro/Chiaro/Sistema per Windows/Android, preferenza locale SharedPreferences, token Material/Forui per brightness, Sticky caricata separatamente; branch non ancora merged, CI/device ancora da attestare. Nessun cambiamento backend/SQLite/outbox. [Specifica](docs/P1-APPEARANCE.md).
+
+- 2026-10-30 | merge(p1.18) | PR #19 integrata su main commit `a7c2e786`: Flutter `0.23.0+25`, CI #41067872668 e Markdown #41067872675 verdi sullo SHA finale. Verifiche su dispositivi e server-first V10 ancora aperte. [Specifica](docs/P1-APPEARANCE.md).

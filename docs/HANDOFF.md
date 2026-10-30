@@ -1,6 +1,6 @@
 # Simple Notes — Passaggio di consegne (handoff)
 
-> **Stato operativo 29/10/2026:** P1.17 Windows Tray integrata in `main` ([PR #18](https://github.com/andreadada/simple-notes/pull/18), Flutter `0.22.0+24`, CI Flutter/Markdown verde); prove fisiche Windows/Android e rilascio cumulativo non ancora attestati. Backend repo Flyway V10, VPS ultima attestazione V8; nessun deploy/reset. [Stato](CURRENT-STATUS.md) · [Tray](P1-WINDOWS-TRAY.md).
+> **Stato operativo 30/10/2026:** P1.18 Tema Chiaro/Scuro/Sistema integrata su `main` ([PR #19](https://github.com/andreadada/simple-notes/pull/19), Flutter `0.23.0+25`, CI Flutter/Markdown verde); prove fisiche Windows/Android e rilascio cumulativo non attestati. Backend repo Flyway V10, VPS ultima attestazione V8; nessun deploy/reset. [Stato](CURRENT-STATUS.md) · [Tema](P1-APPEARANCE.md).
 
 <!-- CURRENT-STATUS-REF -->
 
@@ -289,6 +289,6 @@ P1.15 PR #16 merged, Flutter/Markdown CI verde, principale 0.20. P1.16 Responsiv
 
 P1.16 PR #17 integrata. **P1.17 PR #18 merged su main** (commit `66927c7`, Flutter `0.22.0+24`), con Flutter CI #40797207231 e Markdown #40797207130 tutte verdi: tray Windows, hide/restore/Esci, fallback e isolamento Sticky. Prove ZIP/MSIX e dispositivi reali da eseguire nel batch finale; Flyway repo V10 vs ultima VPS V8 attestata. Nessun deploy, reset, alterazione dati o installazione. [Specifica](P1-WINDOWS-TRAY.md).
 
-## P1.18 — Tema chiaro/scuro/sistema (branch di sviluppo, 30/10/2026)
+## P1.18 — Tema chiaro/scuro/sistema (main, PR #19)
 
-Candidato Flutter `0.23.0+25`: preferenza `SharedPreferences` per dispositivo (default legacy Scuro); palette coerenti Material/Forui e modifica dal menu account, senza nuove API, migrazioni o outbox. CI e prove su Windows/Android ancora da attestare sullo SHA finale; nessun deploy/reset. [Specifica](P1-APPEARANCE.md) · [Stato](CURRENT-STATUS.md).
+Integrata in `main` ([PR #19](https://github.com/andreadada/simple-notes/pull/19)), Flutter `0.23.0+25`: preferenza `SharedPreferences` per dispositivo (default legacy Scuro); palette coerenti Material/Forui e modifica dal menu account, senza nuove API, migrazioni o outbox. CI completa sullo SHA finale **verde**; test fisici Windows/Android, installazione e deploy non attestati; nessun reset. [Specifica](P1-APPEARANCE.md) · [Stato](CURRENT-STATUS.md).

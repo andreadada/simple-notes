@@ -1,6 +1,8 @@
 # P1.18 — Aspetto chiaro/scuro/sistema (Windows e Android)
 
-**Implementazione:** branch `feature/p1-18-theme-modes`, candidata Flutter `0.23.0+25`. Questa specifica descrive il codice; test CI e prova visiva su dispositivi devono essere registrati separatamente in [CURRENT-STATUS](CURRENT-STATUS.md).
+> **Stato operativo 30/10/2026:** P1.18 Tema Chiaro/Scuro/Sistema integrata su `main` ([PR #19](https://github.com/andreadada/simple-notes/pull/19), Flutter `0.23.0+25`, CI Flutter/Markdown verde); prove fisiche Windows/Android e rilascio cumulativo non attestati. Backend repo Flyway V10, VPS ultima attestazione V8; nessun deploy/reset. [Stato](CURRENT-STATUS.md) · [Tema](P1-APPEARANCE.md).
+
+**Implementazione:** integrata in `main` tramite [PR #19](https://github.com/andreadada/simple-notes/pull/19), Flutter `0.23.0+25`. [Flutter CI #41067872668](https://github.com/andreadada/simple-notes/actions/runs/41067872668) e [Markdown #41067872675](https://github.com/andreadada/simple-notes/actions/runs/41067872675) **verdi** sullo SHA finale; test fisici e release non attestati. [CURRENT-STATUS](CURRENT-STATUS.md).
 
 ## Comportamento
 
@@ -20,7 +22,7 @@
 
 1. Unit test encode/decode, default legacy e persistenza/mock di `SharedPreferences`.
 2. Widget test Material + Forui con palette coerenti in entrambi i temi; scope del controllo.
-3. CI: `flutter analyze`, `flutter test`, Android debug JDK17/21, Windows EXE/MSIX, link Markdown sullo **SHA finale**.
+3. CI: `flutter analyze`, `flutter test` (**148 test PASS**), Android debug JDK17/21, Windows EXE/MSIX e link Markdown **PASS** sullo SHA finale della PR #19.
 4. In batch finale: Windows/Android, scuro/chiaro/sistema, rientro da app chiusa, account diverso, screenshot leggibilità/contrasto, input underline, Forui modal/menu, Sticky nuova vs già aperta, resize, nessun cambiamento SQLite/outbox.
 5. Non installare MSIX di sviluppo su dati reali né eseguire reset/deploy automatici.
 

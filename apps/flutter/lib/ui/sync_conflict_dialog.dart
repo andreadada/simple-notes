@@ -16,13 +16,13 @@ Future<void> showNotesSyncConflictDialog(
     width: double.infinity,
     padding: const EdgeInsets.all(12),
     decoration: BoxDecoration(
-      border: Border.all(color: NotesPalette.border),
-      color: NotesPalette.surface,
+      border: Border.all(color: NotesPalette.of(context).border),
+      color: NotesPalette.of(context).surface,
       borderRadius: BorderRadius.circular(12),
     ),
     child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-      Text(caption, style: const TextStyle(
-        fontSize: 11, color: NotesPalette.secondaryText,
+      Text(caption, style: TextStyle(
+        fontSize: 11, color: NotesPalette.of(context).secondaryText,
         fontWeight: FontWeight.w700)),
       const SizedBox(height: 6),
       Text(title.isEmpty ? 'Senza titolo' : title,
@@ -31,8 +31,8 @@ Future<void> showNotesSyncConflictDialog(
       if (content.isNotEmpty) ...[
         const SizedBox(height: 5),
         Text(content, maxLines: 4, overflow: TextOverflow.ellipsis,
-          style: const TextStyle(
-            color: NotesPalette.secondaryText, fontSize: 12)),
+          style: TextStyle(
+            color: NotesPalette.of(context).secondaryText, fontSize: 12)),
       ],
     ]),
   );
@@ -52,10 +52,10 @@ Future<void> showNotesSyncConflictDialog(
           title: const Text('Conflitto di sincronizzazione'),
           body: Column(mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start, children: [
-            const Text(
+            Text(
               'La stessa voce è stata modificata su due dispositivi. '
               'Nessun dato viene sovrascritto senza una tua scelta.',
-              style: TextStyle(color: NotesPalette.secondaryText, fontSize: 13),
+              style: TextStyle(color: NotesPalette.of(context).secondaryText, fontSize: 13),
             ),
             const SizedBox(height: 14),
             preview('QUESTO DISPOSITIVO',
@@ -82,8 +82,8 @@ Future<void> showNotesSyncConflictDialog(
               Padding(
                 padding: const EdgeInsets.only(top: 8),
                 child: Text(ref.read(cloudSyncProvider).message!,
-                    style: const TextStyle(fontSize: 11,
-                        color: NotesPalette.secondaryText)),
+                    style: TextStyle(fontSize: 11,
+                        color: NotesPalette.of(context).secondaryText)),
               ),
           ]),
           actions: [

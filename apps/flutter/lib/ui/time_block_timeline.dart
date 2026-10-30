@@ -51,7 +51,7 @@ class TimeBlockTimeline extends StatelessWidget {
                   child: Text(mark.label, style: TextStyle(
                     color: NotesPalette.of(context).secondaryText, fontSize: 10))),
                 Expanded(child: Container(height: 1,
-                  color: const Color(0xFF343434))),
+                  color: NotesPalette.of(context).border)),
               ]),
             ),
           for (final item in blocks)
@@ -190,7 +190,7 @@ class _InteractiveBlockState extends State<_InteractiveBlock> {
       child: Container(
         key: Key('calendar-block-${task.id}-${widget.geometry.slot.id}'),
         decoration: BoxDecoration(
-          color: const Color(0xFF24354E),
+          color: NotesPalette.of(context).accent.withValues(alpha: 0.14),
           border: Border.all(color: NotesPalette.of(context).accent.withValues(alpha: 0.65)),
           borderRadius: BorderRadius.circular(7),
         ),

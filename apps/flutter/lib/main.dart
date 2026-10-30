@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:forui/forui.dart';
 import 'ui/notes_theme.dart';
+import 'ui/theme_mode_preference.dart';
 import 'ui/desktop_shortcuts.dart';
 import 'ui/windows_tray.dart'
     if (dart.library.html) 'ui/windows_tray_stub.dart';
@@ -53,45 +54,54 @@ Future<void> main(List<String> args) async {
       databaseProvider.overrideWithValue(database),
       initialDataProvider.overrideWithValue(snapshot),
     ],
-    child: const SimpleNotesApp(),
+    child: SimpleNotesApp(initialMode: ThemeModePreference.decode(
+      preferences.getString(ThemeModePreference.key))),
   ));
 }
 
-class SimpleNotesApp extends StatelessWidget {
-  const SimpleNotesApp({super.key});
+class SimpleNotesApp extends StatefulWidget {
+  const SimpleNotesApp({super.key, this.initialMode = ThemeMode.dark});
+
+  final ThemeMode initialMode;
+
+  @override
+  State<SimpleNotesApp> createState() => _SimpleNotesAppState();
+}
+
+class _SimpleNotesAppState extends State<SimpleNotesApp> {
+  late ThemeMode _mode = widget.initialMode;
+
+  Future<void> _changeMode(ThemeMode next) async {
+    if (next == _mode) return;
+    try {
+      await ThemeModePreference.save(next);
+      if (mounted) setState(() => _mode = next);
+    } catch (_) {
+      // A failed write must not give the impression that the choice persists.
+      // Previous mode and local SQLite/outbox remain unchanged.
+    }
+  }
 
   @override
   Widget build(BuildContext context) => MaterialApp(
         title: 'Simple Notes',
         debugShowCheckedModeBanner: false,
-        themeMode: ThemeMode.dark,
-        theme: ThemeData(
-          brightness: Brightness.dark,
-          colorScheme: ColorScheme.fromSeed(
-            seedColor: const Color(0xff547aff), brightness: Brightness.dark,
-            surface: const Color(0xff181818),
-          ),
-          useMaterial3: true,
-          scaffoldBackgroundColor: const Color(0xff181818),
-          cardColor: const Color(0xff252525),
-          // The Material bridge must not put grey backgrounds behind
-          // editable text. Forui controls keep their own distinct styling.
-          inputDecorationTheme: const InputDecorationTheme(
-            filled: false,
-            fillColor: Colors.transparent,
-            border: NotesTheme.inlineBorder,
-            enabledBorder: NotesTheme.inlineBorder,
-            focusedBorder: NotesTheme.inlineFocusedBorder,
-            contentPadding: EdgeInsets.symmetric(vertical: 8),
-          ),
-        ),
-        // Forui is our primary widget system. Material remains only as a
-        // compatibility bridge for date pickers, dialogs and the editor.
+        themeMode: _mode,
+        theme: NotesTheme.material(Brightness.light),
+        darkTheme: NotesTheme.material(Brightness.dark),
+        // Material is a compatibility bridge; Forui owns the primary widgets.
         builder: (context, child) => FTheme(
-          data: NotesTheme.forPlatform(Theme.of(context).platform),
+          data: NotesTheme.forPlatform(
+            Theme.of(context).platform,
+            brightness: Theme.of(context).brightness,
+          ),
           child: child ?? const SizedBox.shrink(),
         ),
-        home: const AutoSyncHost(child: NotesHome()),
+        home: NotesAppearance(
+          mode: _mode,
+          onChange: _changeMode,
+          child: const AutoSyncHost(child: NotesHome()),
+        ),
       );
 }
 
@@ -424,6 +434,22 @@ Ctrl+/ · Questo elenco'''),
               title: const Text('Accedi con Google'),
               prefix: const Icon(Icons.login, size: 18),
               onPress: () => accountAction('login'),
+            ),
+        ]),
+        .group(children: [
+          for (final option in <(ThemeMode, String, IconData)>[
+            (ThemeMode.dark, 'Scuro', Icons.dark_mode_outlined),
+            (ThemeMode.light, 'Chiaro', Icons.light_mode_outlined),
+            (ThemeMode.system, 'Sistema', Icons.brightness_auto_outlined),
+          ])
+            .item(
+              title: Text('Tema: ${option.$2}'),
+              prefix: Icon(
+                NotesAppearance.of(context).mode == option.$1
+                  ? Icons.check_circle_outline : option.$3,
+                size: 18,
+              ),
+              onPress: () => NotesAppearance.of(context).onChange(option.$1),
             ),
         ]),
       ],

@@ -68,8 +68,8 @@ class _InlineQuickAddState extends State<InlineQuickAdd> {
         final fieldWidth = InlineTextMetrics.inputWidth(
           glyphWidth: glyphWidth, maxWidth: available);
         return Row(children: [
-          const Icon(Icons.add, size: 17,
-            color: NotesPalette.secondaryText),
+          Icon(Icons.add, size: 17,
+            color: NotesPalette.of(context).secondaryText),
           const SizedBox(width: 7),
           SizedBox(width: fieldWidth, child: InlineGlyphUnderline(
             glyphWidth: glyphWidth,
@@ -84,8 +84,8 @@ class _InlineQuickAddState extends State<InlineQuickAdd> {
             style: textStyle,
             decoration: InputDecoration(
               hintText: widget.hint,
-              hintStyle: const TextStyle(
-                fontSize: 13, color: NotesPalette.placeholder),
+              hintStyle: TextStyle(
+                fontSize: 13, color: NotesPalette.of(context).placeholder),
               counterText: '',
               isDense: true,
               filled: false,

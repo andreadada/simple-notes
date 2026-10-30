@@ -252,7 +252,7 @@ Future<TaskDue?> showTaskDueEditor(BuildContext context, {
                   if (message != null) ...[
                     const SizedBox(height: 12),
                     Text(message!, key: const Key('due-validation-error'),
-                      style: const TextStyle(fontSize: 12,
+                      style: TextStyle(fontSize: 12,
                         color: Theme.of(context).colorScheme.error)),
                   ],
                 ],

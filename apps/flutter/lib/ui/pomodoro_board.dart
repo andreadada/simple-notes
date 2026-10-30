@@ -207,13 +207,13 @@ class _PomodoroBoardState extends State<PomodoroBoard>
             LinearProgressIndicator(
               key: const Key('pomodoro-progress'),
               value: progress, minHeight: 7,
-              color: NotesPalette.accent,
-              backgroundColor: NotesPalette.muted),
+              color: NotesPalette.of(context).accent,
+              backgroundColor: NotesPalette.of(context).muted),
             const SizedBox(height: 12),
-            const Text('25 min focus · 5 min pausa breve · '
+            Text('25 min focus · 5 min pausa breve · '
               '15 min ogni 4 focus',
               textAlign: TextAlign.center,
-              style: TextStyle(color: NotesPalette.secondaryText,
+              style: TextStyle(color: NotesPalette.of(context).secondaryText,
                 fontSize: 12)),
             const SizedBox(height: 18),
             Wrap(spacing: 8, runSpacing: 8,
@@ -263,19 +263,19 @@ class _PomodoroBoardState extends State<PomodoroBoard>
             Text('${_value.focusCompleted} cicli focus completati',
               key: const Key('pomodoro-cycles')),
             const SizedBox(height: 16),
-            const Text('Ultimi 7 giorni', style: TextStyle(
-              fontSize: 12, color: NotesPalette.secondaryText)),
+            Text('Ultimi 7 giorni', style: TextStyle(
+              fontSize: 12, color: NotesPalette.of(context).secondaryText)),
             const SizedBox(height: 10),
             for (final day in days) ...[
               Row(children: [
                 SizedBox(width: 50, child: Text(
-                  '${day.day}/${day.month}', style: const TextStyle(
-                    fontSize: 12, color: NotesPalette.secondaryText))),
+                  '${day.day}/${day.month}', style: TextStyle(
+                    fontSize: 12, color: NotesPalette.of(context).secondaryText))),
                 Expanded(child: LinearProgressIndicator(
                   value: _value.completedOn(day) / maxDaily,
                   minHeight: 9,
-                  color: NotesPalette.accent,
-                  backgroundColor: NotesPalette.muted)),
+                  color: NotesPalette.of(context).accent,
+                  backgroundColor: NotesPalette.of(context).muted)),
                 SizedBox(width: 28, child: Text(
                   '${_value.completedOn(day)}',
                   textAlign: TextAlign.end,
@@ -283,10 +283,10 @@ class _PomodoroBoardState extends State<PomodoroBoard>
               ]),
               const SizedBox(height: 8),
             ],
-            const Text('Solo su questo dispositivo. Nessuna '
+            Text('Solo su questo dispositivo. Nessuna '
               'sincronizzazione o notifica con app chiusa.',
               style: TextStyle(fontSize: 12,
-                color: NotesPalette.secondaryText)),
+                color: NotesPalette.of(context).secondaryText)),
           ],
         ),
       ));

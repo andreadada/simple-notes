@@ -141,3 +141,7 @@ Su PC Windows: creare tre note con titoli e corpi diversi, verificare passaggio 
 ## P1.17 — Verifica tray Windows non distruttiva
 
 Nel ZIP completo con EXE/DLL: X→tray senza uscire, click/menu Apri→stessa finestra, menu Esci→terminazione completa senza icona orfana. Provare insieme a una Sticky senza seconda tray; se il plugin non si avvia, X deve funzionare normalmente. In MSIX usare profilo di prova e preservare SQLite, outbox, secure storage, SharedPreferences, firma/identity. Nessun deploy/reset. [Specifica](P1-WINDOWS-TRAY.md).
+
+## P1.18 — Tema chiaro/scuro/sistema (branch di sviluppo, 30/10/2026)
+
+Candidato Flutter `0.23.0+25`: preferenza `SharedPreferences` per dispositivo (default legacy Scuro); palette coerenti Material/Forui e modifica dal menu account, senza nuove API, migrazioni o outbox. CI e prove su Windows/Android ancora da attestare sullo SHA finale; nessun deploy/reset. [Specifica](P1-APPEARANCE.md) · [Stato](CURRENT-STATUS.md).

@@ -125,7 +125,7 @@
 - [x] **P1.15 Scorciatoie desktop:** PR #16 integrata su `main`, Flutter `0.20.0+22`, CI Flutter/Markdown verde; Ctrl+1..5, Ctrl+Shift+T/N, Ctrl+/ guida Forui. Test PC reale da fare. [Specifica](docs/P1-DESKTOP-SHORTCUTS.md).
 - [x] **P1.16 Responsive Windows/Android:** PR #17 merged su `main`, Flutter `0.21.0+23`, CI verde. Test hardware aperti. [Specifica](docs/P1-RESPONSIVE.md).
 - [x] **P1.17 Windows Tray:** [PR #18](https://github.com/andreadada/simple-notes/pull/18) integrata su `main` (merge `66927c7`), Flutter `0.22.0+24`; Flutter analyze/test, Windows EXE/MSIX, Android JDK17/21 e Markdown CI verdi. Test hardware e release ancora aperti. [Specifica](docs/P1-WINDOWS-TRAY.md).
-- [ ] Temi chiaro/scuro e altre rifiniture future.
+- [ ] **P1.18 Tema chiaro/scuro/sistema**: implementazione su `feature/p1-18-theme-modes`, candidato Flutter `0.23.0+25`; test CI/merge/dispositivi ancora pendenti. [Specifica](docs/P1-APPEARANCE.md).
 
 ## P2 — Estensioni
 - [ ] Timeline/Gantt e filtri avanzati.
@@ -318,3 +318,5 @@ Esempio: `2026-10-21 14:20 CEST | commit abc1234 | Aggiunto modulo promemoria e 
 - 2026-10-29 | feat(p1.17) | P1.16 PR #17 merged con CI verde. P1.17 Windows Tray: sistema hide, restore e uscita esplicita, isolamento Sticky, fallback su plugin; nessuna migration, deploy o reset. [Specifica](docs/P1-WINDOWS-TRAY.md).
 
 - 2026-10-29 02:10 CET | commit 66927c7 | PR #18 P1.17 Tray integrata su main dopo CI completa verde; documentazione operativa riallineata; Coolify e test reali ancora aperti.
+
+- 2026-10-30 | feat(p1.18) | Tema Scuro/Chiaro/Sistema per Windows/Android, preferenza locale SharedPreferences, token Material/Forui per brightness, Sticky caricata separatamente; branch non ancora merged, CI/device ancora da attestare. Nessun cambiamento backend/SQLite/outbox. [Specifica](docs/P1-APPEARANCE.md).

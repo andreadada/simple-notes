@@ -209,3 +209,7 @@ Vista Note: una colonna stretta, due medie, tre molto larghe, con spazi regolari
 ## P1.17 — Tray Windows
 
 Piccolo pulsante nell'header Windows per nascondere. Se la tray è attiva la X nasconde; click sull'icona o menu Apri mostrano la stessa finestra; menu **Esci** la chiude. Nessuna nuova modale o rinomina; UI Forui/edit inline invariati. [Specifica](docs/P1-WINDOWS-TRAY.md).
+
+## P1.18 — Tema chiaro/scuro/sistema (branch di sviluppo, 30/10/2026)
+
+Candidato Flutter `0.23.0+25`: preferenza `SharedPreferences` per dispositivo (default legacy Scuro); palette coerenti Material/Forui e modifica dal menu account, senza nuove API, migrazioni o outbox. CI e prove su Windows/Android ancora da attestare sullo SHA finale; nessun deploy/reset. [Specifica](docs/P1-APPEARANCE.md) · [Stato](docs/CURRENT-STATUS.md).

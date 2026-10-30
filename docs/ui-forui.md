@@ -159,3 +159,7 @@ Card Forui Note in `Wrap` a 1/2/3 colonne con larghezza utile reale, `InlineEdit
 ## P1.17 — Tray e finestra principale Windows
 
 L'header Windows contiene un piccolo comando Nascondi quando la tray è pronta; X nasconde, click sulla tray riapre e menu Apri/Esci permette ripristino o uscita esplicita. Niente nuova modale, editing inline invariato. Da verificare focus, più finestre Sticky, icone orfane, X in caso di plugin non disponibile. [P1.17](P1-WINDOWS-TRAY.md).
+
+## P1.18 — Tema chiaro/scuro/sistema (branch di sviluppo, 30/10/2026)
+
+Candidato Flutter `0.23.0+25`: preferenza `SharedPreferences` per dispositivo (default legacy Scuro); palette coerenti Material/Forui e modifica dal menu account, senza nuove API, migrazioni o outbox. CI e prove su Windows/Android ancora da attestare sullo SHA finale; nessun deploy/reset. [Specifica](P1-APPEARANCE.md) · [Stato](CURRENT-STATUS.md).

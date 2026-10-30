@@ -10,7 +10,7 @@
 | CI P1.18 | [Flutter CI #41067872668](https://github.com/andreadada/simple-notes/actions/runs/41067872668): **success** (148 test, Windows EXE/MSIX, Android JDK17/21). [Markdown #41067872675](https://github.com/andreadada/simple-notes/actions/runs/41067872675): **success** | Non dimostra test fisico, OAuth né upgrade ZIP→MSIX |
 | CI P1.17 | [Flutter CI #40797207231](https://github.com/andreadada/simple-notes/actions/runs/40797207231): **success** per analyze/test, Windows release + MSIX di sviluppo, Android JDK17 e JDK21. [Markdown #40797207130](https://github.com/andreadada/simple-notes/actions/runs/40797207130): **success** | La CI non certifica interazioni fisiche, Google login o notifiche |
 | Backend nel repository | Spring Boot / PostgreSQL 17, Flyway **V10**; client Drift/SQLite **V8** | VPS Coolify ultima attestazione **V8**; V9–V10 reali, health e capability ancora da verificare |
-| Distribuzione | Nessun deploy, installazione o reset PostgreSQL, SQLite, outbox, SharedPreferences eseguito per P1.18 | Upgrade server-first, conservazione dati e collaudo cumulativo |
+| Distribuzione | Nessun deploy, installazione o reset PostgreSQL, SQLite, outbox, SharedPreferences eseguito per P2.1 | Upgrade server-first, conservazione dati e collaudo cumulativo |
 
 ## Funzioni integrate nel codice
 

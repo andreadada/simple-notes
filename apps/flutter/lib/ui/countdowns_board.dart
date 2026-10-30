@@ -197,10 +197,10 @@ class _CountdownsBoardState extends State<CountdownsBoard>
         const Text('Conti alla rovescia', style: TextStyle(
           fontWeight: FontWeight.w700, fontSize: 20)),
         const SizedBox(height: 6),
-        const Text('Date civili o scadenze con ora e fuso IANA. '
+        Text('Date civili o scadenze con ora e fuso IANA. '
           'Solo su questo dispositivo, senza notifiche automatiche.',
           style: TextStyle(fontSize: 12,
-            color: NotesPalette.secondaryText)),
+            color: NotesPalette.of(context).secondaryText)),
         const SizedBox(height: 16),
         FCard(child: Padding(
           padding: const EdgeInsets.all(14),
@@ -263,8 +263,8 @@ class _CountdownsBoardState extends State<CountdownsBoard>
                     style: TextStyle(fontSize: 24,
                       fontWeight: FontWeight.w700,
                       color: CountdownClock.overdue(event.due, now)
-                          ? NotesPalette.secondaryText
-                          : NotesPalette.accent)),
+                          ? NotesPalette.of(context).secondaryText
+                          : NotesPalette.of(context).accent)),
                   const SizedBox(height: 8),
                   FButton(
                     key: Key('countdown-edit-due-${event.id}'),

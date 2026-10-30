@@ -231,15 +231,21 @@ class _NotesHomeState extends ConsumerState<NotesHome> {
     if (_archiveBusy) return;
     setState(() => _archiveBusy = true);
     try {
-      final file = await FilePicker.pickFile(
+      final selected = await FilePicker.pickFiles(
         type: FileType.custom,
         allowedExtensions: ['json'],
+        withData: true,
       );
-      if (file == null) return;
-      if ((file.lengthSync() ?? 0) > PortableArchive.maxBytes) {
+      if (selected == null) return;
+      final file = selected.files.single;
+      if (file.size > PortableArchive.maxBytes) {
         throw const FormatException('Archivio troppo grande (massimo 8 MB).');
       }
-      final archive = PortableArchive.decode(await file.readAsBytes());
+      final bytes = file.bytes;
+      if (bytes == null) {
+        throw const FormatException('Impossibile leggere il file selezionato.');
+      }
+      final archive = PortableArchive.decode(bytes);
       if (!mounted) return;
       final approved = await showFDialog<bool>(
         context: context,

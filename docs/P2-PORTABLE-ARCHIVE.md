@@ -14,7 +14,7 @@
 - Massimo **8 MiB** per archivio, **10.000** record; schema e data obbligatori, sezioni liste/task/note obbligatorie, identificativi univoci, riferimenti alle liste presenti; controlli titolo, priorità/tag/sottotask e parsing coerente di due/recurrence/slots.
 - Il formato **versionato** rifiuta versioni future sconosciute; niente import implicito di oggetti arbitrari o di metadata di sync.
 - Inserimento ordinato liste→task→note dentro **una transazione SQLite**; rollback su errore; snapshot e UI ricaricati dopo commit. Nessuna nuova migration Drift/Flyway, endpoint o capability.
-- File picker nativo (dipendenza `file_picker`) su Windows e Android. Verifiche CI non attestano permessi e comportamento delle UI di sistema.
+- File picker nativo (dipendenza `file_picker` v11 (compatibile con `flutter_secure_storage` Windows/Win32 v5)) su Windows e Android. Verifiche CI non attestano permessi e comportamento delle UI di sistema.
 - Import in un database legato a un account Google è un'azione esplicita dell'utente: i nuovi elementi diventano dati di **quell'account**, non di quello da cui proviene il file. Nessuna provenienza/ACL si trasferisce.
 
 ## Test e release gate

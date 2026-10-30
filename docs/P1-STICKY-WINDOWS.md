@@ -1,6 +1,6 @@
 # P1.14 — Sticky Notes in finestre Windows
 
-> **Stato operativo 29/10/2026:** P1.17 Windows Tray integrata in `main` ([PR #18](https://github.com/andreadada/simple-notes/pull/18), Flutter `0.22.0+24`, CI Flutter/Markdown verde); prove fisiche Windows/Android e rilascio cumulativo non attestati. Backend repo Flyway V10, VPS ultima attestazione V8; nessun deploy/reset. [Stato](CURRENT-STATUS.md) · [Tray](P1-WINDOWS-TRAY.md).
+> **Stato operativo 30/10/2026:** P1.18 Tema Chiaro/Scuro/Sistema integrata su `main` ([PR #19](https://github.com/andreadada/simple-notes/pull/19), Flutter `0.23.0+25`, CI Flutter/Markdown verde); prove fisiche Windows/Android e rilascio cumulativo non attestati. Backend repo Flyway V10, VPS ultima attestazione V8; nessun deploy/reset. [Stato](CURRENT-STATUS.md) · [Tema](P1-APPEARANCE.md).
 
 **Stato 26/10/2026:** **integrata in `main` con PR #15**, Flutter `0.19.0+21`, [CI Flutter verde](https://github.com/andreadada/simple-notes/actions/runs/40377359849) e [Markdown verde](https://github.com/andreadada/simple-notes/actions/runs/40377360259). Il collaudo Windows reale resta da fare. P1.13 Weekly Habits ([PR #14](https://github.com/andreadada/simple-notes/pull/14)) integrata su `main`, Flutter `0.18.0+20`, [CI Flutter](https://github.com/andreadada/simple-notes/actions/runs/40371894259) e [Markdown](https://github.com/andreadada/simple-notes/actions/runs/40371894390) verdi. Nessun deploy/reset.
 

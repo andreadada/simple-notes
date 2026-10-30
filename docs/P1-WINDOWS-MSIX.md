@@ -1,6 +1,6 @@
 # P1.7 Windows — MSIX e promemoria opt-in
 
-> **Stato operativo 29/10/2026:** P1.17 Windows Tray integrata in `main` ([PR #18](https://github.com/andreadada/simple-notes/pull/18), Flutter `0.22.0+24`, CI Flutter/Markdown verde); prove fisiche Windows/Android e rilascio cumulativo non attestati. Backend repo Flyway V10, VPS ultima attestazione V8; nessun deploy/reset. [Stato](CURRENT-STATUS.md) · [Tray](P1-WINDOWS-TRAY.md).
+> **Stato operativo 30/10/2026:** P1.18 Tema Chiaro/Scuro/Sistema integrata su `main` ([PR #19](https://github.com/andreadada/simple-notes/pull/19), Flutter `0.23.0+25`, CI Flutter/Markdown verde); prove fisiche Windows/Android e rilascio cumulativo non attestati. Backend repo Flyway V10, VPS ultima attestazione V8; nessun deploy/reset. [Stato](CURRENT-STATUS.md) · [Tema](P1-APPEARANCE.md).
 
 **Stato 26/10/2026:** **integrata in `main` con PR #7** (merge `34106c4`, Flutter `0.12.0+14`, [CI 40245561264 verde](https://github.com/andreadada/simple-notes/actions/runs/40245561264)); **non installata o verificata su PC reale**, non rilasciata. Backend Flyway V10 e Drift V8 invariati. La release corrente del codice su `main` è ora Flutter `0.13.0+15` (PR #8); non installare nuovi client fino a verifica dell'API Coolify e compatibilità dell'upgrade MSIX.
 

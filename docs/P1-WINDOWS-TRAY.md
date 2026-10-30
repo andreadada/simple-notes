@@ -1,5 +1,7 @@
 # P1.17 — Windows System Tray
 
+> **Stato operativo 30/10/2026:** P1.18 Tema Chiaro/Scuro/Sistema integrata su `main` ([PR #19](https://github.com/andreadada/simple-notes/pull/19), Flutter `0.23.0+25`, CI Flutter/Markdown verde); prove fisiche Windows/Android e rilascio cumulativo non attestati. Backend repo Flyway V10, VPS ultima attestazione V8; nessun deploy/reset. [Stato](CURRENT-STATUS.md) · [Tema](P1-APPEARANCE.md).
+
 **Stato 29/10/2026:** P1.17 **integrata su `main`** con [PR #18](https://github.com/andreadada/simple-notes/pull/18) (merge `66927c7`), Flutter `0.22.0+24` e MSIX sviluppo `0.22.0.0`. [Flutter CI verde](https://github.com/andreadada/simple-notes/actions/runs/40797207231) per analyze/test, Windows EXE/MSIX e Android JDK17/JDK21; [Markdown verde](https://github.com/andreadada/simple-notes/actions/runs/40797207130). Test reali Windows/Android, deploy e rilascio ancora aperti. Nessun reset.
 
 ## Comportamento e implementazione

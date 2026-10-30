@@ -1,5 +1,5 @@
 <!-- CURRENT-STATUS-REF -->
-> **Stato operativo 29/10/2026:** P1.17 Windows Tray integrata in `main` ([PR #18](https://github.com/andreadada/simple-notes/pull/18), Flutter `0.22.0+24`, CI Flutter/Markdown verde); prove fisiche Windows/Android e rilascio cumulativo non attestati. Backend repo Flyway V10, VPS ultima attestazione V8; nessun deploy/reset. [Stato](CURRENT-STATUS.md) · [Tray](P1-WINDOWS-TRAY.md).
+> **Stato operativo 30/10/2026:** P1.18 Tema Chiaro/Scuro/Sistema integrata su `main` ([PR #19](https://github.com/andreadada/simple-notes/pull/19), Flutter `0.23.0+25`, CI Flutter/Markdown verde); prove fisiche Windows/Android e rilascio cumulativo non attestati. Backend repo Flyway V10, VPS ultima attestazione V8; nessun deploy/reset. [Stato](CURRENT-STATUS.md) · [Tema](P1-APPEARANCE.md).
 
 <!-- Vincolo UI aggiornato 24/10/2026: tutti i titoli di liste, task e subtasks usano la stessa logica inline-first. La sottolineatura non deve eccedere la larghezza del valore (o dell'hint) +~1px, nessun grigio di riempimento; placeholder semitrasparente (~72%). Utilizzare InlineTextMetrics.fieldWidth in notes_theme.dart, non minWidth artificiale o Expanded TextField full-width. Regole: ../design.md, ui-forui.md e ui-design-audit.md. -->
 # Organizzazione attività (P0) — liste, priorità, tag e sottotask

@@ -1,7 +1,7 @@
 # Android — build, firma, Google OAuth e installazione
 
 <!-- CURRENT-STATUS-REF -->
-> **Stato operativo 29/10/2026:** P1.17 Windows Tray integrata in `main` ([PR #18](https://github.com/andreadada/simple-notes/pull/18), Flutter `0.22.0+24`, CI Flutter/Markdown verde); prove fisiche Windows/Android e rilascio cumulativo non attestati. Backend repo Flyway V10, VPS ultima attestazione V8; nessun deploy/reset. [Stato](CURRENT-STATUS.md) · [Tray](P1-WINDOWS-TRAY.md).
+> **Stato operativo 30/10/2026:** P1.18 Tema Chiaro/Scuro/Sistema integrata su `main` ([PR #19](https://github.com/andreadada/simple-notes/pull/19), Flutter `0.23.0+25`, CI Flutter/Markdown verde); prove fisiche Windows/Android e rilascio cumulativo non attestati. Backend repo Flyway V10, VPS ultima attestazione V8; nessun deploy/reset. [Stato](CURRENT-STATUS.md) · [Tema](P1-APPEARANCE.md).
 
 
 > Runbook basato sui problemi reali risolti il 22–23 ottobre 2026. Package Android **`it.andreadada.simplenotes`**. Per il quadro completo leggere [HANDOFF.md](HANDOFF.md).

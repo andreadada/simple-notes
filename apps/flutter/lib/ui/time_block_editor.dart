@@ -194,7 +194,7 @@ Future<TimeBlockDecision?> showTimeBlockEditor(
               ],
               if (warning != null) ...[
                 const SizedBox(height: 8),
-                Text(warning!, style: const TextStyle(color: Color(0xFFFF9090),
+                Text(warning!, style: TextStyle(color: Theme.of(context).colorScheme.error,
                     fontSize: 12)),
               ],
             ]),

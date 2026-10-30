@@ -1,7 +1,7 @@
 # Simple Notes — Architettura applicativa
 
 <!-- CURRENT-STATUS-REF -->
-> **Stato operativo 30/10/2026:** P1.18 Tema Chiaro/Scuro/Sistema integrata su `main` ([PR #19](https://github.com/andreadada/simple-notes/pull/19), Flutter `0.23.0+25`, CI Flutter/Markdown verde); prove fisiche Windows/Android e rilascio cumulativo non attestati. Backend repo Flyway V10, VPS ultima attestazione V8; nessun deploy/reset. [Stato](CURRENT-STATUS.md) · [Tema](P1-APPEARANCE.md).
+> **Stato operativo 30/10/2026:** P2.1 import/export JSON portabile integrata su `main` ([PR #20](https://github.com/andreadada/simple-notes/pull/20), Flutter `0.24.0+26`, CI Flutter/Markdown verde: 152 test e build Windows/Android). Prove su dispositivi reali e rilascio cumulativo non attestati. Backend repo Flyway V10, VPS ultima attestazione V8; nessun deploy/reset. [Stato](CURRENT-STATUS.md) · [Archivio](P2-PORTABLE-ARCHIVE.md).
 
 ## Componenti del codice attuale
 
@@ -76,7 +76,7 @@ I comandi app-local selezionano viste già presenti o invocano i metodi normali 
 
 Hide/restore/quit della finestra non crea entità, endpoint, migrazione, cursor, outbox o credenziali. Il LocalStore/sync già esistente rimane attivo mentre il processo main è nascosto. Il comando Esci chiude il processo; nessun secondo DB nell'engine Sticky. [P1.17](P1-WINDOWS-TRAY.md).
 
-## P2.1 — Livello archivio portabile (branch)
+## P2.1 — Livello archivio portabile (main, PR #20)
 
 `PortableArchive` separa modello JSON versionato e validazione dal picker nativo; `LocalStore` aggiunge copie attraverso transazione SQLite/outbox esistente. La UI nel menu account usa Forui, con conteggi e conferma. Nessuna migrazione, backend API o ownership delle note Sticky modificata. **Non è un backup bit-a-bit**, né ripristina cursori/credenziali/cronologia. [Specifica](P2-PORTABLE-ARCHIVE.md).
 

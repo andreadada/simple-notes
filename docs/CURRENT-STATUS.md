@@ -4,8 +4,9 @@
 
 | Area | Stato verificato | Gate ancora aperti |
 |---|---|---|
-| `main` | **P0–P1.18 integrate**. [PR #19 Tema](https://github.com/andreadada/simple-notes/pull/19) merged, commit [`a7c2e78`](https://github.com/andreadada/simple-notes/commit/a7c2e7866c5aaf30c232270661f48540a30e5152), Flutter **`0.23.0+25`** | Test su Windows e Android reali |
-| P1.18 integrata | [PR #19](https://github.com/andreadada/simple-notes/pull/19) merged, Flutter **`0.23.0+25`**, temi chiaro/scuro/sistema, preferenza locale e Sticky | CI verde; test visivi e su dispositivi fisici ancora aperti |
+| `main` | **P0–P1.18 + P2.1 integrate**. [PR #20 Archivio](https://github.com/andreadada/simple-notes/pull/20) merged, commit [`667b68e`](https://github.com/andreadada/simple-notes/commit/667b68e1c78e47860e2be9706c027a100ea3c1e2), Flutter **`0.24.0+26`** | Test su Windows e Android reali |
+| P1.18 integrata (storico) | [PR #19](https://github.com/andreadada/simple-notes/pull/19) merged, Flutter **`0.23.0+25`**, temi chiaro/scuro/sistema, preferenza locale e Sticky | CI verde; test visivi e su dispositivi fisici ancora aperti |
+| CI P2.1 | [Flutter CI #41114448268](https://github.com/andreadada/simple-notes/actions/runs/41114448268): **success** (152 test, Windows EXE/MSIX, Android JDK17/21). [Markdown #41114449602](https://github.com/andreadada/simple-notes/actions/runs/41114449602): **success** | Non dimostra test fisico, OAuth, upgrade ZIP→MSIX o rilascio |
 | CI P1.18 | [Flutter CI #41067872668](https://github.com/andreadada/simple-notes/actions/runs/41067872668): **success** (148 test, Windows EXE/MSIX, Android JDK17/21). [Markdown #41067872675](https://github.com/andreadada/simple-notes/actions/runs/41067872675): **success** | Non dimostra test fisico, OAuth né upgrade ZIP→MSIX |
 | CI P1.17 | [Flutter CI #40797207231](https://github.com/andreadada/simple-notes/actions/runs/40797207231): **success** per analyze/test, Windows release + MSIX di sviluppo, Android JDK17 e JDK21. [Markdown #40797207130](https://github.com/andreadada/simple-notes/actions/runs/40797207130): **success** | La CI non certifica interazioni fisiche, Google login o notifiche |
 | Backend nel repository | Spring Boot / PostgreSQL 17, Flyway **V10**; client Drift/SQLite **V8** | VPS Coolify ultima attestazione **V8**; V9–V10 reali, health e capability ancora da verificare |
@@ -19,7 +20,8 @@
 - **P1.14–P1.16:** Sticky Notes Windows con bridge al LocalStore principale, scorciatoie Windows e griglia note responsive 1–3 colonne.
 - **P1.17:** icona nell'area di notifica Windows, X→nascondi, Apri/ripristina ed Esci esplicito; fallback quando plugin non disponibile. **Implementazione + CI verificate, comportamento reale da collaudare**.
 - **P1.18 (integrata in main, PR #19):** modalità Scuro/Chiaro/Sistema e preferenza locale, nessuna modifica SQLite/outbox/server. [Specifica](P1-APPEARANCE.md).
-- **P2/P3:** prima P2.1 import/export **in branch, non ancora su main**; integrazioni calendario, condivisione e funzioni smart opzionali **non implementate**.
+- **P2.1 (integrata in main, PR #20):** export/import JSON versionato di liste, task e note attive con conferma Forui, nuovi UUID e outbox nella transazione. [Specifica](P2-PORTABLE-ARCHIVE.md).
+- **P2 successiva/P3:** ICS, export CSV, backup completo, condivisione e smart opzionali **non implementati**.
 
 ## Gate di rilascio ancora aperti
 
@@ -35,7 +37,7 @@
 
 PR #19 merged con CI di codice e documentazione verde sullo SHA finale. Restano il collaudo reale di temi su Windows/Android, Sticky e preferenze dopo riavvio, più il release gate cumulativo backend-first. [Specifica](P1-APPEARANCE.md).
 
-## P2.1 in preparazione (branch separato)
+## P2.1 integrata (30/10/2026)
 
-[Specifica import/export](P2-PORTABLE-ARCHIVE.md). Branch `feature/p2-1-portable-import-export`, candidate Flutter `0.24.0+26`: JSON portabile di liste/task/note attive con validazione e importazione additiva; **non integrata su main finché non passa la CI**. Non modifica PostgreSQL/Flyway o schema Drift; non è un backup del profilo, dei dati Focus o della coda sync. Test fisici e deploy separati.
+[Specifica import/export](P2-PORTABLE-ARCHIVE.md). [PR #20](https://github.com/andreadada/simple-notes/pull/20) merged: Flutter `0.24.0+26`, JSON portabile liste/task/note attive con validazione e importazione additiva. CI completa verde; test fisici e deploy aperti. Non modifica PostgreSQL/Flyway o schema Drift; non è un backup del profilo, dei dati Focus o della coda sync.
 

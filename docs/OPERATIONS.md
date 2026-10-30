@@ -1,6 +1,6 @@
 # Guida operativa — Simple Notes
 
-> **Stato operativo 30/10/2026:** P1.18 Tema Chiaro/Scuro/Sistema integrata su `main` ([PR #19](https://github.com/andreadada/simple-notes/pull/19), Flutter `0.23.0+25`, CI Flutter/Markdown verde); prove fisiche Windows/Android e rilascio cumulativo non attestati. Backend repo Flyway V10, VPS ultima attestazione V8; nessun deploy/reset. [Stato](CURRENT-STATUS.md) · [Tema](P1-APPEARANCE.md).
+> **Stato operativo 30/10/2026:** P2.1 import/export JSON portabile integrata su `main` ([PR #20](https://github.com/andreadada/simple-notes/pull/20), Flutter `0.24.0+26`, CI Flutter/Markdown verde: 152 test e build Windows/Android). Prove su dispositivi reali e rilascio cumulativo non attestati. Backend repo Flyway V10, VPS ultima attestazione V8; nessun deploy/reset. [Stato](CURRENT-STATUS.md) · [Archivio](P2-PORTABLE-ARCHIVE.md).
 
 **Fonte operativa** per il checkout locale Windows, CI, Coolify, Android e Windows ZIP/MSIX. **Ultimo stato verificabile (30/10/2026):** P1.18 su `main` con PR #19 (Flutter `0.23.0+25`), CI Flutter/Markdown verdi. Backend repository Flyway V10 / Drift V8, **ultima VPS confermata Flyway V8**; release e collaudo device non attestati. Leggere sempre [CURRENT-STATUS.md](CURRENT-STATUS.md).
 
@@ -146,7 +146,7 @@ Nel ZIP completo con EXE/DLL: X→tray senza uscire, click/menu Apri→stessa fi
 
 Integrata in `main` ([PR #19](https://github.com/andreadada/simple-notes/pull/19)), Flutter `0.23.0+25`: preferenza `SharedPreferences` per dispositivo (default legacy Scuro); palette coerenti Material/Forui e modifica dal menu account, senza nuove API, migrazioni o outbox. CI completa sullo SHA finale **verde**; test fisici Windows/Android, installazione e deploy non attestati; nessun reset. [Specifica](P1-APPEARANCE.md) · [Stato](CURRENT-STATUS.md).
 
-## Gate P2.1 (branch, nessun deploy)
+## Gate P2.1 (main, CI verde, nessun deploy)
 
 Android e Windows usano il picker file di sistema; verificare un JSON salvato, apertura, annullamento, test import con profilo di prova e persistenza dopo riavvio. Importare su account connesso crea **nuove** operazioni outbox; non importare dataset reali durante prova. Prima di sincronizzare copie importate con Coolify, attestare Flyway V10 e capability. Il JSON non sostituisce il backup/restore isolato di PostgreSQL o il backup SQLite. [Specifica](P2-PORTABLE-ARCHIVE.md).
 

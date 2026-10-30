@@ -1,6 +1,6 @@
 # Flutter client — P0 e P1
 
-> **Stato operativo 30/10/2026:** P1.18 Tema Chiaro/Scuro/Sistema integrata su `main` ([PR #19](https://github.com/andreadada/simple-notes/pull/19), Flutter `0.23.0+25`, CI Flutter/Markdown verde); prove fisiche Windows/Android e rilascio cumulativo non attestati. Backend repo Flyway V10, VPS ultima attestazione V8; nessun deploy/reset. [Stato](../../docs/CURRENT-STATUS.md) · [Tema](../../docs/P1-APPEARANCE.md).
+> **Stato operativo 30/10/2026:** P2.1 import/export JSON portabile integrata su `main` ([PR #20](https://github.com/andreadada/simple-notes/pull/20), Flutter `0.24.0+26`, CI Flutter/Markdown verde: 152 test e build Windows/Android). Prove su dispositivi reali e rilascio cumulativo non attestati. Backend repo Flyway V10, VPS ultima attestazione V8; nessun deploy/reset. [Stato](../../docs/CURRENT-STATUS.md) · [Archivio](../../docs/P2-PORTABLE-ARCHIVE.md).
 
 <!-- CURRENT-STATUS-REF -->
 
@@ -183,6 +183,6 @@ Flutter `0.20.0+22` candidata. `DesktopShortcutPolicy` gestisce Ctrl+1..5, Ctrl+
 
 Integrata in `main` ([PR #19](https://github.com/andreadada/simple-notes/pull/19)), Flutter `0.23.0+25`: preferenza `SharedPreferences` per dispositivo (default legacy Scuro); palette coerenti Material/Forui e modifica dal menu account, senza nuove API, migrazioni o outbox. CI completa sullo SHA finale **verde**; test fisici Windows/Android, installazione e deploy non attestati; nessun reset. [Specifica](../../docs/P1-APPEARANCE.md) · [Stato](../../docs/CURRENT-STATUS.md).
 
-## P2.1 — Import/export dati (candidate)
+## P2.1 — Import/export dati (main, PR #20)
 
-`lib/data/portable_archive.dart` definisce il formato JSON 1 e la validazione; il menu account usa `file_selector` per l'apertura su Android/Windows e il salvataggio su Windows, `share_plus` per l'export Android. Importazione confermata in `NotesDialog` Forui, transazione tramite `LocalStore.importPortable` e outbox; `test/portable_archive_test.dart` copre il round-trip, i limiti e il merge additivo. Flutter `0.24.0+26` in branch, **CI finale ancora da attestare**. Non equivale a un backup di SQLite/SharedPreferences né preserva ID e tombstone. [Specifica](../../docs/P2-PORTABLE-ARCHIVE.md).
+`lib/data/portable_archive.dart` definisce il formato JSON 1 e la validazione; il menu account usa `file_selector` per l'apertura su Android/Windows e il salvataggio su Windows, `share_plus` per l'export Android. Importazione confermata in `NotesDialog` Forui, transazione tramite `LocalStore.importPortable` e outbox; `test/portable_archive_test.dart` copre il round-trip, i limiti e il merge additivo. Flutter `0.24.0+26` integrata su main, CI completa verde (152 test, Android JDK17/21, Windows EXE/MSIX, Markdown); collaudo reale aperto. Non equivale a un backup di SQLite/SharedPreferences né preserva ID e tombstone. [Specifica](../../docs/P2-PORTABLE-ARCHIVE.md).

@@ -1,6 +1,6 @@
 # P2.1 — Archivio JSON portabile, non distruttivo
 
-**Stato al 30/10/2026:** branch `feature/p2-1-portable-import-export`, candidato Flutter `0.24.0+26`. CI e merge da attestare. Nessun deploy o modifica ai dati reali. [Stato](CURRENT-STATUS.md).
+**Stato al 30/10/2026:** [PR #20](https://github.com/andreadada/simple-notes/pull/20) integrata su `main`, Flutter `0.24.0+26`. [Flutter CI #41114448268](https://github.com/andreadada/simple-notes/actions/runs/41114448268) **verde: 152 test, Windows EXE/MSIX, Android JDK17/21**; [Markdown #41114449602](https://github.com/andreadada/simple-notes/actions/runs/41114449602) verde. Nessun deploy o modifica ai dati reali. [Stato](CURRENT-STATUS.md).
 
 ## Scopo
 
@@ -22,7 +22,7 @@
 1. Codec round-trip, date-only/ricorrenze/slot/tag/sottotask, esclusione cestino e identificativi nuovi con mapping corretto.
 2. JSON invalido, schema sconosciuto, liste orfane, limite dimensione → nessuna scrittura.
 3. Import SQLite memory: righe e outbox preesistenti invariati, nuove operazioni in ordine, reimport con nuove UUID; all-or-nothing.
-4. CI Flutter analyze/test, Android JDK 17/21, Windows EXE/MSIX, Markdown **sullo SHA finale**.
+4. CI Flutter analyze/test (152 test), Android JDK 17/21, Windows EXE/MSIX, Markdown **PASS** sullo SHA finale della PR.
 5. Solo in seguito: Windows/Android veri, cancel picker, salva/riapri, riavvio, import offline e sync protetta dal gate V10.
 6. Non confondere il JSON portabile con un backup completo di SQLite + SharedPreferences + secure storage; [runbook](P1-RELEASE-BATCH.md).
 

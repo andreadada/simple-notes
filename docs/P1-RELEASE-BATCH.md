@@ -1,6 +1,6 @@
 # Rollout coordinato — Simple Notes backend V10 e client P1.18
 
-> **Stato operativo 30/10/2026:** P1.18 Tema Chiaro/Scuro/Sistema integrata su `main` ([PR #19](https://github.com/andreadada/simple-notes/pull/19), Flutter `0.23.0+25`, CI Flutter/Markdown verde); prove fisiche Windows/Android e rilascio cumulativo non attestati. Backend repo Flyway V10, VPS ultima attestazione V8; nessun deploy/reset. [Stato](CURRENT-STATUS.md) · [Tema](P1-APPEARANCE.md).
+> **Stato operativo 30/10/2026:** P2.1 import/export JSON portabile integrata su `main` ([PR #20](https://github.com/andreadada/simple-notes/pull/20), Flutter `0.24.0+26`, CI Flutter/Markdown verde: 152 test e build Windows/Android). Prove su dispositivi reali e rilascio cumulativo non attestati. Backend repo Flyway V10, VPS ultima attestazione V8; nessun deploy/reset. [Stato](CURRENT-STATUS.md) · [Archivio](P2-PORTABLE-ARCHIVE.md).
 
 **Stato:** runbook per backend Flyway V10 e client P1.18 `0.23.0+25` (**P1.1–P1.18 integrate in `main`, PR #19, CI Flutter/Markdown verdi**). Non è attestato un deploy Coolify, un'installazione o un collaudo cumulativo; l'utente intende effettuare personalmente il deploy dopo gli incrementi. I comandi sono read-only salvo la procedura Redeploy espressamente distinta.
 
@@ -129,5 +129,5 @@ Integrata in `main` ([PR #19](https://github.com/andreadada/simple-notes/pull/19
 
 ## Gate aggiuntivo — P2.1, non incluso nel batch corrente
 
-La P2.1 è nel branch `feature/p2-1-portable-import-export`; non installare la candidate prima di CI completa, deploy Flyway V10 e collaudo hardware. Un import nel client genera nuove modifiche sync e **non** sostituisce backup, restore isolato o preflight delle capability. [Specifica](P2-PORTABLE-ARCHIVE.md).
+La P2.1 è integrata su `main` (PR #20, CI completa verde); non installare i client aggiornati prima di deploy server-first Flyway V10 e collaudo hardware. Un import nel client genera nuove modifiche sync e **non** sostituisce backup, restore isolato o preflight delle capability. [Specifica](P2-PORTABLE-ARCHIVE.md).
 

@@ -1,6 +1,6 @@
 # Simple Notes — Passaggio di consegne (handoff)
 
-> **Stato operativo 30/10/2026:** P1.18 Tema Chiaro/Scuro/Sistema integrata su `main` ([PR #19](https://github.com/andreadada/simple-notes/pull/19), Flutter `0.23.0+25`, CI Flutter/Markdown verde); prove fisiche Windows/Android e rilascio cumulativo non attestati. Backend repo Flyway V10, VPS ultima attestazione V8; nessun deploy/reset. [Stato](CURRENT-STATUS.md) · [Tema](P1-APPEARANCE.md).
+> **Stato operativo 30/10/2026:** P2.1 import/export JSON portabile integrata su `main` ([PR #20](https://github.com/andreadada/simple-notes/pull/20), Flutter `0.24.0+26`, CI Flutter/Markdown verde: 152 test e build Windows/Android). Prove su dispositivi reali e rilascio cumulativo non attestati. Backend repo Flyway V10, VPS ultima attestazione V8; nessun deploy/reset. [Stato](CURRENT-STATUS.md) · [Archivio](P2-PORTABLE-ARCHIVE.md).
 
 <!-- CURRENT-STATUS-REF -->
 
@@ -293,7 +293,7 @@ P1.16 PR #17 integrata. **P1.17 PR #18 merged su main** (commit `66927c7`, Flutt
 
 Integrata in `main` ([PR #19](https://github.com/andreadada/simple-notes/pull/19)), Flutter `0.23.0+25`: preferenza `SharedPreferences` per dispositivo (default legacy Scuro); palette coerenti Material/Forui e modifica dal menu account, senza nuove API, migrazioni o outbox. CI completa sullo SHA finale **verde**; test fisici Windows/Android, installazione e deploy non attestati; nessun reset. [Specifica](P1-APPEARANCE.md) · [Stato](CURRENT-STATUS.md).
 
-## P2.1 — Archivio portabile (branch 30/10/2026)
+## P2.1 — Archivio portabile (main, PR #20)
 
-Sviluppo nel branch `feature/p2-1-portable-import-export`, candidato `0.24.0+26`. Export JSON solo dati attivi liste/task/note; validazione forte e import come **nuove copie** in transazione SQLite con outbox. Test app e picker ancora soggetti a CI/device; `main` rimane P1.18. Non fare deploy né ripristini distruttivi. [Specifica](P2-PORTABLE-ARCHIVE.md) · [Stato](CURRENT-STATUS.md).
+Integrata su `main` con PR #20, Flutter `0.24.0+26`. Export JSON solo dati attivi liste/task/note; validazione forte e import come **nuove copie** in transazione SQLite con outbox. Flutter CI verde (152 test, Windows/Android); test picker fisico e sync release separati; `main` contiene P2.1. Non fare deploy né ripristini distruttivi. [Specifica](P2-PORTABLE-ARCHIVE.md) · [Stato](CURRENT-STATUS.md).
 

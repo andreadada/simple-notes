@@ -1,6 +1,6 @@
 # Simple Notes — Progetto e roadmap
 
-> **Stato operativo 30/10/2026:** P1.18 Tema Chiaro/Scuro/Sistema integrata su `main` ([PR #19](https://github.com/andreadada/simple-notes/pull/19), Flutter `0.23.0+25`, CI Flutter/Markdown verde); prove fisiche Windows/Android e rilascio cumulativo non attestati. Backend repo Flyway V10, VPS ultima attestazione V8; nessun deploy/reset. [Stato](docs/CURRENT-STATUS.md) · [Tema](docs/P1-APPEARANCE.md).
+> **Stato operativo 30/10/2026:** P2.1 import/export JSON portabile integrata su `main` ([PR #20](https://github.com/andreadada/simple-notes/pull/20), Flutter `0.24.0+26`, CI Flutter/Markdown verde: 152 test e build Windows/Android). Prove su dispositivi reali e rilascio cumulativo non attestati. Backend repo Flyway V10, VPS ultima attestazione V8; nessun deploy/reset. [Stato](docs/CURRENT-STATUS.md) · [Archivio](docs/P2-PORTABLE-ARCHIVE.md).
 
 <!-- CURRENT-STATUS-REF -->
 
@@ -129,7 +129,7 @@
 
 ## P2 — Estensioni
 - [ ] Timeline/Gantt e filtri avanzati.
-- [ ] Import/export e subscription ICS.
+- [x] P2.1 Import/export JSON non distruttivo (PR #20, 152 test e CI verde). [ ] Subscription ICS ancora da implementare.
 - [ ] Collegamento Google Calendar/Outlook con consenso separato.
 - [ ] Liste condivise, ruoli, assegnazioni e audit.
 - [ ] Allegati con storage S3 compatibile.
@@ -323,9 +323,11 @@ Esempio: `2026-10-21 14:20 CEST | commit abc1234 | Aggiunto modulo promemoria e 
 
 - 2026-10-30 | merge(p1.18) | PR #19 integrata su main commit `a7c2e786`: Flutter `0.23.0+25`, CI #41067872668 e Markdown #41067872675 verdi sullo SHA finale. Verifiche su dispositivi e server-first V10 ancora aperte. [Specifica](docs/P1-APPEARANCE.md).
 
-## P2.1 — Archivio portabile (branch di sviluppo 30/10/2026)
+## P2.1 — Archivio portabile (integrata 30/10/2026)
 
-- [ ] Integrare PR P2.1 su `main` **solo dopo CI verde**. Nel branch: export/import JSON liste/task/note attive, import non distruttivo con nuovi UUID, validazione e conferma Forui; test Flutter e device reali separati.
+- [x] PR #20 integrata su `main` **dopo CI verde**: export/import JSON liste/task/note attive, import non distruttivo con nuovi UUID, validazione e conferma Forui; test reali sui dispositivi ancora aperti.
 - [ ] Collaudare picker Android/Windows e condivisione file realmente salvato; verificare sync dopo import solo a server Flyway V10 pronto.
 - [ ] P2 successiva: formato ICS read-only, export CSV mirati e backup/restore completo progettato separatamente. [Specifica](docs/P2-PORTABLE-ARCHIVE.md).
 
+
+- 2026-10-30 | merge(p2.1) | PR #20 merged su `main` (`667b68e`), Flutter `0.24.0+26`. CI #41114448268 e Markdown #41114449602 verdi; 152 test, Windows EXE/MSIX e Android JDK17/21. Nessun deploy, migrazione o reset; test fisici aperti. [Specifica](docs/P2-PORTABLE-ARCHIVE.md).

@@ -1,6 +1,6 @@
 # P1.7 — Promemoria Android e pianificazione cross-platform
 
-> **Stato operativo 30/10/2026:** P1.18 Tema Chiaro/Scuro/Sistema integrata su `main` ([PR #19](https://github.com/andreadada/simple-notes/pull/19), Flutter `0.23.0+25`, CI Flutter/Markdown verde); prove fisiche Windows/Android e rilascio cumulativo non attestati. Backend repo Flyway V10, VPS ultima attestazione V8; nessun deploy/reset. [Stato](CURRENT-STATUS.md) · [Tema](P1-APPEARANCE.md).
+> **Stato operativo 30/10/2026:** P2.1 import/export JSON portabile integrata su `main` ([PR #20](https://github.com/andreadada/simple-notes/pull/20), Flutter `0.24.0+26`, CI Flutter/Markdown verde: 152 test e build Windows/Android). Collaudi fisici e rilascio cumulativo non attestati. Backend repo Flyway V10, ultima VPS verificata V8; nessun deploy/reset. [Stato](CURRENT-STATUS.md) · [Archivio](P2-PORTABLE-ARCHIVE.md).
 
 **Stato del codice (25 ottobre 2026):** P1.7 Android integrata su `main` con [PR #6](https://github.com/andreadada/simple-notes/pull/6), merge `df40b93e`. CI Flutter **verde** ([run 40231569864](https://github.com/andreadada/simple-notes/actions/runs/40231569864)) su test, Windows release e APK JDK17/21. **Nessun test fisico Android**, deploy e delivery Windows da attestare.
 

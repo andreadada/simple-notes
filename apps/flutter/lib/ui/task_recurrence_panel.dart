@@ -15,12 +15,12 @@ class TaskRecurrencePanel extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) => Column(
     crossAxisAlignment: CrossAxisAlignment.start,
     children: [
-      const Text('RIPETIZIONE', style: TextStyle(
-        color: NotesPalette.secondaryText, fontSize: 11)),
+      Text('RIPETIZIONE', style: TextStyle(
+        color: NotesPalette.of(context).secondaryText, fontSize: 11)),
       const SizedBox(height: 8),
       if (!task.due.modern)
-        const Text('Imposta prima una scadenza con data per attivare la ripetizione.',
-          style: TextStyle(color: NotesPalette.secondaryText, fontSize: 12))
+        Text('Imposta prima una scadenza con data per attivare la ripetizione.',
+          style: TextStyle(color: NotesPalette.of(context).secondaryText, fontSize: 12))
       else
         FPopoverMenu(
           menu: [
@@ -56,9 +56,9 @@ class TaskRecurrencePanel extends ConsumerWidget {
         ),
       if (task.recurrence.enabled) ...[
         const SizedBox(height: 6),
-        const Text('Completando la sessione, la scadenza avanza '
+        Text('Completando la sessione, la scadenza avanza '
           'alla prossima occorrenza senza creare duplicati.',
-          style: TextStyle(color: NotesPalette.secondaryText, fontSize: 11)),
+          style: TextStyle(color: NotesPalette.of(context).secondaryText, fontSize: 11)),
       ],
     ],
   );

@@ -197,9 +197,9 @@ class _CalendarBoardState extends ConsumerState<CalendarBoard> {
               child: Text(task.title, style:
                 const TextStyle(color: Colors.white))),
         ),
-        child: const Tooltip(message: 'Trascina sul giorno di destinazione',
+        child: Tooltip(message: 'Trascina sul giorno di destinazione',
           child: Icon(Icons.drag_indicator, size: 18,
-            color: NotesPalette.accent)),
+            color: NotesPalette.of(context).accent)),
       ),
       const SizedBox(width: 10),
       Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start,
@@ -208,8 +208,8 @@ class _CalendarBoardState extends ConsumerState<CalendarBoard> {
               style: const TextStyle(fontWeight: FontWeight.w600)),
           const SizedBox(height: 4),
           Text(timeBlockLabel(slot.block),
-              style: const TextStyle(fontSize: 11,
-                  color: NotesPalette.secondaryText)),
+              style: TextStyle(fontSize: 11,
+                  color: NotesPalette.of(context).secondaryText)),
         ],
       )),
       if (task.timeBlocks.isNotEmpty) ...[
@@ -270,14 +270,14 @@ class _CalendarBoardState extends ConsumerState<CalendarBoard> {
           ),
           const SizedBox(height: 4),
           Text(calendarClockLabel(task),
-              style: const TextStyle(fontSize: 11,
-                  color: NotesPalette.secondaryText)),
+              style: TextStyle(fontSize: 11,
+                  color: NotesPalette.of(context).secondaryText)),
           if (task.due.kind == 'datetime')
             Text(taskDueLabel(task.due),
               maxLines: compact ? 1 : 2,
               overflow: TextOverflow.ellipsis,
-              style: const TextStyle(fontSize: 10,
-                  color: NotesPalette.secondaryText)),
+              style: TextStyle(fontSize: 10,
+                  color: NotesPalette.of(context).secondaryText)),
         ],
       )),
       const SizedBox(width: 5),
@@ -311,44 +311,44 @@ class _CalendarBoardState extends ConsumerState<CalendarBoard> {
           const SizedBox(height: 10),
         ],
         if (blocks.isEmpty && items.isEmpty)
-          const Padding(
+          Padding(
             padding: EdgeInsets.symmetric(vertical: 24),
             child: Text('Nessun blocco o attività in questo giorno.',
-              style: TextStyle(color: NotesPalette.secondaryText)),
+              style: TextStyle(color: NotesPalette.of(context).secondaryText)),
           ),
         if (mode != CalendarMode.day && blocks.isNotEmpty) ...[
-          const Text('BLOCCHI DI TEMPO', style: TextStyle(
-              color: NotesPalette.secondaryText, fontSize: 12,
+          Text('BLOCCHI DI TEMPO', style: TextStyle(
+              color: NotesPalette.of(context).secondaryText, fontSize: 12,
               fontWeight: FontWeight.w600)),
           const SizedBox(height: 8),
           for (final entry in blocks) _blockCard(entry),
           const SizedBox(height: 12),
         ],
         if (items.isNotEmpty)
-          const Padding(
+          Padding(
             padding: EdgeInsets.only(bottom: 8),
             child: Text('SCADENZE', style: TextStyle(
-              color: NotesPalette.secondaryText,
+              color: NotesPalette.of(context).secondaryText,
               fontSize: 12, fontWeight: FontWeight.w600)),
           ),
         if (allDay.isNotEmpty) ...[
-          const Text('Senza orario', style: TextStyle(
-              color: NotesPalette.secondaryText, fontSize: 12)),
+          Text('Senza orario', style: TextStyle(
+              color: NotesPalette.of(context).secondaryText, fontSize: 12)),
           const SizedBox(height: 8),
           for (final task in allDay) _taskCard(task),
         ],
         if (scheduled.isNotEmpty) ...[
           const SizedBox(height: 8),
-          const Text('Orari', style: TextStyle(
-              color: NotesPalette.secondaryText, fontSize: 12)),
+          Text('Orari', style: TextStyle(
+              color: NotesPalette.of(context).secondaryText, fontSize: 12)),
           const SizedBox(height: 8),
           for (final task in scheduled) _taskCard(task),
         ],
         if (mode == CalendarMode.day) ...[
           const SizedBox(height: 14),
-          const Text('TIMELINE · trascina per spostare, '
+          Text('TIMELINE · trascina per spostare, '
               'usa la maniglia inferiore per ridimensionare',
-            style: TextStyle(color: NotesPalette.secondaryText, fontSize: 11)),
+            style: TextStyle(color: NotesPalette.of(context).secondaryText, fontSize: 11)),
           const SizedBox(height: 10),
           TimeBlockTimeline(
             key: Key('calendar-day-timeline-${calendarDateKey(day)}'),
@@ -368,8 +368,8 @@ class _CalendarBoardState extends ConsumerState<CalendarBoard> {
           Expanded(child: Padding(
             padding: const EdgeInsets.only(bottom: 9),
             child: Text(name, textAlign: TextAlign.center,
-                style: const TextStyle(fontSize: 11,
-                    color: NotesPalette.secondaryText)),
+                style: TextStyle(fontSize: 11,
+                    color: NotesPalette.of(context).secondaryText)),
           )),
       ]),
       GridView.builder(
@@ -393,7 +393,7 @@ class _CalendarBoardState extends ConsumerState<CalendarBoard> {
           return CalendarDayDropZone(
             day: day, onDrop: _moveBlockToDay,
             child: Material(
-              color: focused ? NotesPalette.accent.withValues(alpha: 0.14)
+              color: focused ? NotesPalette.of(context).accent.withValues(alpha: 0.14)
                   : const Color(0xff252525),
               borderRadius: BorderRadius.circular(9),
               child: InkWell(
@@ -405,8 +405,8 @@ class _CalendarBoardState extends ConsumerState<CalendarBoard> {
                 child: Column(crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text('${day.day}', style: TextStyle(fontSize: 12,
-                      color: !inMonth ? NotesPalette.secondaryText
-                          : today ? NotesPalette.accent : null,
+                      color: !inMonth ? NotesPalette.of(context).secondaryText
+                          : today ? NotesPalette.of(context).accent : null,
                       fontWeight: today || focused
                           ? FontWeight.bold : FontWeight.normal)),
                     if (items.isNotEmpty || blocks.isNotEmpty) ...[
@@ -415,8 +415,8 @@ class _CalendarBoardState extends ConsumerState<CalendarBoard> {
                           ? '${items.length} · ${blocks.length}'
                           : '${items.length} scad. · ${blocks.length} blocchi',
                         maxLines: 1, overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(fontSize: 10,
-                            color: NotesPalette.secondaryText)),
+                        style: TextStyle(fontSize: 10,
+                            color: NotesPalette.of(context).secondaryText)),
                       if (width >= 650)
                         for (final task in items.take(2))
                           Text('• ${task.title}', maxLines: 1,
@@ -471,10 +471,10 @@ class _CalendarBoardState extends ConsumerState<CalendarBoard> {
                 _taskCard(task, compact: true),
               if (calendarTasksForDay(tasks, day).isEmpty &&
                   calendarTimeSlotsForDay(tasks, day).isEmpty)
-                const Padding(
+                Padding(
                   padding: EdgeInsets.symmetric(vertical: 13),
                   child: Text('—', style: TextStyle(
-                      color: NotesPalette.secondaryText)),
+                      color: NotesPalette.of(context).secondaryText)),
                 ),
             ]),
           )),
@@ -578,20 +578,20 @@ class _CalendarBoardState extends ConsumerState<CalendarBoard> {
           const SizedBox(height: 8),
           Text('${tasks.length} di ${allTasks.length} attività visibili',
             key: const Key('calendar-filter-count'),
-            style: const TextStyle(fontSize: 11,
-                color: NotesPalette.secondaryText)),
+            style: TextStyle(fontSize: 11,
+                color: NotesPalette.of(context).secondaryText)),
           const SizedBox(height: 8),
           Text('${summary.slotCount} blocchi · '
               '${calendarMinutesLabel(summary.plannedMinutes)} pianificate · '
               '${calendarMinutesLabel(summary.completedMinutes)} completate',
             key: const Key('calendar-summary'),
-            style: const TextStyle(fontSize: 12,
-                color: NotesPalette.secondaryText)),
+            style: TextStyle(fontSize: 12,
+                color: NotesPalette.of(context).secondaryText)),
           const SizedBox(height: 5),
           Text('Trascina i blocchi per spostare orari e date · '
               '$unscheduled attività da pianificare',
-            style: const TextStyle(fontSize: 11,
-                color: NotesPalette.secondaryText)),
+            style: TextStyle(fontSize: 11,
+                color: NotesPalette.of(context).secondaryText)),
         ]),
       ),
       Expanded(child: LayoutBuilder(
@@ -604,8 +604,8 @@ class _CalendarBoardState extends ConsumerState<CalendarBoard> {
               if (mode == CalendarMode.month) _month(tasks, limits.maxWidth - 32),
               const SizedBox(height: 18),
               Text('Aggiungi attività al ${selected.day}/${selected.month}/${selected.year}',
-                style: const TextStyle(fontSize: 12,
-                    color: NotesPalette.secondaryText)),
+                style: TextStyle(fontSize: 12,
+                    color: NotesPalette.of(context).secondaryText)),
               const SizedBox(height: 7),
               InlineQuickAdd(
                 key: const Key('calendar-quick-add'),
@@ -615,12 +615,12 @@ class _CalendarBoardState extends ConsumerState<CalendarBoard> {
               ),
               if (unscheduled > 0) ...[
                 const SizedBox(height: 18),
-                const Text('DA PIANIFICARE',
+                Text('DA PIANIFICARE',
                   style: TextStyle(fontSize: 12,
-                      color: NotesPalette.secondaryText)),
+                      color: NotesPalette.of(context).secondaryText)),
                 Wrap(spacing: 7, runSpacing: 6, children: [
-                  const Text('Durata rapida:', style: TextStyle(
-                    color: NotesPalette.secondaryText, fontSize: 12)),
+                  Text('Durata rapida:', style: TextStyle(
+                    color: NotesPalette.of(context).secondaryText, fontSize: 12)),
                   for (final duration in [30, 60, 90])
                     FButton(
                       key: Key('calendar-quick-duration-$duration'),

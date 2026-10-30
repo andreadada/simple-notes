@@ -48,8 +48,8 @@ class TimeBlockTimeline extends StatelessWidget {
               left: 0, right: 0,
               child: Row(children: [
                 SizedBox(width: rulerWidth - 4,
-                  child: Text(mark.label, style: const TextStyle(
-                    color: NotesPalette.secondaryText, fontSize: 10))),
+                  child: Text(mark.label, style: TextStyle(
+                    color: NotesPalette.of(context).secondaryText, fontSize: 10))),
                 Expanded(child: Container(height: 1,
                   color: const Color(0xFF343434))),
               ]),
@@ -191,7 +191,7 @@ class _InteractiveBlockState extends State<_InteractiveBlock> {
         key: Key('calendar-block-${task.id}-${widget.geometry.slot.id}'),
         decoration: BoxDecoration(
           color: const Color(0xFF24354E),
-          border: Border.all(color: NotesPalette.accent.withValues(alpha: 0.65)),
+          border: Border.all(color: NotesPalette.of(context).accent.withValues(alpha: 0.65)),
           borderRadius: BorderRadius.circular(7),
         ),
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
@@ -223,8 +223,8 @@ class _InteractiveBlockState extends State<_InteractiveBlock> {
                   if (!short)
                     Text(timeBlockLabel(widget.geometry.slot.block),
                       maxLines: 1, overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(fontSize: 9,
-                          color: NotesPalette.secondaryText)),
+                      style: TextStyle(fontSize: 9,
+                          color: NotesPalette.of(context).secondaryText)),
                 ]),
             ),
           )),
@@ -268,7 +268,7 @@ class _InteractiveBlockState extends State<_InteractiveBlock> {
                   child: Center(child: Container(
                     width: 28, height: 3,
                     decoration: BoxDecoration(
-                      color: NotesPalette.accent.withValues(alpha: 0.8),
+                      color: NotesPalette.of(context).accent.withValues(alpha: 0.8),
                       borderRadius: BorderRadius.circular(2)),
                   )),
                 ),
@@ -301,7 +301,7 @@ class CalendarDayDropZone extends StatelessWidget {
         builder: (context, candidates, rejects) => DecoratedBox(
           decoration: BoxDecoration(
             border: candidates.isEmpty ? null : Border.all(
-              color: NotesPalette.accent, width: 2),
+              color: NotesPalette.of(context).accent, width: 2),
             borderRadius: BorderRadius.circular(8),
           ),
           child: child,

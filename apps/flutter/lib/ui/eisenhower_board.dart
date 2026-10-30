@@ -35,15 +35,15 @@ class EisenhowerBoard extends ConsumerWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
+            Text(
               'La matrice si aggiorna automaticamente da priorità e scadenze.',
-              style: TextStyle(color: NotesPalette.secondaryText, fontSize: 12),
+              style: TextStyle(color: NotesPalette.of(context).secondaryText, fontSize: 12),
             ),
             const SizedBox(height: 4),
-            const Text(
+            Text(
               'P2/P3 = importante · Scadenza entro 48 ore = urgente; '
               'le date senza orario usano oggi/domani.',
-              style: TextStyle(color: NotesPalette.secondaryText, fontSize: 12),
+              style: TextStyle(color: NotesPalette.of(context).secondaryText, fontSize: 12),
             ),
             const SizedBox(height: 16),
             Wrap(
@@ -65,19 +65,19 @@ class EisenhowerBoard extends ConsumerWidget {
                                 style: const TextStyle(
                                   fontSize: 17, fontWeight: FontWeight.w700))),
                               Text('${groups[quadrant]!.length}',
-                                style: const TextStyle(
-                                  color: NotesPalette.secondaryText)),
+                                style: TextStyle(
+                                  color: NotesPalette.of(context).secondaryText)),
                             ]),
                             const SizedBox(height: 4),
-                            Text(quadrant.description, style: const TextStyle(
-                              color: NotesPalette.secondaryText, fontSize: 12)),
+                            Text(quadrant.description, style: TextStyle(
+                              color: NotesPalette.of(context).secondaryText, fontSize: 12)),
                             const SizedBox(height: 12),
                             if (groups[quadrant]!.isEmpty)
-                              const Padding(
+                              Padding(
                                 padding: EdgeInsets.symmetric(vertical: 8),
                                 child: Text('Nessuna attività',
                                   style: TextStyle(
-                                    color: NotesPalette.secondaryText)),
+                                    color: NotesPalette.of(context).secondaryText)),
                               ),
                             for (final task in groups[quadrant]!)
                               Padding(

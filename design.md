@@ -213,3 +213,7 @@ Piccolo pulsante nell'header Windows per nascondere. Se la tray è attiva la X n
 ## P1.18 — Tema chiaro/scuro/sistema (main, PR #19)
 
 Integrata in `main` ([PR #19](https://github.com/andreadada/simple-notes/pull/19)), Flutter `0.23.0+25`: preferenza `SharedPreferences` per dispositivo (default legacy Scuro); palette coerenti Material/Forui e modifica dal menu account, senza nuove API, migrazioni o outbox. CI completa sullo SHA finale **verde**; test fisici Windows/Android, installazione e deploy non attestati; nessun reset. [Specifica](docs/P1-APPEARANCE.md) · [Stato](docs/CURRENT-STATUS.md).
+
+## P2.1 — Import/export nel menu account
+
+Due azioni semplici «Esporta dati JSON» e «Importa dati JSON». L'import mostra prima una modale Forui con conteggi esatti e avviso che vengono create copie (ripetere genera duplicati), senza distruggere dati preesistenti. Non servono campi di rinomina né modal Material. Errori di file leggibili tramite SnackBar; annullare non deve scrivere nulla. [Specifica](docs/P2-PORTABLE-ARCHIVE.md).

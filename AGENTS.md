@@ -72,3 +72,7 @@ Solo processo main/Windows: le Sticky separate **non** inizializzano la tray né
 ## P1.18 — Tema chiaro/scuro/sistema (main, PR #19)
 
 Integrata in `main` ([PR #19](https://github.com/andreadada/simple-notes/pull/19)), Flutter `0.23.0+25`: preferenza `SharedPreferences` per dispositivo (default legacy Scuro); palette coerenti Material/Forui e modifica dal menu account, senza nuove API, migrazioni o outbox. CI completa sullo SHA finale **verde**; test fisici Windows/Android, installazione e deploy non attestati; nessun reset. [Specifica](docs/P1-APPEARANCE.md) · [Stato](docs/CURRENT-STATUS.md).
+
+## Vincolo P2.1 — import/export sicuro
+
+L'archivio portabile JSON deve rimanere distinta da backup/ripristino completo e dalla sincronizzazione: non includere token, owner, cursore, outbox, cestino o dati locali di Focus. Import solo dopo parsing/validazione e conferma esplicita in modale Forui; nuove UUID per tutte le copie, associazioni liste/attività conservate e una transazione SQLite, senza replace, reset, update dello storico o sovrascritture. L'operazione importa sull'account locale corrente e genera operazioni di sync normali. [Specifica](docs/P2-PORTABLE-ARCHIVE.md).

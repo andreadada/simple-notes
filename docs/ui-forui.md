@@ -163,3 +163,8 @@ L'header Windows contiene un piccolo comando Nascondi quando la tray è pronta; 
 ## P1.18 — Tema chiaro/scuro/sistema (main, PR #19)
 
 Integrata in `main` ([PR #19](https://github.com/andreadada/simple-notes/pull/19)), Flutter `0.23.0+25`: preferenza `SharedPreferences` per dispositivo (default legacy Scuro); palette coerenti Material/Forui e modifica dal menu account, senza nuove API, migrazioni o outbox. CI completa sullo SHA finale **verde**; test fisici Windows/Android, installazione e deploy non attestati; nessun reset. [Specifica](P1-APPEARANCE.md) · [Stato](CURRENT-STATUS.md).
+
+## P2.1 — Dialog import portabile
+
+Conferma import mediante `showFDialog` e `NotesDialog` Forui (nessun Material AlertDialog), con conteggio liste/task/note e dichiarazione esplicita di copie con UUID nuove. Le due azioni si trovano nel menu account, con stato busy e SnackBar di esito. Il JSON non richiede input da editare o rinominare. [Specifica](P2-PORTABLE-ARCHIVE.md).
+

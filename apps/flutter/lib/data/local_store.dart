@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:uuid/uuid.dart';
 import 'app_database.dart';
 import 'models.dart';
+import 'portable_archive.dart';
 
 export 'models.dart';
 
@@ -20,6 +21,26 @@ final localMutationRevisionProvider = StateProvider<int>((ref) => 0);
 class LocalStore extends Notifier<LocalData> {
   @override
   LocalData build() => ref.read(initialDataProvider);
+
+  /// Import is additive and atomic: failed writes roll back with the outbox.
+  Future<int> importPortable(PortableArchive archive) async {
+    final copies = archive.asNewCopies();
+    final database = ref.read(databaseProvider);
+    await database.transaction(() async {
+      for (final list in copies.lists) {
+        await database.upsertList(list);
+      }
+      for (final task in copies.tasks) {
+        await database.upsertTask(task);
+      }
+      for (final note in copies.notes) {
+        await database.upsertNote(note);
+      }
+    });
+    await reload();
+    if (archive.recordCount > 0) _changed();
+    return archive.recordCount;
+  }
 
   Future<void> reload() async {
     state = await ref.read(databaseProvider).snapshot();

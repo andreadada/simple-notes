@@ -19,7 +19,7 @@
 - **P1.14–P1.16:** Sticky Notes Windows con bridge al LocalStore principale, scorciatoie Windows e griglia note responsive 1–3 colonne.
 - **P1.17:** icona nell'area di notifica Windows, X→nascondi, Apri/ripristina ed Esci esplicito; fallback quando plugin non disponibile. **Implementazione + CI verificate, comportamento reale da collaudare**.
 - **P1.18 (integrata in main, PR #19):** modalità Scuro/Chiaro/Sistema e preferenza locale, nessuna modifica SQLite/outbox/server. [Specifica](P1-APPEARANCE.md).
-- **P2/P3:** ulteriori personalizzazioni, integrazioni calendario, import/export, condivisione e funzioni smart opzionali **non implementate**.
+- **P2/P3:** prima P2.1 import/export **in branch, non ancora su main**; integrazioni calendario, condivisione e funzioni smart opzionali **non implementate**.
 
 ## Gate di rilascio ancora aperti
 
@@ -34,3 +34,8 @@
 ## P1.18 integrata (30/10/2026)
 
 PR #19 merged con CI di codice e documentazione verde sullo SHA finale. Restano il collaudo reale di temi su Windows/Android, Sticky e preferenze dopo riavvio, più il release gate cumulativo backend-first. [Specifica](P1-APPEARANCE.md).
+
+## P2.1 in preparazione (branch separato)
+
+[Specifica import/export](P2-PORTABLE-ARCHIVE.md). Branch `feature/p2-1-portable-import-export`, candidate Flutter `0.24.0+26`: JSON portabile di liste/task/note attive con validazione e importazione additiva; **non integrata su main finché non passa la CI**. Non modifica PostgreSQL/Flyway o schema Drift; non è un backup del profilo, dei dati Focus o della coda sync. Test fisici e deploy separati.
+

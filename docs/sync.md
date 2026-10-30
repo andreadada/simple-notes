@@ -73,3 +73,8 @@ La griglia responsive è una proiezione della lista `LocalNote` esistente e non 
 ## P1.17 — Tray Windows senza server né sync nuove
 
 Hide/restore/quit della finestra non crea entità, endpoint, migrazione, cursor, outbox o credenziali. Il LocalStore/sync già esistente rimane attivo mentre il processo main è nascosto. Il comando Esci chiude il processo; nessun secondo DB nell'engine Sticky. [P1.17](P1-WINDOWS-TRAY.md).
+
+## P2.1 — Import JSON portabile e outbox
+
+Importare dati tramite `LocalStore.importPortable` crea nuove UUID per liste, task e note, preservando riferimenti task/lista e sottotask/slot; le operazioni SQLite generano gli stessi upsert versionati e l'ordinamento lista→task→note del flusso standard. Non importa operationId, remoteVersion, owner, sync cursor o tombstone di altri dispositivi. No endpoint o capability nuovi; server V10 obbligatorio per i campi P1. [Specifica](P2-PORTABLE-ARCHIVE.md).
+

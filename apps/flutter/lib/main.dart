@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:forui/forui.dart';
 import 'ui/notes_theme.dart';
+import 'ui/theme_mode_preference.dart';
 import 'ui/desktop_shortcuts.dart';
 import 'ui/windows_tray.dart'
     if (dart.library.html) 'ui/windows_tray_stub.dart';
@@ -53,45 +54,54 @@ Future<void> main(List<String> args) async {
       databaseProvider.overrideWithValue(database),
       initialDataProvider.overrideWithValue(snapshot),
     ],
-    child: const SimpleNotesApp(),
+    child: SimpleNotesApp(initialMode: ThemeModePreference.decode(
+      preferences.getString(ThemeModePreference.key))),
   ));
 }
 
-class SimpleNotesApp extends StatelessWidget {
-  const SimpleNotesApp({super.key});
+class SimpleNotesApp extends StatefulWidget {
+  const SimpleNotesApp({super.key, this.initialMode = ThemeMode.dark});
+
+  final ThemeMode initialMode;
+
+  @override
+  State<SimpleNotesApp> createState() => _SimpleNotesAppState();
+}
+
+class _SimpleNotesAppState extends State<SimpleNotesApp> {
+  late ThemeMode _mode = widget.initialMode;
+
+  Future<void> _changeMode(ThemeMode next) async {
+    if (next == _mode) return;
+    try {
+      await ThemeModePreference.save(next);
+      if (mounted) setState(() => _mode = next);
+    } catch (_) {
+      // A failed write must not give the impression that the choice persists.
+      // Previous mode and local SQLite/outbox remain unchanged.
+    }
+  }
 
   @override
   Widget build(BuildContext context) => MaterialApp(
         title: 'Simple Notes',
         debugShowCheckedModeBanner: false,
-        themeMode: ThemeMode.dark,
-        theme: ThemeData(
-          brightness: Brightness.dark,
-          colorScheme: ColorScheme.fromSeed(
-            seedColor: const Color(0xff547aff), brightness: Brightness.dark,
-            surface: const Color(0xff181818),
-          ),
-          useMaterial3: true,
-          scaffoldBackgroundColor: const Color(0xff181818),
-          cardColor: const Color(0xff252525),
-          // The Material bridge must not put grey backgrounds behind
-          // editable text. Forui controls keep their own distinct styling.
-          inputDecorationTheme: const InputDecorationTheme(
-            filled: false,
-            fillColor: Colors.transparent,
-            border: NotesTheme.inlineBorder,
-            enabledBorder: NotesTheme.inlineBorder,
-            focusedBorder: NotesTheme.inlineFocusedBorder,
-            contentPadding: EdgeInsets.symmetric(vertical: 8),
-          ),
-        ),
-        // Forui is our primary widget system. Material remains only as a
-        // compatibility bridge for date pickers, dialogs and the editor.
+        themeMode: _mode,
+        theme: NotesTheme.material(Brightness.light),
+        darkTheme: NotesTheme.material(Brightness.dark),
+        // Material is a compatibility bridge; Forui owns the primary widgets.
         builder: (context, child) => FTheme(
-          data: NotesTheme.forPlatform(Theme.of(context).platform),
+          data: NotesTheme.forPlatform(
+            Theme.of(context).platform,
+            brightness: Theme.of(context).brightness,
+          ),
           child: child ?? const SizedBox.shrink(),
         ),
-        home: const AutoSyncHost(child: NotesHome()),
+        home: NotesAppearance(
+          mode: _mode,
+          onChange: _changeMode,
+          child: const AutoSyncHost(child: NotesHome()),
+        ),
       );
 }
 
@@ -426,6 +436,22 @@ Ctrl+/ · Questo elenco'''),
               onPress: () => accountAction('login'),
             ),
         ]),
+        .group(children: [
+          for (final option in <(ThemeMode, String, IconData)>[
+            (ThemeMode.dark, 'Scuro', Icons.dark_mode_outlined),
+            (ThemeMode.light, 'Chiaro', Icons.light_mode_outlined),
+            (ThemeMode.system, 'Sistema', Icons.brightness_auto_outlined),
+          ])
+            .item(
+              title: Text('Tema: ${option.$2}'),
+              prefix: Icon(
+                NotesAppearance.of(context).mode == option.$1
+                  ? Icons.check_circle_outline : option.$3,
+                size: 18,
+              ),
+              onPress: () => NotesAppearance.of(context).onChange(option.$1),
+            ),
+        ]),
       ],
       menuBuilder: (context, controller, menu) => menu!,
       builder: (context, controller, child) => FButton(
@@ -459,12 +485,12 @@ Ctrl+/ · Questo elenco'''),
                     Text(cloud.authenticated
                       ? 'Sincronizzazione automatica'
                       : 'Collega il tuo account',
-                      style: const TextStyle(fontSize: 11,
-                        color: NotesPalette.secondaryText)),
+                      style: TextStyle(fontSize: 11,
+                        color: NotesPalette.of(context).secondaryText)),
                   ],
                 )),
-                const Icon(Icons.keyboard_arrow_down,
-                  color: NotesPalette.secondaryText, size: 17),
+                Icon(Icons.keyboard_arrow_down,
+                  color: NotesPalette.of(context).secondaryText, size: 17),
               ],
             ],
           ),
@@ -474,10 +500,10 @@ Ctrl+/ · Questo elenco'''),
 
     // One responsive Forui navigation component for Windows and Android.
     Widget navigation() => FSidebar(
-      header: const Padding(
+      header: Padding(
         padding: EdgeInsets.fromLTRB(18, 24, 18, 16),
         child: Row(children: [
-          Icon(Icons.check_circle, color: NotesPalette.accent, size: 22),
+          Icon(Icons.check_circle, color: NotesPalette.of(context).accent, size: 22),
           SizedBox(width: 12),
           Expanded(child: Text('Simple Notes',
             style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700))),
@@ -645,7 +671,7 @@ Ctrl+/ · Questo elenco'''),
       body: Row(children: [
         if (desktop)
           SizedBox(width: 246, child: ColoredBox(
-            color: NotesPalette.sidebar, child: SafeArea(child: navigation()),
+            color: NotesPalette.of(context).sidebar, child: SafeArea(child: navigation()),
           )),
         Expanded(child: Column(children: [
           if (desktop)
@@ -757,8 +783,8 @@ Ctrl+/ · Questo elenco'''),
                           glyphWidth: glyphWidth,
                           maxWidth: bounds.maxWidth - 32);
                         return Row(children: [
-                          const Icon(Icons.add, size: 20,
-                            color: NotesPalette.secondaryText),
+                          Icon(Icons.add, size: 20,
+                            color: NotesPalette.of(context).secondaryText),
                           const SizedBox(width: 8),
                           SizedBox(width: fieldWidth, child: InlineGlyphUnderline(
                             glyphWidth: glyphWidth,
@@ -770,11 +796,11 @@ Ctrl+/ · Questo elenco'''),
                             style: style,
                             textInputAction: TextInputAction.done,
                             onSubmitted: (_) => submitTask(),
-                            decoration: const InputDecoration(
+                            decoration: InputDecoration(
                               hintText: 'Aggiungi attività',
                               hintStyle: TextStyle(
                                 fontSize: 14,
-                                color: NotesPalette.placeholder),
+                                color: NotesPalette.of(context).placeholder),
                               isDense: true,
                               filled: false,
                               fillColor: Colors.transparent,
@@ -797,7 +823,7 @@ Ctrl+/ · Questo elenco'''),
                   icon: Icon(quickDue.kind == 'none'
                       ? Icons.event_outlined : Icons.event_available,
                     color: quickDue.kind == 'none'
-                      ? null : NotesPalette.accent)),
+                      ? null : NotesPalette.of(context).accent)),
               ]),
             ),
           if (section == Section.calendar)
@@ -834,14 +860,14 @@ Ctrl+/ · Questo elenco'''),
             Expanded(child: ListView(
               padding: const EdgeInsets.all(16),
               children: [
-                const Padding(
+                Padding(
                   padding: EdgeInsets.only(bottom: 12),
                   child: Text('Note eliminate · ripristinabili sullo stesso account',
-                    style: TextStyle(color: NotesPalette.secondaryText)),
+                    style: TextStyle(color: NotesPalette.of(context).secondaryText)),
                 ),
                 if (data.trashedNotes.isEmpty)
-                  const Center(child: Text('Cestino vuoto',
-                    style: TextStyle(color: NotesPalette.secondaryText))),
+                  Center(child: Text('Cestino vuoto',
+                    style: TextStyle(color: NotesPalette.of(context).secondaryText))),
                 for (final note in data.trashedNotes)
                   Padding(
                     padding: const EdgeInsets.only(bottom: 10),
@@ -1000,7 +1026,7 @@ Ctrl+/ · Questo elenco'''),
         ])),
         if (wideDetails && selectedId != null && section != Section.notes)
           SizedBox(width: 350, child: ColoredBox(
-            color: NotesPalette.sidebar,
+            color: NotesPalette.of(context).sidebar,
             child: Builder(builder: (_) {
               final task = data.tasks.where((t) => t.id == selectedId).firstOrNull;
               return task == null ? const SizedBox() : taskDetails(task);
@@ -1013,8 +1039,8 @@ Ctrl+/ · Questo elenco'''),
   Widget taskDetails(LocalTask task) => Padding(
     padding: const EdgeInsets.all(18),
     child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-      const Text('DETTAGLI', style: TextStyle(
-        color: NotesPalette.secondaryText, fontSize: 11,
+      Text('DETTAGLI', style: TextStyle(
+        color: NotesPalette.of(context).secondaryText, fontSize: 11,
         fontWeight: FontWeight.w600)),
       const SizedBox(height: 16),
       Expanded(child: SingleChildScrollView(
@@ -1029,8 +1055,8 @@ Ctrl+/ · Questo elenco'''),
                 .renameTask(task.id, text),
           ),
           const SizedBox(height: 20),
-          const Text('SCADENZA', style: TextStyle(
-            color: NotesPalette.secondaryText, fontSize: 11)),
+          Text('SCADENZA', style: TextStyle(
+            color: NotesPalette.of(context).secondaryText, fontSize: 11)),
           const SizedBox(height: 8),
           Wrap(spacing: 8, runSpacing: 8, children: [
             FButton(
@@ -1062,8 +1088,8 @@ Ctrl+/ · Questo elenco'''),
           const SizedBox(height: 18),
           TaskBlocksPanel(task: task),
           const SizedBox(height: 18),
-          const Text('PRIORITÀ', style: TextStyle(
-            color: NotesPalette.secondaryText, fontSize: 11)),
+          Text('PRIORITÀ', style: TextStyle(
+            color: NotesPalette.of(context).secondaryText, fontSize: 11)),
           const SizedBox(height: 8),
           FPopoverMenu(
             menu: [
@@ -1088,8 +1114,8 @@ Ctrl+/ · Questo elenco'''),
             child: Text(task.priority == 0 ? 'Normale' : 'P${task.priority}'),
           ),
           const SizedBox(height: 18),
-          const Text('LISTA', style: TextStyle(
-            color: NotesPalette.secondaryText, fontSize: 11)),
+          Text('LISTA', style: TextStyle(
+            color: NotesPalette.of(context).secondaryText, fontSize: 11)),
           const SizedBox(height: 8),
           FPopoverMenu(
             menu: [
@@ -1121,8 +1147,8 @@ Ctrl+/ · Questo elenco'''),
                 .firstOrNull?.title ?? 'Inbox'),
           ),
           const SizedBox(height: 18),
-          const Text('TAG', style: TextStyle(
-            color: NotesPalette.secondaryText, fontSize: 11)),
+          Text('TAG', style: TextStyle(
+            color: NotesPalette.of(context).secondaryText, fontSize: 11)),
           const SizedBox(height: 6),
           InlineEditableTitle(
             key: Key('inline-task-tags-${task.id}'),
@@ -1136,8 +1162,8 @@ Ctrl+/ · Questo elenco'''),
                 .setTaskTags(task.id, text),
           ),
           const SizedBox(height: 18),
-          const Text('DESCRIZIONE', style: TextStyle(
-            color: NotesPalette.secondaryText, fontSize: 11)),
+          Text('DESCRIZIONE', style: TextStyle(
+            color: NotesPalette.of(context).secondaryText, fontSize: 11)),
           const SizedBox(height: 6),
           InlineEditableBody(
             key: Key('inline-task-description-${task.id}'),
@@ -1151,7 +1177,7 @@ Ctrl+/ · Questo elenco'''),
           Text('SOTTOTASK · '
             '${task.subtasks.where((item) => item.completed).length}/'
             '${task.subtasks.length}',
-            style: const TextStyle(color: NotesPalette.secondaryText,
+            style: TextStyle(color: NotesPalette.of(context).secondaryText,
               fontSize: 11, fontWeight: FontWeight.w600)),
           const SizedBox(height: 8),
           for (final item in task.subtasks)
@@ -1417,9 +1443,9 @@ Ctrl+/ · Questo elenco'''),
                 maxLines: 5,
               ),
               const SizedBox(height: 20),
-              const Text('LISTA', style: TextStyle(
+              Text('LISTA', style: TextStyle(
                 fontSize: 11, fontWeight: FontWeight.w600,
-                color: NotesPalette.secondaryText)),
+                color: NotesPalette.of(context).secondaryText)),
               const SizedBox(height: 8),
               Wrap(spacing: 7, runSpacing: 7, children: [
                 for (final item in <LocalTaskList?>[
@@ -1435,9 +1461,9 @@ Ctrl+/ · Questo elenco'''),
                   ),
               ]),
               const SizedBox(height: 18),
-              const Text('PRIORITÀ', style: TextStyle(
+              Text('PRIORITÀ', style: TextStyle(
                 fontSize: 11, fontWeight: FontWeight.w600,
-                color: NotesPalette.secondaryText)),
+                color: NotesPalette.of(context).secondaryText)),
               const SizedBox(height: 8),
               Wrap(spacing: 7, runSpacing: 7, children: [
                 for (var value = 0; value <= 3; value++)
@@ -1461,9 +1487,9 @@ Ctrl+/ · Questo elenco'''),
               const SizedBox(height: 18),
               Text('SOTTOTASK (${editedSubtasks.where((s) => s.completed).length}/'
                   '${editedSubtasks.length})',
-                style: const TextStyle(fontSize: 11,
+                style: TextStyle(fontSize: 11,
                   fontWeight: FontWeight.w600,
-                  color: NotesPalette.secondaryText)),
+                  color: NotesPalette.of(context).secondaryText)),
               for (final sub in editedSubtasks)
                 Row(children: [
                   Checkbox(
@@ -1530,10 +1556,10 @@ Ctrl+/ · Questo elenco'''),
                 ),
               ]),
               const SizedBox(height: 20),
-              const Text('SCADENZA', style: TextStyle(
+              Text('SCADENZA', style: TextStyle(
                 fontSize: 11,
                 fontWeight: FontWeight.w600,
-                color: NotesPalette.secondaryText,
+                color: NotesPalette.of(context).secondaryText,
                 letterSpacing: 0.6,
               )),
               const SizedBox(height: 8),

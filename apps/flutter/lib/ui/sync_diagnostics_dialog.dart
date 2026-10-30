@@ -41,7 +41,7 @@ Future<void> showNotesSyncDiagnostics(BuildContext context, WidgetRef ref) {
               ? 'Mai completata su questo dispositivo'
               : last.toString().split('.').first;
           final statusColor = info.backendStatus == 'compatible'
-              ? NotesPalette.accent : Colors.orangeAccent;
+              ? NotesPalette.of(context).accent : Colors.orangeAccent;
           Widget detail(String label, String value, {Color? color}) =>
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 5),
@@ -49,8 +49,8 @@ Future<void> showNotesSyncDiagnostics(BuildContext context, WidgetRef ref) {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Expanded(child: Text(label,
-                      style: const TextStyle(fontSize: 12,
-                          color: NotesPalette.secondaryText))),
+                      style: TextStyle(fontSize: 12,
+                          color: NotesPalette.of(context).secondaryText))),
                     const SizedBox(width: 8),
                     Flexible(child: Text(value,
                       textAlign: TextAlign.end,
@@ -90,12 +90,12 @@ Future<void> showNotesSyncDiagnostics(BuildContext context, WidgetRef ref) {
               detail('Cursor di sincronizzazione', '${info.cursor}'),
               detail('Ultima sincronizzazione', lastLabel),
               const SizedBox(height: 12),
-              const Text(
+              Text(
                 'Controllo in sola lettura. Non invia attività o note, '
                 'non svuota la coda e non garantisce che l’altro '
                 'dispositivo sia già sincronizzato.',
                 style: TextStyle(fontSize: 12,
-                    color: NotesPalette.secondaryText),
+                    color: NotesPalette.of(context).secondaryText),
               ),
               const SizedBox(height: 12),
               FButton(

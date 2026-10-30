@@ -1,7 +1,7 @@
 name: simple_notes
 description: Offline-first tasks and notes for Windows and Android.
 publish_to: none
-version: 0.22.0+24
+version: 0.23.0+25
 environment:
   sdk: '>=3.10.0 <4.0.0'
 dependencies:
@@ -45,7 +45,7 @@ msix_config:
   publisher_display_name: DDone
   identity_name: ddone.SimpleNotes
   publisher: CN=DDone
-  msix_version: 0.22.0.0
+  msix_version: 0.23.0.0
   output_name: simple-notes-windows
   capabilities: internetClient
   install_certificate: false

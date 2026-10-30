@@ -179,10 +179,10 @@ class _HabitsBoardState extends State<HabitsBoard>
         const Text('Abitudini quotidiane', style: TextStyle(
           fontSize: 20, fontWeight: FontWeight.w700)),
         const SizedBox(height: 4),
-        const Text('Check-in giornalieri e streak sul dispositivo. '
+        Text('Check-in giornalieri e streak sul dispositivo. '
           'Non sincronizzati tra Windows e Android.',
           style: TextStyle(fontSize: 12,
-            color: NotesPalette.secondaryText)),
+            color: NotesPalette.of(context).secondaryText)),
         const SizedBox(height: 12),
         FCard(child: Padding(
           padding: const EdgeInsets.all(14),
@@ -198,8 +198,8 @@ class _HabitsBoardState extends State<HabitsBoard>
                 key: const Key('habits-progress'),
                 value: active.isEmpty
                     ? 0 : _data.checkedToday(today) / active.length,
-                color: NotesPalette.accent,
-                backgroundColor: NotesPalette.muted, minHeight: 7),
+                color: NotesPalette.of(context).accent,
+                backgroundColor: NotesPalette.of(context).muted, minHeight: 7),
               const SizedBox(height: 10),
               InlineQuickAdd(
                 key: const Key('habits-create'),
@@ -253,16 +253,16 @@ class _HabitsBoardState extends State<HabitsBoard>
                   Wrap(spacing: 14, runSpacing: 4, children: [
                     Text('${habit.streak(today)} giorni di streak',
                       key: Key('habit-streak-${habit.id}'),
-                      style: const TextStyle(fontSize: 12,
-                        color: NotesPalette.secondaryText)),
+                      style: TextStyle(fontSize: 12,
+                        color: NotesPalette.of(context).secondaryText)),
                     Text('${habit.countLast(today, 7)} / 7 '
                       'check-in negli ultimi 7 giorni',
-                      style: const TextStyle(fontSize: 12,
-                        color: NotesPalette.secondaryText)),
+                      style: TextStyle(fontSize: 12,
+                        color: NotesPalette.of(context).secondaryText)),
                     Text('${habit.countLast(today, 30)} / 30 '
                       'negli ultimi 30 giorni',
-                      style: const TextStyle(fontSize: 12,
-                        color: NotesPalette.secondaryText)),
+                      style: TextStyle(fontSize: 12,
+                        color: NotesPalette.of(context).secondaryText)),
                   ]),
                   const SizedBox(height: 10),
                   Wrap(
@@ -294,14 +294,14 @@ class _HabitsBoardState extends State<HabitsBoard>
                         '${HabitWeek.currentProgress(habit, today)} / '
                         '${habit.weeklyTarget} questa settimana',
                         key: Key('habit-weekly-progress-${habit.id}'),
-                        style: const TextStyle(fontSize: 12,
-                          color: NotesPalette.secondaryText),
+                        style: TextStyle(fontSize: 12,
+                          color: NotesPalette.of(context).secondaryText),
                       ),
                       Text(
                         '${HabitWeek.streak(habit, today)} settimane di streak',
                         key: Key('habit-weekly-streak-${habit.id}'),
-                        style: const TextStyle(fontSize: 12,
-                          color: NotesPalette.secondaryText),
+                        style: TextStyle(fontSize: 12,
+                          color: NotesPalette.of(context).secondaryText),
                       ),
                     ],
                   ),
@@ -310,8 +310,8 @@ class _HabitsBoardState extends State<HabitsBoard>
                     key: Key('habit-weekly-bar-${habit.id}'),
                     value: (HabitWeek.currentProgress(habit, today) /
                         habit.weeklyTarget).clamp(0.0, 1.0),
-                    color: NotesPalette.accent,
-                    backgroundColor: NotesPalette.muted,
+                    color: NotesPalette.of(context).accent,
+                    backgroundColor: NotesPalette.of(context).muted,
                     minHeight: 6,
                   ),
                   const SizedBox(height: 10),
@@ -353,8 +353,8 @@ class _HabitsBoardState extends State<HabitsBoard>
                   child: Row(children: [
                     Expanded(child: Text(habit.title)),
                     Text('${habit.checkIns.length} check-in',
-                      style: const TextStyle(fontSize: 12,
-                        color: NotesPalette.secondaryText)),
+                      style: TextStyle(fontSize: 12,
+                        color: NotesPalette.of(context).secondaryText)),
                     const SizedBox(width: 8),
                     FButton(
                       key: Key('habit-restore-${habit.id}'),

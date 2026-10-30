@@ -68,3 +68,7 @@ Derivare il numero di colonne **dalla larghezza utile del contenuto**, non dalla
 ## P1.17 — Tray Windows (PR #18 su main, CI verde)
 
 Solo processo main/Windows: le Sticky separate **non** inizializzano la tray né un DB. La X nasconde soltanto quando la tray è stata registrata; fallimento plugin = close normale. Esci dal menu disabilita prevent-close, libera la tray e chiude normalmente. Nessun autostart, nuovo server, reset dati o toast native Windows ZIP. [Specifica](docs/P1-WINDOWS-TRAY.md).
+
+## P1.18 — Tema chiaro/scuro/sistema (branch di sviluppo, 30/10/2026)
+
+Candidato Flutter `0.23.0+25`: preferenza `SharedPreferences` per dispositivo (default legacy Scuro); palette coerenti Material/Forui e modifica dal menu account, senza nuove API, migrazioni o outbox. CI e prove su Windows/Android ancora da attestare sullo SHA finale; nessun deploy/reset. [Specifica](docs/P1-APPEARANCE.md) · [Stato](docs/CURRENT-STATUS.md).

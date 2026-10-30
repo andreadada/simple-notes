@@ -33,19 +33,19 @@ class TaskBlocksPanel extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) => Column(
     crossAxisAlignment: CrossAxisAlignment.start, children: [
       Row(children: [
-        const Expanded(child: Text('BLOCCHI ORARI',
-          style: TextStyle(color: NotesPalette.secondaryText, fontSize: 11))),
+        Expanded(child: Text('BLOCCHI ORARI',
+          style: TextStyle(color: NotesPalette.of(context).secondaryText, fontSize: 11))),
         Text('${task.timeBlocks.length}/12',
-          style: const TextStyle(fontSize: 11,
-              color: NotesPalette.secondaryText)),
+          style: TextStyle(fontSize: 11,
+              color: NotesPalette.of(context).secondaryText)),
       ]),
       const SizedBox(height: 8),
       for (final slot in task.timeBlocks)
         Padding(
           padding: const EdgeInsets.only(bottom: 6),
           child: FCard(child: Row(children: [
-            const Icon(Icons.timelapse_outlined, size: 17,
-                color: NotesPalette.accent),
+            Icon(Icons.timelapse_outlined, size: 17,
+                color: NotesPalette.of(context).accent),
             const SizedBox(width: 8),
             Expanded(child: Text(timeBlockLabel(slot.block),
                 maxLines: 2, overflow: TextOverflow.ellipsis)),

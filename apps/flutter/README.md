@@ -178,3 +178,7 @@ Flutter `0.20.0+22` candidata. `DesktopShortcutPolicy` gestisce Ctrl+1..5, Ctrl+
 ## P1.17 — System tray Windows candidata
 
 `tray_manager ^0.8.0`, `window_manager ^0.5.2`; `WindowsTray.initialize` solo main, `TrayClosePolicy` fail-open; click/menu Apri ed Esci, X/hide. L'engine Sticky e Android non hanno tray. Flutter `0.22.0+24`, nessuna migration. [Specifica](../../docs/P1-WINDOWS-TRAY.md).
+
+## P1.18 — Tema chiaro/scuro/sistema (branch di sviluppo, 30/10/2026)
+
+Candidato Flutter `0.23.0+25`: preferenza `SharedPreferences` per dispositivo (default legacy Scuro); palette coerenti Material/Forui e modifica dal menu account, senza nuove API, migrazioni o outbox. CI e prove su Windows/Android ancora da attestare sullo SHA finale; nessun deploy/reset. [Specifica](../../docs/P1-APPEARANCE.md) · [Stato](../../docs/CURRENT-STATUS.md).

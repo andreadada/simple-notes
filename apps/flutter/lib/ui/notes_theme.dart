@@ -1,8 +1,37 @@
 import 'package:flutter/material.dart';
 import 'package:forui/forui.dart';
 
-/// Simple Notes' design tokens. Forui is the baseline for new screens.
-/// The existing Material widgets remain as transitional interoperability.
+/// Theme tokens shared between Material and Forui. Colors are resolved from
+/// the local BuildContext, never from a global mutable palette.
+@immutable
+class NotesColors {
+  const NotesColors({
+    required this.accent,
+    required this.background,
+    required this.sidebar,
+    required this.surface,
+    required this.muted,
+    required this.foreground,
+    required this.secondaryText,
+    required this.border,
+    required this.inlineUnderline,
+    required this.placeholder,
+  });
+
+  final Color accent;
+  final Color background;
+  final Color sidebar;
+  final Color surface;
+  final Color muted;
+  final Color foreground;
+  final Color secondaryText;
+  final Color border;
+  final Color inlineUnderline;
+  final Color placeholder;
+}
+
+/// Dark-mode constants are retained for backward compatibility with tests
+/// and historical helpers. New UI must use NotesPalette.of(context).
 abstract final class NotesPalette {
   static const accent = Color(0xFF547AFF);
   static const background = Color(0xFF181818);
@@ -13,8 +42,29 @@ abstract final class NotesPalette {
   static const secondaryText = Color(0xFFA0A0A0);
   static const border = Color(0xFF343434);
   static const inlineUnderline = Color(0xFF676C76);
-  // Subdued placeholder: 72% opaque, independently of Material theme defaults.
   static const placeholder = Color(0xB8A0A0A0);
+
+  static const dark = NotesColors(
+    accent: accent, background: background, sidebar: sidebar,
+    surface: surface, muted: muted, foreground: foreground,
+    secondaryText: secondaryText, border: border,
+    inlineUnderline: inlineUnderline, placeholder: placeholder,
+  );
+  static const light = NotesColors(
+    accent: Color(0xFF315AD6),
+    background: Color(0xFFF8F9FC),
+    sidebar: Color(0xFFF0F2F7),
+    surface: Color(0xFFFFFFFF),
+    muted: Color(0xFFE8EDF5),
+    foreground: Color(0xFF172033),
+    secondaryText: Color(0xFF4B5567),
+    border: Color(0xFFD3DBE7),
+    inlineUnderline: Color(0xFF78869C),
+    placeholder: Color(0xB84B5567),
+  );
+
+  static NotesColors of(BuildContext context) =>
+      Theme.of(context).brightness == Brightness.light ? light : dark;
 }
 
 abstract final class NotesTheme {
@@ -24,20 +74,53 @@ abstract final class NotesTheme {
   static const inlineFocusedBorder = UnderlineInputBorder(
     borderSide: BorderSide(color: NotesPalette.accent, width: 1.5),
   );
-  // For inline controls the real line is painted to the measured glyph width.
-  // This invisible shape prevents InputDecorator from drawing a full-width line.
   static const invisibleInlineBorder = UnderlineInputBorder(
     borderSide: BorderSide.none,
   );
 
+  static ThemeData material(Brightness brightness) {
+    final palette = brightness == Brightness.light
+        ? NotesPalette.light : NotesPalette.dark;
+    return ThemeData(
+      brightness: brightness,
+      colorScheme: ColorScheme.fromSeed(
+        seedColor: palette.accent,
+        brightness: brightness,
+        surface: palette.background,
+      ),
+      useMaterial3: true,
+      scaffoldBackgroundColor: palette.background,
+      cardColor: palette.surface,
+      inputDecorationTheme: InputDecorationTheme(
+        filled: false,
+        fillColor: Colors.transparent,
+        border: UnderlineInputBorder(
+          borderSide: BorderSide(color: palette.inlineUnderline)),
+        enabledBorder: UnderlineInputBorder(
+          borderSide: BorderSide(color: palette.inlineUnderline)),
+        focusedBorder: UnderlineInputBorder(
+          borderSide: BorderSide(color: palette.accent, width: 1.5)),
+        contentPadding: const EdgeInsets.symmetric(vertical: 8),
+      ),
+    );
+  }
+
   /// Touch targets on Android; compact controls on Windows/macOS/Linux.
-  static FThemeData forPlatform(TargetPlatform platform) {
+  static FThemeData forPlatform(TargetPlatform platform,
+      {Brightness brightness = Brightness.dark}) {
     final touch = switch (platform) {
       TargetPlatform.android || TargetPlatform.iOS || TargetPlatform.fuchsia
         => true,
       _ => false,
     };
-    final base = touch ? FTheme.neutral.dark.touch : FTheme.neutral.dark.desktop;
+    final base = switch ((brightness, touch)) {
+      (Brightness.light, true) => FTheme.neutral.light.touch,
+      (Brightness.light, false) => FTheme.neutral.light.desktop,
+      (Brightness.dark, true) => FTheme.neutral.dark.touch,
+      (Brightness.dark, false) => FTheme.neutral.dark.desktop,
+    };
+    final palette = brightness == Brightness.light
+        ? NotesPalette.light : NotesPalette.dark;
     return FThemeData(
       touch: touch,
       breakpoints: base.breakpoints,
@@ -45,14 +128,14 @@ abstract final class NotesTheme {
       icons: base.icons,
       style: base.style,
       colors: base.colors.copyWith(
-        background: NotesPalette.background,
-        foreground: NotesPalette.foreground,
-        card: NotesPalette.surface,
-        muted: NotesPalette.muted,
-        mutedForeground: NotesPalette.secondaryText,
-        secondary: NotesPalette.sidebar,
-        border: NotesPalette.border,
-        primary: NotesPalette.accent,
+        background: palette.background,
+        foreground: palette.foreground,
+        card: palette.surface,
+        muted: palette.muted,
+        mutedForeground: palette.secondaryText,
+        secondary: palette.sidebar,
+        border: palette.border,
+        primary: palette.accent,
         primaryForeground: Colors.white,
       ),
     );
@@ -132,7 +215,7 @@ class InlineGlyphUnderline extends StatelessWidget {
               width: glyphWidth,
               height: focusNode.hasFocus ? 1.5 : 1,
               child: ColoredBox(color: focusNode.hasFocus
-                  ? NotesPalette.accent : NotesPalette.inlineUnderline),
+                  ? NotesPalette.of(context).accent : NotesPalette.of(context).inlineUnderline),
             ),
           ),
         ),

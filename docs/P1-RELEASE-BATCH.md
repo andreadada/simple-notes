@@ -118,3 +118,7 @@ Il percorso iniziale consolidato è nella [guida operativa](OPERATIONS.md). La [
 ### P1.17 — Tray Windows
 
 [P1.17](P1-WINDOWS-TRAY.md) aggiunge plugin client, hide/restore e voce Esci; nessuna API/migration. Testare tray su ZIP/MSIX reali, sticky e Android invariato, con gate backend-first Flyway V10 ancora aperto e nessun reset.
+
+## P1.18 — Tema chiaro/scuro/sistema (branch di sviluppo, 30/10/2026)
+
+Candidato Flutter `0.23.0+25`: preferenza `SharedPreferences` per dispositivo (default legacy Scuro); palette coerenti Material/Forui e modifica dal menu account, senza nuove API, migrazioni o outbox. CI e prove su Windows/Android ancora da attestare sullo SHA finale; nessun deploy/reset. [Specifica](P1-APPEARANCE.md) · [Stato](CURRENT-STATUS.md).

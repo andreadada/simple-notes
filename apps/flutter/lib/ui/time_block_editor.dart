@@ -131,8 +131,8 @@ Future<TimeBlockDecision?> showTimeBlockEditor(
             body: Column(mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start, children: [
               Text('La scadenza del task resta indipendente.',
-                style: const TextStyle(fontSize: 12,
-                    color: NotesPalette.secondaryText)),
+                style: TextStyle(fontSize: 12,
+                    color: NotesPalette.of(context).secondaryText)),
               const SizedBox(height: 12),
               FButton(
                 key: const Key('time-block-date'),
@@ -194,7 +194,7 @@ Future<TimeBlockDecision?> showTimeBlockEditor(
               ],
               if (warning != null) ...[
                 const SizedBox(height: 8),
-                Text(warning!, style: const TextStyle(color: Color(0xFFFF9090),
+                Text(warning!, style: TextStyle(color: Theme.of(context).colorScheme.error,
                     fontSize: 12)),
               ],
             ]),

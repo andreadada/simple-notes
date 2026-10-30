@@ -141,13 +141,13 @@ class _InlineEditableBodyState extends State<InlineEditableBody> {
         maxLengthEnforcement: MaxLengthEnforcement.enforced,
         keyboardType: TextInputType.multiline,
         style: const TextStyle(fontSize: 14, height: 1.45),
-        cursorColor: NotesPalette.accent,
+        cursorColor: NotesPalette.of(context).accent,
         onTapOutside: (_) => _focus.unfocus(),
         onChanged: (_) => setState(() {}),
         decoration: InputDecoration(
           hintText: widget.hint,
-          hintStyle: const TextStyle(
-            fontSize: 14, height: 1.45, color: NotesPalette.placeholder),
+          hintStyle: TextStyle(
+            fontSize: 14, height: 1.45, color: NotesPalette.of(context).placeholder),
           isDense: true,
           filled: false,
           fillColor: Colors.transparent,

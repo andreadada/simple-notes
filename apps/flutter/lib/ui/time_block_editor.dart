@@ -131,8 +131,8 @@ Future<TimeBlockDecision?> showTimeBlockEditor(
             body: Column(mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start, children: [
               Text('La scadenza del task resta indipendente.',
-                style: const TextStyle(fontSize: 12,
-                    color: NotesPalette.secondaryText)),
+                style: TextStyle(fontSize: 12,
+                    color: NotesPalette.of(context).secondaryText)),
               const SizedBox(height: 12),
               FButton(
                 key: const Key('time-block-date'),

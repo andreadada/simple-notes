@@ -144,7 +144,7 @@ class _InlineEditableTitleState extends State<InlineEditableTitle> {
               controller: _controller,
               focusNode: _focusNode,
               style: widget.style,
-              cursorColor: NotesPalette.accent,
+              cursorColor: NotesPalette.of(context).accent,
               textInputAction: TextInputAction.done,
               maxLines: 1,
               inputFormatters: [LengthLimitingTextInputFormatter(widget.maxLength)],
@@ -158,7 +158,7 @@ class _InlineEditableTitleState extends State<InlineEditableTitle> {
                 fillColor: Colors.transparent,
                 hintText: widget.hint,
                 hintStyle: widget.style.copyWith(
-                  color: NotesPalette.placeholder),
+                  color: NotesPalette.of(context).placeholder),
                 contentPadding: const EdgeInsets.symmetric(vertical: 3),
                 border: NotesTheme.invisibleInlineBorder,
                 enabledBorder: NotesTheme.invisibleInlineBorder,

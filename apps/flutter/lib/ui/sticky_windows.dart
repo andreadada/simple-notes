@@ -192,19 +192,19 @@ class _StickyNoteWindowState extends State<StickyNoteWindow> {
   Widget build(BuildContext context) {
     final note = _note;
     return Scaffold(
-      backgroundColor: NotesPalette.surface,
+      backgroundColor: NotesPalette.of(context).surface,
       body: SafeArea(child: Padding(
         padding: const EdgeInsets.all(14),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(children: [
-              const Icon(Icons.sticky_note_2_outlined,
-                size: 18, color: NotesPalette.accent),
+              Icon(Icons.sticky_note_2_outlined,
+                size: 18, color: NotesPalette.of(context).accent),
               const SizedBox(width: 8),
-              const Expanded(child: Text('Sticky Note',
+              Expanded(child: Text('Sticky Note',
                 style: TextStyle(fontSize: 12,
-                  color: NotesPalette.secondaryText))),
+                  color: NotesPalette.of(context).secondaryText))),
               FButton(
                 key: const Key('sticky-reload'),
                 variant: FButtonVariant.ghost,
@@ -243,8 +243,8 @@ class _StickyNoteWindowState extends State<StickyNoteWindow> {
               Padding(
                 padding: const EdgeInsets.only(top: 10),
                 child: Text(_error!, key: const Key('sticky-error'),
-                  style: const TextStyle(
-                    color: NotesPalette.secondaryText, fontSize: 12)),
+                  style: TextStyle(
+                    color: NotesPalette.of(context).secondaryText, fontSize: 12)),
               ),
           ],
         ),

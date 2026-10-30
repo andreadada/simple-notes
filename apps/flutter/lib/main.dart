@@ -1,4 +1,7 @@
 import 'dart:async';
+import 'dart:typed_data';
+
+import 'package:file_picker/file_picker.dart';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -33,6 +36,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uuid/uuid.dart';
 import 'data/local_store.dart';
+import 'data/portable_archive.dart';
 import 'data/app_database.dart';
 import 'auth/cloud_auth.dart';
 import 'sync/cloud_sync.dart';
@@ -152,6 +156,7 @@ class _NotesHomeState extends ConsumerState<NotesHome> {
   String? activeListId;
   int? priorityFilter;
   String searchQuery = '';
+  bool _archiveBusy = false;
   final newTask = TextEditingController();
   final newTaskFocus = FocusNode();
   TaskDue quickDue = TaskDue.none;
@@ -189,6 +194,89 @@ class _NotesHomeState extends ConsumerState<NotesHome> {
       ScaffoldMessenger.maybeOf(context)?.showSnackBar(
         const SnackBar(content: Text('Impossibile creare la nota.')),
       );
+    }
+  }
+
+  void _archiveMessage(String message) {
+    if (!mounted) return;
+    ScaffoldMessenger.maybeOf(context)?.showSnackBar(
+      SnackBar(content: Text(message)),
+    );
+  }
+
+  Future<void> _exportArchive() async {
+    if (_archiveBusy) return;
+    setState(() => _archiveBusy = true);
+    try {
+      // Read SQLite, not a potentially stale widget snapshot.
+      final data = await ref.read(databaseProvider).snapshot();
+      final bytes = PortableArchive(data).encode();
+      final saved = await FilePicker.saveFile(
+        fileName: 'simple-notes-${DateTime.now().toIso8601String().substring(0, 10)}.json',
+        type: FileType.custom,
+        allowedExtensions: ['json'],
+        bytes: Uint8List.fromList(bytes),
+      );
+      if (saved != null) _archiveMessage('Archivio JSON esportato. Conserva il file in un luogo sicuro.');
+    } on FormatException catch (error) {
+      _archiveMessage(error.message);
+    } catch (_) {
+      _archiveMessage('Impossibile esportare il file JSON.');
+    } finally {
+      if (mounted) setState(() => _archiveBusy = false);
+    }
+  }
+
+  Future<void> _importArchive() async {
+    if (_archiveBusy) return;
+    setState(() => _archiveBusy = true);
+    try {
+      final file = await FilePicker.pickFile(
+        type: FileType.custom,
+        allowedExtensions: ['json'],
+      );
+      if (file == null) return;
+      if ((file.lengthSync() ?? 0) > PortableArchive.maxBytes) {
+        throw const FormatException('Archivio troppo grande (massimo 8 MB).');
+      }
+      final archive = PortableArchive.decode(await file.readAsBytes());
+      if (!mounted) return;
+      final approved = await showFDialog<bool>(
+        context: context,
+        builder: (ctx, style, animation) => NotesDialog(
+          style: style,
+          animation: animation,
+          title: const Text('Importa archivio JSON'),
+          body: Text(
+            'Aggiungere ${archive.data.lists.length} liste, '
+            '${archive.data.tasks.length} attività e '
+            '${archive.data.notes.length} note? '
+            'Verranno create nuove copie, senza sostituire gli elementi '
+            'presenti. Se sincronizzi, le copie saranno inviate '
+            'all’account collegato. Importare due volte crea duplicati.',
+          ),
+          actions: [
+            FButton(
+              variant: FButtonVariant.ghost,
+              onPress: () => Navigator.pop(ctx, false),
+              child: const Text('Annulla'),
+            ),
+            FButton(
+              onPress: () => Navigator.pop(ctx, true),
+              child: const Text('Importa copie'),
+            ),
+          ],
+        ),
+      );
+      if (approved != true || !mounted) return;
+      final count = await ref.read(localStoreProvider.notifier).importPortable(archive);
+      _archiveMessage('Importazione completata: $count elementi aggiunti.');
+    } on FormatException catch (error) {
+      _archiveMessage(error.message);
+    } catch (_) {
+      _archiveMessage('Importazione non riuscita. Nessun dato esistente cancellato.');
+    } finally {
+      if (mounted) setState(() => _archiveBusy = false);
     }
   }
 
@@ -324,7 +412,11 @@ Ctrl+/ · Questo elenco'''),
     }
 
     Future<void> accountAction(String value) async {
-      if (value == 'sync') {
+      if (value == 'export') {
+        await _exportArchive();
+      } else if (value == 'import') {
+        await _importArchive();
+      } else if (value == 'sync') {
         await ref.read(cloudSyncProvider.notifier).synchronize();
       } else if (value == 'diagnostics') {
         await showNotesSyncDiagnostics(context, ref);
@@ -435,6 +527,20 @@ Ctrl+/ · Questo elenco'''),
               prefix: const Icon(Icons.login, size: 18),
               onPress: () => accountAction('login'),
             ),
+        ]),
+        .group(children: [
+          .item(
+            title: const Text('Esporta dati JSON'),
+            prefix: const Icon(Icons.file_download_outlined, size: 18),
+            enabled: !_archiveBusy,
+            onPress: () => accountAction('export'),
+          ),
+          .item(
+            title: const Text('Importa dati JSON'),
+            prefix: const Icon(Icons.file_upload_outlined, size: 18),
+            enabled: !_archiveBusy,
+            onPress: () => accountAction('import'),
+          ),
         ]),
         .group(children: [
           for (final option in <(ThemeMode, String, IconData)>[

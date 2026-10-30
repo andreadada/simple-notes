@@ -126,3 +126,8 @@ Integrata in `main` ([PR #19](https://github.com/andreadada/simple-notes/pull/19
 ### P1.18 — Tema locale (client Flutter 0.23.0+25)
 
 [Specifiche P1.18](P1-APPEARANCE.md): `ThemeMode` Scuro/Chiaro/Sistema con persistenza SharedPreferences device-only, Forui/Material e Sticky. PR #19 su `main`, CI completa verde; test fisici ancora aperti, nessun cambio DB/API. Per un client cumulativo restano obbligatori Flyway V10 reale, capability, backup secondo policy e collaudo senza reset.
+
+## Gate aggiuntivo — P2.1, non incluso nel batch corrente
+
+La P2.1 è nel branch `feature/p2-1-portable-import-export`; non installare la candidate prima di CI completa, deploy Flyway V10 e collaudo hardware. Un import nel client genera nuove modifiche sync e **non** sostituisce backup, restore isolato o preflight delle capability. [Specifica](P2-PORTABLE-ARCHIVE.md).
+

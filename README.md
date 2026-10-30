@@ -57,3 +57,7 @@ X→nascondi nell'area di notifica, click/menu→riapri, **Esci** dal menu per c
 ## P1.18 — Tema chiaro/scuro/sistema (main, PR #19)
 
 Integrata in `main` ([PR #19](https://github.com/andreadada/simple-notes/pull/19)), Flutter `0.23.0+25`: preferenza `SharedPreferences` per dispositivo (default legacy Scuro); palette coerenti Material/Forui e modifica dal menu account, senza nuove API, migrazioni o outbox. CI completa sullo SHA finale **verde**; test fisici Windows/Android, installazione e deploy non attestati; nessun reset. [Specifica](docs/P1-APPEARANCE.md) · [Stato](docs/CURRENT-STATUS.md).
+
+## P2.1 — Archivio portabile JSON (branch, CI in corso)
+
+Menu account → **Esporta dati JSON** oppure **Importa dati JSON**. Esporta liste, attività (comprese scadenze/ricorrenze/blocchi/sottotask) e note attive. Importa copie con nuovi ID senza sovrascrivere alcun elemento, tramite SQLite e outbox standard. Non è un backup completo: esclude cestino, cronologia sync, impostazioni, dati Focus locali, credenziali e sessioni. Candidate Flutter `0.24.0+26`, **non ancora su main**, nessun deploy. [Specifica](docs/P2-PORTABLE-ARCHIVE.md).

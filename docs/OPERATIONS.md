@@ -145,3 +145,8 @@ Nel ZIP completo con EXE/DLL: X→tray senza uscire, click/menu Apri→stessa fi
 ## P1.18 — Tema chiaro/scuro/sistema (main, PR #19)
 
 Integrata in `main` ([PR #19](https://github.com/andreadada/simple-notes/pull/19)), Flutter `0.23.0+25`: preferenza `SharedPreferences` per dispositivo (default legacy Scuro); palette coerenti Material/Forui e modifica dal menu account, senza nuove API, migrazioni o outbox. CI completa sullo SHA finale **verde**; test fisici Windows/Android, installazione e deploy non attestati; nessun reset. [Specifica](P1-APPEARANCE.md) · [Stato](CURRENT-STATUS.md).
+
+## Gate P2.1 (branch, nessun deploy)
+
+Android e Windows usano il picker file di sistema; verificare un JSON salvato, apertura, annullamento, test import con profilo di prova e persistenza dopo riavvio. Importare su account connesso crea **nuove** operazioni outbox; non importare dataset reali durante prova. Prima di sincronizzare copie importate con Coolify, attestare Flyway V10 e capability. Il JSON non sostituisce il backup/restore isolato di PostgreSQL o il backup SQLite. [Specifica](P2-PORTABLE-ARCHIVE.md).
+

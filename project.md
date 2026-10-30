@@ -322,3 +322,10 @@ Esempio: `2026-10-21 14:20 CEST | commit abc1234 | Aggiunto modulo promemoria e 
 - 2026-10-30 | feat(p1.18) | Tema Scuro/Chiaro/Sistema per Windows/Android, preferenza locale SharedPreferences, token Material/Forui per brightness, Sticky caricata separatamente; branch non ancora merged, CI/device ancora da attestare. Nessun cambiamento backend/SQLite/outbox. [Specifica](docs/P1-APPEARANCE.md).
 
 - 2026-10-30 | merge(p1.18) | PR #19 integrata su main commit `a7c2e786`: Flutter `0.23.0+25`, CI #41067872668 e Markdown #41067872675 verdi sullo SHA finale. Verifiche su dispositivi e server-first V10 ancora aperte. [Specifica](docs/P1-APPEARANCE.md).
+
+## P2.1 — Archivio portabile (branch di sviluppo 30/10/2026)
+
+- [ ] Integrare PR P2.1 su `main` **solo dopo CI verde**. Nel branch: export/import JSON liste/task/note attive, import non distruttivo con nuovi UUID, validazione e conferma Forui; test Flutter e device reali separati.
+- [ ] Collaudare picker Android/Windows e condivisione file realmente salvato; verificare sync dopo import solo a server Flyway V10 pronto.
+- [ ] P2 successiva: formato ICS read-only, export CSV mirati e backup/restore completo progettato separatamente. [Specifica](docs/P2-PORTABLE-ARCHIVE.md).
+

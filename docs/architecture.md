@@ -75,3 +75,8 @@ I comandi app-local selezionano viste già presenti o invocano i metodi normali 
 ## P1.17 — Tray Windows senza server né sync nuove
 
 Hide/restore/quit della finestra non crea entità, endpoint, migrazione, cursor, outbox o credenziali. Il LocalStore/sync già esistente rimane attivo mentre il processo main è nascosto. Il comando Esci chiude il processo; nessun secondo DB nell'engine Sticky. [P1.17](P1-WINDOWS-TRAY.md).
+
+## P2.1 — Livello archivio portabile (branch)
+
+`PortableArchive` separa modello JSON versionato e validazione dal picker nativo; `LocalStore` aggiunge copie attraverso transazione SQLite/outbox esistente. La UI nel menu account usa Forui, con conteggi e conferma. Nessuna migrazione, backend API o ownership delle note Sticky modificata. **Non è un backup bit-a-bit**, né ripristina cursori/credenziali/cronologia. [Specifica](P2-PORTABLE-ARCHIVE.md).
+

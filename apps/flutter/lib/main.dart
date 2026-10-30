@@ -1,7 +1,8 @@
 import 'dart:async';
 import 'dart:typed_data';
 
-import 'package:file_picker/file_picker.dart';
+import 'package:file_selector/file_selector.dart';
+import 'package:share_plus/share_plus.dart';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -211,13 +212,30 @@ class _NotesHomeState extends ConsumerState<NotesHome> {
       // Read SQLite, not a potentially stale widget snapshot.
       final data = await ref.read(databaseProvider).snapshot();
       final bytes = PortableArchive(data).encode();
-      final saved = await FilePicker.saveFile(
-        fileName: 'simple-notes-${DateTime.now().toIso8601String().substring(0, 10)}.json',
-        type: FileType.custom,
-        allowedExtensions: ['json'],
-        bytes: Uint8List.fromList(bytes),
+      final filename = 'simple-notes-${DateTime.now().toIso8601String().substring(0, 10)}.json';
+      final output = XFile.fromData(
+        Uint8List.fromList(bytes), name: filename, mimeType: 'application/json',
       );
-      if (saved != null) _archiveMessage('Archivio JSON esportato. Conserva il file in un luogo sicuro.');
+      if (defaultTargetPlatform == TargetPlatform.windows) {
+        final location = await getSaveLocation(
+          suggestedName: filename,
+          acceptedTypeGroups: [
+            const XTypeGroup(label: 'JSON', extensions: ['json']),
+          ],
+        );
+        if (location == null) return;
+        await output.saveTo(location.path);
+        _archiveMessage('Archivio JSON salvato. Conserva il file in un luogo sicuro.');
+      } else {
+        // Android has no getSaveLocation: the system share sheet lets the
+        // user explicitly choose Files, Drive or another document target.
+        final result = await SharePlus.instance.share(ShareParams(
+          files: [output], fileNameOverrides: [filename],
+        ));
+        if (result.status == ShareResultStatus.success) {
+          _archiveMessage('Archivio condiviso. Conserva il file in un luogo sicuro.');
+        }
+      }
     } on FormatException catch (error) {
       _archiveMessage(error.message);
     } catch (_) {
@@ -231,21 +249,16 @@ class _NotesHomeState extends ConsumerState<NotesHome> {
     if (_archiveBusy) return;
     setState(() => _archiveBusy = true);
     try {
-      final selected = await FilePicker.pickFiles(
-        type: FileType.custom,
-        allowedExtensions: ['json'],
-        withData: true,
+      final file = await openFile(
+        acceptedTypeGroups: [
+          const XTypeGroup(label: 'JSON', extensions: ['json']),
+        ],
       );
-      if (selected == null) return;
-      final file = selected.files.single;
-      if (file.size > PortableArchive.maxBytes) {
+      if (file == null) return;
+      if (await file.length() > PortableArchive.maxBytes) {
         throw const FormatException('Archivio troppo grande (massimo 8 MB).');
       }
-      final bytes = file.bytes;
-      if (bytes == null) {
-        throw const FormatException('Impossibile leggere il file selezionato.');
-      }
-      final archive = PortableArchive.decode(bytes);
+      final archive = PortableArchive.decode(await file.readAsBytes());
       if (!mounted) return;
       final approved = await showFDialog<bool>(
         context: context,

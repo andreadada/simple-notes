@@ -113,10 +113,10 @@ Future<DateTime?> showNotesDatePicker(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text('Seleziona il giorno della scadenza',
+            Text('Seleziona il giorno della scadenza',
               style: TextStyle(
                 fontSize: 13,
-                color: NotesPalette.secondaryText,
+                color: NotesPalette.of(context).secondaryText,
               ),
             ),
             const SizedBox(height: 16),

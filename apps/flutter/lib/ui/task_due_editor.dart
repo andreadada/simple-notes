@@ -129,11 +129,11 @@ Future<TaskDue?> showTaskDueEditor(BuildContext context, {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   if (initial.kind == 'legacy') ...[
-                    const Text(
+                    Text(
                       'Scadenza storica: scegliere una modalità per '
                       'convertirla esplicitamente. Annulla non la modifica.',
                       style: TextStyle(fontSize: 12,
-                        color: NotesPalette.secondaryText),
+                        color: NotesPalette.of(context).secondaryText),
                     ),
                     const SizedBox(height: 12),
                   ],
@@ -218,12 +218,12 @@ Future<TaskDue?> showTaskDueEditor(BuildContext context, {
                         ),
                     ]),
                     if (detectedZone == null && initial.kind != 'datetime')
-                      const Padding(
+                      Padding(
                         padding: EdgeInsets.only(top: 8),
                         child: Text('Fuso del dispositivo non rilevato: '
                             'scegline uno esplicitamente.',
                           style: TextStyle(fontSize: 12,
-                            color: NotesPalette.secondaryText)),
+                            color: NotesPalette.of(context).secondaryText)),
                       ),
                     if (choices.length == 2) ...[
                       const SizedBox(height: 12),

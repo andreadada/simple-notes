@@ -41,9 +41,9 @@ class KanbanBoard extends ConsumerWidget {
             spacing: 12, runSpacing: 6,
             crossAxisAlignment: WrapCrossAlignment.center,
             children: [
-              const Text('Trascina una card tra le liste o usa «Sposta in».',
+              Text('Trascina una card tra le liste o usa «Sposta in».',
                 style: TextStyle(fontSize: 12,
-                  color: NotesPalette.secondaryText)),
+                  color: NotesPalette.of(context).secondaryText)),
               FButton(
                 key: const Key('kanban-create-list'),
                 variant: FButtonVariant.outline,
@@ -90,18 +90,18 @@ class KanbanBoard extends ConsumerWidget {
                                       .renameList(column.id!, title),
                                 )),
                             Text('${column.tasks.length}',
-                              style: const TextStyle(
-                                color: NotesPalette.secondaryText)),
+                              style: TextStyle(
+                                color: NotesPalette.of(context).secondaryText)),
                           ]),
                           const SizedBox(height: 10),
                           Expanded(child: DecoratedBox(
                             decoration: BoxDecoration(
                               color: candidates.isNotEmpty
-                                  ? NotesPalette.accent.withValues(alpha: 0.12)
+                                  ? NotesPalette.of(context).accent.withValues(alpha: 0.12)
                                   : Colors.transparent,
                               borderRadius: BorderRadius.circular(8),
                               border: Border.all(color: candidates.isNotEmpty
-                                  ? NotesPalette.accent
+                                  ? NotesPalette.of(context).accent
                                   : Colors.transparent),
                             ),
                             child: ListView(
@@ -109,11 +109,11 @@ class KanbanBoard extends ConsumerWidget {
                               padding: const EdgeInsets.all(4),
                               children: [
                                 if (column.tasks.isEmpty)
-                                  const Padding(
+                                  Padding(
                                     padding: EdgeInsets.all(12),
                                     child: Text('Trascina qui un’attività',
                                       style: TextStyle(fontSize: 12,
-                                        color: NotesPalette.secondaryText)),
+                                        color: NotesPalette.of(context).secondaryText)),
                                   ),
                                 for (final task in column.tasks)
                                   Padding(
@@ -127,9 +127,9 @@ class KanbanBoard extends ConsumerWidget {
                                               CrossAxisAlignment.start,
                                           children: [
                                             Row(children: [
-                                              const Icon(Icons.drag_indicator,
+                                              Icon(Icons.drag_indicator,
                                                 size: 18,
-                                                color: NotesPalette.secondaryText),
+                                                color: NotesPalette.of(context).secondaryText),
                                               const SizedBox(width: 6),
                                               Expanded(child: InlineEditableTitle(
                                                 key: Key('kanban-edit-${task.id}'),
@@ -162,17 +162,17 @@ class KanbanBoard extends ConsumerWidget {
                                               const SizedBox(width: 6),
                                               if (task.priority > 0)
                                                 Text('P${task.priority}  ',
-                                                  style: const TextStyle(
+                                                  style: TextStyle(
                                                     fontSize: 12,
-                                                    color: NotesPalette.secondaryText)),
+                                                    color: NotesPalette.of(context).secondaryText)),
                                               Expanded(child: Text(
                                                 task.due.kind == 'none'
                                                   ? 'Senza scadenza'
                                                   : taskDueLabel(task.due),
                                                 overflow: TextOverflow.ellipsis,
-                                                style: const TextStyle(
+                                                style: TextStyle(
                                                   fontSize: 11,
-                                                  color: NotesPalette.secondaryText)),
+                                                  color: NotesPalette.of(context).secondaryText)),
                                               ),
                                               FPopoverMenu(
                                                 menu: [

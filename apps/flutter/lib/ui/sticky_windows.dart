@@ -10,6 +10,7 @@ import '../data/local_store.dart';
 import 'inline_editable_body.dart';
 import 'inline_editable_title.dart';
 import 'notes_theme.dart';
+import 'theme_mode_preference.dart';
 
 /// A detached note never opens its own SQLite/Drift engine.
 /// All reads and writes go through the main window's LocalStore/outbox.
@@ -253,21 +254,49 @@ class _StickyNoteWindowState extends State<StickyNoteWindow> {
   }
 }
 
-class StickyNoteApp extends StatelessWidget {
-  const StickyNoteApp({super.key, required this.parentId,
-      required this.noteId});
+class StickyNoteApp extends StatefulWidget {
+  const StickyNoteApp({super.key, required this.parentId, required this.noteId});
+
   final String parentId;
   final String noteId;
+
+  @override
+  State<StickyNoteApp> createState() => _StickyNoteAppState();
+}
+
+class _StickyNoteAppState extends State<StickyNoteApp> {
+  ThemeMode _mode = ThemeMode.dark;
+
+  @override
+  void initState() {
+    super.initState();
+    _readAppearance();
+  }
+
+  Future<void> _readAppearance() async {
+    try {
+      final mode = await ThemeModePreference.load();
+      if (mounted) setState(() => _mode = mode);
+    } catch (_) {
+      // Detached windows can continue in the existing dark theme if
+      // SharedPreferences is unavailable in their secondary engine.
+    }
+  }
 
   @override
   Widget build(BuildContext context) => MaterialApp(
     title: 'Simple Notes • Sticky',
     debugShowCheckedModeBanner: false,
-    theme: ThemeData.dark(useMaterial3: true),
+    themeMode: _mode,
+    theme: NotesTheme.material(Brightness.light),
+    darkTheme: NotesTheme.material(Brightness.dark),
     builder: (context, child) => FTheme(
-      data: NotesTheme.forPlatform(TargetPlatform.windows),
+      data: NotesTheme.forPlatform(
+        TargetPlatform.windows,
+        brightness: Theme.of(context).brightness,
+      ),
       child: child ?? const SizedBox.shrink(),
     ),
-    home: StickyNoteWindow(parentId: parentId, noteId: noteId),
+    home: StickyNoteWindow(parentId: widget.parentId, noteId: widget.noteId),
   );
 }

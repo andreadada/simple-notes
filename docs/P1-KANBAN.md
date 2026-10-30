@@ -1,5 +1,7 @@
 # P1.9 — Kanban per liste con drag & drop
 
+> **Stato operativo 30/10/2026:** P1.18 Tema Chiaro/Scuro/Sistema integrata su `main` ([PR #19](https://github.com/andreadada/simple-notes/pull/19), Flutter `0.23.0+25`, CI Flutter/Markdown verde); prove fisiche Windows/Android e rilascio cumulativo non attestati. Backend repo Flyway V10, VPS ultima attestazione V8; nessun deploy/reset. [Stato](CURRENT-STATUS.md) · [Tema](P1-APPEARANCE.md).
+
 > **Snapshot 29/10/2026:** P1.17 Windows Tray integrata in `main` ([PR #18](https://github.com/andreadada/simple-notes/pull/18), Flutter `0.22.0+24`, CI Flutter/Markdown verde); prove fisiche Windows/Android e rilascio cumulativo non attestati. Backend repo Flyway V10, VPS ultima attestazione V8; nessun deploy/reset. Le sezioni originali sottostanti restano storiche; vedere lo stato canonico. [Stato](CURRENT-STATUS.md) · [Tray](P1-WINDOWS-TRAY.md).
 
 **Stato (26/10/2026):** **integrata su main con PR #10**, Flutter `0.14.0+16`; [CI Flutter verde](https://github.com/andreadada/simple-notes/actions/runs/40328803094) e [Markdown verde](https://github.com/andreadada/simple-notes/actions/runs/40328803015). Deploy e test dispositivi reali **non attestati**. Backend Flyway V10 e Drift V8 invariati.

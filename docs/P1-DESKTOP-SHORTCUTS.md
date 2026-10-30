@@ -1,6 +1,6 @@
 # P1.15 — Scorciatoie tastiera Windows
 
-> **Stato operativo 29/10/2026:** P1.17 Windows Tray integrata in `main` ([PR #18](https://github.com/andreadada/simple-notes/pull/18), Flutter `0.22.0+24`, CI Flutter/Markdown verde); prove fisiche Windows/Android e rilascio cumulativo non attestati. Backend repo Flyway V10, VPS ultima attestazione V8; nessun deploy/reset. [Stato](CURRENT-STATUS.md) · [Tray](P1-WINDOWS-TRAY.md).
+> **Stato operativo 30/10/2026:** P1.18 Tema Chiaro/Scuro/Sistema integrata su `main` ([PR #19](https://github.com/andreadada/simple-notes/pull/19), Flutter `0.23.0+25`, CI Flutter/Markdown verde); prove fisiche Windows/Android e rilascio cumulativo non attestati. Backend repo Flyway V10, VPS ultima attestazione V8; nessun deploy/reset. [Stato](CURRENT-STATUS.md) · [Tema](P1-APPEARANCE.md).
 
 **Stato 26/10/2026:** **integrata in `main` con PR #16**, Flutter `0.20.0+22`, [CI Flutter verde](https://github.com/andreadada/simple-notes/actions/runs/40384676154) e [Markdown verde](https://github.com/andreadada/simple-notes/actions/runs/40384676062). P1.14 Sticky Notes [PR #15](https://github.com/andreadada/simple-notes/pull/15) è integrata su `main` (Flutter `0.19.0+21`, [Flutter CI verde](https://github.com/andreadada/simple-notes/actions/runs/40377359849) e [Markdown verde](https://github.com/andreadada/simple-notes/actions/runs/40377360259)). CI/merge P1.15 confermati; installazione e prove fisiche ancora da verificare.
 

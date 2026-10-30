@@ -1,5 +1,7 @@
 # P1.10 — Pomodoro locale e statistiche
 
+> **Stato operativo 30/10/2026:** P1.18 Tema Chiaro/Scuro/Sistema integrata su `main` ([PR #19](https://github.com/andreadada/simple-notes/pull/19), Flutter `0.23.0+25`, CI Flutter/Markdown verde); prove fisiche Windows/Android e rilascio cumulativo non attestati. Backend repo Flyway V10, VPS ultima attestazione V8; nessun deploy/reset. [Stato](CURRENT-STATUS.md) · [Tema](P1-APPEARANCE.md).
+
 > **Snapshot 29/10/2026:** P1.17 Windows Tray integrata in `main` ([PR #18](https://github.com/andreadada/simple-notes/pull/18), Flutter `0.22.0+24`, CI Flutter/Markdown verde); prove fisiche Windows/Android e rilascio cumulativo non attestati. Backend repo Flyway V10, VPS ultima attestazione V8; nessun deploy/reset. Le sezioni originali sottostanti restano storiche; vedere lo stato canonico. [Stato](CURRENT-STATUS.md) · [Tray](P1-WINDOWS-TRAY.md).
 
 **Stato (26/10/2026):** **integrata su main con PR #11**, Flutter `0.15.0+17`, [CI Flutter verde](https://github.com/andreadada/simple-notes/actions/runs/40347771381) e [Markdown verde](https://github.com/andreadada/simple-notes/actions/runs/40347771324). P1.9 Kanban PR #10 è stata integrata su `main` dopo [CI Flutter verde](https://github.com/andreadada/simple-notes/actions/runs/40328803094). P1.10 CI/merge confermati; **test su dispositivi reali ancora da completare**. Coolify non modificato: ultimo Flyway reale attestato V8, V10 soltanto nel repository.

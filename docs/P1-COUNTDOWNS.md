@@ -1,5 +1,7 @@
 # P1.12 — Countdown per eventi e scadenze
 
+> **Stato operativo 30/10/2026:** P1.18 Tema Chiaro/Scuro/Sistema integrata su `main` ([PR #19](https://github.com/andreadada/simple-notes/pull/19), Flutter `0.23.0+25`, CI Flutter/Markdown verde); prove fisiche Windows/Android e rilascio cumulativo non attestati. Backend repo Flyway V10, VPS ultima attestazione V8; nessun deploy/reset. [Stato](CURRENT-STATUS.md) · [Tema](P1-APPEARANCE.md).
+
 > **Snapshot 29/10/2026:** P1.17 Windows Tray integrata in `main` ([PR #18](https://github.com/andreadada/simple-notes/pull/18), Flutter `0.22.0+24`, CI Flutter/Markdown verde); prove fisiche Windows/Android e rilascio cumulativo non attestati. Backend repo Flyway V10, VPS ultima attestazione V8; nessun deploy/reset. Le sezioni originali sottostanti restano storiche; vedere lo stato canonico. [Stato](CURRENT-STATUS.md) · [Tray](P1-WINDOWS-TRAY.md).
 
 **Stato 26/10/2026:** **integrata su `main` con PR #13**, Flutter `0.17.0+19`, [CI Flutter verde](https://github.com/andreadada/simple-notes/actions/runs/40368229874), [Markdown verde](https://github.com/andreadada/simple-notes/actions/runs/40368230012). P1.11 Habit Tracker è stata integrata su `main` via [PR #12](https://github.com/andreadada/simple-notes/pull/12) dopo [CI Flutter](https://github.com/andreadada/simple-notes/actions/runs/40364300062) e [Markdown](https://github.com/andreadada/simple-notes/actions/runs/40364300000) verdi. P1.12 ha completato CI e merge; **test device reali ancora da eseguire**. Nessun deploy, database reset o aggiornamento server.

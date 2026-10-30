@@ -394,7 +394,7 @@ class _CalendarBoardState extends ConsumerState<CalendarBoard> {
             day: day, onDrop: _moveBlockToDay,
             child: Material(
               color: focused ? NotesPalette.of(context).accent.withValues(alpha: 0.14)
-                  : const Color(0xff252525),
+                  : NotesPalette.of(context).surface,
               borderRadius: BorderRadius.circular(9),
               child: InkWell(
               key: Key('calendar-date-${calendarDateKey(day)}'),

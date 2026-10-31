@@ -1,6 +1,6 @@
 # P1.7 Windows — MSIX e promemoria opt-in
 
-> **Stato operativo 30/10/2026:** P2.1 import/export JSON portabile integrata su `main` ([PR #20](https://github.com/andreadada/simple-notes/pull/20), Flutter `0.24.0+26`, CI Flutter/Markdown verde: 152 test e build Windows/Android). Collaudi fisici e rilascio cumulativo non attestati. Backend repo Flyway V10, ultima VPS verificata V8; nessun deploy/reset. [Stato](CURRENT-STATUS.md) · [Archivio](P2-PORTABLE-ARCHIVE.md).
+> **Stato operativo 31/10/2026:** P2.2 ICS read-only integrata su `main` ([PR #21](https://github.com/andreadada/simple-notes/pull/21), Flutter `0.25.0+27`, CI Flutter/Markdown verde: 162 test, Windows EXE/MSIX, Android JDK17/21). Test fisici e deploy cumulativo non attestati. Backend repo Flyway V10, VPS ultima attestazione V8; nessun deploy/reset. [Stato](CURRENT-STATUS.md) · [ICS](P2-ICS.md).
 
 **Stato 26/10/2026:** **integrata in `main` con PR #7** (merge `34106c4`, Flutter `0.12.0+14`, [CI 40245561264 verde](https://github.com/andreadada/simple-notes/actions/runs/40245561264)); **non installata o verificata su PC reale**, non rilasciata. Backend Flyway V10 e Drift V8 invariati. La release corrente del codice su `main` è ora Flutter `0.13.0+15` (PR #8); non installare nuovi client fino a verifica dell'API Coolify e compatibilità dell'upgrade MSIX.
 

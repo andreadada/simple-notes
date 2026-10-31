@@ -1,6 +1,6 @@
 # P1.13 — Obiettivi settimanali Habit Tracker
 
-> **Stato operativo 30/10/2026:** P2.1 import/export JSON portabile integrata su `main` ([PR #20](https://github.com/andreadada/simple-notes/pull/20), Flutter `0.24.0+26`, CI Flutter/Markdown verde: 152 test e build Windows/Android). Collaudi fisici e rilascio cumulativo non attestati. Backend repo Flyway V10, ultima VPS verificata V8; nessun deploy/reset. [Stato](CURRENT-STATUS.md) · [Archivio](P2-PORTABLE-ARCHIVE.md).
+> **Stato operativo 31/10/2026:** P2.2 ICS read-only integrata su `main` ([PR #21](https://github.com/andreadada/simple-notes/pull/21), Flutter `0.25.0+27`, CI Flutter/Markdown verde: 162 test, Windows EXE/MSIX, Android JDK17/21). Test fisici e deploy cumulativo non attestati. Backend repo Flyway V10, VPS ultima attestazione V8; nessun deploy/reset. [Stato](CURRENT-STATUS.md) · [ICS](P2-ICS.md).
 
 **Stato 26/10/2026:** **integrata su `main` con PR #14**, Flutter `0.18.0+20`, [CI Flutter](https://github.com/andreadada/simple-notes/actions/runs/40371894259) e [Markdown](https://github.com/andreadada/simple-notes/actions/runs/40371894390) verdi; hardware/installazione non attestati. P1.12 Countdown [PR #13](https://github.com/andreadada/simple-notes/pull/13) è integrata su `main` (`0.17.0+19`) con [Flutter CI verde](https://github.com/andreadada/simple-notes/actions/runs/40368229874) e [docs verdi](https://github.com/andreadada/simple-notes/actions/runs/40368230012).
 

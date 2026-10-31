@@ -1,6 +1,6 @@
 # Simple Notes — Progetto e roadmap
 
-> **Stato operativo 30/10/2026:** P2.1 import/export JSON portabile integrata su `main` ([PR #20](https://github.com/andreadada/simple-notes/pull/20), Flutter `0.24.0+26`, CI Flutter/Markdown verde: 152 test e build Windows/Android). Prove su dispositivi reali e rilascio cumulativo non attestati. Backend repo Flyway V10, VPS ultima attestazione V8; nessun deploy/reset. [Stato](docs/CURRENT-STATUS.md) · [Archivio](docs/P2-PORTABLE-ARCHIVE.md).
+> **Stato operativo 31/10/2026:** P2.2 ICS read-only integrata su `main` ([PR #21](https://github.com/andreadada/simple-notes/pull/21), Flutter `0.25.0+27`; Flutter CI verde: **162 test**, Windows EXE/MSIX, Android JDK17/21, Markdown). Collaudo fisico e deploy cumulativo non attestati. Backend repo Flyway V10; ultima VPS verificata V8, nessun reset/deploy. [Stato](docs/CURRENT-STATUS.md) · [ICS](docs/P2-ICS.md).
 
 <!-- CURRENT-STATUS-REF -->
 
@@ -332,10 +332,12 @@ Esempio: `2026-10-21 14:20 CEST | commit abc1234 | Aggiunto modulo promemoria e 
 
 - 2026-10-30 | merge(p2.1) | PR #20 merged su `main` (`667b68e`), Flutter `0.24.0+26`. CI #41114448268 e Markdown #41114449602 verdi; 152 test, Windows EXE/MSIX e Android JDK17/21. Nessun deploy, migrazione o reset; test fisici aperti. [Specifica](docs/P2-PORTABLE-ARCHIVE.md).
 
-## P2.2 — Calendari ICS in sola lettura (branch 31/10/2026)
+## P2.2 — Calendari ICS in sola lettura (main, PR #21)
 
-- [ ] **P2.2**: import file ICS multipli, fino a 5 sorgenti per account/dispositivo, 500 eventi/file, 1 MiB/file; visualizzazione giorno/settimana/mese, rimozione/reimport del solo overlay, nessuna sincronizzazione.
-- [ ] CI Flutter analyze/test, Windows EXE/MSIX, Android JDK17/JDK21 e Markdown verde **sullo SHA finale**; merge PR solo a controlli verdi.
+- [x] **P2.2**: import file ICS multipli, fino a 5 sorgenti per account/dispositivo, 500 eventi/file, 1 MiB/file; visualizzazione giorno/settimana/mese, rimozione/reimport del solo overlay, nessuna sincronizzazione.
+- [x] CI Flutter analyze/test (162 test), Windows EXE/MSIX, Android JDK17/JDK21 e Markdown verde **sullo SHA finale**; PR #21 integrata su main.
 - [ ] Verifica picker ICS Android/Windows reale, fuso orario locale, persistenza dopo riavvio, logout/account switch e dati preesistenti immutati. Vedere [specifica](docs/P2-ICS.md).
 - [ ] P2.3 futura: subscription ICS via URL, refresh e ricorrenze/VTIMEZONE completi, con security review e permessi minimali (non incluso in P2.2).
 
+
+- 2026-10-31 | merge(p2.2) | PR #21 integrata su `main` (`141004d`), Flutter `0.25.0+27`, CI #41157322208 e Markdown #41157326277 verdi: 162 test, Windows EXE/MSIX e Android JDK17/21. Collaudo fisico e deploy ancora aperti. [Specifica](docs/P2-ICS.md).

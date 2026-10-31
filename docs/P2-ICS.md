@@ -1,6 +1,6 @@
 # P2.2 — Calendari ICS locali in sola lettura
 
-**Stato 31/10/2026:** sviluppo nel branch `feature/p2-2-ics-readonly`, Flutter candidato `0.25.0+27`. Non dichiarare CI, merge, deploy o test hardware finché non verificati. [Stato](CURRENT-STATUS.md).
+**Stato 31/10/2026:** [PR #21](https://github.com/andreadada/simple-notes/pull/21) integrata su `main`, Flutter `0.25.0+27`. [Flutter CI #41157322208](https://github.com/andreadada/simple-notes/actions/runs/41157322208) **success** (162 test, Windows EXE/MSIX, Android JDK17/21), [Markdown #41157326277](https://github.com/andreadada/simple-notes/actions/runs/41157326277) **success**. Nessun deploy o collaudo hardware attestato. [Stato](CURRENT-STATUS.md).
 
 ## Scopo e interazione
 
@@ -28,7 +28,7 @@ Nessuna migrazione Drift o Flyway, nessun endpoint, outbox, Google Calendar OAut
 1. UTC, IANA Europe/Rome inverno/estate, eventi giorno intero multi-giorno/end exclusive, UTC→giorno locale.
 2. DST gap/fold, floating/custom TZID, ricorrenze e exception, UID duplicati, data impossibile, file grande/corrotto → errore fail-closed.
 3. Ri-import stesso file, multi-source, rimozione, serializzazione versionata, chiavi per account diversi.
-4. CI analyze/test Windows EXE/MSIX, Android debug JDK17/JDK21, Markdown sullo **SHA finale**; prova fisica picker e persistenza successiva al merge.
+4. CI analyze/test (**162 test**), Windows EXE/MSIX, Android debug JDK17/JDK21 e Markdown: **PASS** sullo SHA finale. Prova fisica picker e persistenza ancora da eseguire.
 5. Nessun deploy/reset o test con dati reali durante questo incremento.
 
 ## Incrementi futuri

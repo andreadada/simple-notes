@@ -1,7 +1,7 @@
 # Simple Notes — Architettura applicativa
 
 <!-- CURRENT-STATUS-REF -->
-> **Stato operativo 30/10/2026:** P2.1 import/export JSON portabile integrata su `main` ([PR #20](https://github.com/andreadada/simple-notes/pull/20), Flutter `0.24.0+26`, CI Flutter/Markdown verde: 152 test e build Windows/Android). Prove su dispositivi reali e rilascio cumulativo non attestati. Backend repo Flyway V10, VPS ultima attestazione V8; nessun deploy/reset. [Stato](CURRENT-STATUS.md) · [Archivio](P2-PORTABLE-ARCHIVE.md).
+> **Stato operativo 31/10/2026:** P2.2 ICS read-only integrata su `main` ([PR #21](https://github.com/andreadada/simple-notes/pull/21), Flutter `0.25.0+27`; Flutter CI verde: **162 test**, Windows EXE/MSIX, Android JDK17/21, Markdown). Collaudo fisico e deploy cumulativo non attestati. Backend repo Flyway V10; ultima VPS verificata V8, nessun reset/deploy. [Stato](CURRENT-STATUS.md) · [ICS](P2-ICS.md).
 
 ## Componenti del codice attuale
 
@@ -81,7 +81,7 @@ Hide/restore/quit della finestra non crea entità, endpoint, migrazione, cursor,
 `PortableArchive` separa modello JSON versionato e validazione dal picker nativo; `LocalStore` aggiunge copie attraverso transazione SQLite/outbox esistente. La UI nel menu account usa Forui, con conteggi e conferma. Nessuna migrazione, backend API o ownership delle note Sticky modificata. **Non è un backup bit-a-bit**, né ripristina cursori/credenziali/cronologia. [Specifica](P2-PORTABLE-ARCHIVE.md).
 
 
-## P2.2 — ICS reader device-local
+## P2.2 — ICS reader device-local (main, PR #21)
 
 `IcsParser` produce eventi esterni immutabili da file in UTF-8 con validazione fail-closed. `IcsLibrary` serializza sorgenti multiple in SharedPreferences per hash del Google owner; `CalendarBoard` le proietta senza metodi `LocalStore` o sync. La subscription remota, il refresh automatico, le ricorrenze e l'autorizzazione a calendari terzi **non esistono ancora**. [P2-ICS.md](P2-ICS.md).
 

@@ -1,6 +1,6 @@
 # Simple Notes — Passaggio di consegne (handoff)
 
-> **Stato operativo 30/10/2026:** P2.1 import/export JSON portabile integrata su `main` ([PR #20](https://github.com/andreadada/simple-notes/pull/20), Flutter `0.24.0+26`, CI Flutter/Markdown verde: 152 test e build Windows/Android). Prove su dispositivi reali e rilascio cumulativo non attestati. Backend repo Flyway V10, VPS ultima attestazione V8; nessun deploy/reset. [Stato](CURRENT-STATUS.md) · [Archivio](P2-PORTABLE-ARCHIVE.md).
+> **Stato operativo 31/10/2026:** P2.2 ICS read-only integrata su `main` ([PR #21](https://github.com/andreadada/simple-notes/pull/21), Flutter `0.25.0+27`; Flutter CI verde: **162 test**, Windows EXE/MSIX, Android JDK17/21, Markdown). Collaudo fisico e deploy cumulativo non attestati. Backend repo Flyway V10; ultima VPS verificata V8, nessun reset/deploy. [Stato](CURRENT-STATUS.md) · [ICS](P2-ICS.md).
 
 <!-- CURRENT-STATUS-REF -->
 
@@ -298,7 +298,7 @@ Integrata in `main` ([PR #19](https://github.com/andreadada/simple-notes/pull/19
 Integrata su `main` con PR #20, Flutter `0.24.0+26`. Export JSON solo dati attivi liste/task/note; validazione forte e import come **nuove copie** in transazione SQLite con outbox. Flutter CI verde (152 test, Windows/Android); test picker fisico e sync release separati; `main` contiene P2.1. Non fare deploy né ripristini distruttivi. [Specifica](P2-PORTABLE-ARCHIVE.md) · [Stato](CURRENT-STATUS.md).
 
 
-## P2.2 — ICS locali (branch 31/10/2026)
+## P2.2 — ICS locali (main, PR #21)
 
-Sviluppo nel branch `feature/p2-2-ics-readonly` Flutter `0.25.0+27`. Parser di file ICS rigoroso con UID unici, date esclusive, UTC/IANA e rifiuto ricorrenze non implementate; fino a 5 sorgenti locali e overlay Forui senza mutazioni. Test/unit, CI e hardware separati; `main` rimane P2.1 fino a merge. [Specifiche](P2-ICS.md) · [Stato](CURRENT-STATUS.md).
+Integrata su `main` con PR #21, Flutter `0.25.0+27`. Parser di file ICS rigoroso con UID unici, date esclusive, UTC/IANA e rifiuto ricorrenze non implementate; fino a 5 sorgenti locali e overlay Forui senza mutazioni. Flutter CI verde con 162 test + Windows/Android; collaudo hardware e deploy ancora aperti. [Specifiche](P2-ICS.md) · [Stato](CURRENT-STATUS.md).
 

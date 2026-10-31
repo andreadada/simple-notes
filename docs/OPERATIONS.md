@@ -1,6 +1,6 @@
 # Guida operativa — Simple Notes
 
-> **Stato operativo 30/10/2026:** P2.1 import/export JSON portabile integrata su `main` ([PR #20](https://github.com/andreadada/simple-notes/pull/20), Flutter `0.24.0+26`, CI Flutter/Markdown verde: 152 test e build Windows/Android). Prove su dispositivi reali e rilascio cumulativo non attestati. Backend repo Flyway V10, VPS ultima attestazione V8; nessun deploy/reset. [Stato](CURRENT-STATUS.md) · [Archivio](P2-PORTABLE-ARCHIVE.md).
+> **Stato operativo 31/10/2026:** P2.2 ICS read-only integrata su `main` ([PR #21](https://github.com/andreadada/simple-notes/pull/21), Flutter `0.25.0+27`; Flutter CI verde: **162 test**, Windows EXE/MSIX, Android JDK17/21, Markdown). Collaudo fisico e deploy cumulativo non attestati. Backend repo Flyway V10; ultima VPS verificata V8, nessun reset/deploy. [Stato](CURRENT-STATUS.md) · [ICS](P2-ICS.md).
 
 **Fonte operativa** per il checkout locale Windows, CI, Coolify, Android e Windows ZIP/MSIX. **Ultimo stato verificabile (30/10/2026):** P1.18 su `main` con PR #19 (Flutter `0.23.0+25`), CI Flutter/Markdown verdi. Backend repository Flyway V10 / Drift V8, **ultima VPS confermata Flyway V8**; release e collaudo device non attestati. Leggere sempre [CURRENT-STATUS.md](CURRENT-STATUS.md).
 
@@ -151,7 +151,7 @@ Integrata in `main` ([PR #19](https://github.com/andreadada/simple-notes/pull/19
 Android e Windows usano il picker file di sistema; verificare un JSON salvato, apertura, annullamento, test import con profilo di prova e persistenza dopo riavvio. Importare su account connesso crea **nuove** operazioni outbox; non importare dataset reali durante prova. Prima di sincronizzare copie importate con Coolify, attestare Flyway V10 e capability. Il JSON non sostituisce il backup/restore isolato di PostgreSQL o il backup SQLite. [Specifica](P2-PORTABLE-ARCHIVE.md).
 
 
-## Gate P2.2 — File ICS esterni (branch)
+## Gate P2.2 — File ICS esterni (main, CI verde, dispositivo reale da collaudare)
 
 Collaudo reale Windows/Android: file UTC, all-day, fuso Europe/Rome, DST, import/reimport/revoke, annullamento picker, cambio account e riavvio. Confermare che l'overlay non scrive SQLite, outbox, API o token; condividere un file ICS può includere dati personali, usare sorgenti di prova. File non supportati **devono essere rifiutati** senza modifiche parziali. [Specifica](P2-ICS.md).
 

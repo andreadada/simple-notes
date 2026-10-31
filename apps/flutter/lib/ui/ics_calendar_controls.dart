@@ -124,11 +124,10 @@ class _IcsCalendarControlsState extends State<IcsCalendarControls> {
       final next=_library.replace(candidate);
       if(!mounted) return;
       final ok=await _confirm('Importa calendario ICS',
-        'File: ${candidate.name}\nEventi: ${candidate.events.length}\n'
-        (replace ? 'Sostituisce solo questo file ICS.\n':
-          'Aggiunge un calendario esterno.\n')+
-        'Gli eventi restano in sola lettura su questo dispositivo; '
-        'nessuna attività o modifica cloud verrà creata.',
+        "File: ${candidate.name}\nEventi: ${candidate.events.length}\n"
+        "${replace ? 'Sostituisce solo questo file ICS.' : 'Aggiunge un calendario esterno.'}\n"
+        "Gli eventi restano in sola lettura su questo dispositivo; "
+        "nessuna attività o modifica cloud verrà creata.",
         'Importa eventi');
       if(!ok) return;
       await _save(next);

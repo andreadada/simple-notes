@@ -951,7 +951,7 @@ Ctrl+/ · Questo elenco'''),
               ]),
             ),
           if (section == Section.calendar)
-            const Expanded(child: CalendarBoard())
+            Expanded(child: CalendarBoard(ownerId: cloud.userId))
           else if (section == Section.eisenhower)
             Expanded(child: EisenhowerBoard(onOpenTask: (task) {
               setState(() => selectedId = task.id);

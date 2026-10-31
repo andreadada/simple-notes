@@ -8,7 +8,8 @@ List<int> ics(List<String> events) => utf8.encode([
   'VERSION:2.0',
   ...events,
   'END:VCALENDAR',
-].join('\r\n') + '\r\n');
+  '',
+].join('\r\n'));
 
 List<String> event({
   String id='id-1',
@@ -16,7 +17,7 @@ List<String> event({
   String start='DTSTART:20261103T090000Z',
   String end='DTEND:20261103T100000Z',
   List<String> extra=const [],
-}) => ['BEGIN:VEVENT','UID:'+id,'SUMMARY:'+summary,start,end,...extra,'END:VEVENT'];
+}) => ['BEGIN:VEVENT','UID:$id','SUMMARY:$summary',start,end,...extra,'END:VEVENT'];
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -73,8 +74,7 @@ void main() {
   });
 
   test('unfolds lines and decodes escaped punctuation', () {
-    final c=IcsParser.parse(ics(event(summary:r'Prima\, parte\; seconda\n'+'\r\n '+
-        r'Terza')), 'text.ics');
+    final c=IcsParser.parse(ics(event(summary:r'Prima\, parte\; seconda\n' '\r\n ' r'Terza')), 'text.ics');
     expect(c.events.single.title, 'Prima, parte; seconda\nTerza');
   });
 
@@ -132,7 +132,7 @@ void main() {
   test('limits imported file count and do not write on parse failures', () {
     var lib=const IcsLibrary();
     for(var i=0;i<IcsLibrary.maxSources;i++) {
-      lib=lib.replace(IcsParser.parse(ics(event()),'calendar'+i.toString()+'.ics'));
+      lib=lib.replace(IcsParser.parse(ics(event()),'calendar$i.ics'));
     }
     expect(() => lib.replace(IcsParser.parse(ics(event()),'overflow.ics')),
       throwsFormatException);

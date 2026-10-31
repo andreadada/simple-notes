@@ -1,5 +1,10 @@
 import 'dart:convert';
+import 'package:crypto/crypto.dart';
 import '../data/task_due_clock.dart';
+
+/// Owner-scoped local key; no raw Google ID is stored in preferences keys.
+String icsOwnerKey(String? owner) => 'simple_notes.ics.v1.' +
+    sha256.convert(utf8.encode(owner ?? 'signed-out-local')).toString();
 
 String _pad(int v) => v.toString().padLeft(2, '0');
 String icsDay(DateTime d) => d.year.toString().padLeft(4,'0')+'-'+_pad(d.month)+'-'+_pad(d.day);

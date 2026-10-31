@@ -1,7 +1,4 @@
 import 'dart:async';
-import 'dart:convert';
-
-import 'package:crypto/crypto.dart';
 import 'package:file_selector/file_selector.dart';
 import 'package:flutter/material.dart';
 import 'package:forui/forui.dart';
@@ -27,8 +24,7 @@ class _IcsCalendarControlsState extends State<IcsCalendarControls> {
   bool _loading=true, _busy=false;
   String? _error;
 
-  String get _key=>'simple_notes.ics.v1.'+
-      sha256.convert(utf8.encode(widget.ownerId??'signed-out-local')).toString();
+  String get _key=>icsOwnerKey(widget.ownerId);
 
   @override
   void initState() {

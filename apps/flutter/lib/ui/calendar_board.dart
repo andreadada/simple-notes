@@ -318,7 +318,7 @@ class _CalendarBoardState extends ConsumerState<CalendarBoard> {
           Text(e.title, maxLines: compact ? 1 : 2,
             overflow: TextOverflow.ellipsis,
             style: TextStyle(fontSize: compact ? 12 : 14)),
-          Text(e.clock + ' · ICS: ' + e.source + ' · sola lettura',
+          Text('${e.clock} · ICS: ${e.source} · sola lettura',
             maxLines: 2, overflow: TextOverflow.ellipsis,
             style: TextStyle(fontSize: 10,
               color: NotesPalette.of(context).secondaryText)),

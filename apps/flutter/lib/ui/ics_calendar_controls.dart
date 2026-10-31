@@ -86,8 +86,10 @@ class _IcsCalendarControlsState extends State<IcsCalendarControls> {
   }
 
   void _message(String text) {
-    if(mounted) ScaffoldMessenger.maybeOf(context)?.showSnackBar(
-        SnackBar(content:Text(text)));
+    if (mounted) {
+      ScaffoldMessenger.maybeOf(context)?.showSnackBar(
+          SnackBar(content: Text(text)));
+    }
   }
 
   Future<bool> _confirm(String title,String body,String accept) async {
@@ -122,8 +124,7 @@ class _IcsCalendarControlsState extends State<IcsCalendarControls> {
       final next=_library.replace(candidate);
       if(!mounted) return;
       final ok=await _confirm('Importa calendario ICS',
-        'File: '+candidate.name+'\nEventi: '+
-        candidate.events.length.toString()+'\n'+
+        'File: ${candidate.name}\nEventi: ${candidate.events.length}\n'
         (replace ? 'Sostituisce solo questo file ICS.\n':
           'Aggiunge un calendario esterno.\n')+
         'Gli eventi restano in sola lettura su questo dispositivo; '
@@ -142,7 +143,7 @@ class _IcsCalendarControlsState extends State<IcsCalendarControls> {
   Future<void> _remove(String name) async {
     if(_loading || _busy || _error!=null) return;
     final ok=await _confirm('Rimuovere calendario ICS?',
-      'Rimuove soltanto il file locale '+name+'. Nessuna attività sarà eliminata.',
+      'Rimuove soltanto il file locale $name. Nessuna attività sarà eliminata.',
       'Rimuovi calendario');
     if(!ok) return;
     try { await _save(_library.remove(name)); }
@@ -158,14 +159,13 @@ class _IcsCalendarControlsState extends State<IcsCalendarControls> {
             variant:FButtonVariant.outline,mainAxisSize:MainAxisSize.min,
             onPress:_loading||_busy||_error!=null ? null : _import,
             child:const Text('Importa ICS')),
-          Text('Eventi esterni · '+_library.eventCount.toString()+
-            ' · locali, sola lettura',style:TextStyle(fontSize:11,
+          Text('Eventi esterni · ${_library.eventCount} · locali, sola lettura',style:TextStyle(fontSize:11,
               color:NotesPalette.of(context).secondaryText)),
           for(final cal in _library.calendars)
-            FButton(key:Key('calendar-remove-ics-'+cal.name),
+            FButton(key:Key('calendar-remove-ics-${cal.name}'),
               variant:FButtonVariant.ghost,mainAxisSize:MainAxisSize.min,
               onPress:_busy ? null : ()=>_remove(cal.name),
-              child:Text('× '+cal.name,maxLines:1,
+              child:Text('× ${cal.name}',maxLines:1,
                 overflow:TextOverflow.ellipsis)),
         ],
       ),

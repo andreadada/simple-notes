@@ -73,7 +73,7 @@ void main() {
   });
 
   test('unfolds lines and decodes escaped punctuation', () {
-    final c=IcsParser.parse(ics(event(summary:r'Prima\, parte\; seconda\n'+' '+
+    final c=IcsParser.parse(ics(event(summary:r'Prima\, parte\; seconda\n'+'\r\n '+
         r'Terza')), 'text.ics');
     expect(c.events.single.title, 'Prima, parte; seconda\nTerza');
   });

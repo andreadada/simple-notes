@@ -3,11 +3,11 @@ import 'package:crypto/crypto.dart';
 import '../data/task_due_clock.dart';
 
 /// Owner-scoped local key; no raw Google ID is stored in preferences keys.
-String icsOwnerKey(String? owner) => 'simple_notes.ics.v1.' +
-    sha256.convert(utf8.encode(owner ?? 'signed-out-local')).toString();
+String icsOwnerKey(String? owner) =>
+    'simple_notes.ics.v1.${sha256.convert(utf8.encode(owner ?? 'signed-out-local'))}';
 
 String _pad(int v) => v.toString().padLeft(2, '0');
-String icsDay(DateTime d) => d.year.toString().padLeft(4,'0')+'-'+_pad(d.month)+'-'+_pad(d.day);
+String icsDay(DateTime d) => "${d.year.toString().padLeft(4, '0')}-${_pad(d.month)}-${_pad(d.day)}";
 bool _validDay(String s) {
   final d = DateTime.tryParse(s);
   return RegExp(r'^\d{4}-\d\d-\d\d$').hasMatch(s) && d != null && icsDay(d) == s;
@@ -33,7 +33,7 @@ class IcsEvent {
   String get clock {
     if (allDay) return 'Tutto il giorno';
     final d = startUtc!.toLocal();
-    return _pad(d.hour)+':'+_pad(d.minute);
+    return '${_pad(d.hour)}:${_pad(d.minute)}';
   }
   Map<String,dynamic> toJson() => {
     'uid': uid, 'title': title, 'source': source,
@@ -232,7 +232,7 @@ class IcsParser {
   static (bool,String) _parseDate(_Prop prop) {
     final s=prop.value;
     if(RegExp(r'^\d{8}$').hasMatch(s)) {
-      final day=s.substring(0,4)+'-'+s.substring(4,6)+'-'+s.substring(6,8);
+      final day='${s.substring(0,4)}-${s.substring(4,6)}-${s.substring(6,8)}';
       if(prop.zone!=null || !_validDay(day)) {
         throw const FormatException('Data ICS non valida.');
       }
@@ -253,8 +253,8 @@ class IcsParser {
     if(prop.zone==null || !TaskDueClock.knowsZone(prop.zone!)) {
       throw const FormatException('Orario floating o timezone non IANA.');
     }
-    final day=p[0].toString().padLeft(4,'0')+'-'+_pad(p[1])+'-'+_pad(p[2]);
-    final time=_pad(p[3])+':'+_pad(p[4]);
+    final day="${p[0].toString().padLeft(4,'0')}-${_pad(p[1])}-${_pad(p[2])}";
+    final time='${_pad(p[3])}:${_pad(p[4])}';
     final options=TaskDueClock.possibilities(day,time,prop.zone!);
     if(options.length!=1) throw const FormatException('Orario ICS ambiguo per DST.');
     return (false,options.single.instant.add(Duration(seconds:p[5]))

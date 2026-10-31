@@ -78,3 +78,8 @@ Hide/restore/quit della finestra non crea entità, endpoint, migrazione, cursor,
 
 Importare dati tramite `LocalStore.importPortable` crea nuove UUID per liste, task e note, preservando riferimenti task/lista e sottotask/slot; le operazioni SQLite generano gli stessi upsert versionati e l'ordinamento lista→task→note del flusso standard. Non importa operationId, remoteVersion, owner, sync cursor o tombstone di altri dispositivi. No endpoint o capability nuovi; server V10 obbligatorio per i campi P1. [Specifica](P2-PORTABLE-ARCHIVE.md).
 
+
+## P2.2 — Eventi ICS mai sincronizzati
+
+L'import ICS legge un file locale, non invia alcuna richiesta cloud, non crea entityType, outbox, UUID di task, cursor o metadata di versioning. Cambio account cambia la chiave SharedPreferences e nasconde subito gli eventi dell'owner precedente. Dati app e API V10 invariati. [Specifica](P2-ICS.md).
+

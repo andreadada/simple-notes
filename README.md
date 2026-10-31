@@ -61,3 +61,8 @@ Integrata in `main` ([PR #19](https://github.com/andreadada/simple-notes/pull/19
 ## P2.1 — Archivio portabile JSON (integrata, PR #20)
 
 Menu account → **Esporta dati JSON** oppure **Importa dati JSON**. Esporta liste, attività (comprese scadenze/ricorrenze/blocchi/sottotask) e note attive. Importa copie con nuovi ID senza sovrascrivere alcun elemento, tramite SQLite e outbox standard. Non è un backup completo: esclude cestino, cronologia sync, impostazioni, dati Focus locali, credenziali e sessioni. Flutter `0.24.0+26` integrata in `main` dopo CI completa verde (152 test, Windows/Android, Markdown); nessun deploy. [Specifica](docs/P2-PORTABLE-ARCHIVE.md).
+
+## P2.2 — Calendario ICS esterno (PR in sviluppo)
+
+Nella schermata Calendario si possono importare fino a 5 file ICS in sola lettura per account/dispositivo; compaiono in giorno, settimana e mese senza essere convertiti in task. Nessuna nuova API o migrazione; ricorrenze ICS e timezone non IANA sono rifiutati con un errore esplicito. Il codice è solo nel branch `feature/p2-2-ics-readonly` e non è ancora disponibile su `main`. Flutter candidato `0.25.0+27`. [Specifica](docs/P2-ICS.md).
+

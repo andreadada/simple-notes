@@ -76,3 +76,8 @@ Integrata in `main` ([PR #19](https://github.com/andreadada/simple-notes/pull/19
 ## Vincolo P2.1 — import/export sicuro
 
 L'archivio portabile JSON deve rimanere distinta da backup/ripristino completo e dalla sincronizzazione: non includere token, owner, cursore, outbox, cestino o dati locali di Focus. Import solo dopo parsing/validazione e conferma esplicita in modale Forui; nuove UUID per tutte le copie, associazioni liste/attività conservate e una transazione SQLite, senza replace, reset, update dello storico o sovrascritture. L'operazione importa sull'account locale corrente e genera operazioni di sync normali. [Specifica](docs/P2-PORTABLE-ARCHIVE.md).
+
+## Vincolo P2.2 — Calendari esterni
+
+Un evento ICS resta **read-only** e **device-local per account**: non creare UUID task, outbox, migrazioni, endpoints, reminder o mutazioni sincronizzate. Fallire in modo esplicito quando un file contiene ricorrenze/exception, timezone non IANA o orari DST ambigui; non nascondere eventi parziali. Conferma con Forui prima di cambiare l'overlay locale; non toccare liste/task/note né cache credenziali. [Contratto](docs/P2-ICS.md).
+

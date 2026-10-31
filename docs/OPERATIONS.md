@@ -150,3 +150,8 @@ Integrata in `main` ([PR #19](https://github.com/andreadada/simple-notes/pull/19
 
 Android e Windows usano il picker file di sistema; verificare un JSON salvato, apertura, annullamento, test import con profilo di prova e persistenza dopo riavvio. Importare su account connesso crea **nuove** operazioni outbox; non importare dataset reali durante prova. Prima di sincronizzare copie importate con Coolify, attestare Flyway V10 e capability. Il JSON non sostituisce il backup/restore isolato di PostgreSQL o il backup SQLite. [Specifica](P2-PORTABLE-ARCHIVE.md).
 
+
+## Gate P2.2 — File ICS esterni (branch)
+
+Collaudo reale Windows/Android: file UTC, all-day, fuso Europe/Rome, DST, import/reimport/revoke, annullamento picker, cambio account e riavvio. Confermare che l'overlay non scrive SQLite, outbox, API o token; condividere un file ICS può includere dati personali, usare sorgenti di prova. File non supportati **devono essere rifiutati** senza modifiche parziali. [Specifica](P2-ICS.md).
+

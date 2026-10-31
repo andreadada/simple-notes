@@ -217,3 +217,8 @@ Integrata in `main` ([PR #19](https://github.com/andreadada/simple-notes/pull/19
 ## P2.1 — Import/export nel menu account
 
 Due azioni semplici «Esporta dati JSON» e «Importa dati JSON». L'import mostra prima una modale Forui con conteggi esatti e avviso che vengono create copie (ripetere genera duplicati), senza distruggere dati preesistenti. Non servono campi di rinomina né modal Material. Errori di file leggibili tramite SnackBar; annullare non deve scrivere nulla. [Specifica](docs/P2-PORTABLE-ARCHIVE.md).
+
+## P2.2 — Distinzione calendario esterno
+
+Eventi importati dai file ICS mostrati come card non editabili con icona lucchetto e dicitura «ICS: sorgente · sola lettura». Non aggiungere checkbox, drag handle, modifica titolo/orario o duplicazione dentro le task. Forui per conferma import, sostituzione e rimozione, menu compatto per file sul calendario; contatori mese separati da scadenze e blocchi. [Specifica](docs/P2-ICS.md).
+

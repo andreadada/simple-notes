@@ -186,3 +186,8 @@ Integrata in `main` ([PR #19](https://github.com/andreadada/simple-notes/pull/19
 ## P2.1 — Import/export dati (main, PR #20)
 
 `lib/data/portable_archive.dart` definisce il formato JSON 1 e la validazione; il menu account usa `file_selector` per l'apertura su Android/Windows e il salvataggio su Windows, `share_plus` per l'export Android. Importazione confermata in `NotesDialog` Forui, transazione tramite `LocalStore.importPortable` e outbox; `test/portable_archive_test.dart` copre il round-trip, i limiti e il merge additivo. Flutter `0.24.0+26` integrata su main, CI completa verde (152 test, Android JDK17/21, Windows EXE/MSIX, Markdown); collaudo reale aperto. Non equivale a un backup di SQLite/SharedPreferences né preserva ID e tombstone. [Specifica](../../docs/P2-PORTABLE-ARCHIVE.md).
+
+## P2.2 — ICS read-only (branch)
+
+`ui/ics_calendar.dart` contiene parser RFC5545 limitato, calendario versionato e proiezione per giorno; `ui/ics_calendar_controls.dart` gestisce file nativi, preview Forui e archivio SharedPreferences hash-owner; `calendar_board.dart` mostra gli eventi esterni senza azioni editabili in giorno/settimana/mese. `test/ics_calendar_test.dart` verifica date, UTC/IANA/DST, fold/unfold, limiti e owner isolation. Candidate `0.25.0+27`, nessun sync/SQLite/outbox; CI e test device ancora da attestare. [Specifica](../../docs/P2-ICS.md).
+

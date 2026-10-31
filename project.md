@@ -331,3 +331,11 @@ Esempio: `2026-10-21 14:20 CEST | commit abc1234 | Aggiunto modulo promemoria e 
 
 
 - 2026-10-30 | merge(p2.1) | PR #20 merged su `main` (`667b68e`), Flutter `0.24.0+26`. CI #41114448268 e Markdown #41114449602 verdi; 152 test, Windows EXE/MSIX e Android JDK17/21. Nessun deploy, migrazione o reset; test fisici aperti. [Specifica](docs/P2-PORTABLE-ARCHIVE.md).
+
+## P2.2 — Calendari ICS in sola lettura (branch 31/10/2026)
+
+- [ ] **P2.2**: import file ICS multipli, fino a 5 sorgenti per account/dispositivo, 500 eventi/file, 1 MiB/file; visualizzazione giorno/settimana/mese, rimozione/reimport del solo overlay, nessuna sincronizzazione.
+- [ ] CI Flutter analyze/test, Windows EXE/MSIX, Android JDK17/JDK21 e Markdown verde **sullo SHA finale**; merge PR solo a controlli verdi.
+- [ ] Verifica picker ICS Android/Windows reale, fuso orario locale, persistenza dopo riavvio, logout/account switch e dati preesistenti immutati. Vedere [specifica](docs/P2-ICS.md).
+- [ ] P2.3 futura: subscription ICS via URL, refresh e ricorrenze/VTIMEZONE completi, con security review e permessi minimali (non incluso in P2.2).
+

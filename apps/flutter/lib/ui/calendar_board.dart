@@ -6,6 +6,8 @@ import '../data/local_store.dart';
 import '../data/task_due_clock.dart';
 import '../data/task_due_view.dart';
 import 'calendar_logic.dart';
+import 'ics_calendar.dart';
+import 'ics_calendar_controls.dart';
 import 'calendar_plan_summary.dart';
 import 'calendar_quick_planner.dart';
 import 'inline_editable_title.dart';
@@ -20,7 +22,8 @@ import 'time_block_timeline.dart';
 /// P1.1: calendar projection over existing SQLite tasks. No new local/cloud
 /// storage and no fabricated hour for date-only deadlines.
 class CalendarBoard extends ConsumerStatefulWidget {
-  const CalendarBoard({super.key});
+  const CalendarBoard({super.key, this.ownerId});
+  final String? ownerId;
 
   @override
   ConsumerState<CalendarBoard> createState() => _CalendarBoardState();
@@ -35,6 +38,14 @@ class _CalendarBoardState extends ConsumerState<CalendarBoard> {
   String searchTerm = '';
   final searchController = TextEditingController();
   bool quickPlanning = false;
+  IcsLibrary _ics = const IcsLibrary();
+
+  @override
+  void didUpdateWidget(covariant CalendarBoard old) {
+    super.didUpdateWidget(old);
+    if (old.ownerId != widget.ownerId) _ics = const IcsLibrary();
+  }
+
 
   @override
   void dispose() {
@@ -296,9 +307,30 @@ class _CalendarBoardState extends ConsumerState<CalendarBoard> {
     ])),
   );
 
+  Widget _icsCard(IcsEvent e, {bool compact = false}) => Padding(
+    padding: EdgeInsets.only(bottom: compact ? 6 : 9),
+    child: FCard(child: Row(children: [
+      Icon(Icons.lock_outline, size: 17,
+        color: NotesPalette.of(context).secondaryText),
+      const SizedBox(width: 9),
+      Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(e.title, maxLines: compact ? 1 : 2,
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(fontSize: compact ? 12 : 14)),
+          Text('${e.clock} · ICS: ${e.source} · sola lettura',
+            maxLines: 2, overflow: TextOverflow.ellipsis,
+            style: TextStyle(fontSize: 10,
+              color: NotesPalette.of(context).secondaryText)),
+        ],
+      )),
+    ])),
+  );
+
   Widget _agenda(DateTime day, List<LocalTask> tasks,
       {bool includeHeading = true}) {
     final items = calendarTasksForDay(tasks, day);
+    final external = _ics.onDay(day);
     final blocks = calendarTimeSlotsForDay(tasks, day);
     final allDay = items.where((t) => t.due.kind == 'date').toList();
     final scheduled = items.where((t) => t.due.kind != 'date').toList();
@@ -310,7 +342,7 @@ class _CalendarBoardState extends ConsumerState<CalendarBoard> {
               fontSize: 17, fontWeight: FontWeight.w600)),
           const SizedBox(height: 10),
         ],
-        if (blocks.isEmpty && items.isEmpty)
+        if (blocks.isEmpty && items.isEmpty && external.isEmpty)
           Padding(
             padding: EdgeInsets.symmetric(vertical: 24),
             child: Text('Nessun blocco o attività in questo giorno.',
@@ -343,6 +375,14 @@ class _CalendarBoardState extends ConsumerState<CalendarBoard> {
               color: NotesPalette.of(context).secondaryText, fontSize: 12)),
           const SizedBox(height: 8),
           for (final task in scheduled) _taskCard(task),
+        ],
+        if (external.isNotEmpty) ...[
+          const SizedBox(height: 12),
+          Text('EVENTI ESTERNI · SOLA LETTURA',
+            style: TextStyle(fontSize: 12,
+              color: NotesPalette.of(context).secondaryText)),
+          const SizedBox(height: 8),
+          for (final event in external) _icsCard(event),
         ],
         if (mode == CalendarMode.day) ...[
           const SizedBox(height: 14),
@@ -386,6 +426,7 @@ class _CalendarBoardState extends ConsumerState<CalendarBoard> {
           final day = days[index];
           final items = calendarTasksForDay(tasks, day);
           final blocks = calendarTimeSlotsForDay(tasks, day);
+          final external = _ics.onDay(day);
           final focused = calendarDateKey(day) == calendarDateKey(selected);
           final today = calendarDateKey(day) ==
               calendarDateKey(DateTime.now());
@@ -409,11 +450,11 @@ class _CalendarBoardState extends ConsumerState<CalendarBoard> {
                           : today ? NotesPalette.of(context).accent : null,
                       fontWeight: today || focused
                           ? FontWeight.bold : FontWeight.normal)),
-                    if (items.isNotEmpty || blocks.isNotEmpty) ...[
+                    if (items.isNotEmpty || blocks.isNotEmpty || external.isNotEmpty) ...[
                       const SizedBox(height: 3),
                       Text(width < 650
-                          ? '${items.length} · ${blocks.length}'
-                          : '${items.length} scad. · ${blocks.length} blocchi',
+                          ? '${items.length} · ${blocks.length} · ${external.length}'
+                          : '${items.length} scad. · ${blocks.length} blocchi · ${external.length} ICS',
                         maxLines: 1, overflow: TextOverflow.ellipsis,
                         style: TextStyle(fontSize: 10,
                             color: NotesPalette.of(context).secondaryText)),
@@ -469,8 +510,11 @@ class _CalendarBoardState extends ConsumerState<CalendarBoard> {
               const SizedBox(height: 10),
               for (final task in calendarTasksForDay(tasks, day))
                 _taskCard(task, compact: true),
+              for (final event in _ics.onDay(day))
+                _icsCard(event, compact: true),
               if (calendarTasksForDay(tasks, day).isEmpty &&
-                  calendarTimeSlotsForDay(tasks, day).isEmpty)
+                  calendarTimeSlotsForDay(tasks, day).isEmpty &&
+                  _ics.onDay(day).isEmpty)
                 Padding(
                   padding: EdgeInsets.symmetric(vertical: 13),
                   child: Text('—', style: TextStyle(
@@ -523,6 +567,12 @@ class _CalendarBoardState extends ConsumerState<CalendarBoard> {
               Text(_rangeLabel(), key: const Key('calendar-range'),
                 style: const TextStyle(fontWeight: FontWeight.w600)),
             ],
+          ),
+          const SizedBox(height: 10),
+          IcsCalendarControls(ownerId: widget.ownerId,
+            onChanged: (lib) {
+              if (mounted) setState(() => _ics = lib);
+            },
           ),
           const SizedBox(height: 10),
           Wrap(spacing: 7, runSpacing: 6, children: [

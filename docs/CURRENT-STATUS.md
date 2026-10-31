@@ -41,3 +41,8 @@ PR #19 merged con CI di codice e documentazione verde sullo SHA finale. Restano 
 
 [Specifica import/export](P2-PORTABLE-ARCHIVE.md). [PR #20](https://github.com/andreadada/simple-notes/pull/20) merged: Flutter `0.24.0+26`, JSON portabile liste/task/note attive con validazione e importazione additiva. CI completa verde; test fisici e deploy aperti. Non modifica PostgreSQL/Flyway o schema Drift; non è un backup del profilo, dei dati Focus o della coda sync.
 
+
+## P2.2 — In sviluppo, NON su main
+
+Branch `feature/p2-2-ics-readonly`, candidato Flutter `0.25.0+27`: import locale di file `.ics` (fino a 5, eventi singoli, UTC/IANA o all-day), overlay read-only nel calendario giorno/settimana/mese, preferenze con hash owner. Nessuna modifica a task/SQLite/outbox/cloud. **Non dichiarare integrato prima di CI e merge**; collaudo reale e distribuzione sempre distinti. [Specifica](P2-ICS.md).
+

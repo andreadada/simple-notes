@@ -297,3 +297,8 @@ Integrata in `main` ([PR #19](https://github.com/andreadada/simple-notes/pull/19
 
 Integrata su `main` con PR #20, Flutter `0.24.0+26`. Export JSON solo dati attivi liste/task/note; validazione forte e import come **nuove copie** in transazione SQLite con outbox. Flutter CI verde (152 test, Windows/Android); test picker fisico e sync release separati; `main` contiene P2.1. Non fare deploy né ripristini distruttivi. [Specifica](P2-PORTABLE-ARCHIVE.md) · [Stato](CURRENT-STATUS.md).
 
+
+## P2.2 — ICS locali (branch 31/10/2026)
+
+Sviluppo nel branch `feature/p2-2-ics-readonly` Flutter `0.25.0+27`. Parser di file ICS rigoroso con UID unici, date esclusive, UTC/IANA e rifiuto ricorrenze non implementate; fino a 5 sorgenti locali e overlay Forui senza mutazioni. Test/unit, CI e hardware separati; `main` rimane P2.1 fino a merge. [Specifiche](P2-ICS.md) · [Stato](CURRENT-STATUS.md).
+

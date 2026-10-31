@@ -56,3 +56,8 @@ Ancora fuori ambito: drag/drop e ridimensionamento delle fasce orarie, ricorrenz
 ## Evoluzione storica: P1.2, integrata successivamente su main
 
 La versione successiva estende la proiezione aggiungendo i blocchi temporali distinti dalle scadenze. Serve API `timeBlockSchema:1` e Flyway V8 prima di aggiornare client: [P1-TIME-BLOCKING.md](P1-TIME-BLOCKING.md). Fino al merge e al rollout, le funzioni P1.2 **non sono presenti nella release attuale**.
+
+## P2.2 — Overlay ICS esterno (branch)
+
+Senza modificare P1.1: il calendario affianca gli eventi di file ICS locali in giorno, settimana e mese; date/ore lette con regole dichiarate, nessuna conversione in task, modifica o sync. Contatore mese distingue `ICS` da scadenze/blocchi e la card esterna non è trascinabile. [Specifica](P2-ICS.md).
+

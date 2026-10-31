@@ -80,3 +80,8 @@ Hide/restore/quit della finestra non crea entità, endpoint, migrazione, cursor,
 
 `PortableArchive` separa modello JSON versionato e validazione dal picker nativo; `LocalStore` aggiunge copie attraverso transazione SQLite/outbox esistente. La UI nel menu account usa Forui, con conteggi e conferma. Nessuna migrazione, backend API o ownership delle note Sticky modificata. **Non è un backup bit-a-bit**, né ripristina cursori/credenziali/cronologia. [Specifica](P2-PORTABLE-ARCHIVE.md).
 
+
+## P2.2 — ICS reader device-local
+
+`IcsParser` produce eventi esterni immutabili da file in UTF-8 con validazione fail-closed. `IcsLibrary` serializza sorgenti multiple in SharedPreferences per hash del Google owner; `CalendarBoard` le proietta senza metodi `LocalStore` o sync. La subscription remota, il refresh automatico, le ricorrenze e l'autorizzazione a calendari terzi **non esistono ancora**. [P2-ICS.md](P2-ICS.md).
+

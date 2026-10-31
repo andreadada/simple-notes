@@ -1,8 +1,8 @@
-# Rollout coordinato — Simple Notes backend V10 e client P1.18
+# Rollout coordinato — Simple Notes backend V10 e client P2.2
 
-> **Stato operativo 30/10/2026:** P2.1 import/export JSON portabile integrata su `main` ([PR #20](https://github.com/andreadada/simple-notes/pull/20), Flutter `0.24.0+26`, CI Flutter/Markdown verde: 152 test e build Windows/Android). Prove su dispositivi reali e rilascio cumulativo non attestati. Backend repo Flyway V10, VPS ultima attestazione V8; nessun deploy/reset. [Stato](CURRENT-STATUS.md) · [Archivio](P2-PORTABLE-ARCHIVE.md).
+> **Stato operativo 31/10/2026:** P2.2 ICS read-only integrata su `main` ([PR #21](https://github.com/andreadada/simple-notes/pull/21), Flutter `0.25.0+27`, CI Flutter/Markdown verde: 162 test, Windows EXE/MSIX, Android JDK17/21). Test fisici e deploy cumulativo non attestati. Backend repo Flyway V10, VPS ultima attestazione V8; nessun deploy/reset. [Stato](CURRENT-STATUS.md) · [ICS](P2-ICS.md).
 
-**Stato:** runbook per backend Flyway V10 e client P1.18 `0.23.0+25` (**P1.1–P1.18 integrate in `main`, PR #19, CI Flutter/Markdown verdi**). Non è attestato un deploy Coolify, un'installazione o un collaudo cumulativo; l'utente intende effettuare personalmente il deploy dopo gli incrementi. I comandi sono read-only salvo la procedura Redeploy espressamente distinta.
+**Stato:** runbook per backend Flyway V10 e client P2.2 `0.25.0+27` (**P0–P1.18, P2.1 e P2.2 integrate in `main`, PR #21, CI Flutter/Markdown verdi**). Non è attestato un deploy Coolify, un'installazione o un collaudo cumulativo; l'utente intende effettuare personalmente il deploy dopo gli incrementi. I comandi sono read-only salvo la procedura Redeploy espressamente distinta.
 
 ## Prima di agire
 
@@ -131,3 +131,7 @@ Integrata in `main` ([PR #19](https://github.com/andreadada/simple-notes/pull/19
 
 La P2.1 è integrata su `main` (PR #20, CI completa verde); non installare i client aggiornati prima di deploy server-first Flyway V10 e collaudo hardware. Un import nel client genera nuove modifiche sync e **non** sostituisce backup, restore isolato o preflight delle capability. [Specifica](P2-PORTABLE-ARCHIVE.md).
 
+
+### P2.2 — Calendari ICS locali (Flutter 0.25.0+27)
+
+[PR #21](https://github.com/andreadada/simple-notes/pull/21) integrata, CI finale verde: 162 test, Windows EXE/MSIX, Android JDK17/JDK21, Markdown. Il file `.ics` è letto solo come overlay locale per account; non crea task/outbox/endpoint. Nel collaudo cumulativo verificare picker ICS, sostituzione, rimozione e isolamento dopo cambio account, ma **non** considerarli conferma di un deploy server. Per il client completo restano i gate Flyway V10 e capability; nessun reset o intervento dati. [Specifica](P2-ICS.md).

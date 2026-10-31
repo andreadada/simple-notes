@@ -1,6 +1,6 @@
 # P1.18 — Aspetto chiaro/scuro/sistema (Windows e Android)
 
-> **Stato operativo 30/10/2026:** P2.1 import/export JSON portabile integrata su `main` ([PR #20](https://github.com/andreadada/simple-notes/pull/20), Flutter `0.24.0+26`, CI Flutter/Markdown verde: 152 test e build Windows/Android). Collaudi fisici e rilascio cumulativo non attestati. Backend repo Flyway V10, ultima VPS verificata V8; nessun deploy/reset. [Stato](CURRENT-STATUS.md) · [Archivio](P2-PORTABLE-ARCHIVE.md).
+> **Stato operativo 31/10/2026:** P2.2 ICS read-only integrata su `main` ([PR #21](https://github.com/andreadada/simple-notes/pull/21), Flutter `0.25.0+27`, CI Flutter/Markdown verde: 162 test, Windows EXE/MSIX, Android JDK17/21). Test fisici e deploy cumulativo non attestati. Backend repo Flyway V10, VPS ultima attestazione V8; nessun deploy/reset. [Stato](CURRENT-STATUS.md) · [ICS](P2-ICS.md).
 
 **Implementazione P1.18 (storica):** integrata in `main` tramite [PR #19](https://github.com/andreadada/simple-notes/pull/19), Flutter `0.23.0+25`. [Flutter CI #41067872668](https://github.com/andreadada/simple-notes/actions/runs/41067872668) e [Markdown #41067872675](https://github.com/andreadada/simple-notes/actions/runs/41067872675) **verdi** sullo SHA finale; test fisici e release non attestati. [CURRENT-STATUS](CURRENT-STATUS.md).
 

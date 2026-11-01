@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:crypto/crypto.dart';
+import 'package:uuid/uuid.dart';
 import '../data/task_due_clock.dart';
 
 /// Owner-scoped local key; no raw Google ID is stored in preferences keys.
@@ -64,58 +65,141 @@ class IcsEvent {
   }
 }
 
+/// A stable source identity is distinct from the display name and event UID.
+/// URL sources are reserved for a later step: no network calls are made here.
+enum IcsSourceKind { file, url }
+
+String _legacyFileId(String name) =>
+    'file-' + sha256.convert(utf8.encode(name)).toString().substring(0, 32);
+
+bool _validSubscriptionUrl(String? text) {
+  if (text == null || text.length > 2048) return false;
+  final uri = Uri.tryParse(text);
+  return uri != null && uri.scheme == 'https' && uri.host.isNotEmpty &&
+      uri.userInfo.isEmpty && !uri.hasFragment;
+}
+
 class IcsCalendar {
-  const IcsCalendar(this.name,this.events);
-  final String name;
+  /// The parser returns an unnamed-in-storage file candidate (id='').
+  /// The library assigns an identity on import, preserving it on reimport.
+  const IcsCalendar(this.name, this.events,
+      {this.id = '', this.kind = IcsSourceKind.file, this.sourceUrl});
+  final String id, name;
+  final IcsSourceKind kind;
+  /// A private HTTPS feed URL, not read or fetched until URL subscriptions ship.
+  final String? sourceUrl;
   final List<IcsEvent> events;
-  Map<String,dynamic> toJson() => {
-    'name': name, 'events': events.map((e)=>e.toJson()).toList(),
+
+  IcsCalendar withId(String value) =>
+      IcsCalendar(name, events, id: value, kind: kind, sourceUrl: sourceUrl);
+
+  Map<String, dynamic> toJson() => {
+    'id': id.isEmpty ? _legacyFileId(name) : id,
+    'kind': kind.name,
+    'name': name,
+    if (sourceUrl != null) 'sourceUrl': sourceUrl,
+    'events': events.map((e) => e.toJson()).toList(),
   };
-  factory IcsCalendar.fromJson(Map<String,dynamic> raw) {
-    final name=raw['name'] as String;
-    final events=(raw['events'] as List).map((e)=>IcsEvent.fromJson(
-        Map<String,dynamic>.from(e as Map))).toList();
-    if(name.isEmpty || events.isEmpty || events.length>IcsParser.maxEvents ||
-       events.any((e)=>e.source!=name)) {
-      throw const FormatException('Calendario ICS locale non valido.');
+
+  factory IcsCalendar.fromJson(Map<String, dynamic> raw,
+      {required int schema}) {
+    final name = raw['name'] as String;
+    final id = schema == 1 ? _legacyFileId(name) : raw['id'] as String;
+    final kind = schema == 1 ? IcsSourceKind.file :
+        IcsSourceKind.values.byName(raw['kind'] as String);
+    final sourceUrl = schema == 1 ? null : raw['sourceUrl'] as String?;
+    final events = (raw['events'] as List).map((e) =>
+        IcsEvent.fromJson(Map<String, dynamic>.from(e as Map))).toList();
+    if (name.trim().isEmpty || name.length > 180 ||
+        !RegExp(r'^[a-zA-Z0-9._:-]{1,128}$').hasMatch(id) ||
+        events.isEmpty || events.length > IcsParser.maxEvents ||
+        events.any((e) => e.source != name) ||
+        (kind == IcsSourceKind.file && sourceUrl != null) ||
+        (kind == IcsSourceKind.url && !_validSubscriptionUrl(sourceUrl))) {
+      throw const FormatException('Sorgente calendario ICS non valida.');
     }
-    return IcsCalendar(name,List.unmodifiable(events));
+    return IcsCalendar(name, List.unmodifiable(events), id: id,
+        kind: kind, sourceUrl: sourceUrl);
   }
 }
 
 class IcsLibrary {
-  const IcsLibrary([this.calendars=const []]);
-  static const maxSources=5;
+  const IcsLibrary([this.calendars = const []]);
+  static const maxSources = 5;
   final List<IcsCalendar> calendars;
-  int get eventCount => calendars.fold(0,(int sum,IcsCalendar c)=>sum+c.events.length);
+  int get eventCount => calendars.fold(
+      0, (int sum, IcsCalendar c) => sum + c.events.length);
   List<IcsEvent> onDay(DateTime day) => [
-    for(final c in calendars) for(final e in c.events)
-      if(e.onDay(day)) e,
-  ]..sort((a,b) {
-    if(a.allDay!=b.allDay) return a.allDay ? -1 : 1;
-    return a.allDay ? a.title.compareTo(b.title) : a.startUtc!.compareTo(b.startUtc!);
+    for (final c in calendars) for (final e in c.events)
+      if (e.onDay(day)) e,
+  ]..sort((a, b) {
+    if (a.allDay != b.allDay) return a.allDay ? -1 : 1;
+    return a.allDay ? a.title.compareTo(b.title) :
+        a.startUtc!.compareTo(b.startUtc!);
   });
+
+  /// File reimports reuse identity by filename; URL sources match by id only.
+  /// No changes are persisted until the caller confirms and saves.
   IcsLibrary replace(IcsCalendar calendar) {
-    final rest=calendars.where((c)=>c.name!=calendar.name).toList();
-    if(rest.length>=maxSources) {
+    IcsCalendar? existing;
+    for (final item in calendars) {
+      if ((calendar.id.isNotEmpty && item.id == calendar.id) ||
+          (calendar.kind == IcsSourceKind.file &&
+           item.kind == IcsSourceKind.file && item.name == calendar.name)) {
+        existing = item;
+        break;
+      }
+    }
+    if (existing != null && existing.kind != calendar.kind) {
+      throw const FormatException('Tipo sorgente ICS non compatibile.');
+    }
+    final id = existing == null ?
+        (calendar.id.isEmpty ? const Uuid().v4() : calendar.id) :
+        (existing.id.isEmpty ? _legacyFileId(existing.name) : existing.id);
+    final candidate = IcsCalendar.fromJson(calendar.withId(id).toJson(),
+        schema: 2);
+    final rest = calendars.where((c) => !identical(c, existing)).toList();
+    if (rest.length >= maxSources) {
       throw const FormatException('Massimo cinque calendari ICS.');
     }
-    return IcsLibrary(List.unmodifiable([...rest,calendar]));
+    return IcsLibrary(List.unmodifiable([...rest, candidate]));
   }
-  IcsLibrary remove(String name)=>IcsLibrary(List.unmodifiable(
-      calendars.where((c)=>c.name!=name)));
-  String serialize()=>jsonEncode({'schema':1,
-    'calendars':calendars.map((c)=>c.toJson()).toList()});
+
+  /// Remove exactly one source, even if a future URL feed shares a file label.
+  IcsLibrary removeById(String id) => IcsLibrary(List.unmodifiable(
+      calendars.where((c) => c.id != id)));
+
+  /// Compatibility helper for pre-P2.3 file-only callers.
+  IcsLibrary remove(String name) => IcsLibrary(List.unmodifiable(
+      calendars.where((c) =>
+          !(c.kind == IcsSourceKind.file && c.name == name))));
+
+  /// Schema 2 is written only on an explicit user action, never on load.
+  String serialize() => jsonEncode({
+    'schema': 2,
+    'calendars': calendars.map((c) => c.toJson()).toList(),
+  });
+
   factory IcsLibrary.deserialize(String source) {
     try {
-      final data=jsonDecode(source);
-      if(data is! Map || data['schema']!=1 || data['calendars'] is! List) {
+      final data = jsonDecode(source);
+      if (data is! Map ||
+          (data['schema'] != 1 && data['schema'] != 2) ||
+          data['calendars'] is! List) {
         throw const FormatException('Versione archivio ICS non supportata.');
       }
-      final list=(data['calendars'] as List).map((item)=>
-        IcsCalendar.fromJson(Map<String,dynamic>.from(item as Map))).toList();
-      if(list.length>maxSources || list.map((c)=>c.name).toSet().length!=list.length) {
-        throw const FormatException('Troppi calendari ICS o duplicati.');
+      final schema = data['schema'] as int;
+      final list = (data['calendars'] as List).map((item) =>
+          IcsCalendar.fromJson(Map<String, dynamic>.from(item as Map),
+              schema: schema)).toList();
+      final ids = list.map((c) => c.id).toSet();
+      final filenames = list.where((c) => c.kind == IcsSourceKind.file)
+          .map((c) => c.name).toSet();
+      final fileCount =
+          list.where((c) => c.kind == IcsSourceKind.file).length;
+      if (list.length > maxSources || ids.length != list.length ||
+          filenames.length != fileCount) {
+        throw const FormatException('Troppe sorgenti ICS o identificativi duplicati.');
       }
       return IcsLibrary(List.unmodifiable(list));
     } on FormatException { rethrow; }

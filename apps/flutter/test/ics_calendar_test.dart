@@ -124,9 +124,96 @@ void main() {
     expect(restored.onDay(DateTime(2026,11,3)).single.title,'Visita');
     expect(icsOwnerKey('google-a'),isNot(icsOwnerKey('google-b')));
     expect(icsOwnerKey(null),isNot(icsOwnerKey('google-a')));
-    expect(() => IcsLibrary.deserialize('{"schema":2,"calendars":[]}'),
+    expect(() => IcsLibrary.deserialize('{"schema":3,"calendars":[]}'),
       throwsFormatException);
     expect(() => IcsLibrary.deserialize('not json'),throwsFormatException);
+  });
+
+  test('legacy schema 1 is read without writes and lazily upgrades to 2', () {
+    final oldCalendar = IcsParser.parse(ics(event()), 'legacy.ics');
+    final legacy = jsonEncode({
+      'schema': 1,
+      'calendars': [
+        {'name': oldCalendar.name,
+         'events': oldCalendar.events.map((e) => e.toJson()).toList()},
+      ],
+    });
+    final first = IcsLibrary.deserialize(legacy);
+    final again = IcsLibrary.deserialize(legacy);
+    expect(first.calendars.single.kind, IcsSourceKind.file);
+    expect(first.calendars.single.sourceUrl, isNull);
+    expect(first.calendars.single.id, startsWith('file-'));
+    expect(first.calendars.single.id, again.calendars.single.id);
+    expect(jsonDecode(legacy)['schema'], 1); // Loading does not rewrite.
+    expect(first.onDay(DateTime(2026, 11, 3)).single.uid, 'id-1');
+
+    final updated = first.replace(IcsParser.parse(
+        ics(event(summary: 'Aggiornata')), 'legacy.ics'));
+    expect(updated.calendars.single.id, first.calendars.single.id);
+    expect(updated.calendars.single.events.single.title, 'Aggiornata');
+    final saved = updated.serialize();
+    expect(jsonDecode(saved)['schema'], 2);
+    expect(IcsLibrary.deserialize(saved).calendars.single.id,
+        first.calendars.single.id);
+  });
+
+  test('new imports have stable ids through reimport and round-trip', () {
+    final initial = const IcsLibrary().replace(
+        IcsParser.parse(ics(event()), 'file.ics'));
+    final id = initial.calendars.single.id;
+    expect(id, isNotEmpty);
+    final second = initial.replace(IcsParser.parse(
+        ics(event(summary: 'Corretto')), 'file.ics'));
+    expect(second.calendars.single.id, id);
+    expect(IcsLibrary.deserialize(second.serialize()).calendars.single.id, id);
+  });
+
+  test('URL metadata is distinct from file labels; removal uses identity', () {
+    final parsed = IcsParser.parse(ics(event()), 'shared.ics');
+    final fileLibrary = const IcsLibrary().replace(parsed);
+    final fileId = fileLibrary.calendars.single.id;
+    final feed = IcsCalendar('shared.ics', parsed.events,
+        id: 'subscription-example', kind: IcsSourceKind.url,
+        sourceUrl: 'https://calendar.example.org/personal.ics');
+    final combined = fileLibrary.replace(feed);
+    expect(combined.calendars.length, 2);
+    final restored = IcsLibrary.deserialize(combined.serialize());
+    expect(restored.calendars.map((c) => c.kind).toSet(),
+        {IcsSourceKind.file, IcsSourceKind.url});
+    expect(restored.removeById(fileId).calendars.single.id,
+        'subscription-example');
+    expect(restored.removeById('subscription-example').calendars.single.id,
+        fileId);
+    // Metadata support does not activate URL fetching or event editing.
+    expect(restored.calendars.last.sourceUrl,
+        'https://calendar.example.org/personal.ics');
+  });
+
+  test('rejects duplicate identity, unknown kinds and unsafe URL metadata', () {
+    final first = IcsParser.parse(ics(event()), 'first.ics');
+    final second = IcsParser.parse(ics(event()), 'second.ics');
+    final library = const IcsLibrary().replace(first).replace(second);
+    final raw = jsonDecode(library.serialize()) as Map<String, dynamic>;
+    final entries = raw['calendars'] as List;
+    final head = entries.first as Map<String, dynamic>;
+    final tail = entries.last as Map<String, dynamic>;
+    tail['id'] = head['id'];
+    expect(() => IcsLibrary.deserialize(jsonEncode(raw)),
+        throwsFormatException);
+    tail['id'] = 'valid-other';
+    tail['kind'] = 'unsupported';
+    expect(() => IcsLibrary.deserialize(jsonEncode(raw)),
+        throwsFormatException);
+    tail['kind'] = 'url';
+    tail['sourceUrl'] = 'http://127.0.0.1/private.ics';
+    expect(() => IcsLibrary.deserialize(jsonEncode(raw)),
+        throwsFormatException);
+    tail['sourceUrl'] = 'https://user:secret@example.org/calendar.ics';
+    expect(() => IcsLibrary.deserialize(jsonEncode(raw)),
+        throwsFormatException);
+    tail['sourceUrl'] = 'https://example.org/calendar.ics#fragment';
+    expect(() => IcsLibrary.deserialize(jsonEncode(raw)),
+        throwsFormatException);
   });
 
   test('limits imported file count and do not write on parse failures', () {

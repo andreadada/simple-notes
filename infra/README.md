@@ -1,7 +1,7 @@
 # Backend — Coolify
 
 <!-- CURRENT-STATUS-REF -->
-> **Stato operativo 31/10/2026:** P2.2 ICS read-only integrata su `main` ([PR #21](https://github.com/andreadada/simple-notes/pull/21), Flutter `0.25.0+27`, CI Flutter/Markdown verde: 162 test, Windows EXE/MSIX, Android JDK17/21). Test fisici e deploy cumulativo non attestati. Backend repo Flyway V10, VPS ultima attestazione V8; nessun deploy/reset. [Stato](../docs/CURRENT-STATUS.md) · [ICS](../docs/P2-ICS.md).
+> **Stato operativo 01/11/2026:** P2.3A identità sorgenti ICS integrata su `main` ([PR #22](https://github.com/andreadada/simple-notes/pull/22), Flutter `0.26.0+28`, CI Flutter/Markdown verde: **166 test**, Windows EXE/MSIX, Android JDK17/21). Nessun deploy Coolify o test hardware. Backend Flyway V10 nel repository, ultima VPS verificata V8. [Stato](../docs/CURRENT-STATUS.md) · [Sorgenti ICS](../docs/P2-ICS-SOURCES.md).
 
 
 ## Cronologia — rilascio 0.7.0+9 (superato da P1.6)
@@ -158,3 +158,7 @@ Adaptive notes è solo disposizione Flutter senza backend, compose/env, nuove mi
 ## P1.17 — Nessuna modifica Coolify
 
 Tray è solo client Windows: nessuna nuova risorsa server, volume, Compose env, key, API o migration. Per il rollout cumulativo controllare comunque Flyway V10 reale (ultima attestazione V8). Nessun deploy/reset per questa fase. [Specifica](../docs/P1-WINDOWS-TRAY.md).
+
+## P2.3A — Nessun intervento backend
+
+PR #22 è integrata su `main` con Flutter `0.26.0+28` e CI verde. La migrazione JSON ICS schema 1→2 avviene esclusivamente nel client locale e solo dopo conferma utente: nessuna modifica a Compose, PostgreSQL, Flyway, JWT, OAuth, volumi o risorse Coolify. **Non ridistribuire il backend solo per P2.3A.** Il batch cumulativo resta vincolato a verifica Flyway V10 e capability server. [Specifiche](../docs/P2-ICS-SOURCES.md).

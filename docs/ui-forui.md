@@ -1,7 +1,7 @@
 # Simple Notes — UI e design system Forui
 
 <!-- CURRENT-STATUS-REF -->
-> **Stato operativo 31/10/2026:** P2.2 ICS read-only integrata su `main` ([PR #21](https://github.com/andreadada/simple-notes/pull/21), Flutter `0.25.0+27`; Flutter CI verde: **162 test**, Windows EXE/MSIX, Android JDK17/21, Markdown). Collaudo fisico e deploy cumulativo non attestati. Backend repo Flyway V10; ultima VPS verificata V8, nessun reset/deploy. [Stato](CURRENT-STATUS.md) · [ICS](P2-ICS.md).
+> **Stato operativo 01/11/2026:** P2.3A identità sorgenti ICS integrata su `main` ([PR #22](https://github.com/andreadada/simple-notes/pull/22), Flutter `0.26.0+28`, CI Flutter/Markdown verde: **166 test**, Windows EXE/MSIX, Android JDK17/21). Nessun deploy Coolify o test hardware. Backend Flyway V10 nel repository, ultima VPS verificata V8. [Stato](CURRENT-STATUS.md) · [Sorgenti ICS](P2-ICS-SOURCES.md).
 
 
 > **Stato reale 24/10/2026:** PostgreSQL `simplenotes` 17.11, Flyway V1–V7 riuscite, backup `simple-notes-20261024T132857Z-271921.dump` con SHA256 valido e restore isolato PASS. Copia offsite non effettuata per scelta dell'utente. Restano da verificare l'API autenticata (`taskDueSchema:1`) e il collaudo T4.2 Windows↔Android con Flutter `0.4.0+4`. Non ripetere backup, migrazioni o deploy automaticamente. [T4.2](T4-DEVICE-SYNC.md).

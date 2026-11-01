@@ -1,6 +1,6 @@
 # Simple Notes — Design & Product Specification
 
-> **Stato operativo 31/10/2026:** P2.2 ICS read-only integrata su `main` ([PR #21](https://github.com/andreadada/simple-notes/pull/21), Flutter `0.25.0+27`; Flutter CI verde: **162 test**, Windows EXE/MSIX, Android JDK17/21, Markdown). Collaudo fisico e deploy cumulativo non attestati. Backend repo Flyway V10; ultima VPS verificata V8, nessun reset/deploy. [Stato](docs/CURRENT-STATUS.md) · [ICS](docs/P2-ICS.md).
+> **Stato operativo 01/11/2026:** P2.3A identità sorgenti ICS integrata su `main` ([PR #22](https://github.com/andreadada/simple-notes/pull/22), Flutter `0.26.0+28`, CI Flutter/Markdown verde: **166 test**, Windows EXE/MSIX, Android JDK17/21). Nessun deploy Coolify o test hardware. Backend Flyway V10 nel repository, ultima VPS verificata V8. [Stato](docs/CURRENT-STATUS.md) · [Sorgenti ICS](docs/P2-ICS-SOURCES.md).
 
 <!-- CURRENT-STATUS-REF -->
 

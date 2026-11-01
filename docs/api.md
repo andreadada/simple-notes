@@ -1,7 +1,7 @@
 # Simple Notes API v1
 
 <!-- CURRENT-STATUS-REF -->
-> **Stato operativo 31/10/2026:** P2.2 ICS read-only integrata su `main` ([PR #21](https://github.com/andreadada/simple-notes/pull/21), Flutter `0.25.0+27`, CI Flutter/Markdown verde: 162 test, Windows EXE/MSIX, Android JDK17/21). Test fisici e deploy cumulativo non attestati. Backend repo Flyway V10, VPS ultima attestazione V8; nessun deploy/reset. [Stato](CURRENT-STATUS.md) · [ICS](P2-ICS.md).
+> **Stato operativo 01/11/2026:** P2.3A identità sorgenti ICS integrata su `main` ([PR #22](https://github.com/andreadada/simple-notes/pull/22), Flutter `0.26.0+28`, CI Flutter/Markdown verde: **166 test**, Windows EXE/MSIX, Android JDK17/21). Nessun deploy Coolify o test hardware. Backend Flyway V10 nel repository, ultima VPS verificata V8. [Stato](CURRENT-STATUS.md) · [Sorgenti ICS](P2-ICS-SOURCES.md).
 
 
 ## Auth
@@ -81,3 +81,7 @@ La griglia responsive è una proiezione della lista `LocalNote` esistente e non 
 ## P1.17 — Tray Windows senza server né sync nuove
 
 Hide/restore/quit della finestra non crea entità, endpoint, migrazione, cursor, outbox o credenziali. Il LocalStore/sync già esistente rimane attivo mentre il processo main è nascosto. Il comando Esci chiude il processo; nessun secondo DB nell'engine Sticky. [P1.17](P1-WINDOWS-TRAY.md).
+
+## P2.3A — Nessuna estensione API
+
+Il client ICS schema 2, identificativi sorgente e distinzione file/URL sono persistiti soltanto nelle preferenze locali per account. Nessuna nuova API Spring Boot, capability, migrazione Flyway, sync outbox, endpoint o credenziale OAuth introdotta. Il gate di compatibilità backend Flyway V10 è valido per il **client cumulativo**, non è causato dalla sola P2.3A. [Specifiche](P2-ICS-SOURCES.md).

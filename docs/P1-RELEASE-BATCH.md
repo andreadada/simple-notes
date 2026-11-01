@@ -1,8 +1,8 @@
-# Rollout coordinato — Simple Notes backend V10 e client P2.2
+# Rollout coordinato — Simple Notes backend V10 e client P2.3A
 
-> **Stato operativo 31/10/2026:** P2.2 ICS read-only integrata su `main` ([PR #21](https://github.com/andreadada/simple-notes/pull/21), Flutter `0.25.0+27`, CI Flutter/Markdown verde: 162 test, Windows EXE/MSIX, Android JDK17/21). Test fisici e deploy cumulativo non attestati. Backend repo Flyway V10, VPS ultima attestazione V8; nessun deploy/reset. [Stato](CURRENT-STATUS.md) · [ICS](P2-ICS.md).
+> **Stato operativo 01/11/2026:** P2.3A identità sorgenti ICS integrata su `main` ([PR #22](https://github.com/andreadada/simple-notes/pull/22), Flutter `0.26.0+28`, CI Flutter/Markdown verde: **166 test**, Windows EXE/MSIX, Android JDK17/21). Nessun deploy Coolify o test hardware. Backend Flyway V10 nel repository, ultima VPS verificata V8. [Stato](CURRENT-STATUS.md) · [Sorgenti ICS](P2-ICS-SOURCES.md).
 
-**Stato:** runbook per backend Flyway V10 e client P2.2 `0.25.0+27` (**P0–P1.18, P2.1 e P2.2 integrate in `main`, PR #21, CI Flutter/Markdown verdi**). Non è attestato un deploy Coolify, un'installazione o un collaudo cumulativo; l'utente intende effettuare personalmente il deploy dopo gli incrementi. I comandi sono read-only salvo la procedura Redeploy espressamente distinta.
+**Stato:** runbook per backend Flyway V10 e client P2.3A `0.26.0+28` (**P0–P1.18, P2.1 e P2.2 integrate in `main`, PR #21, CI Flutter/Markdown verdi**). Non è attestato un deploy Coolify, un'installazione o un collaudo cumulativo; l'utente intende effettuare personalmente il deploy dopo gli incrementi. I comandi sono read-only salvo la procedura Redeploy espressamente distinta.
 
 ## Prima di agire
 
@@ -138,4 +138,4 @@ La P2.1 è integrata su `main` (PR #20, CI completa verde); non installare i cli
 
 ### P2.3A — Compatibilità archivio ICS schema 2
 
-Il candidato `0.26.0+28` legge `schema=1` e `schema=2`, ma scrive `schema=2` solo dopo una modifica confermata. I client P2.2 `0.25.0+27` rifiutano `schema=2` (senza cancellarlo): non fare downgrade cieco sui profili con sorgenti locali. Collaudare preservazione dati prima/dopo il reimport, separazione di fonti omonime e owner switch; nessuna migrazione Flyway/Drift richiesta dalla sola feature, mentre il rilascio cumulativo completo necessita sempre delle capability server V10. CI/merge E2E hardware documentati separatamente. [Specifiche](P2-ICS-SOURCES.md).
+Il client `0.26.0+28` integrato su `main` (PR #22, CI verde) legge `schema=1` e `schema=2`, ma scrive `schema=2` solo dopo una modifica confermata. I client P2.2 `0.25.0+27` rifiutano `schema=2` (senza cancellarlo): non fare downgrade cieco sui profili con sorgenti locali. Collaudare preservazione dati prima/dopo il reimport, separazione di fonti omonime e owner switch; nessuna migrazione Flyway/Drift richiesta dalla sola feature, mentre il rilascio cumulativo completo necessita sempre delle capability server V10. CI/merge E2E hardware documentati separatamente. [Specifiche](P2-ICS-SOURCES.md).

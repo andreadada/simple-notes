@@ -1,8 +1,8 @@
 # Guida operativa — Simple Notes
 
-> **Stato operativo 31/10/2026:** P2.2 ICS read-only integrata su `main` ([PR #21](https://github.com/andreadada/simple-notes/pull/21), Flutter `0.25.0+27`; Flutter CI verde: **162 test**, Windows EXE/MSIX, Android JDK17/21, Markdown). Collaudo fisico e deploy cumulativo non attestati. Backend repo Flyway V10; ultima VPS verificata V8, nessun reset/deploy. [Stato](CURRENT-STATUS.md) · [ICS](P2-ICS.md).
+> **Stato operativo 01/11/2026:** P2.3A identità sorgenti ICS integrata su `main` ([PR #22](https://github.com/andreadada/simple-notes/pull/22), Flutter `0.26.0+28`, CI Flutter/Markdown verde: **166 test**, Windows EXE/MSIX, Android JDK17/21). Nessun deploy Coolify o test hardware. Backend Flyway V10 nel repository, ultima VPS verificata V8. [Stato](CURRENT-STATUS.md) · [Sorgenti ICS](P2-ICS-SOURCES.md).
 
-**Fonte operativa** per il checkout locale Windows, CI, Coolify, Android e Windows ZIP/MSIX. **Baseline `main` verificata al 31/10/2026:** P2.2 ICS (Flutter `0.25.0+27`) integrata con CI verde. **Candidato successivo:** P2.3A schema locale ICS 2 (Flutter `0.26.0+28`, branch; CI, merge e hardware da attestare). Backend repository Flyway V10 / Drift V8, **ultima VPS confermata Flyway V8**; release e collaudo device non attestati. Leggere sempre [CURRENT-STATUS.md](CURRENT-STATUS.md).
+**Fonte operativa** per il checkout locale Windows, CI, Coolify, Android e Windows ZIP/MSIX. **Baseline `main` verificata al 31/10/2026:** P2.2 ICS (Flutter `0.25.0+27`) integrata con CI verde. **Incremento P2.3A integrato:** PR #22 su `main`, Flutter `0.26.0+28`, CI verde (166 test, Windows/Android/Markdown); hardware ancora da collaudare. Backend repository Flyway V10 / Drift V8, **ultima VPS confermata Flyway V8**; release e collaudo device non attestati. Leggere sempre [CURRENT-STATUS.md](CURRENT-STATUS.md).
 
 ## 0. Regola fondamentale
 
@@ -157,4 +157,4 @@ Collaudo reale Windows/Android: file UTC, all-day, fuso Europe/Rome, DST, import
 
 ## Gate P2.3A — Migrazione locale ICS
 
-Sul candidato Flutter `0.26.0+28`, leggere i dati P2.2 `schema=1` non deve modificarli finché l'utente non conferma import/rimozione. Dopo la prima modifica l'archivio è in `schema=2`, che i client P2.2 precedenti non leggono: **non eseguire downgrade senza una strategia di conservazione dati**. Verificare su dispositivo file importato, ri-import e rimozione corretta quando sorgenti hanno etichette uguali, cambio account durante dialog e assenza di mutazioni cloud. Non aggiornare Coolify per la sola P2.3A; per il **batch cumulativo** resta il gate backend V10. [Specifica](P2-ICS-SOURCES.md).
+Nel client Flutter `0.26.0+28`, leggere i dati P2.2 `schema=1` non deve modificarli finché l'utente non conferma import/rimozione. Dopo la prima modifica l'archivio è in `schema=2`, che i client P2.2 precedenti non leggono: **non eseguire downgrade senza una strategia di conservazione dati**. Verificare su dispositivo file importato, ri-import e rimozione corretta quando sorgenti hanno etichette uguali, cambio account durante dialog e assenza di mutazioni cloud. Non aggiornare Coolify per la sola P2.3A; per il **batch cumulativo** resta il gate backend V10. [Specifica](P2-ICS-SOURCES.md).

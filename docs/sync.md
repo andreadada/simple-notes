@@ -86,3 +86,7 @@ L'import ICS legge un file locale, non invia alcuna richiesta cloud, non crea en
 ## P2.3A — Sorgenti ICS schema 2, ancora non sincronizzate
 
 L'evoluzione locale degli ICS aggiunge solo `id`, `kind` ed eventuale URL di futura sottoscrizione in SharedPreferences per owner. I calendari esterni e gli eventi **non entrano** nel protocollo `/sync/apply`, non generano task, outbox, versioni remote né change log. L'import file conserva la conferma esplicita e l'isolamento del profilo. Nessun endpoint backend o schema SQL nuovo. [Specifica](P2-ICS-SOURCES.md).
+
+## P2.3B — Ricorrenze ICS escluse da sync
+
+Master, RRULE, date aggiuntive/escluse e override per RECURRENCE-ID appartengono soltanto a SharedPreferences locali e alla vista in sola lettura. Non producono mutation, cursor, tombstone, task o API call. [Specifica](P2-ICS-RECURRENCE.md).

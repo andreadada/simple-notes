@@ -346,3 +346,11 @@ Esempio: `2026-10-21 14:20 CEST | commit abc1234 | Aggiunto modulo promemoria e 
 - 2026-11-01 | feat(p2.3a) | Branch `feature/p2-3a-ics-source-identity`: ICS schema 2 con ID stabile e migrazione lazy, kind file/url senza fetch, UI removals per ID, guardia cambio account, test migrazione. Nessun deploy, DB reset o device acceptance; CI e merge ancora da verificare. [Specifica](docs/P2-ICS-SOURCES.md).
 
 - 2026-11-01 | merge(p2.3a) | PR #22 integrata su `main` (`85b56fc`); Flutter 0.26.0+28, CI #41339906564 PASS (166 test, Windows/Android), Markdown #41339910458 PASS. Non sono stati effettuati deploy Coolify, reset dati o test hardware. Prossimo incremento P2.3B ricorrenze ICS.
+
+## P2.3B — Ricorrenze ICS (branch, candidata)
+
+- [ ] Flutter `0.27.0+29`: sottoinsieme RRULE DAILY/WEEKLY/MONTHLY/YEARLY, BYDAY settimanale, COUNT/UNTIL, RDATE/EXDATE e RECURRENCE-ID.
+- [ ] JSON locale schema 3 con lettura schema 1/2/3, proiezione delle occorrenze solo per il giorno richiesto e parsing fail-closed.
+- [ ] CI e merge da attestare; E2E dispositivi e deploy separati. [Specifica](docs/P2-ICS-RECURRENCE.md).
+
+- 2026-11-01 | feat(p2.3b) | Branch `feature/p2-3b-ics-recurrence`, ricorrenze ICS locali con exception e schema 3. CI/merge/hardware non ancora attestati. Nessun deploy o reset.

@@ -85,3 +85,7 @@ Un evento ICS resta **read-only** e **device-local per account**: non creare UUI
 ## Vincolo P2.3A — Identità delle sorgenti ICS
 
 Archivio JSON locale `schema=2` nella **stessa** preferenza owner-scoped ICS v1. Leggere i vecchi `schema=1` senza scrittura automatica; ID legacy deterministico per filename, UUID v4 per nuove importazioni e ID conservato ai reimport. `IcsSourceKind.url` è **solo modello**: non aggiungere fetch, OAuth, sync, outbox, migrazioni o trigger di rete in P2.3A. Rimuovere per `id`, mantenere read-only, limite cinque fonti, parsing fail-closed e controllare l'owner dopo qualunque `await` del picker/dialogo. Non presentare `schema=2` come retrocompatibile con vecchi client P2.2: la lettura è v1→v2, non v2→v1. [Specifica](docs/P2-ICS-SOURCES.md).
+
+## Vincolo P2.3B — Serie ICS
+
+Evento esterno ricorrente sempre **read-only** e **device-local per account**: non creare task, notifiche, API o outbox. RRULE solo per sottoinsieme dichiarato, senza materializzare serie infinite; EXDATE prevale su RDATE/RRULE, RECURRENCE-ID individua l'occorrenza originale. Non ignorare parametri RFC ignoti: import fail-closed. JSON schema 3 letto insieme a schema 1/2 senza scrittura al load; vietato downgrade silenzioso a client P2.3A. [Specifica](docs/P2-ICS-RECURRENCE.md).

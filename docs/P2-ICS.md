@@ -41,3 +41,7 @@ P2.3: subscription URL ICS con rete e refresh espliciti, ricorrenze/EXDATE, inte
 Con [PR #22](https://github.com/andreadada/simple-notes/pull/22) su `main` è stato introdotto l'archivio ICS **schema 2**, con ID stabile e tipo `file`/`url`. La lettura dei dati P2.2 `schema 1` rimane compatibile e non riscrive le preferenze finché l'utente non conferma un'operazione. Il reimport del file conserva l'ID; la rimozione usa l'ID, non il nome. La UI continua a importare solo file e **non esegue richieste URL**. Flutter `0.26.0+28` integrata, CI Flutter/Markdown verde (166 test) e non ancora distribuita; `schema 2` non è leggibile da client P2.2 più vecchi. La CI di P2.2 descritta sopra resta una prova storica, non una prova di P2.3A.
 
 [Contratto tecnico P2.3A](P2-ICS-SOURCES.md) · [Stato canonico](CURRENT-STATUS.md).
+
+## Estensione P2.3B — Ricorrenze locali
+
+La P2.2 storicamente rifiutava ogni ricorrenza. La P2.3B candidata introduce un subset RFC5545 esplicito, con serie/exception e proiezione lazy; opzioni avanzate non supportate restano errori bloccanti prima del salvataggio. Nuovo schema 3 con lettura 1/2; nessun URL fetch o cloud. [Specifica](P2-ICS-RECURRENCE.md).

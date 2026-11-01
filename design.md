@@ -225,3 +225,7 @@ Eventi importati dai file ICS mostrati come card non editabili con icona lucchet
 ## P2.3A — Design dell'identità per calendari esterni
 
 La fonte degli eventi ICS non coincide con il nome file visualizzato: il modello `IcsCalendar` usa un ID persistente e un `kind` esplicito (`file` o `url`). Per i file già presenti il vecchio JSON schema 1 è letto senza modifiche e un ID deterministico è derivato dal filename; lo schema 2 si salva solo dopo azione confermata. La rimozione deve agire sull'ID, non sulla label. In P2.3A `url` è soltanto una struttura dati riservata, non un'integrazione remota. Resta obbligatoria la UI Forui, senza task cloud o modifiche agli eventi esterni; il downgrade verso P2.2 non è compatibile con schema 2 e va documentato. [Specifica](docs/P2-ICS-SOURCES.md).
+
+## Vincolo P2.3B — Ricorrenze ICS
+
+Eventi esterni restano read-only; non trasformarli in task, non notificare, non creare outbox. Serie infinite RRULE non vanno espanse all'import: calcolare solo le occorrenze visibili, rispettando fine esclusiva, giorni civili e DST. Parametri RFC non implementati bloccano l'import senza modificare i dati. [Specifica](docs/P2-ICS-RECURRENCE.md).

@@ -139,3 +139,7 @@ La P2.1 è integrata su `main` (PR #20, CI completa verde); non installare i cli
 ### P2.3A — Compatibilità archivio ICS schema 2
 
 Il client `0.26.0+28` integrato su `main` (PR #22, CI verde) legge `schema=1` e `schema=2`, ma scrive `schema=2` solo dopo una modifica confermata. I client P2.2 `0.25.0+27` rifiutano `schema=2` (senza cancellarlo): non fare downgrade cieco sui profili con sorgenti locali. Collaudare preservazione dati prima/dopo il reimport, separazione di fonti omonime e owner switch; nessuna migrazione Flyway/Drift richiesta dalla sola feature, mentre il rilascio cumulativo completo necessita sempre delle capability server V10. CI/merge E2E hardware documentati separatamente. [Specifiche](P2-ICS-SOURCES.md).
+
+### P2.3B — Archivio locale schema 3
+
+Nel collaudo cumulativo di Flutter candidata `0.27.0+29` controllare eventi RRULE e singole exception, senza task/outbox. Schema 1/2 leggibili, schema 3 scritto solo su conferma; downgrade verso client precedenti vietato senza conservazione dati. Nessuna nuova migration backend per P2.3B, ma resta gate server V10 del client cumulativo. [Specifica](P2-ICS-RECURRENCE.md).

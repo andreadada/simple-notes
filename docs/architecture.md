@@ -88,3 +88,7 @@ Hide/restore/quit della finestra non crea entità, endpoint, migrazione, cursor,
 ## P2.3A — Identità sorgenti ICS (main, PR #22, Flutter 0.26)
 
 L'overlay ICS rimane in `SharedPreferences` per owner e non usa SQLite, API o outbox. La struttura dati locale evolve a `schema=2`, con ID stabile distinto da `name` e `kind=file/url`; il codice legge in modo non distruttivo lo schema 1 e ne mantiene gli eventi. La sorgente URL è **solo metadata, senza fetch**, fino a P2.3C. Rimozione e sostituzione agiscono sull'identità della fonte, non sugli UID evento. [Specifica](P2-ICS-SOURCES.md).
+
+## P2.3B — Proiezione lazy delle serie ICS
+
+La UI calendario continua a invocare `IcsLibrary.onDay`, che unisce eventi singoli e occorrenze ricorrenti generate per il solo giorno richiesto. Regole e stato ricorrenze persistono nel JSON owner-scoped schema 3. Nessuna estensione Spring Boot, SQLite/Drift o API. [Specifica](P2-ICS-RECURRENCE.md).

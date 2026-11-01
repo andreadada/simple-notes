@@ -83,3 +83,6 @@ Importare dati tramite `LocalStore.importPortable` crea nuove UUID per liste, ta
 
 L'import ICS legge un file locale, non invia alcuna richiesta cloud, non crea entityType, outbox, UUID di task, cursor o metadata di versioning. Cambio account cambia la chiave SharedPreferences e nasconde subito gli eventi dell'owner precedente. Dati app e API V10 invariati. [Specifica](P2-ICS.md).
 
+## P2.3A — Sorgenti ICS schema 2, ancora non sincronizzate
+
+L'evoluzione locale degli ICS aggiunge solo `id`, `kind` ed eventuale URL di futura sottoscrizione in SharedPreferences per owner. I calendari esterni e gli eventi **non entrano** nel protocollo `/sync/apply`, non generano task, outbox, versioni remote né change log. L'import file conserva la conferma esplicita e l'isolamento del profilo. Nessun endpoint backend o schema SQL nuovo. [Specifica](P2-ICS-SOURCES.md).

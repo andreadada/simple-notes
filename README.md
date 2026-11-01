@@ -66,3 +66,6 @@ Menu account → **Esporta dati JSON** oppure **Importa dati JSON**. Esporta lis
 
 Nella schermata Calendario si possono importare fino a 5 file ICS in sola lettura per account/dispositivo; compaiono in giorno, settimana e mese senza essere convertiti in task. Nessuna nuova API o migrazione; ricorrenze ICS e timezone non IANA sono rifiutati con un errore esplicito. Integrata su `main` con [PR #21](https://github.com/andreadada/simple-notes/pull/21), Flutter `0.25.0+27`, CI completa verde (162 test, Windows e Android), collaudo fisico ancora aperto. [Specifica](docs/P2-ICS.md).
 
+## P2.3A — Modello sorgenti ICS (candidato)
+
+Sul branch `feature/p2-3a-ics-source-identity` è in sviluppo il modello di identità stabile delle sorgenti ICS: archivio locale schema 2 con lettura schema 1, tipologia file/URL (URL ancora inattivo), rimozione per ID e protezione nei cambi account durante import. Candidato Flutter `0.26.0+28`; nessun deploy o sync cloud. Prima di utilizzare client meno recenti, considerare che P2.2 non può leggere lo schema 2 scritto dopo una nuova modifica. [Specifica](docs/P2-ICS-SOURCES.md).

@@ -2,7 +2,7 @@
 
 > **Stato operativo 31/10/2026:** P2.2 ICS read-only integrata su `main` ([PR #21](https://github.com/andreadada/simple-notes/pull/21), Flutter `0.25.0+27`; Flutter CI verde: **162 test**, Windows EXE/MSIX, Android JDK17/21, Markdown). Collaudo fisico e deploy cumulativo non attestati. Backend repo Flyway V10; ultima VPS verificata V8, nessun reset/deploy. [Stato](CURRENT-STATUS.md) · [ICS](P2-ICS.md).
 
-**Fonte operativa** per il checkout locale Windows, CI, Coolify, Android e Windows ZIP/MSIX. **Ultimo stato verificabile (30/10/2026):** P1.18 su `main` con PR #19 (Flutter `0.23.0+25`), CI Flutter/Markdown verdi. Backend repository Flyway V10 / Drift V8, **ultima VPS confermata Flyway V8**; release e collaudo device non attestati. Leggere sempre [CURRENT-STATUS.md](CURRENT-STATUS.md).
+**Fonte operativa** per il checkout locale Windows, CI, Coolify, Android e Windows ZIP/MSIX. **Baseline `main` verificata al 31/10/2026:** P2.2 ICS (Flutter `0.25.0+27`) integrata con CI verde. **Candidato successivo:** P2.3A schema locale ICS 2 (Flutter `0.26.0+28`, branch; CI, merge e hardware da attestare). Backend repository Flyway V10 / Drift V8, **ultima VPS confermata Flyway V8**; release e collaudo device non attestati. Leggere sempre [CURRENT-STATUS.md](CURRENT-STATUS.md).
 
 ## 0. Regola fondamentale
 
@@ -155,3 +155,6 @@ Android e Windows usano il picker file di sistema; verificare un JSON salvato, a
 
 Collaudo reale Windows/Android: file UTC, all-day, fuso Europe/Rome, DST, import/reimport/revoke, annullamento picker, cambio account e riavvio. Confermare che l'overlay non scrive SQLite, outbox, API o token; condividere un file ICS può includere dati personali, usare sorgenti di prova. File non supportati **devono essere rifiutati** senza modifiche parziali. [Specifica](P2-ICS.md).
 
+## Gate P2.3A — Migrazione locale ICS
+
+Sul candidato Flutter `0.26.0+28`, leggere i dati P2.2 `schema=1` non deve modificarli finché l'utente non conferma import/rimozione. Dopo la prima modifica l'archivio è in `schema=2`, che i client P2.2 precedenti non leggono: **non eseguire downgrade senza una strategia di conservazione dati**. Verificare su dispositivo file importato, ri-import e rimozione corretta quando sorgenti hanno etichette uguali, cambio account durante dialog e assenza di mutazioni cloud. Non aggiornare Coolify per la sola P2.3A; per il **batch cumulativo** resta il gate backend V10. [Specifica](P2-ICS-SOURCES.md).

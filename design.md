@@ -222,3 +222,6 @@ Due azioni semplici «Esporta dati JSON» e «Importa dati JSON». L'import most
 
 Eventi importati dai file ICS mostrati come card non editabili con icona lucchetto e dicitura «ICS: sorgente · sola lettura». Non aggiungere checkbox, drag handle, modifica titolo/orario o duplicazione dentro le task. Forui per conferma import, sostituzione e rimozione, menu compatto per file sul calendario; contatori mese separati da scadenze e blocchi. [Specifica](docs/P2-ICS.md).
 
+## P2.3A — Design dell'identità per calendari esterni
+
+La fonte degli eventi ICS non coincide con il nome file visualizzato: il modello `IcsCalendar` usa un ID persistente e un `kind` esplicito (`file` o `url`). Per i file già presenti il vecchio JSON schema 1 è letto senza modifiche e un ID deterministico è derivato dal filename; lo schema 2 si salva solo dopo azione confermata. La rimozione deve agire sull'ID, non sulla label. In P2.3A `url` è soltanto una struttura dati riservata, non un'integrazione remota. Resta obbligatoria la UI Forui, senza task cloud o modifiche agli eventi esterni; il downgrade verso P2.2 non è compatibile con schema 2 e va documentato. [Specifica](docs/P2-ICS-SOURCES.md).

@@ -85,3 +85,6 @@ Hide/restore/quit della finestra non crea entità, endpoint, migrazione, cursor,
 
 `IcsParser` produce eventi esterni immutabili da file in UTF-8 con validazione fail-closed. `IcsLibrary` serializza sorgenti multiple in SharedPreferences per hash del Google owner; `CalendarBoard` le proietta senza metodi `LocalStore` o sync. La subscription remota, il refresh automatico, le ricorrenze e l'autorizzazione a calendari terzi **non esistono ancora**. [P2-ICS.md](P2-ICS.md).
 
+## P2.3A — Identità sorgenti ICS (candidata Flutter 0.26)
+
+L'overlay ICS rimane in `SharedPreferences` per owner e non usa SQLite, API o outbox. La struttura dati locale evolve a `schema=2`, con ID stabile distinto da `name` e `kind=file/url`; il codice legge in modo non distruttivo lo schema 1 e ne mantiene gli eventi. La sorgente URL è **solo metadata, senza fetch**, fino a P2.3C. Rimozione e sostituzione agiscono sull'identità della fonte, non sugli UID evento. [Specifica](P2-ICS-SOURCES.md).

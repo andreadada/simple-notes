@@ -302,3 +302,6 @@ Integrata su `main` con PR #20, Flutter `0.24.0+26`. Export JSON solo dati attiv
 
 Integrata su `main` con PR #21, Flutter `0.25.0+27`. Parser di file ICS rigoroso con UID unici, date esclusive, UTC/IANA e rifiuto ricorrenze non implementate; fino a 5 sorgenti locali e overlay Forui senza mutazioni. Flutter CI verde con 162 test + Windows/Android; collaudo hardware e deploy ancora aperti. [Specifiche](P2-ICS.md) · [Stato](CURRENT-STATUS.md).
 
+## P2.3A — Sorgenti ICS con identità stabile (branch 01/11/2026)
+
+Branch `feature/p2-3a-ics-source-identity`, Flutter candidata `0.26.0+28`. Estensione locale `IcsCalendar` con `id`, `kind=file/url`, `sourceUrl` HTTPS metadata-only. `IcsLibrary` carica i dati P2.2 schema 1 in memoria senza scrivere; serializza schema 2 alla prima modifica esplicitamente confermata, preservando ID di reimport e dati owner-scoped. La UI rimuove per ID e interrompe conferme stale dopo cambio account. Test di v1→v2, round trip e URL invalidi. **In questa fase NON implementare fetch URL/RRULE e NON fare deploy.** Verificare CI e poi merge; backend repo V10, VPS ultima attestazione V8, hardware ancora da collaudare nel batch finale. [Specifiche](P2-ICS-SOURCES.md) · [Stato](CURRENT-STATUS.md).

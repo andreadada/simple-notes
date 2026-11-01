@@ -343,4 +343,6 @@ Esempio: `2026-10-21 14:20 CEST | commit abc1234 | Aggiunto modulo promemoria e 
 
 - 2026-10-31 | merge(p2.2) | PR #21 integrata su `main` (`141004d`), Flutter `0.25.0+27`, CI #41157322208 e Markdown #41157326277 verdi: 162 test, Windows EXE/MSIX e Android JDK17/21. Collaudo fisico e deploy ancora aperti. [Specifica](docs/P2-ICS.md).
 
-- 2026-11-01 | feat(p2.3a) | Branch `feature/p2-3a-ics-source-identity`: ICS schema 2 con ID stabile e migrazione lazy, kind file/url senza fetch, UI removals per ID, guardia cambio account, test migrazione. Nessun deploy, DB reset o device acceptance; CI e merge ancora da verificare. [Specifica](docs/P2-ICS-SOURCES.md).\n\n- 2026-11-01 | merge(p2.3a) | PR #22 integrata su `main` (`85b56fc`); Flutter 0.26.0+28, CI #41339906564 PASS (166 test, Windows/Android), Markdown #41339910458 PASS. Non sono stati effettuati deploy Coolify, reset dati o test hardware. Prossimo incremento P2.3B ricorrenze ICS.\n
+- 2026-11-01 | feat(p2.3a) | Branch `feature/p2-3a-ics-source-identity`: ICS schema 2 con ID stabile e migrazione lazy, kind file/url senza fetch, UI removals per ID, guardia cambio account, test migrazione. Nessun deploy, DB reset o device acceptance; CI e merge ancora da verificare. [Specifica](docs/P2-ICS-SOURCES.md).
+
+- 2026-11-01 | merge(p2.3a) | PR #22 integrata su `main` (`85b56fc`); Flutter 0.26.0+28, CI #41339906564 PASS (166 test, Windows/Android), Markdown #41339910458 PASS. Non sono stati effettuati deploy Coolify, reset dati o test hardware. Prossimo incremento P2.3B ricorrenze ICS.

@@ -173,3 +173,6 @@ Conferma import mediante `showFDialog` e `NotesDialog` Forui (nessun Material Al
 
 Usare `NotesDialog`/`showFDialog` di Forui per conferma import/sostituzione/rimozione ICS con nome e conteggio eventi. Gli eventi sono card esterne read-only con lucchetto, non hanno edit inline, drag o checkbox. Button «Importa ICS» nella barra Calendario, sorgenti rimovibili accanto; lista di stato/errori non deve sparire senza spiegazione. [Specifica](P2-ICS.md).
 
+## P2.3A — Sorgenti ICS con chiave stabile
+
+Le etichette di calendari file rimangono immutate in UI, ma le azioni di rimozione e i `Key` dei pulsanti fanno riferimento al nuovo ID stabile. Evitare di usare il filename come identità una volta esistenti feed URL omonimi. Il picker e il dialog Forui non devono salvare nell'owner nuovo se si cambia account mentre sono aperti. Lo schema 2 è scritto solo dopo conferma. La UI non abilita ancora subscription URL o ricorrenze. [Contratto](P2-ICS-SOURCES.md).

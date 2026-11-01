@@ -78,10 +78,10 @@ void main() {
     expect(c.events.single.title, 'Prima, parte; seconda\nTerza');
   });
 
-  test('rejects unsupported recurrences rather than displaying partial data', () {
+  test('rejects unsupported recurrence variants rather than partial data', () {
     for(final extra in [
-      ['RRULE:FREQ=WEEKLY;COUNT=5'],
-      ['RDATE:20261104T100000Z'],
+      ['RRULE:FREQ=HOURLY;COUNT=5'],
+      ['RDATE;VALUE=PERIOD:20261104T100000Z/20261104T110000Z'],
       ['RECURRENCE-ID:20261103T090000Z'],
       ['DURATION:PT1H'],
     ]) {

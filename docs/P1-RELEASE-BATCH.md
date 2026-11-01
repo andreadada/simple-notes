@@ -54,7 +54,7 @@ FAILED_MIGRATIONS=0
 
 Health deve restituire `{"status":"UP"}`. Su endpoint autenticato `/api/v1/capabilities` verificare **`taskDueSchema:1`**, **`timeBlockSchema:1`**, **`timeBlocksSchema:1`** e **`recurrenceSchema:1`**, usando JWT in locale: **non inserire token nei messaggi, screenshot o log**. Il semplice health UP non dimostra tutte le capability.
 
-## 4 — Client Flutter 0.21.0+23 (0.22 candidata) soltanto quando backend è compatibile
+## 4 — Client Flutter cumulativo (P2.2 0.25.0+27; P2.3A 0.26 candidata) soltanto quando backend è compatibile
 
 Sul PC con repository aggiornato su `main`:
 
@@ -127,7 +127,7 @@ Integrata in `main` ([PR #19](https://github.com/andreadada/simple-notes/pull/19
 
 [Specifiche P1.18](P1-APPEARANCE.md): `ThemeMode` Scuro/Chiaro/Sistema con persistenza SharedPreferences device-only, Forui/Material e Sticky. PR #19 su `main`, CI completa verde; test fisici ancora aperti, nessun cambio DB/API. Per un client cumulativo restano obbligatori Flyway V10 reale, capability, backup secondo policy e collaudo senza reset.
 
-## Gate aggiuntivo — P2.1, non incluso nel batch corrente
+## Gate aggiuntivo — P2.1 incluso nel client cumulativo
 
 La P2.1 è integrata su `main` (PR #20, CI completa verde); non installare i client aggiornati prima di deploy server-first Flyway V10 e collaudo hardware. Un import nel client genera nuove modifiche sync e **non** sostituisce backup, restore isolato o preflight delle capability. [Specifica](P2-PORTABLE-ARCHIVE.md).
 
@@ -135,3 +135,7 @@ La P2.1 è integrata su `main` (PR #20, CI completa verde); non installare i cli
 ### P2.2 — Calendari ICS locali (Flutter 0.25.0+27)
 
 [PR #21](https://github.com/andreadada/simple-notes/pull/21) integrata, CI finale verde: 162 test, Windows EXE/MSIX, Android JDK17/JDK21, Markdown. Il file `.ics` è letto solo come overlay locale per account; non crea task/outbox/endpoint. Nel collaudo cumulativo verificare picker ICS, sostituzione, rimozione e isolamento dopo cambio account, ma **non** considerarli conferma di un deploy server. Per il client completo restano i gate Flyway V10 e capability; nessun reset o intervento dati. [Specifica](P2-ICS.md).
+
+### P2.3A — Compatibilità archivio ICS schema 2
+
+Il candidato `0.26.0+28` legge `schema=1` e `schema=2`, ma scrive `schema=2` solo dopo una modifica confermata. I client P2.2 `0.25.0+27` rifiutano `schema=2` (senza cancellarlo): non fare downgrade cieco sui profili con sorgenti locali. Collaudare preservazione dati prima/dopo il reimport, separazione di fonti omonime e owner switch; nessuna migrazione Flyway/Drift richiesta dalla sola feature, mentre il rilascio cumulativo completo necessita sempre delle capability server V10. CI/merge E2E hardware documentati separatamente. [Specifiche](P2-ICS-SOURCES.md).

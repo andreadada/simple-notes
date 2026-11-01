@@ -34,3 +34,10 @@ Nessuna migrazione Drift o Flyway, nessun endpoint, outbox, Google Calendar OAut
 ## Incrementi futuri
 
 P2.3: subscription URL ICS con rete e refresh espliciti, ricorrenze/EXDATE, integrazioni Google/Outlook solo con permessi minimi e policy di accesso separate. Queste funzioni **non** appartengono alla P2.2.
+
+
+## P2.3A — Modello sorgenti (incremento successivo)
+
+Sul branch `feature/p2-3a-ics-source-identity` è stato introdotto l'archivio ICS **schema 2**, con ID stabile e tipo `file`/`url`. La lettura dei dati P2.2 `schema 1` rimane compatibile e non riscrive le preferenze finché l'utente non conferma un'operazione. Il reimport del file conserva l'ID; la rimozione usa l'ID, non il nome. La UI continua a importare solo file e **non esegue richieste URL**. Candidato Flutter `0.26.0+28` non ancora distribuito; `schema 2` non è leggibile da client P2.2 più vecchi. La CI di P2.2 descritta sopra resta una prova storica, non una prova di P2.3A.
+
+[Contratto tecnico P2.3A](P2-ICS-SOURCES.md) · [Stato canonico](CURRENT-STATUS.md).

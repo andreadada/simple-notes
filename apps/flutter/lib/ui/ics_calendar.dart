@@ -70,7 +70,7 @@ class IcsEvent {
 enum IcsSourceKind { file, url }
 
 String _legacyFileId(String name) =>
-    'file-' + sha256.convert(utf8.encode(name)).toString().substring(0, 32);
+    'file-${sha256.convert(utf8.encode(name)).toString().substring(0, 32)}';
 
 bool _validSubscriptionUrl(String? text) {
   if (text == null || text.length > 2048) return false;

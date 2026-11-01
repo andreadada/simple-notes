@@ -1,6 +1,6 @@
 # Flutter client — P0 e P1
 
-> **Stato operativo 31/10/2026:** P2.2 ICS read-only integrata su `main` ([PR #21](https://github.com/andreadada/simple-notes/pull/21), Flutter `0.25.0+27`; Flutter CI verde: **162 test**, Windows EXE/MSIX, Android JDK17/21, Markdown). Collaudo fisico e deploy cumulativo non attestati. Backend repo Flyway V10; ultima VPS verificata V8, nessun reset/deploy. [Stato](../../docs/CURRENT-STATUS.md) · [ICS](../../docs/P2-ICS.md).
+> **Stato operativo 01/11/2026:** P2.3A identità sorgenti ICS integrata in `main` ([PR #22](https://github.com/andreadada/simple-notes/pull/22), Flutter `0.26.0+28`; [CI Flutter](https://github.com/andreadada/simple-notes/actions/runs/41339906564) verde: **166 test**, Windows EXE/MSIX, Android JDK17/21; [Markdown](https://github.com/andreadada/simple-notes/actions/runs/41339910458) verde). Nessun deploy Coolify o test hardware. Backend Flyway V10 su repo, ultima VPS verificata V8. [Stato](../../docs/CURRENT-STATUS.md).
 
 <!-- CURRENT-STATUS-REF -->
 
@@ -191,6 +191,6 @@ Integrata in `main` ([PR #19](https://github.com/andreadada/simple-notes/pull/19
 
 `ui/ics_calendar.dart` contiene parser RFC5545 limitato, calendario versionato e proiezione per giorno; `ui/ics_calendar_controls.dart` gestisce file nativi, preview Forui e archivio SharedPreferences hash-owner; `calendar_board.dart` mostra gli eventi esterni senza azioni editabili in giorno/settimana/mese. `test/ics_calendar_test.dart` verifica date, UTC/IANA/DST, fold/unfold, limiti e owner isolation. Flutter `0.25.0+27` integrata su main, CI completa verde (162 test, Windows EXE/MSIX, Android JDK17/21, Markdown); nessun sync/SQLite/outbox; test reali ancora aperti. [Specifica](../../docs/P2-ICS.md).
 
-## P2.3A — Archivio ICS schema 2 (branch)
+## P2.3A — Archivio ICS schema 2 (main, PR #22)
 
-Il modello `ui/ics_calendar.dart` assegna ID stabili a file e futuri feed, distingue `kind=file/url`, conserva i file già importati da schema 1 senza riscriverli al load e serializza schema 2 soltanto quando l'utente conferma un import/rimozione. `ics_calendar_controls.dart` elimina per ID e verifica che l'owner non cambi durante picker/conferme. `test/ics_calendar_test.dart` contiene test di compatibilità e fail-closed. Nessun fetch URL o RRULE; Flutter candidata `0.26.0+28`, CI/merge da verificare. [Specifiche](../../docs/P2-ICS-SOURCES.md).
+Il modello `ui/ics_calendar.dart` assegna ID stabili a file e futuri feed, distingue `kind=file/url`, conserva i file già importati da schema 1 senza riscriverli al load e serializza schema 2 soltanto quando l'utente conferma un import/rimozione. `ics_calendar_controls.dart` elimina per ID e verifica che l'owner non cambi durante picker/conferme. `test/ics_calendar_test.dart` contiene test di compatibilità e fail-closed. Nessun fetch URL o RRULE; Flutter `0.26.0+28` integrata con PR #22, CI completa verde (166 test, Windows EXE/MSIX, Android JDK17/21, Markdown), E2E fisico da verificare. [Specifiche](../../docs/P2-ICS-SOURCES.md).

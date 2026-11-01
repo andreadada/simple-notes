@@ -1,12 +1,12 @@
 # Stato corrente — Simple Notes
 
-**Aggiornato 31 ottobre 2026.** Questo documento prevale sulla cronologia. **Codice/CI, deploy Coolify, installazione e collaudo fisico sono stati distinti.**
+**Aggiornato 1 novembre 2026.** Questo documento prevale sulla cronologia. **Codice/CI, deploy Coolify, installazione e collaudo fisico sono stati distinti.**
 
 | Area | Stato verificato | Gate ancora aperti |
 |---|---|---|
-| `main` | **P0–P1.18 + P2.1 + P2.2 integrate**. [PR #21 ICS](https://github.com/andreadada/simple-notes/pull/21) merged, commit [`141004d`](https://github.com/andreadada/simple-notes/commit/141004d2ead988a9fdd58078e8b6e6b3d10c20c4), Flutter **`0.25.0+27`** | Test su Windows e Android reali |
+| `main` | **P0–P1.18 + P2.1 + P2.2 + P2.3A integrate**. [PR #22](https://github.com/andreadada/simple-notes/pull/22) merged, commit [`85b56fc`](https://github.com/andreadada/simple-notes/commit/85b56fce2debeeca75a16e52fcc18874f8959a6d), Flutter **`0.26.0+28`** | Test su Windows/Android reali |
 | P1.18 integrata (storico) | [PR #19](https://github.com/andreadada/simple-notes/pull/19) merged, Flutter **`0.23.0+25`**, temi chiaro/scuro/sistema, preferenza locale e Sticky | CI verde; test visivi e su dispositivi fisici ancora aperti |
-| CI P2.2 | [Flutter CI #41157322208](https://github.com/andreadada/simple-notes/actions/runs/41157322208): **success** (162 test, Windows EXE/MSIX, Android JDK17/21). [Markdown #41157326277](https://github.com/andreadada/simple-notes/actions/runs/41157326277): **success** | Non certifica picker ICS su dispositivi fisici o deploy |
+| CI P2.3A | [Flutter CI #41339906564](https://github.com/andreadada/simple-notes/actions/runs/41339906564): **success** (166 test, Windows EXE/MSIX, Android JDK17/21). [Markdown #41339910458](https://github.com/andreadada/simple-notes/actions/runs/41339910458): **success** | Non certifica l'upgrade ICS schema 1→2 sui dispositivi reali |\n| CI P2.2 | [Flutter CI #41157322208](https://github.com/andreadada/simple-notes/actions/runs/41157322208): **success** (162 test, Windows EXE/MSIX, Android JDK17/21). [Markdown #41157326277](https://github.com/andreadada/simple-notes/actions/runs/41157326277): **success** | Non certifica picker ICS su dispositivi fisici o deploy |
 | CI P2.1 | [Flutter CI #41114448268](https://github.com/andreadada/simple-notes/actions/runs/41114448268): **success** (152 test, Windows EXE/MSIX, Android JDK17/21). [Markdown #41114449602](https://github.com/andreadada/simple-notes/actions/runs/41114449602): **success** | Non dimostra test fisico, OAuth, upgrade ZIP→MSIX o rilascio |
 | CI P1.18 | [Flutter CI #41067872668](https://github.com/andreadada/simple-notes/actions/runs/41067872668): **success** (148 test, Windows EXE/MSIX, Android JDK17/21). [Markdown #41067872675](https://github.com/andreadada/simple-notes/actions/runs/41067872675): **success** | Non dimostra test fisico, OAuth né upgrade ZIP→MSIX |
 | CI P1.17 | [Flutter CI #40797207231](https://github.com/andreadada/simple-notes/actions/runs/40797207231): **success** per analyze/test, Windows release + MSIX di sviluppo, Android JDK17 e JDK21. [Markdown #40797207130](https://github.com/andreadada/simple-notes/actions/runs/40797207130): **success** | La CI non certifica interazioni fisiche, Google login o notifiche |
@@ -23,7 +23,7 @@
 - **P1.18 (integrata in main, PR #19):** modalità Scuro/Chiaro/Sistema e preferenza locale, nessuna modifica SQLite/outbox/server. [Specifica](P1-APPEARANCE.md).
 - **P2.1 (integrata in main, PR #20):** export/import JSON versionato di liste, task e note attive con conferma Forui, nuovi UUID e outbox nella transazione. [Specifica](P2-PORTABLE-ARCHIVE.md).
 - **P2.2 (integrata in main, PR #21):** file ICS esterni, locali per account, read-only in calendario giorno/settimana/mese, fino a 5 fonti; nessun task/outbox/cloud. [Specifica](P2-ICS.md).
-- **P2 successiva/P3:** subscription ICS via URL, ricorrenze complete, export CSV, backup completo, condivisione e smart opzionali **non implementati**.
+- **P2.3A (integrata in main, PR #22):** ID stabili per sorgenti ICS, formato locale schema 2 con lettura legacy schema 1, `file/url` (URL ancora senza fetch) e rimozione per ID. [Specifica](P2-ICS-SOURCES.md).\n- **P2 successiva/P3:** subscription ICS via URL, ricorrenze complete, export CSV, backup completo, condivisione e smart opzionali **non implementati**.
 
 ## Gate di rilascio ancora aperti
 
@@ -51,4 +51,4 @@ PR #19 merged con CI di codice e documentazione verde sullo SHA finale. Restano 
 
 ## P2.3A — Identità sorgenti ICS (branch, 01/11/2026)
 
-**Non ancora integrata in `main` al momento di questo aggiornamento.** Branch `feature/p2-3a-ics-source-identity`, candidata Flutter `0.26.0+28`: schema locale ICS 2 con `id` persistente, `kind=file/url`, migrazione in memoria da schema 1, reimport file e rimozione su ID, controllo owner durante picker/conferma. Il formato viene scritto soltanto dopo un'azione esplicita; i client P2.2 vecchi non leggono schema 2 ma devono conservarlo senza cancellazioni. URL è **solo metadato di modello**, nessuna sottoscrizione o ricorrenza nuova. Test e CI finale da verificare prima del merge; deploy e device E2E ancora separati. [Specifica](P2-ICS-SOURCES.md).
+**Non ancora integrata in `main` al momento di questo aggiornamento.** Branch `feature/p2-3a-ics-source-identity`, candidata Flutter `0.26.0+28`: schema locale ICS 2 con `id` persistente, `kind=file/url`, migrazione in memoria da schema 1, reimport file e rimozione su ID, controllo owner durante picker/conferma. Il formato viene scritto soltanto dopo un'azione esplicita; i client P2.2 vecchi non leggono schema 2 ma devono conservarlo senza cancellazioni. URL è **solo metadato di modello**, nessuna sottoscrizione o ricorrenza nuova. CI Flutter **166 test** + Windows EXE/MSIX e Android JDK17/21 verde sul commit candidato `7b7d4db`; Markdown verde, nessun deploy e device E2E ancora da eseguire. [Specifica](P2-ICS-SOURCES.md).

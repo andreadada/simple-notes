@@ -1,12 +1,12 @@
 # Simple Notes — Progetto e roadmap
 
-> **Stato operativo 31/10/2026:** P2.2 ICS read-only integrata su `main` ([PR #21](https://github.com/andreadada/simple-notes/pull/21), Flutter `0.25.0+27`; Flutter CI verde: **162 test**, Windows EXE/MSIX, Android JDK17/21, Markdown). Collaudo fisico e deploy cumulativo non attestati. Backend repo Flyway V10; ultima VPS verificata V8, nessun reset/deploy. [Stato](docs/CURRENT-STATUS.md) · [ICS](docs/P2-ICS.md).
+> **Stato operativo 01/11/2026:** P2.3A identità sorgenti ICS integrata in `main` ([PR #22](https://github.com/andreadada/simple-notes/pull/22), Flutter `0.26.0+28`; [CI Flutter](https://github.com/andreadada/simple-notes/actions/runs/41339906564) verde: **166 test**, Windows EXE/MSIX, Android JDK17/21; [Markdown](https://github.com/andreadada/simple-notes/actions/runs/41339910458) verde). Nessun deploy Coolify o test hardware. Backend Flyway V10 su repo, ultima VPS verificata V8. [Stato](docs/CURRENT-STATUS.md).
 
 <!-- CURRENT-STATUS-REF -->
 
 **Obiettivo:** Windows 11 + Android offline-first, Google OAuth, Flutter/Forui/Drift + Spring Boot/PostgreSQL su Coolify. Regole UX in [design.md](design.md); deploy sicuro in [P1-RELEASE-BATCH.md](docs/P1-RELEASE-BATCH.md). Le checklist sotto includono traguardi storici: `[x]` significa **codice verificato nella CI o prova specifica**, non distribuzione sul VPS.
 
-## Gate corrente (CI P2.2 superata; distribuzione non eseguita)
+## Gate corrente (CI P2.3A superata; distribuzione non eseguita)
 
 - [x] P1.7 Android con scheduler inexact, ledger, opt-in e CI verde (PR #6). [ ] Prova fisica Android app chiusa/reboot e controllo permessi; [x] codice packaging MSIX + promemoria Windows integrato (PR #7, CI verde); [ ] test fisici MSIX/identità/dati e firma pubblica.
 - [ ] Verificare Flyway V10, health **e** capability su Coolify prima di nuovi client.
@@ -128,7 +128,7 @@
 - [x] **P1.18 Tema chiaro/scuro/sistema**: PR #19 integrata su `main`, Flutter `0.23.0+25`, CI completa verde (148 test, Windows EXE/MSIX, Android 17/21, Markdown); collaudo hardware e deploy ancora aperti. [Specifica](docs/P1-APPEARANCE.md).
 
 ## P2 — Estensioni
-- [ ] **P2.3A — Identità sorgenti ICS**: branch `feature/p2-3a-ics-source-identity`, Flutter candidata `0.26.0+28`; ID stabili, schema 2 con lettura legacy schema 1 senza riscrittura, rimozione per ID, kind `file/url` riservato; test e CI/merge ancora da validare. [Contratto](docs/P2-ICS-SOURCES.md).
+- [x] **P2.3A — Identità sorgenti ICS**: PR #22 integrata su `main`, Flutter `0.26.0+28`; ID stabili, schema 2 con lettura legacy schema 1 senza riscrittura, rimozione per ID, kind `file/url` riservato; CI 166 test, Windows EXE/MSIX, Android JDK17/21 e Markdown verdi. [Contratto](docs/P2-ICS-SOURCES.md).
 - [ ] Timeline/Gantt e filtri avanzati.
 - [x] P2.1 Import/export JSON non distruttivo (PR #20, 152 test e CI verde). [ ] Subscription ICS ancora da implementare.
 - [ ] Collegamento Google Calendar/Outlook con consenso separato.
@@ -343,4 +343,4 @@ Esempio: `2026-10-21 14:20 CEST | commit abc1234 | Aggiunto modulo promemoria e 
 
 - 2026-10-31 | merge(p2.2) | PR #21 integrata su `main` (`141004d`), Flutter `0.25.0+27`, CI #41157322208 e Markdown #41157326277 verdi: 162 test, Windows EXE/MSIX e Android JDK17/21. Collaudo fisico e deploy ancora aperti. [Specifica](docs/P2-ICS.md).
 
-- 2026-11-01 | feat(p2.3a) | Branch `feature/p2-3a-ics-source-identity`: ICS schema 2 con ID stabile e migrazione lazy, kind file/url senza fetch, UI removals per ID, guardia cambio account, test migrazione. Nessun deploy, DB reset o device acceptance; CI e merge ancora da verificare. [Specifica](docs/P2-ICS-SOURCES.md).
+- 2026-11-01 | feat(p2.3a) | Branch `feature/p2-3a-ics-source-identity`: ICS schema 2 con ID stabile e migrazione lazy, kind file/url senza fetch, UI removals per ID, guardia cambio account, test migrazione. Nessun deploy, DB reset o device acceptance; CI e merge ancora da verificare. [Specifica](docs/P2-ICS-SOURCES.md).\n\n- 2026-11-01 | merge(p2.3a) | PR #22 integrata su `main` (`85b56fc`); Flutter 0.26.0+28, CI #41339906564 PASS (166 test, Windows/Android), Markdown #41339910458 PASS. Non sono stati effettuati deploy Coolify, reset dati o test hardware. Prossimo incremento P2.3B ricorrenze ICS.\n

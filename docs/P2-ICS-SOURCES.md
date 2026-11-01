@@ -1,6 +1,6 @@
 # P2.3A — Identità e storage delle sorgenti ICS
 
-**Stato:** incremento in sviluppo sul branch `feature/p2-3a-ics-source-identity` dal 1 novembre 2026. È un prerequisito per P2.3B (ricorrenze) e P2.3C (sottoscrizioni HTTPS); **non abilita ancora né fetch URL né RRULE**. Non richiede deployment Spring Boot, Flyway o Drift.
+**Stato 01/11/2026:** integrata su `main` con [PR #22](https://github.com/andreadada/simple-notes/pull/22), Flutter `0.26.0+28`; [CI Flutter](https://github.com/andreadada/simple-notes/actions/runs/41339906564) success (**166 test**, Windows EXE/MSIX, Android JDK17/21), [Markdown](https://github.com/andreadada/simple-notes/actions/runs/41339910458) success. Nessun deploy o collaudo hardware. È un prerequisito per P2.3B (ricorrenze) e P2.3C (sottoscrizioni HTTPS); **non abilita ancora né fetch URL né RRULE**. Non richiede deployment Spring Boot, Flyway o Drift.
 
 ## Problema e modello
 

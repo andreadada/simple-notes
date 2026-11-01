@@ -1,6 +1,6 @@
 # Simple Notes — Passaggio di consegne (handoff)
 
-> **Stato operativo 31/10/2026:** P2.2 ICS read-only integrata su `main` ([PR #21](https://github.com/andreadada/simple-notes/pull/21), Flutter `0.25.0+27`; Flutter CI verde: **162 test**, Windows EXE/MSIX, Android JDK17/21, Markdown). Collaudo fisico e deploy cumulativo non attestati. Backend repo Flyway V10; ultima VPS verificata V8, nessun reset/deploy. [Stato](CURRENT-STATUS.md) · [ICS](P2-ICS.md).
+> **Stato operativo 01/11/2026:** P2.3A identità sorgenti ICS integrata in `main` ([PR #22](https://github.com/andreadada/simple-notes/pull/22), Flutter `0.26.0+28`; [CI Flutter](https://github.com/andreadada/simple-notes/actions/runs/41339906564) verde: **166 test**, Windows EXE/MSIX, Android JDK17/21; [Markdown](https://github.com/andreadada/simple-notes/actions/runs/41339910458) verde). Nessun deploy Coolify o test hardware. Backend Flyway V10 su repo, ultima VPS verificata V8. [Stato](CURRENT-STATUS.md).
 
 <!-- CURRENT-STATUS-REF -->
 
@@ -302,6 +302,6 @@ Integrata su `main` con PR #20, Flutter `0.24.0+26`. Export JSON solo dati attiv
 
 Integrata su `main` con PR #21, Flutter `0.25.0+27`. Parser di file ICS rigoroso con UID unici, date esclusive, UTC/IANA e rifiuto ricorrenze non implementate; fino a 5 sorgenti locali e overlay Forui senza mutazioni. Flutter CI verde con 162 test + Windows/Android; collaudo hardware e deploy ancora aperti. [Specifiche](P2-ICS.md) · [Stato](CURRENT-STATUS.md).
 
-## P2.3A — Sorgenti ICS con identità stabile (branch 01/11/2026)
+## P2.3A — Sorgenti ICS con identità stabile (main, PR #22, 01/11/2026)
 
-Branch `feature/p2-3a-ics-source-identity`, Flutter candidata `0.26.0+28`. Estensione locale `IcsCalendar` con `id`, `kind=file/url`, `sourceUrl` HTTPS metadata-only. `IcsLibrary` carica i dati P2.2 schema 1 in memoria senza scrivere; serializza schema 2 alla prima modifica esplicitamente confermata, preservando ID di reimport e dati owner-scoped. La UI rimuove per ID e interrompe conferme stale dopo cambio account. Test di v1→v2, round trip e URL invalidi. **In questa fase NON implementare fetch URL/RRULE e NON fare deploy.** Verificare CI e poi merge; backend repo V10, VPS ultima attestazione V8, hardware ancora da collaudare nel batch finale. [Specifiche](P2-ICS-SOURCES.md) · [Stato](CURRENT-STATUS.md).
+PR #22 integrata su `main`, Flutter `0.26.0+28`. Estensione locale `IcsCalendar` con `id`, `kind=file/url`, `sourceUrl` HTTPS metadata-only. `IcsLibrary` carica i dati P2.2 schema 1 in memoria senza scrivere; serializza schema 2 alla prima modifica esplicitamente confermata, preservando ID di reimport e dati owner-scoped. La UI rimuove per ID e interrompe conferme stale dopo cambio account. Test di v1→v2, round trip e URL invalidi. **In questa fase NON implementare fetch URL/RRULE e NON fare deploy.** CI Flutter 166 test, build Windows/Android e Markdown verdi (run 41339906564 / 41339910458); backend repo V10, VPS ultima attestazione V8, hardware ancora da collaudare nel batch finale. [Specifiche](P2-ICS-SOURCES.md) · [Stato](CURRENT-STATUS.md).

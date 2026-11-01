@@ -1,6 +1,6 @@
 # Simple Notes
 
-> **Stato operativo 31/10/2026:** P2.2 ICS read-only integrata su `main` ([PR #21](https://github.com/andreadada/simple-notes/pull/21), Flutter `0.25.0+27`; Flutter CI verde: **162 test**, Windows EXE/MSIX, Android JDK17/21, Markdown). Collaudo fisico e deploy cumulativo non attestati. Backend repo Flyway V10; ultima VPS verificata V8, nessun reset/deploy. [Stato](docs/CURRENT-STATUS.md) · [ICS](docs/P2-ICS.md).
+> **Stato operativo 01/11/2026:** P2.3A identità sorgenti ICS integrata in `main` ([PR #22](https://github.com/andreadada/simple-notes/pull/22), Flutter `0.26.0+28`; [CI Flutter](https://github.com/andreadada/simple-notes/actions/runs/41339906564) verde: **166 test**, Windows EXE/MSIX, Android JDK17/21; [Markdown](https://github.com/andreadada/simple-notes/actions/runs/41339910458) verde). Nessun deploy Coolify o test hardware. Backend Flyway V10 su repo, ultima VPS verificata V8. [Stato](docs/CURRENT-STATUS.md).
 
 App offline-first per **Windows 11 e Android** dedicata ad attività, note e pianificazione. Flutter/Forui con Drift SQLite locale, Google OAuth e sincronizzazione con Spring Boot/PostgreSQL su Coolify.
 
@@ -66,6 +66,6 @@ Menu account → **Esporta dati JSON** oppure **Importa dati JSON**. Esporta lis
 
 Nella schermata Calendario si possono importare fino a 5 file ICS in sola lettura per account/dispositivo; compaiono in giorno, settimana e mese senza essere convertiti in task. Nessuna nuova API o migrazione; ricorrenze ICS e timezone non IANA sono rifiutati con un errore esplicito. Integrata su `main` con [PR #21](https://github.com/andreadada/simple-notes/pull/21), Flutter `0.25.0+27`, CI completa verde (162 test, Windows e Android), collaudo fisico ancora aperto. [Specifica](docs/P2-ICS.md).
 
-## P2.3A — Modello sorgenti ICS (candidato)
+## P2.3A — Modello sorgenti ICS (main, PR #22)
 
-Sul branch `feature/p2-3a-ics-source-identity` è in sviluppo il modello di identità stabile delle sorgenti ICS: archivio locale schema 2 con lettura schema 1, tipologia file/URL (URL ancora inattivo), rimozione per ID e protezione nei cambi account durante import. Candidato Flutter `0.26.0+28`; nessun deploy o sync cloud. Prima di utilizzare client meno recenti, considerare che P2.2 non può leggere lo schema 2 scritto dopo una nuova modifica. [Specifica](docs/P2-ICS-SOURCES.md).
+Integrato su `main` con [PR #22](https://github.com/andreadada/simple-notes/pull/22) è il modello di identità stabile delle sorgenti ICS: archivio locale schema 2 con lettura schema 1, tipologia file/URL (URL ancora inattivo), rimozione per ID e protezione nei cambi account durante import. Flutter `0.26.0+28`, CI verde (166 test, Windows EXE/MSIX, Android JDK17/21, Markdown); nessun deploy o sync cloud. Prima di utilizzare client meno recenti, considerare che P2.2 non può leggere lo schema 2 scritto dopo una nuova modifica. [Specifica](docs/P2-ICS-SOURCES.md).

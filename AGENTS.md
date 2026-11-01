@@ -81,3 +81,7 @@ L'archivio portabile JSON deve rimanere distinta da backup/ripristino completo e
 
 Un evento ICS resta **read-only** e **device-local per account**: non creare UUID task, outbox, migrazioni, endpoints, reminder o mutazioni sincronizzate. Fallire in modo esplicito quando un file contiene ricorrenze/exception, timezone non IANA o orari DST ambigui; non nascondere eventi parziali. Conferma con Forui prima di cambiare l'overlay locale; non toccare liste/task/note né cache credenziali. [Contratto](docs/P2-ICS.md).
 
+
+## Vincolo P2.3A — Identità delle sorgenti ICS
+
+Archivio JSON locale `schema=2` nella **stessa** preferenza owner-scoped ICS v1. Leggere i vecchi `schema=1` senza scrittura automatica; ID legacy deterministico per filename, UUID v4 per nuove importazioni e ID conservato ai reimport. `IcsSourceKind.url` è **solo modello**: non aggiungere fetch, OAuth, sync, outbox, migrazioni o trigger di rete in P2.3A. Rimuovere per `id`, mantenere read-only, limite cinque fonti, parsing fail-closed e controllare l'owner dopo qualunque `await` del picker/dialogo. Non presentare `schema=2` come retrocompatibile con vecchi client P2.2: la lettura è v1→v2, non v2→v1. [Specifica](docs/P2-ICS-SOURCES.md).

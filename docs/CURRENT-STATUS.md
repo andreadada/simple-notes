@@ -48,3 +48,7 @@ PR #19 merged con CI di codice e documentazione verde sullo SHA finale. Restano 
 
 [PR #21](https://github.com/andreadada/simple-notes/pull/21) merged, Flutter `0.25.0+27`: import locale file `.ics` (fino a 5, eventi singoli, UTC/IANA o all-day), overlay read-only nel calendario giorno/settimana/mese, preferenze con hash owner. Nessuna modifica task/SQLite/outbox/cloud. CI e Markdown verdi; collaudo reale e distribuzione sempre distinti. [Specifica](P2-ICS.md).
 
+
+## P2.3A — Identità sorgenti ICS (branch, 01/11/2026)
+
+**Non ancora integrata in `main` al momento di questo aggiornamento.** Branch `feature/p2-3a-ics-source-identity`, candidata Flutter `0.26.0+28`: schema locale ICS 2 con `id` persistente, `kind=file/url`, migrazione in memoria da schema 1, reimport file e rimozione su ID, controllo owner durante picker/conferma. Il formato viene scritto soltanto dopo un'azione esplicita; i client P2.2 vecchi non leggono schema 2 ma devono conservarlo senza cancellazioni. URL è **solo metadato di modello**, nessuna sottoscrizione o ricorrenza nuova. Test e CI finale da verificare prima del merge; deploy e device E2E ancora separati. [Specifica](P2-ICS-SOURCES.md).

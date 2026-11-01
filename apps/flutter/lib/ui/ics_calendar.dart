@@ -127,8 +127,8 @@ class IcsCalendar {
         events.length + series.length > IcsParser.maxEvents ||
         events.any((e) => e.source != name) ||
         series.any((s) => s.master.source != name) ||
-        [...events.map((e) => e.uid), ...series.map((s) => s.master.uid)]
-            .toSet().length != events.length + series.length ||
+        {...events.map((e) => e.uid), ...series.map((s) => s.master.uid)}
+            .length != events.length + series.length ||
         (kind == IcsSourceKind.file && sourceUrl != null) ||
         (kind == IcsSourceKind.url && !_validSubscriptionUrl(sourceUrl))) {
       throw const FormatException('Sorgente calendario ICS non valida.');
@@ -316,7 +316,7 @@ class IcsParser {
             if (previous.zone != zone) {
               throw const FormatException('TZID multipli sulla stessa proprietà.');
             }
-            props[key] = _Prop('${previous.value},${value}', zone);
+            props[key] = _Prop('${previous.value},$value', zone);
           } else {
             props[key] = _Prop(value, zone);
           }

@@ -1,6 +1,6 @@
 # Flutter client — P0 e P1
 
-> **Stato operativo 01/11/2026:** P2.3A identità sorgenti ICS integrata in `main` ([PR #22](https://github.com/andreadada/simple-notes/pull/22), Flutter `0.26.0+28`; [CI Flutter](https://github.com/andreadada/simple-notes/actions/runs/41339906564) verde: **166 test**, Windows EXE/MSIX, Android JDK17/21; [Markdown](https://github.com/andreadada/simple-notes/actions/runs/41339910458) verde). Nessun deploy Coolify o test hardware. Backend Flyway V10 su repo, ultima VPS verificata V8. [Stato](../../docs/CURRENT-STATUS.md).
+> **Stato operativo 01/11/2026:** P2.3B ricorrenze ICS integrata in `main` ([PR #23](https://github.com/andreadada/simple-notes/pull/23), Flutter `0.27.0+29`; [CI Flutter](https://github.com/andreadada/simple-notes/actions/runs/41350187352) verde: **174 test**, Windows EXE/MSIX, Android JDK17/21; [Markdown](https://github.com/andreadada/simple-notes/actions/runs/41350191590) verde). Nessun deploy, reset o test hardware. Backend repo Flyway V10, ultima VPS V8 attestata. [Stato](../../docs/CURRENT-STATUS.md) · [ICS RRULE](../../docs/P2-ICS-RECURRENCE.md).
 
 <!-- CURRENT-STATUS-REF -->
 
@@ -195,6 +195,6 @@ Integrata in `main` ([PR #19](https://github.com/andreadada/simple-notes/pull/19
 
 Il modello `ui/ics_calendar.dart` assegna ID stabili a file e futuri feed, distingue `kind=file/url`, conserva i file già importati da schema 1 senza riscriverli al load e serializza schema 2 soltanto quando l'utente conferma un import/rimozione. `ics_calendar_controls.dart` elimina per ID e verifica che l'owner non cambi durante picker/conferme. `test/ics_calendar_test.dart` contiene test di compatibilità e fail-closed. Nessun fetch URL o RRULE; Flutter `0.26.0+28` integrata con PR #22, CI completa verde (166 test, Windows EXE/MSIX, Android JDK17/21, Markdown), E2E fisico da verificare. [Specifiche](../../docs/P2-ICS-SOURCES.md).
 
-## P2.3B — RRULE e istanze ICS (candidata)
+## P2.3B — RRULE e istanze ICS (main, PR #23)
 
-`ics_recurrence_rule.dart` valida FREQ, INTERVAL, COUNT, UNTIL e BYDAY settimanale; `ics_recurring_event.dart` proietta istanze con DST e singoli override. Il parser integra RDATE/EXDATE/RECURRENCE-ID, usando preferenze locali schema 3 e leggendo vecchi archivi schema 1/2 senza riscrittura. CI e prove fisiche da verificare separatamente. [Specifica](../../docs/P2-ICS-RECURRENCE.md).
+`ics_recurrence_rule.dart` valida FREQ, INTERVAL, COUNT, UNTIL e BYDAY settimanale; `ics_recurring_event.dart` proietta istanze con DST e singoli override. Il parser integra RDATE/EXDATE/RECURRENCE-ID, usando preferenze locali schema 3 e leggendo vecchi archivi schema 1/2 senza riscrittura. CI verde; prove fisiche ancora da svolgere. [Specifica](../../docs/P2-ICS-RECURRENCE.md).

@@ -1,6 +1,6 @@
 # P2.3B — Ricorrenze ICS locali e proiezione a richiesta
 
-**Stato:** implementazione candidata sul branch `feature/p2-3b-ics-recurrence` (1 novembre 2026), Flutter `0.27.0+29`. Non attestare merge, CI o test real-device finché non confermati. Nessun endpoint, modifica Flyway, Drift, outbox o deploy Coolify.
+**Stato 01/11/2026:** integrata su `main` con [PR #23](https://github.com/andreadada/simple-notes/pull/23), Flutter `0.27.0+29`; [CI Flutter #41350187352](https://github.com/andreadada/simple-notes/actions/runs/41350187352) verde (**174 test**, Windows EXE/MSIX, Android JDK17/21), [Markdown #41350191590](https://github.com/andreadada/simple-notes/actions/runs/41350191590) verde. Hardware e deploy ancora aperti. Nessun endpoint, modifica Flyway, Drift, outbox o deploy Coolify.
 
 ## Modello e compatibilità dati
 

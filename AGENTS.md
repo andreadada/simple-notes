@@ -1,6 +1,6 @@
 # AGENTS.md — Istruzioni operative per agenti AI
 
-> **Stato operativo 01/11/2026:** P2.3A identità sorgenti ICS integrata in `main` ([PR #22](https://github.com/andreadada/simple-notes/pull/22), Flutter `0.26.0+28`; [CI Flutter](https://github.com/andreadada/simple-notes/actions/runs/41339906564) verde: **166 test**, Windows EXE/MSIX, Android JDK17/21; [Markdown](https://github.com/andreadada/simple-notes/actions/runs/41339910458) verde). Nessun deploy Coolify o test hardware. Backend Flyway V10 su repo, ultima VPS verificata V8. [Stato](docs/CURRENT-STATUS.md).
+> **Stato operativo 01/11/2026:** P2.3B ricorrenze ICS integrata in `main` ([PR #23](https://github.com/andreadada/simple-notes/pull/23), Flutter `0.27.0+29`; [CI Flutter](https://github.com/andreadada/simple-notes/actions/runs/41350187352) verde: **174 test**, Windows EXE/MSIX, Android JDK17/21; [Markdown](https://github.com/andreadada/simple-notes/actions/runs/41350191590) verde). Nessun deploy, reset o test hardware. Backend repo Flyway V10, ultima VPS V8 attestata. [Stato](docs/CURRENT-STATUS.md) · [ICS RRULE](docs/P2-ICS-RECURRENCE.md).
 
 <!-- CURRENT-STATUS-REF -->
 

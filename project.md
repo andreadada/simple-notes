@@ -1,12 +1,12 @@
 # Simple Notes — Progetto e roadmap
 
-> **Stato operativo 01/11/2026:** P2.3A identità sorgenti ICS integrata in `main` ([PR #22](https://github.com/andreadada/simple-notes/pull/22), Flutter `0.26.0+28`; [CI Flutter](https://github.com/andreadada/simple-notes/actions/runs/41339906564) verde: **166 test**, Windows EXE/MSIX, Android JDK17/21; [Markdown](https://github.com/andreadada/simple-notes/actions/runs/41339910458) verde). Nessun deploy Coolify o test hardware. Backend Flyway V10 su repo, ultima VPS verificata V8. [Stato](docs/CURRENT-STATUS.md).
+> **Stato operativo 01/11/2026:** P2.3B ricorrenze ICS integrata in `main` ([PR #23](https://github.com/andreadada/simple-notes/pull/23), Flutter `0.27.0+29`; [CI Flutter](https://github.com/andreadada/simple-notes/actions/runs/41350187352) verde: **174 test**, Windows EXE/MSIX, Android JDK17/21; [Markdown](https://github.com/andreadada/simple-notes/actions/runs/41350191590) verde). Nessun deploy, reset o test hardware. Backend repo Flyway V10, ultima VPS V8 attestata. [Stato](docs/CURRENT-STATUS.md) · [ICS RRULE](docs/P2-ICS-RECURRENCE.md).
 
 <!-- CURRENT-STATUS-REF -->
 
 **Obiettivo:** Windows 11 + Android offline-first, Google OAuth, Flutter/Forui/Drift + Spring Boot/PostgreSQL su Coolify. Regole UX in [design.md](design.md); deploy sicuro in [P1-RELEASE-BATCH.md](docs/P1-RELEASE-BATCH.md). Le checklist sotto includono traguardi storici: `[x]` significa **codice verificato nella CI o prova specifica**, non distribuzione sul VPS.
 
-## Gate corrente (CI P2.3A superata; distribuzione non eseguita)
+## Gate corrente (CI P2.3B superata; distribuzione non eseguita)
 
 - [x] P1.7 Android con scheduler inexact, ledger, opt-in e CI verde (PR #6). [ ] Prova fisica Android app chiusa/reboot e controllo permessi; [x] codice packaging MSIX + promemoria Windows integrato (PR #7, CI verde); [ ] test fisici MSIX/identità/dati e firma pubblica.
 - [ ] Verificare Flyway V10, health **e** capability su Coolify prima di nuovi client.
@@ -347,10 +347,12 @@ Esempio: `2026-10-21 14:20 CEST | commit abc1234 | Aggiunto modulo promemoria e 
 
 - 2026-11-01 | merge(p2.3a) | PR #22 integrata su `main` (`85b56fc`); Flutter 0.26.0+28, CI #41339906564 PASS (166 test, Windows/Android), Markdown #41339910458 PASS. Non sono stati effettuati deploy Coolify, reset dati o test hardware. Prossimo incremento P2.3B ricorrenze ICS.
 
-## P2.3B — Ricorrenze ICS (branch, candidata)
+## P2.3B — Ricorrenze ICS (main, PR #23)
 
-- [ ] Flutter `0.27.0+29`: sottoinsieme RRULE DAILY/WEEKLY/MONTHLY/YEARLY, BYDAY settimanale, COUNT/UNTIL, RDATE/EXDATE e RECURRENCE-ID.
-- [ ] JSON locale schema 3 con lettura schema 1/2/3, proiezione delle occorrenze solo per il giorno richiesto e parsing fail-closed.
-- [ ] CI e merge da attestare; E2E dispositivi e deploy separati. [Specifica](docs/P2-ICS-RECURRENCE.md).
+- [x] Flutter `0.27.0+29`: sottoinsieme RRULE DAILY/WEEKLY/MONTHLY/YEARLY, BYDAY settimanale, COUNT/UNTIL, RDATE/EXDATE e RECURRENCE-ID.
+- [x] JSON locale schema 3 con lettura schema 1/2/3, proiezione delle occorrenze solo per il giorno richiesto e parsing fail-closed.
+- [x] PR #23 merged, CI 174 test, Windows EXE/MSIX, Android JDK17/21 e Markdown verdi; [ ] E2E dispositivi e deploy separati. [Specifica](docs/P2-ICS-RECURRENCE.md).
 
 - 2026-11-01 | feat(p2.3b) | Branch `feature/p2-3b-ics-recurrence`, ricorrenze ICS locali con exception e schema 3. CI/merge/hardware non ancora attestati. Nessun deploy o reset.
+
+- 2026-11-01 | merge(p2.3b) | PR #23 integrata su `main` (`41732169`), Flutter 0.27.0+29, CI #41350187352 success (174 test, Windows EXE/MSIX, Android JDK17/21), Markdown #41350191590 success. Nessun deploy, reset o collaudo fisico; prossimo P2.3C feed HTTPS.

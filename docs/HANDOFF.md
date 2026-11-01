@@ -1,6 +1,6 @@
 # Simple Notes — Passaggio di consegne (handoff)
 
-> **Stato operativo 01/11/2026:** P2.3A identità sorgenti ICS integrata in `main` ([PR #22](https://github.com/andreadada/simple-notes/pull/22), Flutter `0.26.0+28`; [CI Flutter](https://github.com/andreadada/simple-notes/actions/runs/41339906564) verde: **166 test**, Windows EXE/MSIX, Android JDK17/21; [Markdown](https://github.com/andreadada/simple-notes/actions/runs/41339910458) verde). Nessun deploy Coolify o test hardware. Backend Flyway V10 su repo, ultima VPS verificata V8. [Stato](CURRENT-STATUS.md).
+> **Stato operativo 01/11/2026:** P2.3B ricorrenze ICS integrata in `main` ([PR #23](https://github.com/andreadada/simple-notes/pull/23), Flutter `0.27.0+29`; [CI Flutter](https://github.com/andreadada/simple-notes/actions/runs/41350187352) verde: **174 test**, Windows EXE/MSIX, Android JDK17/21; [Markdown](https://github.com/andreadada/simple-notes/actions/runs/41350191590) verde). Nessun deploy, reset o test hardware. Backend repo Flyway V10, ultima VPS V8 attestata. [Stato](CURRENT-STATUS.md) · [ICS RRULE](P2-ICS-RECURRENCE.md).
 
 <!-- CURRENT-STATUS-REF -->
 
@@ -306,6 +306,6 @@ Integrata su `main` con PR #21, Flutter `0.25.0+27`. Parser di file ICS rigoroso
 
 PR #22 integrata su `main`, Flutter `0.26.0+28`. Estensione locale `IcsCalendar` con `id`, `kind=file/url`, `sourceUrl` HTTPS metadata-only. `IcsLibrary` carica i dati P2.2 schema 1 in memoria senza scrivere; serializza schema 2 alla prima modifica esplicitamente confermata, preservando ID di reimport e dati owner-scoped. La UI rimuove per ID e interrompe conferme stale dopo cambio account. Test di v1→v2, round trip e URL invalidi. **In questa fase NON implementare fetch URL/RRULE e NON fare deploy.** CI Flutter 166 test, build Windows/Android e Markdown verdi (run 41339906564 / 41339910458); backend repo V10, VPS ultima attestazione V8, hardware ancora da collaudare nel batch finale. [Specifiche](P2-ICS-SOURCES.md) · [Stato](CURRENT-STATUS.md).
 
-## Handoff P2.3B (candidata 01/11/2026)
+## Handoff P2.3B (main, PR #23, 01/11/2026)
 
-Branch `feature/p2-3b-ics-recurrence`, Flutter `0.27.0+29`. Nuovi `ui/ics_recurrence_rule.dart` e `ui/ics_recurring_event.dart` per le serie RRULE ed eccezioni calcolate per giorno; `ics_calendar.dart` interpreta VEVENT master/override e salva JSON ICS schema 3 solo dopo conferma. Nessuna nuova API, Flyway, Drift, outbox o rete. CI e merge ancora da attestare; hardware batch separato. [Contratto](P2-ICS-RECURRENCE.md).
+PR #23 merged su `main`, Flutter `0.27.0+29`. Nuovi `ui/ics_recurrence_rule.dart` e `ui/ics_recurring_event.dart` per le serie RRULE ed eccezioni calcolate per giorno; `ics_calendar.dart` interpreta VEVENT master/override e salva JSON ICS schema 3 solo dopo conferma. Nessuna nuova API, Flyway, Drift, outbox o rete. CI 174 test, Windows EXE/MSIX, Android JDK17/21 e Markdown verdi; hardware batch separato. [Contratto](P2-ICS-RECURRENCE.md).

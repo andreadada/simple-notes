@@ -178,12 +178,12 @@ class IcsRecurringEvent {
   IcsEvent _instance(String key) {
     if (allDay) {
       final end = icsCivil(key).add(Duration(days: _spanDays));
-      return IcsEvent(uid: '${master.uid}#${key}', title: master.title,
+      return IcsEvent(uid: '${master.uid}#$key', title: master.title,
           source: master.source, startDay: key, endDay: icsCivilKey(end));
     }
     final start = DateTime.parse(key);
     final end = start.add(master.endUtc!.difference(master.startUtc!));
-    return IcsEvent(uid: '${master.uid}#${key}', title: master.title,
+    return IcsEvent(uid: '${master.uid}#$key', title: master.title,
         source: master.source, startUtc: start, endUtc: end);
   }
 
@@ -195,9 +195,13 @@ class IcsRecurringEvent {
     final result = <IcsEvent>[];
     void append(String key) {
       if (!seen.add(key) || blocked.contains(key) ||
-          overrides.containsKey(key)) return;
+          overrides.containsKey(key)) {
+        return;
+      }
       final item = _instance(key);
-      if (item.onDay(day)) result.add(item);
+      if (item.onDay(day)) {
+        result.add(item);
+      }
     }
 
     final center = DateTime.utc(day.year, day.month, day.day);
@@ -218,7 +222,9 @@ class IcsRecurringEvent {
       append(key);
     }
     // RDATE entries may be located before the master start.
-    for (final key in rdates) append(key);
+    for (final key in rdates) {
+      append(key);
+    }
     for (final entry in overrides.entries) {
       if (!blocked.contains(entry.key) && entry.value.onDay(day)) {
         result.add(entry.value);

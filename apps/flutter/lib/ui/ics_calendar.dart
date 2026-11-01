@@ -2,6 +2,8 @@ import 'dart:convert';
 import 'package:crypto/crypto.dart';
 import 'package:uuid/uuid.dart';
 import '../data/task_due_clock.dart';
+import 'ics_recurring_event.dart';
+import 'ics_recurrence_rule.dart';
 
 /// Owner-scoped local key; no raw Google ID is stored in preferences keys.
 String icsOwnerKey(String? owner) =>
@@ -83,15 +85,18 @@ class IcsCalendar {
   /// The parser returns an unnamed-in-storage file candidate (id='').
   /// The library assigns an identity on import, preserving it on reimport.
   const IcsCalendar(this.name, this.events,
-      {this.id = '', this.kind = IcsSourceKind.file, this.sourceUrl});
+      {this.id = '', this.kind = IcsSourceKind.file, this.sourceUrl,
+       this.series = const []});
   final String id, name;
   final IcsSourceKind kind;
   /// A private HTTPS feed URL, not read or fetched until URL subscriptions ship.
   final String? sourceUrl;
   final List<IcsEvent> events;
+  final List<IcsRecurringEvent> series;
 
   IcsCalendar withId(String value) =>
-      IcsCalendar(name, events, id: value, kind: kind, sourceUrl: sourceUrl);
+      IcsCalendar(name, events, id: value, kind: kind, sourceUrl: sourceUrl,
+          series: series);
 
   Map<String, dynamic> toJson() => {
     'id': id.isEmpty ? _legacyFileId(name) : id,
@@ -99,6 +104,8 @@ class IcsCalendar {
     'name': name,
     if (sourceUrl != null) 'sourceUrl': sourceUrl,
     'events': events.map((e) => e.toJson()).toList(),
+    if (series.isNotEmpty)
+      'series': series.map((item) => item.toJson()).toList(),
   };
 
   factory IcsCalendar.fromJson(Map<String, dynamic> raw,
@@ -110,16 +117,24 @@ class IcsCalendar {
     final sourceUrl = schema == 1 ? null : raw['sourceUrl'] as String?;
     final events = (raw['events'] as List).map((e) =>
         IcsEvent.fromJson(Map<String, dynamic>.from(e as Map))).toList();
+    final series = schema == 3 && raw['series'] != null
+        ? (raw['series'] as List).map((item) => IcsRecurringEvent.fromJson(
+            Map<String, dynamic>.from(item as Map))).toList()
+        : <IcsRecurringEvent>[];
     if (name.trim().isEmpty || name.length > 180 ||
         !RegExp(r'^[a-zA-Z0-9._:-]{1,128}$').hasMatch(id) ||
-        events.isEmpty || events.length > IcsParser.maxEvents ||
+        (events.isEmpty && series.isEmpty) ||
+        events.length + series.length > IcsParser.maxEvents ||
         events.any((e) => e.source != name) ||
+        series.any((s) => s.master.source != name) ||
+        [...events.map((e) => e.uid), ...series.map((s) => s.master.uid)]
+            .toSet().length != events.length + series.length ||
         (kind == IcsSourceKind.file && sourceUrl != null) ||
         (kind == IcsSourceKind.url && !_validSubscriptionUrl(sourceUrl))) {
       throw const FormatException('Sorgente calendario ICS non valida.');
     }
     return IcsCalendar(name, List.unmodifiable(events), id: id,
-        kind: kind, sourceUrl: sourceUrl);
+        kind: kind, sourceUrl: sourceUrl, series: List.unmodifiable(series));
   }
 }
 
@@ -128,10 +143,12 @@ class IcsLibrary {
   static const maxSources = 5;
   final List<IcsCalendar> calendars;
   int get eventCount => calendars.fold(
-      0, (int sum, IcsCalendar c) => sum + c.events.length);
+      0, (int sum, IcsCalendar c) => sum + c.events.length + c.series.length);
   List<IcsEvent> onDay(DateTime day) => [
-    for (final c in calendars) for (final e in c.events)
-      if (e.onDay(day)) e,
+    for (final c in calendars) ...[
+      for (final e in c.events) if (e.onDay(day)) e,
+      for (final group in c.series) ...group.onDay(day),
+    ],
   ]..sort((a, b) {
     if (a.allDay != b.allDay) return a.allDay ? -1 : 1;
     return a.allDay ? a.title.compareTo(b.title) :
@@ -157,7 +174,7 @@ class IcsLibrary {
         (calendar.id.isEmpty ? const Uuid().v4() : calendar.id) :
         (existing.id.isEmpty ? _legacyFileId(existing.name) : existing.id);
     final candidate = IcsCalendar.fromJson(calendar.withId(id).toJson(),
-        schema: 2);
+        schema: 3);
     final rest = calendars.where((c) => !identical(c, existing)).toList();
     if (rest.length >= maxSources) {
       throw const FormatException('Massimo cinque calendari ICS.');
@@ -174,9 +191,9 @@ class IcsLibrary {
       calendars.where((c) =>
           !(c.kind == IcsSourceKind.file && c.name == name))));
 
-  /// Schema 2 is written only on an explicit user action, never on load.
+  /// Schema 3 is written only on an explicit user action, never on load.
   String serialize() => jsonEncode({
-    'schema': 2,
+    'schema': 3,
     'calendars': calendars.map((c) => c.toJson()).toList(),
   });
 
@@ -184,7 +201,8 @@ class IcsLibrary {
     try {
       final data = jsonDecode(source);
       if (data is! Map ||
-          (data['schema'] != 1 && data['schema'] != 2) ||
+          (data['schema'] != 1 && data['schema'] != 2 &&
+           data['schema'] != 3) ||
           data['calendars'] is! List) {
         throw const FormatException('Versione archivio ICS non supportata.');
       }
@@ -218,87 +236,194 @@ class _Prop {
 class IcsParser {
   static const maxBytes=1024*1024;
   static const maxEvents=500;
-  static IcsCalendar parse(List<int> bytes,String source) {
-    if(bytes.isEmpty || bytes.length>maxBytes ||
-       source.trim().isEmpty || source.length>180) {
+  static IcsCalendar parse(List<int> bytes, String source) {
+    if (bytes.isEmpty || bytes.length > maxBytes ||
+        source.trim().isEmpty || source.length > 180) {
       throw const FormatException('File ICS vuoto, troppo grande o nome non valido.');
     }
     try {
       final name = source.trim();
-      final lines=<String>[];
-      final raw=utf8.decode(bytes).replaceAll('\r\n','\n').replaceAll('\r','\n');
-      for(final line in raw.split('\n')) {
-        if((line.startsWith(' ')||line.startsWith('\t')) && lines.isNotEmpty) {
-          lines[lines.length-1]+=line.substring(1);
-        } else if(line.isNotEmpty) { lines.add(line); }
+      final lines = <String>[];
+      final raw = utf8.decode(bytes).replaceAll('\r\n', '\n')
+          .replaceAll('\r', '\n');
+      for (final line in raw.split('\n')) {
+        if ((line.startsWith(' ') || line.startsWith('\t')) && lines.isNotEmpty) {
+          lines[lines.length - 1] += line.substring(1);
+        } else if (line.isNotEmpty) {
+          lines.add(line);
+        }
       }
-      if(lines.isEmpty || lines.first!='BEGIN:VCALENDAR' ||
-         lines.last!='END:VCALENDAR') {
+      if (lines.isEmpty || lines.first != 'BEGIN:VCALENDAR' ||
+          lines.last != 'END:VCALENDAR') {
         throw const FormatException('Intestazione VCALENDAR assente.');
       }
-      final stack=<String>[];
-      final events=<IcsEvent>[];
-      final ids=<String>{};
-      Map<String,_Prop>? props;
-      for(final line in lines) {
-        if(line.startsWith('BEGIN:')) {
-          final type=line.substring(6).toUpperCase();
+      final stack = <String>[];
+      final components = <Map<String, _Prop>>[];
+      Map<String, _Prop>? props;
+      for (final line in lines) {
+        if (line.startsWith('BEGIN:')) {
+          final type = line.substring(6).toUpperCase();
           stack.add(type);
-          if(type=='VEVENT' && stack.length==2) props={};
+          if (type == 'VEVENT' && stack.length == 2) props = {};
           continue;
         }
-        if(line.startsWith('END:')) {
-          final type=line.substring(4).toUpperCase();
-          if(stack.isEmpty || stack.last!=type) {
+        if (line.startsWith('END:')) {
+          final type = line.substring(4).toUpperCase();
+          if (stack.isEmpty || stack.last != type) {
             throw const FormatException('Componenti ICS non bilanciati.');
           }
-          if(type=='VEVENT' && stack.length==2) {
-            if(props==null) throw const FormatException('Evento privo di dati.');
-            if(props['STATUS']?.value.toUpperCase()!='CANCELLED') {
-              final event=_parseEvent(props,name);
-              if(!ids.add(event.uid)) throw const FormatException('UID ICS duplicato.');
-              events.add(event);
-              if(events.length>maxEvents) {
-                throw const FormatException('Massimo 500 eventi ICS.');
-              }
+          if (type == 'VEVENT' && stack.length == 2) {
+            if (props == null) {
+              throw const FormatException('Evento privo di dati.');
             }
-            props=null;
+            components.add(props);
+            if (components.length > maxEvents) {
+              throw const FormatException('Massimo 500 componenti VEVENT.');
+            }
+            props = null;
           }
           stack.removeLast();
           continue;
         }
-        if(stack.length==2 && stack.last=='VEVENT' && props!=null) {
-          final colon=line.indexOf(':');
-          if(colon<1) throw const FormatException('Proprietà ICS non valida.');
-          final header=line.substring(0,colon).split(';');
-          final key=header.first.toUpperCase();
-          if(const {'RRULE','RDATE','EXDATE','RECURRENCE-ID','DURATION'}
-              .contains(key)) {
-            throw const FormatException('Ricorrenze ed eccezioni ICS non supportate.');
+        if (stack.length == 2 && stack.last == 'VEVENT' && props != null) {
+          final colon = line.indexOf(':');
+          if (colon < 1) throw const FormatException('Proprietà ICS non valida.');
+          final header = line.substring(0, colon).split(';');
+          final key = header.first.toUpperCase();
+          if (key == 'DURATION') {
+            throw const FormatException('DURATION ICS non supportata.');
           }
-          if(props.containsKey(key) &&
-              const {'UID','SUMMARY','DTSTART','DTEND'}.contains(key)) {
-            throw const FormatException('Proprietà evento duplicata.');
+          if (props.containsKey(key) &&
+              !const {'RDATE', 'EXDATE'}.contains(key)) {
+            throw const FormatException('Proprietà VEVENT duplicata.');
           }
           String? zone;
-          for(final part in header.skip(1)) {
-            if(part.toUpperCase().startsWith('TZID=')) {
-              zone=part.substring(5).replaceAll('"','');
+          for (final part in header.skip(1)) {
+            if (part.toUpperCase().startsWith('TZID=')) {
+              zone = part.substring(5).replaceAll('"', '');
+            }
+            if (key == 'RECURRENCE-ID' &&
+                part.toUpperCase().startsWith('RANGE=')) {
+              throw const FormatException('THISANDFUTURE non supportato.');
+            }
+            if (part.toUpperCase().startsWith('VALUE=PERIOD')) {
+              throw const FormatException('RDATE PERIOD non supportato.');
             }
           }
-          props[key]=_Prop(line.substring(colon+1),zone);
+          final value = line.substring(colon + 1);
+          if (props.containsKey(key)) {
+            final previous = props[key]!;
+            if (previous.zone != zone) {
+              throw const FormatException('TZID multipli sulla stessa proprietà.');
+            }
+            props[key] = _Prop('${previous.value},${value}', zone);
+          } else {
+            props[key] = _Prop(value, zone);
+          }
         }
       }
-      if(stack.isNotEmpty || events.isEmpty) {
-        throw const FormatException('Nessun evento ICS singolo supportato.');
+      if (stack.isNotEmpty || components.isEmpty) {
+        throw const FormatException('Nessun evento ICS supportato.');
       }
-      return IcsCalendar(name,List.unmodifiable(events));
+      final grouped = <String, List<Map<String, _Prop>>>{};
+      for (final item in components) {
+        final uid = item['UID']?.value.trim() ?? '';
+        if (uid.isEmpty) throw const FormatException('UID ICS assente.');
+        grouped.putIfAbsent(uid, () => []).add(item);
+      }
+      final singles = <IcsEvent>[];
+      final series = <IcsRecurringEvent>[];
+      for (final entry in grouped.entries) {
+        final masters = entry.value.where((c) =>
+            !c.containsKey('RECURRENCE-ID')).toList();
+        if (masters.length != 1) {
+          throw const FormatException('VEVENT master duplicato o assente.');
+        }
+        final props = masters.single;
+        final overrides = entry.value.where((c) =>
+            c.containsKey('RECURRENCE-ID')).toList();
+        if (props['STATUS']?.value.toUpperCase() == 'CANCELLED') {
+          if (overrides.isNotEmpty) {
+            throw const FormatException('Master cancellato con eccezioni.');
+          }
+          continue;
+        }
+        final master = _parseEvent(props, name);
+        final repeating = props.containsKey('RRULE') ||
+            props.containsKey('RDATE') || props.containsKey('EXDATE');
+        if (!repeating) {
+          if (overrides.isNotEmpty) {
+            throw const FormatException('RECURRENCE-ID senza serie.');
+          }
+          singles.add(master);
+          continue;
+        }
+        final start = props['DTSTART']!;
+        final rawStart = start.value;
+        final anchorDay = '${rawStart.substring(0, 4)}-'
+            '${rawStart.substring(4, 6)}-${rawStart.substring(6, 8)}';
+        final clock = master.allDay ? null :
+            '${rawStart.substring(9, 11)}:${rawStart.substring(11, 13)}:'
+            '${rawStart.substring(13, 15)}';
+        final rule = props['RRULE'] == null ? null :
+            IcsRule.parse(props['RRULE']!.value,
+                allDay: master.allDay, anchorDay: anchorDay,
+                anchorWeekday: icsCivil(anchorDay).weekday);
+        List<String> exceptionKeys(String key) {
+          final prop = props[key];
+          if (prop == null) return [];
+          final keys = <String>[];
+          for (final value in prop.value.split(',')) {
+            final parsed = _parseDate(_Prop(value, prop.zone));
+            if (parsed.$1 != master.allDay) {
+              throw const FormatException('Tipo EXDATE/RDATE non coincidente.');
+            }
+            if (keys.contains(parsed.$2)) {
+              throw const FormatException('Data eccezione duplicata.');
+            }
+            keys.add(parsed.$2);
+          }
+          return keys;
+        }
+        final moves = <String, IcsEvent>{};
+        final cancelled = <String>[];
+        for (final change in overrides) {
+          if (change.containsKey('RRULE') ||
+              change.containsKey('RDATE') ||
+              change.containsKey('EXDATE')) {
+            throw const FormatException('Ricorrenze annidate non supportate.');
+          }
+          final original = _parseDate(change['RECURRENCE-ID']!);
+          if (original.$1 != master.allDay ||
+              moves.containsKey(original.$2) ||
+              cancelled.contains(original.$2)) {
+            throw const FormatException('RECURRENCE-ID duplicato o invalido.');
+          }
+          if (change['STATUS']?.value.toUpperCase() == 'CANCELLED') {
+            cancelled.add(original.$2);
+          } else {
+            moves[original.$2] = _parseEvent(change, name,
+                fallbackTitle: master.title);
+          }
+        }
+        series.add(IcsRecurringEvent(master: master,
+            anchorDay: anchorDay, clock: clock, zone: start.zone,
+            rule: rule, rdates: exceptionKeys('RDATE'),
+            exdates: exceptionKeys('EXDATE'),
+            cancelled: cancelled, overrides: moves));
+      }
+      if (singles.isEmpty && series.isEmpty) {
+        throw const FormatException('Nessun evento ICS attivo.');
+      }
+      return IcsCalendar(name, List.unmodifiable(singles),
+          series: List.unmodifiable(series));
     } on FormatException { rethrow; }
     catch (_) { throw const FormatException('File ICS non valido.'); }
   }
-  static IcsEvent _parseEvent(Map<String,_Prop> props,String source) {
+  static IcsEvent _parseEvent(Map<String,_Prop> props,String source,
+      {String? fallbackTitle}) {
     final uid=props['UID']?.value.trim()??'';
-    final title=_unescape(props['SUMMARY']?.value??'').trim();
+    final title=_unescape(props['SUMMARY']?.value??fallbackTitle??'').trim();
     if(uid.isEmpty || title.isEmpty || title.length>512 ||
        props['DTSTART']==null || props['DTEND']==null) {
       throw const FormatException('UID, SUMMARY, DTSTART, DTEND obbligatori.');

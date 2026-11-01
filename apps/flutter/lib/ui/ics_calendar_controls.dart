@@ -67,8 +67,8 @@ class _IcsCalendarControlsState extends State<IcsCalendarControls> {
     }
   }
 
-  Future<void> _save(IcsLibrary next) async {
-    if(_loading || _busy || _error!=null || _prefs==null) {
+  Future<void> _save(IcsLibrary next, {required String expectedKey}) async {
+    if(expectedKey!=_key || _loading || _busy || _error!=null || _prefs==null) {
       throw StateError('Archivio ICS non disponibile');
     }
     final key=_key;
@@ -110,27 +110,28 @@ class _IcsCalendarControlsState extends State<IcsCalendarControls> {
 
   Future<void> _import() async {
     if(_loading || _busy || _error!=null) return;
+    final ownerKey=_key;
     try {
       final file=await openFile(acceptedTypeGroups:[
         const XTypeGroup(label:'iCalendar',extensions:['ics'],
           mimeTypes:['text/calendar']),
       ]);
-      if(file==null) return;
+      if(file==null || !mounted || ownerKey!=_key) return;
       if(await file.length()>IcsParser.maxBytes) {
         throw const FormatException('File ICS superiore a 1 MB.');
       }
       final candidate=IcsParser.parse(await file.readAsBytes(),file.name);
       final replace=_library.calendars.any((x)=>x.name==candidate.name);
       final next=_library.replace(candidate);
-      if(!mounted) return;
+      if(!mounted || ownerKey!=_key) return;
       final ok=await _confirm('Importa calendario ICS',
         "File: ${candidate.name}\nEventi: ${candidate.events.length}\n"
         "${replace ? 'Sostituisce solo questo file ICS.' : 'Aggiunge un calendario esterno.'}\n"
         "Gli eventi restano in sola lettura su questo dispositivo; "
         "nessuna attività o modifica cloud verrà creata.",
         'Importa eventi');
-      if(!ok) return;
-      await _save(next);
+      if(!ok || ownerKey!=_key) return;
+      await _save(next,expectedKey:ownerKey);
       _message('Calendario ICS disponibile in sola lettura.');
     } on FormatException catch(e) {
       _message(e.message);
@@ -139,13 +140,16 @@ class _IcsCalendarControlsState extends State<IcsCalendarControls> {
     }
   }
 
-  Future<void> _remove(String name) async {
+  Future<void> _remove(String id) async {
     if(_loading || _busy || _error!=null) return;
+    final ownerKey=_key;
+    final calendar=_library.calendars.where((c)=>c.id==id);
+    if(calendar.isEmpty) return;
     final ok=await _confirm('Rimuovere calendario ICS?',
-      'Rimuove soltanto il file locale $name. Nessuna attività sarà eliminata.',
+      'Rimuove soltanto la sorgente locale ${calendar.first.name}. Nessuna attività sarà eliminata.',
       'Rimuovi calendario');
-    if(!ok) return;
-    try { await _save(_library.remove(name)); }
+    if(!ok || ownerKey!=_key) return;
+    try { await _save(_library.removeById(id),expectedKey:ownerKey); }
     catch (_) { _message('Rimozione non riuscita; archivio invariato.'); }
   }
 
@@ -161,9 +165,9 @@ class _IcsCalendarControlsState extends State<IcsCalendarControls> {
           Text('Eventi esterni · ${_library.eventCount} · locali, sola lettura',style:TextStyle(fontSize:11,
               color:NotesPalette.of(context).secondaryText)),
           for(final cal in _library.calendars)
-            FButton(key:Key('calendar-remove-ics-${cal.name}'),
+            FButton(key:Key('calendar-remove-ics-${cal.id}'),
               variant:FButtonVariant.ghost,mainAxisSize:MainAxisSize.min,
-              onPress:_busy ? null : ()=>_remove(cal.name),
+              onPress:_busy ? null : ()=>_remove(cal.id),
               child:Text('× ${cal.name}',maxLines:1,
                 overflow:TextOverflow.ellipsis)),
         ],

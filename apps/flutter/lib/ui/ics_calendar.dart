@@ -224,6 +224,7 @@ class IcsParser {
       throw const FormatException('File ICS vuoto, troppo grande o nome non valido.');
     }
     try {
+      final name = source.trim();
       final lines=<String>[];
       final raw=utf8.decode(bytes).replaceAll('\r\n','\n').replaceAll('\r','\n');
       for(final line in raw.split('\n')) {
@@ -254,7 +255,7 @@ class IcsParser {
           if(type=='VEVENT' && stack.length==2) {
             if(props==null) throw const FormatException('Evento privo di dati.');
             if(props['STATUS']?.value.toUpperCase()!='CANCELLED') {
-              final event=_parseEvent(props,source);
+              final event=_parseEvent(props,name);
               if(!ids.add(event.uid)) throw const FormatException('UID ICS duplicato.');
               events.add(event);
               if(events.length>maxEvents) {
@@ -291,7 +292,7 @@ class IcsParser {
       if(stack.isNotEmpty || events.isEmpty) {
         throw const FormatException('Nessun evento ICS singolo supportato.');
       }
-      return IcsCalendar(source.trim(),List.unmodifiable(events));
+      return IcsCalendar(name,List.unmodifiable(events));
     } on FormatException { rethrow; }
     catch (_) { throw const FormatException('File ICS non valido.'); }
   }

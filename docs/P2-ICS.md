@@ -44,4 +44,4 @@ Con [PR #22](https://github.com/andreadada/simple-notes/pull/22) su `main` è st
 
 ## Estensione P2.3B — Ricorrenze locali
 
-La P2.2 storicamente rifiutava ogni ricorrenza. La P2.3B candidata introduce un subset RFC5545 esplicito, con serie/exception e proiezione lazy; opzioni avanzate non supportate restano errori bloccanti prima del salvataggio. Nuovo schema 3 con lettura 1/2; nessun URL fetch o cloud. [Specifica](P2-ICS-RECURRENCE.md).
+La P2.2 storicamente rifiutava ogni ricorrenza. La P2.3B integrata in `main` (PR #23) introduce un subset RFC5545 esplicito, con serie/exception e proiezione lazy; opzioni avanzate non supportate restano errori bloccanti prima del salvataggio. Nuovo schema 3 con lettura 1/2; nessun URL fetch o cloud. [Specifica](P2-ICS-RECURRENCE.md).

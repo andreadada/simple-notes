@@ -162,3 +162,7 @@ Tray è solo client Windows: nessuna nuova risorsa server, volume, Compose env, 
 ## P2.3A — Nessun intervento backend
 
 PR #22 è integrata su `main` con Flutter `0.26.0+28` e CI verde. La migrazione JSON ICS schema 1→2 avviene esclusivamente nel client locale e solo dopo conferma utente: nessuna modifica a Compose, PostgreSQL, Flyway, JWT, OAuth, volumi o risorse Coolify. **Non ridistribuire il backend solo per P2.3A.** Il batch cumulativo resta vincolato a verifica Flyway V10 e capability server. [Specifiche](../docs/P2-ICS-SOURCES.md).
+
+## P2.3B — Nessun deploy necessario
+
+Ricorrenze ICS da file ed eccezioni sono dispositivo/account-local. Nessuna modifica Compose, DB, volume, secret, JWT o endpoint. Per il rilascio cumulativo permane il controllo Flyway V10 già documentato. [Specifica](../docs/P2-ICS-RECURRENCE.md).

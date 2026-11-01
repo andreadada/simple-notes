@@ -158,3 +158,7 @@ Collaudo reale Windows/Android: file UTC, all-day, fuso Europe/Rome, DST, import
 ## Gate P2.3A — Migrazione locale ICS
 
 Nel client Flutter `0.26.0+28`, leggere i dati P2.2 `schema=1` non deve modificarli finché l'utente non conferma import/rimozione. Dopo la prima modifica l'archivio è in `schema=2`, che i client P2.2 precedenti non leggono: **non eseguire downgrade senza una strategia di conservazione dati**. Verificare su dispositivo file importato, ri-import e rimozione corretta quando sorgenti hanno etichette uguali, cambio account durante dialog e assenza di mutazioni cloud. Non aggiornare Coolify per la sola P2.3A; per il **batch cumulativo** resta il gate backend V10. [Specifica](P2-ICS-SOURCES.md).
+
+## Gate P2.3B — Test senza perdita dati
+
+Con file di prova Windows/Android verificare import/reimport, RDATE/EXDATE, override e cancellazioni, fusi IANA/DST, rilettura vecchi schema 1/2, riavvio e cambio account. File non supportati devono fallire senza alterare l'archivio. Non tornare a client 0.26 dopo scrittura schema 3. Nessun deploy per questa feature locale. [Runbook](P2-ICS-RECURRENCE.md).

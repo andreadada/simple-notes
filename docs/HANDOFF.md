@@ -305,3 +305,7 @@ Integrata su `main` con PR #21, Flutter `0.25.0+27`. Parser di file ICS rigoroso
 ## P2.3A — Sorgenti ICS con identità stabile (main, PR #22, 01/11/2026)
 
 PR #22 integrata su `main`, Flutter `0.26.0+28`. Estensione locale `IcsCalendar` con `id`, `kind=file/url`, `sourceUrl` HTTPS metadata-only. `IcsLibrary` carica i dati P2.2 schema 1 in memoria senza scrivere; serializza schema 2 alla prima modifica esplicitamente confermata, preservando ID di reimport e dati owner-scoped. La UI rimuove per ID e interrompe conferme stale dopo cambio account. Test di v1→v2, round trip e URL invalidi. **In questa fase NON implementare fetch URL/RRULE e NON fare deploy.** CI Flutter 166 test, build Windows/Android e Markdown verdi (run 41339906564 / 41339910458); backend repo V10, VPS ultima attestazione V8, hardware ancora da collaudare nel batch finale. [Specifiche](P2-ICS-SOURCES.md) · [Stato](CURRENT-STATUS.md).
+
+## Handoff P2.3B (candidata 01/11/2026)
+
+Branch `feature/p2-3b-ics-recurrence`, Flutter `0.27.0+29`. Nuovi `ui/ics_recurrence_rule.dart` e `ui/ics_recurring_event.dart` per le serie RRULE ed eccezioni calcolate per giorno; `ics_calendar.dart` interpreta VEVENT master/override e salva JSON ICS schema 3 solo dopo conferma. Nessuna nuova API, Flyway, Drift, outbox o rete. CI e merge ancora da attestare; hardware batch separato. [Contratto](P2-ICS-RECURRENCE.md).

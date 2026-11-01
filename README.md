@@ -69,3 +69,7 @@ Nella schermata Calendario si possono importare fino a 5 file ICS in sola lettur
 ## P2.3A — Modello sorgenti ICS (main, PR #22)
 
 Integrato su `main` con [PR #22](https://github.com/andreadada/simple-notes/pull/22) è il modello di identità stabile delle sorgenti ICS: archivio locale schema 2 con lettura schema 1, tipologia file/URL (URL ancora inattivo), rimozione per ID e protezione nei cambi account durante import. Flutter `0.26.0+28`, CI verde (166 test, Windows EXE/MSIX, Android JDK17/21, Markdown); nessun deploy o sync cloud. Prima di utilizzare client meno recenti, considerare che P2.2 non può leggere lo schema 2 scritto dopo una nuova modifica. [Specifica](docs/P2-ICS-SOURCES.md).
+
+## P2.3B — Ricorrenze ICS (candidata)
+
+Flutter `0.27.0+29`: le serie RRULE importate da file possono mostrare ripetizioni ed eccezioni RDATE/EXDATE/RECURRENCE-ID, generate solo per il giorno visualizzato. Archivio locale schema 3 con lettura versioni 1/2, senza cloud o feed URL; nessun deploy. [Specifica](docs/P2-ICS-RECURRENCE.md).

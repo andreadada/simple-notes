@@ -85,3 +85,7 @@ Hide/restore/quit della finestra non crea entità, endpoint, migrazione, cursor,
 ## P2.3A — Nessuna estensione API
 
 Il client ICS schema 2, identificativi sorgente e distinzione file/URL sono persistiti soltanto nelle preferenze locali per account. Nessuna nuova API Spring Boot, capability, migrazione Flyway, sync outbox, endpoint o credenziale OAuth introdotta. Il gate di compatibilità backend Flyway V10 è valido per il **client cumulativo**, non è causato dalla sola P2.3A. [Specifiche](P2-ICS-SOURCES.md).
+
+## P2.3B — Nessun nuovo endpoint
+
+RRULE e gli override dei VEVENT vengono interpretati localmente dal client, senza DTO, API, OAuth scope, SQL/Flyway o capability aggiuntive. [Specifica](P2-ICS-RECURRENCE.md).

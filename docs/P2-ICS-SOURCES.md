@@ -50,3 +50,7 @@ P2.3A introduce il **formato JSON schema 2 nello stesso storage owner-scoped** `
 P2.3A non offre rinomina etichette, import URL, fetch remoto, refresh, espansione RRULE, OAuth Google/Outlook, migrazioni PostgreSQL/Drift, nuovi endpoint, notifiche o sync eventi. URL e relativi query token (quando P2.3C sarà implementata) saranno dati sensibili locali: mai esporli in log o diagnostica e prevedere una policy esplicita per la loro cancellazione.
 
 Collegamenti: [P2.2 ICS](P2-ICS.md) · [Stato corrente](CURRENT-STATUS.md) · [Roadmap](../project.md) · [Regole agenti](../AGENTS.md).
+
+## Evoluzione schema 3 con P2.3B
+
+La P2.3A schema 2 è compatibile in lettura con P2.3B; il nuovo schema 3 aggiunge `series` e salva solo a seguito di azione esplicita. Client P2.3A non leggono archivi schema 3: non fare downgrade non pianificati. [Specifiche](P2-ICS-RECURRENCE.md).

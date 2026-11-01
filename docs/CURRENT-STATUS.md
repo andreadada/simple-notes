@@ -54,3 +54,7 @@ PR #19 merged con CI di codice e documentazione verde sullo SHA finale. Restano 
 ## P2.3A — Identità sorgenti ICS (branch, 01/11/2026)
 
 **Non ancora integrata in `main` al momento di questo aggiornamento.** Branch `feature/p2-3a-ics-source-identity`, candidata Flutter `0.26.0+28`: schema locale ICS 2 con `id` persistente, `kind=file/url`, migrazione in memoria da schema 1, reimport file e rimozione su ID, controllo owner durante picker/conferma. Il formato viene scritto soltanto dopo un'azione esplicita; i client P2.2 vecchi non leggono schema 2 ma devono conservarlo senza cancellazioni. URL è **solo metadato di modello**, nessuna sottoscrizione o ricorrenza nuova. CI Flutter **166 test** + Windows EXE/MSIX e Android JDK17/21 verde sul commit candidato `7b7d4db`; Markdown verde, nessun deploy e device E2E ancora da eseguire. [Specifica](P2-ICS-SOURCES.md).
+
+## P2.3B — Ricorrenze ICS candidate (01/11/2026)
+
+Branch `feature/p2-3b-ics-recurrence`, Flutter `0.27.0+29`, RRULE/RDATE/EXDATE/RECURRENCE-ID con proiezione lazy su giorno, schema locale 3 leggibile insieme ai vecchi 1/2, nessun fetch URL. **CI e merge da verificare; nessun deploy Coolify o collaudo hardware.** [Specifica](P2-ICS-RECURRENCE.md).

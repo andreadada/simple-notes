@@ -131,3 +131,7 @@ Integrata in `main` ([PR #19](https://github.com/andreadada/simple-notes/pull/19
 ## Audit P2.3A — Import e rimozione ICS per identità
 
 P2.3A non cambia il layout del Calendario né la scelta Forui: modifica soltanto l'identità delle sorgenti dietro ai pulsanti di rimozione e protegge il profilo durante picker/conferma. Le sorgenti sono read-only, limitate a cinque; la migrazione locale da `schema=1` è lazy e senza scrittura al caricamento. Nuovi test di dominio verificano i formati e gli ID, ma la prova su Windows/Android reali resta nel batch finale. [Specifica](P2-ICS-SOURCES.md).
+
+## Audit P2.3B — Nessuna modifica UX editabile
+
+La vista giorno/settimana/mese mostra le istanze ricorrenti tramite lo stesso componente ICS read-only; nessuna nuova superficie o mutazione. CI e prova visuale/device sono gate separati. [Specifica](P2-ICS-RECURRENCE.md).

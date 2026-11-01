@@ -176,3 +176,7 @@ Usare `NotesDialog`/`showFDialog` di Forui per conferma import/sostituzione/rimo
 ## P2.3A — Sorgenti ICS con chiave stabile
 
 Le etichette di calendari file rimangono immutate in UI, ma le azioni di rimozione e i `Key` dei pulsanti fanno riferimento al nuovo ID stabile. Evitare di usare il filename come identità una volta esistenti feed URL omonimi. Il picker e il dialog Forui non devono salvare nell'owner nuovo se si cambia account mentre sono aperti. Lo schema 2 è scritto solo dopo conferma. La UI non abilita ancora subscription URL o ricorrenze. [Contratto](P2-ICS-SOURCES.md).
+
+## P2.3B — Eventi ricorrenti esterni
+
+Le istanze ICS rimangono card Forui non editabili, con lucchetto e sorgente. Import solo dopo preview/conferma; non aggiungere drag, checkbox o edit inline a eventi esterni. [Specifica](P2-ICS-RECURRENCE.md).

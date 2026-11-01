@@ -124,7 +124,7 @@ void main() {
     expect(restored.onDay(DateTime(2026,11,3)).single.title,'Visita');
     expect(icsOwnerKey('google-a'),isNot(icsOwnerKey('google-b')));
     expect(icsOwnerKey(null),isNot(icsOwnerKey('google-a')));
-    expect(() => IcsLibrary.deserialize('{"schema":3,"calendars":[]}'),
+    expect(() => IcsLibrary.deserialize('{"schema":4,"calendars":[]}'),
       throwsFormatException);
     expect(() => IcsLibrary.deserialize('not json'),throwsFormatException);
   });
@@ -152,7 +152,7 @@ void main() {
     expect(updated.calendars.single.id, first.calendars.single.id);
     expect(updated.calendars.single.events.single.title, 'Aggiornata');
     final saved = updated.serialize();
-    expect(jsonDecode(saved)['schema'], 2);
+    expect(jsonDecode(saved)['schema'], 3);
     expect(IcsLibrary.deserialize(saved).calendars.single.id,
         first.calendars.single.id);
   });
@@ -214,6 +214,160 @@ void main() {
     tail['sourceUrl'] = 'https://example.org/calendar.ics#fragment';
     expect(() => IcsLibrary.deserialize(jsonEncode(raw)),
         throwsFormatException);
+  });
+
+
+  test('daily COUNT expands lazily and maintains all-day end-exclusive', () {
+    final cal = IcsParser.parse(ics(event(
+      start:'DTSTART;VALUE=DATE:20261103', end:'DTEND;VALUE=DATE:20261105',
+      extra:['RRULE:FREQ=DAILY;COUNT=3'],
+    )), 'daily.ics');
+    expect(cal.events, isEmpty);
+    expect(cal.series, hasLength(1));
+    final lib = IcsLibrary([cal]);
+    expect(lib.onDay(DateTime(2026, 11, 3)), hasLength(1));
+    expect(lib.onDay(DateTime(2026, 11, 4)), hasLength(2));
+    expect(lib.onDay(DateTime(2026, 11, 5)), hasLength(2));
+    expect(lib.onDay(DateTime(2026, 11, 6)), hasLength(1));
+    expect(lib.onDay(DateTime(2026, 11, 7)), isEmpty);
+  });
+
+  test('WEEKLY BYDAY with COUNT includes correct weekdays only', () {
+    final lib = IcsLibrary([IcsParser.parse(ics(event(
+      extra:['RRULE:FREQ=WEEKLY;BYDAY=TU,TH;COUNT=4'],
+    )), 'weekly.ics')]);
+    for (final date in [3, 5, 10, 12]) {
+      expect(lib.onDay(DateTime(2026, 11, date)), hasLength(1));
+    }
+    for (final date in [4, 6, 13, 17]) {
+      expect(lib.onDay(DateTime(2026, 11, date)), isEmpty);
+    }
+  });
+
+  test('MONTHLY and YEARLY skip nonexistent civil dates', () {
+    final monthly = IcsLibrary([IcsParser.parse(ics(event(
+      start:'DTSTART;VALUE=DATE:20270131',
+      end:'DTEND;VALUE=DATE:20270201',
+      extra:['RRULE:FREQ=MONTHLY;COUNT=3'],
+    )), 'monthly.ics')]);
+    for (final month in [1, 3, 5]) {
+      expect(monthly.onDay(DateTime(2027, month, 31)), hasLength(1));
+    }
+    expect(monthly.onDay(DateTime(2027, 2, 28)), isEmpty);
+    expect(monthly.onDay(DateTime(2027, 6, 30)), isEmpty);
+
+    final yearly = IcsLibrary([IcsParser.parse(ics(event(
+      start:'DTSTART;VALUE=DATE:20240229',
+      end:'DTEND;VALUE=DATE:20240301',
+      extra:['RRULE:FREQ=YEARLY;COUNT=3'],
+    )), 'leap.ics')]);
+    expect(yearly.onDay(DateTime(2024, 2, 29)), hasLength(1));
+    expect(yearly.onDay(DateTime(2028, 2, 29)), hasLength(1));
+    expect(yearly.onDay(DateTime(2032, 2, 29)), hasLength(1));
+    expect(yearly.onDay(DateTime(2036, 2, 29)), isEmpty);
+  });
+
+  test('IANA recurrence preserves wall clock across DST transitions', () {
+    final daily = IcsLibrary([IcsParser.parse(ics(event(
+      start:'DTSTART;TZID=Europe/Rome:20260327T090000',
+      end:'DTEND;TZID=Europe/Rome:20260327T100000',
+      extra:['RRULE:FREQ=DAILY;COUNT=4'],
+    )), 'rome.ics')]);
+    expect(daily.onDay(DateTime(2026,3,27)).single.startUtc,
+        DateTime.utc(2026,3,27,8));
+    expect(daily.onDay(DateTime(2026,3,29)).single.startUtc,
+        DateTime.utc(2026,3,29,7));
+
+    final gap = IcsLibrary([IcsParser.parse(ics(event(
+      start:'DTSTART;TZID=Europe/Rome:20260328T023000',
+      end:'DTEND;TZID=Europe/Rome:20260328T030000',
+      extra:['RRULE:FREQ=DAILY;COUNT=3'],
+    )), 'gap.ics')]);
+    expect(gap.onDay(DateTime(2026,3,29)), isEmpty);
+    expect(gap.onDay(DateTime(2026,3,30)), hasLength(1));
+    expect(gap.onDay(DateTime(2026,3,31)), hasLength(1));
+    expect(gap.onDay(DateTime(2026,4,1)), isEmpty);
+
+    final fold = IcsLibrary([IcsParser.parse(ics(event(
+      start:'DTSTART;TZID=Europe/Rome:20261024T023000',
+      end:'DTEND;TZID=Europe/Rome:20261024T033000',
+      extra:['RRULE:FREQ=DAILY;COUNT=3'],
+    )), 'fold.ics')]);
+    expect(fold.onDay(DateTime(2026,10,25)).single.startUtc,
+        DateTime.utc(2026,10,25,0,30));
+  });
+
+  test('EXDATE wins over RDATE and duplicate RRULE occurrence', () {
+    final lib = IcsLibrary([IcsParser.parse(ics(event(
+      extra:[
+        'RRULE:FREQ=DAILY;COUNT=3',
+        'RDATE:20261104T090000Z,20261110T090000Z',
+        'EXDATE:20261104T090000Z',
+      ],
+    )), 'exceptions.ics')]);
+    expect(lib.onDay(DateTime(2026,11,3)), hasLength(1));
+    expect(lib.onDay(DateTime(2026,11,4)), isEmpty);
+    expect(lib.onDay(DateTime(2026,11,5)), hasLength(1));
+    expect(lib.onDay(DateTime(2026,11,10)), hasLength(1));
+  });
+
+  test('RECURRENCE-ID moves and cancels individual instances', () {
+    final master = event(extra:['RRULE:FREQ=DAILY;COUNT=4']);
+    final move = [
+      'BEGIN:VEVENT','UID:id-1',
+      'RECURRENCE-ID:20261104T090000Z',
+      'SUMMARY:Spostata',
+      'DTSTART:20261107T110000Z',
+      'DTEND:20261107T120000Z',
+      'END:VEVENT',
+    ];
+    final cancel = [
+      'BEGIN:VEVENT','UID:id-1',
+      'RECURRENCE-ID:20261105T090000Z',
+      'STATUS:CANCELLED','END:VEVENT',
+    ];
+    final cal = IcsParser.parse(ics([...master,...move,...cancel]),'moved.ics');
+    final lib = IcsLibrary([cal]);
+    expect(lib.onDay(DateTime(2026,11,3)), hasLength(1));
+    expect(lib.onDay(DateTime(2026,11,4)), isEmpty);
+    expect(lib.onDay(DateTime(2026,11,5)), isEmpty);
+    expect(lib.onDay(DateTime(2026,11,6)), hasLength(1));
+    expect(lib.onDay(DateTime(2026,11,7)).single.title,'Spostata');
+    final restored = IcsLibrary.deserialize(
+        const IcsLibrary().replace(cal).serialize());
+    expect(restored.onDay(DateTime(2026,11,7)).single.title,'Spostata');
+  });
+
+  test('legacy schema 2 loads but future schema 3 writes only on action', () {
+    final cal = IcsParser.parse(ics(event()),'legacy2.ics');
+    final saved = const IcsLibrary().replace(cal).serialize();
+    final map = jsonDecode(saved) as Map<String,dynamic>;
+    map['schema'] = 2;
+    final previous = jsonEncode(map);
+    final loaded = IcsLibrary.deserialize(previous);
+    expect(loaded.onDay(DateTime(2026,11,3)), hasLength(1));
+    expect(jsonDecode(previous)['schema'],2);
+    expect(jsonDecode(loaded.serialize())['schema'],3);
+  });
+
+  test('fail closed for unsupported RRULE, invalid overrides or periods', () {
+    for (final extra in [
+      ['RRULE:FREQ=HOURLY;COUNT=2'],
+      ['RRULE:FREQ=WEEKLY;BYSETPOS=1;COUNT=3'],
+      ['RRULE:FREQ=DAILY;COUNT=2;UNTIL=20261104T090000Z'],
+      ['RRULE:FREQ=DAILY;COUNT=0'],
+      ['RRULE:FREQ=WEEKLY;BYDAY=MO;COUNT=2'],
+      ['RRULE:FREQ=DAILY;UNTIL=20261104'],
+      ['RRULE:FREQ=DAILY;COUNT=2','RDATE;VALUE=PERIOD:20261105T090000Z/20261105T100000Z'],
+    ]) {
+      expect(() => IcsParser.parse(ics(event(extra:extra)), 'bad.ics'),
+          throwsFormatException);
+    }
+    expect(() => IcsParser.parse(ics([
+      ...event(extra:['RRULE:FREQ=DAILY;COUNT=3']),
+      'BEGIN:VEVENT','UID:id-1','RECURRENCE-ID;RANGE=THISANDFUTURE:20261104T090000Z',
+      'STATUS:CANCELLED','END:VEVENT',
+    ]), 'range.ics'), throwsFormatException);
   });
 
   test('limits imported file count and do not write on parse failures', () {

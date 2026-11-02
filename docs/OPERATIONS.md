@@ -167,3 +167,7 @@ Con file di prova Windows/Android verificare import/reimport, RDATE/EXDATE, over
 
 Verificare con URL HTTPS di prova: import confermato, riavvio offline, refresh, errore rete/redirect/ICS invalida senza perdita cache, rimozione per ID e account isolation. URL e query token non devono apparire nel testo delle card o nei log. Nessun deploy necessario per i soli feed locali. [Specifica](P2-ICS-FEEDS.md).
 
+## Gate P2.3D — Etichetta ICS e prova fisica
+
+Usare file e feed di test: rinominare il titolo direttamente, salvare con Enter/blur e annullare con Esc, chiudere/riaprire la pagina e riavviare l'app. Reimportare lo stesso file/aggiornare feed HTTPS: non perdere etichetta, UID, eventi o ID; cancellare per ID e cambiare account senza dati visibili dell'altro. Non visualizzare mai token URL; ultimo refresh deve rappresentare l'ultimo **successo**, non un errore. Test Android/Windows prima del rilascio cumulativo, dopo gate V10 del backend. [Specifica](P2-ICS-SOURCE-MANAGEMENT.md).
+

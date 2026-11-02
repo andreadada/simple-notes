@@ -366,3 +366,12 @@ Esempio: `2026-10-21 14:20 CEST | commit abc1234 | Aggiunto modulo promemoria e 
 - 2026-11-02 | feat(p2.3c) | Branch `feature/p2-3c-ics-https-feeds`; URL manuali con cache locale e rete protetta. CI/merge non attestati.
 
 - 2026-11-02 | merge(p2.3c) | PR #24 merged (`3170cc3e`), Flutter 0.28.0+30, CI Flutter #41460378203 PASS (182 test, Windows/Android), Markdown #41460378261 PASS. Nessun deploy o test fisico; prossimo P2.3D gestione UI sorgenti.
+
+## P2.3D — Gestione fonti ICS (candidata)
+
+- [x] Etichette ICS inline senza pulsante Rinomina, identità file/URL e UID intatti, schema 3 invariato.
+- [x] Pannello Forui compatto su richiesta con origine, conteggi, refresh riuscito, errori cache e azioni per ID.
+- [ ] CI/merge da attestare; nessun deploy o collaudo fisico. [Specifiche](docs/P2-ICS-SOURCE-MANAGEMENT.md).
+
+- 2026-11-02 | feat(p2.3d) | Branch `feature/p2-3d-ics-source-management`, Flutter `0.29.0+31`: editor inline delle sorgenti e status refresh sicuri; PR/CI da verificare.
+

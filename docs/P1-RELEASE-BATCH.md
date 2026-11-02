@@ -148,3 +148,7 @@ Nel collaudo cumulativo di Flutter candidata `0.27.0+29` controllare eventi RRUL
 
 Nel collaudo cumulativo utilizzare URL ICS HTTPS di prova: consenso, preview, riavvio offline, refresh esplicito, errori HTTP/redirect/ICS senza perdita cache, cancellazione e separazione account. Niente upgrade DB per questa funzione, ma mantenere gate Flyway V10, capability autenticate, firma e verifica E2E delle altre funzionalità. [Specifica](P2-ICS-FEEDS.md).
 
+### P2.3D — Identità e gestione ICS
+
+Nel collaudo finale verificare: apertura del pannello Sorgenti, label editabile inline/annullamento, file reimport con stesso nome originale, feed refresh e ultimo success UTC/local, errori che preservano cache, rimozione per ID, owner switch e nessun token in UI. Nuovo metadato opzionale su schema 3 senza migration SQL; non fare downgrade su client incompatibili. Backend V10 e capability restano gate del client cumulativo. [Specifica](P2-ICS-SOURCE-MANAGEMENT.md).
+

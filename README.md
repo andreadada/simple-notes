@@ -78,3 +78,7 @@ Flutter `0.27.0+29`: le serie RRULE importate da file possono mostrare ripetizio
 
 Aggiunta di un URL HTTPS nella vista calendario, download solo su conferma, proiezione read-only offline con refresh manuale e cache conservata su errore. I link privati con query-token non vengono mostrati nell'interfaccia. Nessun server o OAuth aggiuntivo. [Specifica](docs/P2-ICS-FEEDS.md).
 
+## P2.3D — Gestione calendari esterni (candidata)
+
+La vista Calendario ha un pannello **Sorgenti** richiudibile: mostra file e feed HTTPS, conta eventi/serie, indica l'ultimo refresh riuscito, permette aggiornamento manuale e rimozione con conferma. Il titolo di ciascuna sorgente è modificabile subito, inline; non cambia il filename né il link usato per l'import. I feed con token non mostrano il loro URL. Nessun nuovo backend o OAuth. [Specifica](docs/P2-ICS-SOURCE-MANAGEMENT.md).
+

@@ -97,3 +97,7 @@ La UI calendario continua a invocare `IcsLibrary.onDay`, che unisce eventi singo
 
 `ui/ics_feed.dart` isola validazione HTTPS/DNS, pinning socket, redirects e limiti. `IcsFeedService` sostituisce la sorgente tramite `IcsLibrary` solo dopo download e parsing, mentre la UI conserva il modello read-only e SharedPreferences owner-scoped. Niente API/SQL. [Specifica](P2-ICS-FEEDS.md).
 
+## P2.3D — Presentazione sorgenti ICS
+
+`IcsCalendar` mantiene il nome originario e un `displayLabel` opzionale; `IcsLibrary.renameById` salva soltanto metadati locali, `onDay` crea una proiezione con etichetta per la UI. `ics_source_details.dart` formatta conteggi, tipo e tempo refresh; `ics_calendar_controls.dart` presenta un pannello collassabile Forui con modifica direttamente sul testo. Nessuna migrazione backend/Drift. [Specifica](P2-ICS-SOURCE-MANAGEMENT.md).
+

@@ -171,3 +171,7 @@ Ricorrenze ICS da file ed eccezioni sono dispositivo/account-local. Nessuna modi
 
 I feed ICS HTTPS vengono richiesti dal client direttamente ai provider soltanto su consenso. Non aggiungere proxy, cron, migration, OAuth scope, secret o endpoint a Coolify. Rilascio cumulativo sempre soggetto a Flyway V10 e capability verificate. [Specifica](../docs/P2-ICS-FEEDS.md).
 
+## P2.3D — Nessun deploy
+
+Il pannello di gestione e i nomi ICS salvano solo SharedPreferences owner-scoped sul dispositivo. Nessuna migration, backend, container, volume, endpoint o token nuovi. Le verifiche Flyway V10/Coolify restano distinte come gate del client cumulativo. [Specifica](../docs/P2-ICS-SOURCE-MANAGEMENT.md).
+

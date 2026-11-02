@@ -185,3 +185,7 @@ Le istanze ICS rimangono card Forui non editabili, con lucchetto e sorgente. Imp
 
 Il campo URL si apre in FTextField/NotesDialog solo dopo pressione del pulsante Aggiungi URL, avvia il download dopo Scarica feed, poi mostra preview/conferma. Bottone Aggiorna per ogni fonte URL; label hostname senza path/query token. Import/refresh in corso bloccano azioni concorrenti; errori conservano la cache. [Specifica](P2-ICS-FEEDS.md).
 
+## P2.3D — Gestione sorgenti inline-first
+
+Pannello Sorgenti (N) collassabile e card Forui/tema condiviso. `InlineEditableTitle` è il nome già editabile (Enter/blur/Esc), non introdurre un comando Rinomina né dialog di modifica. Metadati in testo secondario (tipo, eventi/serie, ultimo refresh UTC offset locale), refresh URL manuale, rimozione confermata; stringhe URL contenenti token escluse da UI. [Specifica](P2-ICS-SOURCE-MANAGEMENT.md).
+

@@ -234,3 +234,7 @@ Eventi esterni restano read-only; non trasformarli in task, non notificare, non 
 
 Aggiungere URL con dialog Forui, scaricare soltanto dopo gesto esplicito; mostrare solo hostname e mai query token nell'UI. Durante download bloccare operazioni concorrenti. Refresh solo manuale, snapshot precedente intatto su errore. I VEVENT esterni rimangono read-only. P2.3D: nome editabile inline, gestione fonti. [Specifica](docs/P2-ICS-FEEDS.md).
 
+## Vincolo UI P2.3D — Nomi ICS editabili e sorgenti ordinate
+
+La label è già un campo editabile inline senza pulsante Rinomina: Enter/blur salva, Esc annulla, underline della larghezza dei glifi, limite 80 caratteri. Le fonti appaiono solo aprendo **Sorgenti (N)**; tipo, ultimi refresh riusciti e conteggi sono informativi, le azioni Aggiorna/Rimuovi restano chiare e manuali. Nessun path o query-token URL in UI. Non confondere label e filename/URL, e non editare gli eventi ICS che restano esterni. [Specifica](docs/P2-ICS-SOURCE-MANAGEMENT.md).
+

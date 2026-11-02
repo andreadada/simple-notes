@@ -67,3 +67,7 @@ PR #23 merged su `main`, Flutter `0.27.0+29`, RRULE/RDATE/EXDATE/RECURRENCE-ID c
 
 PR #24 integrata su `main`, Flutter `0.28.0+30`: fonte HTTPS con DNS pinning, protezioni SSRF, refresh manuale e cache locale preservata su fallimento. Nessun backend, Flyway, outbox o OAuth in più. CI Flutter 182 test, build Windows/Android e Markdown verdi; collaudo fisico ancora aperto. [Specifica](P2-ICS-FEEDS.md).
 
+## P2.3D — Gestione fonti ICS (branch, candidata 02/11/2026)
+
+Branch `feature/p2-3d-ics-source-management`, Flutter `0.29.0+31`: sorgenti ICS nel pannello compatto, titolo inline (`displayLabel` schema 3 opzionale), refresh riuscito e errori senza query token, etichetta di proiezione aggiornata senza alterare ID/UID/filename/URL. CI e merge da attestare, nessun deploy o test hardware. [Specifica](P2-ICS-SOURCE-MANAGEMENT.md).
+

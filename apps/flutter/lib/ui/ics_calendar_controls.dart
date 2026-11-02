@@ -6,6 +6,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'ics_calendar.dart';
 import 'ics_feed.dart';
+import 'ics_source_details.dart';
+import 'inline_editable_title.dart';
 import 'notes_dialogs.dart';
 import 'notes_theme.dart';
 
@@ -23,7 +25,9 @@ class _IcsCalendarControlsState extends State<IcsCalendarControls> {
   IcsLibrary _library=const IcsLibrary();
   SharedPreferences? _prefs;
   bool _loading=true, _busy=false, _fetching=false;
+  bool _showSources=false;
   String? _error;
+  String? _sourceErrorId;
 
   String get _key=>icsOwnerKey(widget.ownerId);
 
@@ -42,6 +46,8 @@ class _IcsCalendarControlsState extends State<IcsCalendarControls> {
     _loading=true;
     _busy=false;
     _fetching=false;
+    _showSources=false;
+    _sourceErrorId=null;
     _error=null;
     // The parent resets its overlay at the same time as owner changes.
     unawaited(_load());
@@ -80,7 +86,10 @@ class _IcsCalendarControlsState extends State<IcsCalendarControls> {
         throw StateError('Salvataggio ICS fallito');
       }
       if(!mounted || key!=_key) return;
-      setState(()=>_library=next);
+      setState(() {
+        _library=next;
+        _showSources=true;
+      });
       widget.onChanged(next);
     } finally {
       if(mounted && key==_key) setState(()=>_busy=false);
@@ -225,9 +234,11 @@ class _IcsCalendarControlsState extends State<IcsCalendarControls> {
       final next = await IcsFeedService().refresh(_library, id);
       if (!mounted || expectedKey != _key) return;
       await _save(next, expectedKey: expectedKey);
+      setState(() => _sourceErrorId=null);
       _message('Calendario aggiornato. Cache salvata.');
     } catch (_) {
       if (mounted && expectedKey == _key) {
+        setState(() => _sourceErrorId=id);
         _message('Aggiornamento non riuscito: cache precedente conservata.');
       }
     } finally {
@@ -237,13 +248,25 @@ class _IcsCalendarControlsState extends State<IcsCalendarControls> {
     }
   }
 
+  Future<void> _rename(String id, String label) async {
+    if (_loading || _busy || _fetching || _error != null) {
+      throw StateError('Sorgenti ICS non disponibili');
+    }
+    final expectedKey = _key;
+    final next = _library.renameById(id, label);
+    if (!mounted || expectedKey != _key) {
+      throw StateError('Account cambiato durante la modifica');
+    }
+    await _save(next, expectedKey: expectedKey);
+  }
+
   Future<void> _remove(String id) async {
     if(_loading || _busy || _fetching || _error!=null) return;
     final ownerKey=_key;
     final calendar=_library.calendars.where((c)=>c.id==id);
     if(calendar.isEmpty) return;
     final ok=await _confirm('Rimuovere calendario ICS?',
-      'Rimuove soltanto la sorgente locale ${calendar.first.name}. Nessuna attività sarà eliminata.',
+      'Rimuove soltanto la sorgente locale ${calendar.first.label}. Nessuna attività sarà eliminata.',
       'Rimuovi calendario');
     if(!ok || ownerKey!=_key) return;
     try { await _save(_library.removeById(id),expectedKey:ownerKey); }
@@ -251,42 +274,142 @@ class _IcsCalendarControlsState extends State<IcsCalendarControls> {
   }
 
   @override
-  Widget build(BuildContext context)=>Column(
-    crossAxisAlignment:CrossAxisAlignment.start,children:[
-      Wrap(spacing:8,runSpacing:6,crossAxisAlignment:WrapCrossAlignment.center,
-        children:[
-          FButton(key:const Key('calendar-import-ics'),
-            variant:FButtonVariant.outline,mainAxisSize:MainAxisSize.min,
-            onPress:_loading||_busy||_fetching||_error!=null ? null : _import,
-            child:const Text('Importa ICS')),
-          FButton(key: const Key('calendar-subscribe-ics'),
-            variant: FButtonVariant.outline,
-            mainAxisSize: MainAxisSize.min,
-            onPress: _loading||_busy||_fetching||_error!=null
-                ? null : _subscribe,
-            child: const Text('Aggiungi URL ICS')),
-          if (_fetching) const Text('Aggiornamento calendario…'),
-          Text('Eventi esterni · ${_library.eventCount} · locali, sola lettura',style:TextStyle(fontSize:11,
-              color:NotesPalette.of(context).secondaryText)),
-          for(final cal in _library.calendars) ...[
-            if (cal.kind == IcsSourceKind.url)
-              FButton(key: Key('calendar-refresh-ics-${cal.id}'),
-                variant: FButtonVariant.ghost,
-                mainAxisSize: MainAxisSize.min,
-                onPress: _loading||_busy||_fetching||_error!=null
-                    ? null : () => _refresh(cal.id),
-                child: Text('Aggiorna ${cal.name}', maxLines: 1,
-                  overflow: TextOverflow.ellipsis)),
-            FButton(key:Key('calendar-remove-ics-${cal.id}'),
-              variant:FButtonVariant.ghost,mainAxisSize:MainAxisSize.min,
-              onPress:_loading||_busy||_fetching||_error!=null
-                  ? null : ()=>_remove(cal.id),
-              child:Text('× ${cal.name}',maxLines:1,
-                overflow:TextOverflow.ellipsis)),
+  Widget build(BuildContext context) {
+    final unavailable = _loading || _busy || _fetching || _error != null;
+    final palette = NotesPalette.of(context);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Wrap(
+          spacing: 8,
+          runSpacing: 6,
+          crossAxisAlignment: WrapCrossAlignment.center,
+          children: [
+            FButton(
+              key: const Key('calendar-import-ics'),
+              variant: FButtonVariant.outline,
+              mainAxisSize: MainAxisSize.min,
+              onPress: unavailable ? null : _import,
+              child: const Text('Importa ICS'),
+            ),
+            FButton(
+              key: const Key('calendar-subscribe-ics'),
+              variant: FButtonVariant.outline,
+              mainAxisSize: MainAxisSize.min,
+              onPress: unavailable ? null : _subscribe,
+              child: const Text('Aggiungi URL ICS'),
+            ),
+            FButton(
+              key: const Key('calendar-manage-ics'),
+              variant: FButtonVariant.ghost,
+              mainAxisSize: MainAxisSize.min,
+              onPress: _loading ? null :
+                  () => setState(() => _showSources = !_showSources),
+              child: Text('Sorgenti (${_library.calendars.length}) '
+                  '${_showSources ? '▴' : '▾'}'),
+            ),
+            if (_fetching) const Text('Aggiornamento calendario…'),
+            Text(
+              'Eventi esterni · ${_library.eventCount} · locali, sola lettura',
+              style: TextStyle(fontSize: 11, color: palette.secondaryText),
+            ),
           ],
-        ],
-      ),
-      if(_error!=null) Text(_error!,
-        style:TextStyle(color:Theme.of(context).colorScheme.error)),
-    ]);
+        ),
+        if (_showSources) Padding(
+          padding: const EdgeInsets.only(top: 12),
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 680),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                if (_library.calendars.isEmpty)
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 10),
+                    child: Text('Nessun calendario esterno aggiunto.',
+                      style: TextStyle(color: palette.secondaryText)),
+                  ),
+                for (final source in _library.calendars)
+                  Padding(
+                    key: Key('ics-source-row-${source.id}'),
+                    padding: const EdgeInsets.only(bottom: 8),
+                    child: DecoratedBox(
+                      decoration: BoxDecoration(
+                        color: palette.surface,
+                        border: Border.all(color: palette.border),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(12),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(children: [
+                              Expanded(child: InlineEditableTitle(
+                                key: Key('ics-source-name-${source.id}'),
+                                value: source.label,
+                                maxLength: 80,
+                                semanticsLabel: 'Nome calendario esterno',
+                                style: TextStyle(
+                                  color: palette.foreground,
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w600),
+                                onSave: (value) => _rename(source.id, value),
+                              )),
+                            ]),
+                            const SizedBox(height: 5),
+                            Text(icsSourceKindLabel(source),
+                              style: TextStyle(fontSize: 12,
+                                color: palette.secondaryText)),
+                            Text(icsSourceEventCount(source),
+                              style: TextStyle(fontSize: 12,
+                                color: palette.secondaryText)),
+                            Text(icsSourceRefreshLabel(source),
+                              style: TextStyle(fontSize: 12,
+                                color: palette.secondaryText)),
+                            if (_sourceErrorId == source.id)
+                              Padding(
+                                padding: const EdgeInsets.only(top: 5),
+                                child: Text(
+                                  'Ultimo tentativo non riuscito: cache preservata.',
+                                  key: Key('ics-source-refresh-error-${source.id}'),
+                                  style: TextStyle(fontSize: 12,
+                                    color: Theme.of(context).colorScheme.error),
+                                ),
+                              ),
+                            const SizedBox(height: 7),
+                            Wrap(spacing: 8, runSpacing: 4, children: [
+                              if (source.kind == IcsSourceKind.url)
+                                FButton(
+                                  key: Key('calendar-refresh-ics-${source.id}'),
+                                  variant: FButtonVariant.ghost,
+                                  mainAxisSize: MainAxisSize.min,
+                                  onPress: unavailable ? null :
+                                      () => _refresh(source.id),
+                                  child: const Text('Aggiorna'),
+                                ),
+                              FButton(
+                                key: Key('calendar-remove-ics-${source.id}'),
+                                variant: FButtonVariant.ghost,
+                                mainAxisSize: MainAxisSize.min,
+                                onPress: unavailable ? null :
+                                    () => _remove(source.id),
+                                child: const Text('Rimuovi'),
+                              ),
+                            ]),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+              ],
+            ),
+          ),
+        ),
+        if (_error != null) Text(
+          _error!,
+          style: TextStyle(color: Theme.of(context).colorScheme.error),
+        ),
+      ],
+    );
+  }
 }

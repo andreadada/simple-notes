@@ -140,3 +140,7 @@ La vista giorno/settimana/mese mostra le istanze ricorrenti tramite lo stesso co
 
 Verificare su dispositivi reali dialog URL, conferma preview, refresh, riavvio offline e fallback di rete; URL/query token non devono apparire in UI, screenshot/report, messaggi errore. I VEVENT sono read-only, nessun drag/edit. [Specifica](P2-ICS-FEEDS.md).
 
+## Audit P2.3D — Gestione ICS
+
+Controlli visibili nel Calendario: Importa, Aggiungi URL e Sorgenti (N). Pannello opt-in, title inline con larghezza dei glifi, nomi duplicati consentiti con IDs distinti, errori refresh locali senza perdere cache; verificare layout 320/390px mobile, tastiera, contrasto, light/dark e flusso Esc/Enter/blur. La CI non sostituisce la prova visiva su Windows/Android. [Specifica](P2-ICS-SOURCE-MANAGEMENT.md).
+

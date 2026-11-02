@@ -44,3 +44,8 @@
 **P2.3C:** feed HTTPS, refresh esplicito e cache last-known-good con controlli su DNS/redirect/SSRF. Funzioni RRULE avanzate e semantiche complesse VTIMEZONE sono lavoro dedicato, non devono essere presentate come supporto iCalendar universale.
 
 Collegamenti: [P2.3A](P2-ICS-SOURCES.md) · [P2.2](P2-ICS.md) · [Stato](CURRENT-STATUS.md) · [Roadmap](../project.md) · [AGENTS](../AGENTS.md).
+
+## Evoluzione P2.3D — Label della sorgente
+
+La serie master RRULE e gli override persistiti mantengono `source` originale per validazione; `IcsLibrary.onDay` proietta il `displayLabel` solo sugli eventi visualizzati, senza alterare UID, esdate o last-good cache. [Specifica](P2-ICS-SOURCE-MANAGEMENT.md).
+

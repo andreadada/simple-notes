@@ -19,7 +19,11 @@ def run() -> None:
         obj = json.load(sys.stdin)
         if not isinstance(obj, dict):
             refuse()
-        if obj.get("taskDueSchema") != 1:
+        def has_version_one(key: str) -> bool:
+            value = obj.get(key)
+            return type(value) is int and value == 1
+
+        if not has_version_one("taskDueSchema"):
             refuse()
         kinds = obj.get("taskDueKinds")
         if not isinstance(kinds, list) or not all(isinstance(x, str) for x in kinds):
@@ -33,10 +37,10 @@ def run() -> None:
         if strict not in ("0", "1") or time_block not in ("0", "1"):
             refuse()
         if strict == "1" or time_block == "1":
-            if obj.get("timeBlockSchema") != 1 or obj.get("noteRestoreSchema") != 1:
+            if not has_version_one("timeBlockSchema") or not has_version_one("noteRestoreSchema"):
                 refuse()
         if strict == "1":
-            if obj.get("timeBlocksSchema") != 1 or obj.get("recurrenceSchema") != 1:
+            if not has_version_one("timeBlocksSchema") or not has_version_one("recurrenceSchema"):
                 refuse()
     except (ValueError, TypeError, KeyError, OverflowError):
         refuse()

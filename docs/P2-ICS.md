@@ -48,5 +48,5 @@ La P2.2 storicamente rifiutava ogni ricorrenza. La P2.3B integrata in `main` (PR
 
 ## Evoluzione P2.3C — Feed HTTPS
 
-La P2.2 era file-only. La candidata P2.3C introduce URL HTTPS diretti con download e refresh manuali e cache offline; parser RFC della P2.3B invariato e fallimenti senza modifica dello storico locale. Nessuna sincronizzazione task. [Specifica](P2-ICS-FEEDS.md).
+La P2.2 era file-only. La P2.3C integrata in `main` (PR #24) introduce URL HTTPS diretti con download e refresh manuali e cache offline; parser RFC della P2.3B invariato e fallimenti senza modifica dello storico locale. Nessuna sincronizzazione task. [Specifica](P2-ICS-FEEDS.md).
 

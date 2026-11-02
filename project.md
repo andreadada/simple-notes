@@ -130,7 +130,7 @@
 ## P2 — Estensioni
 - [x] **P2.3A — Identità sorgenti ICS**: PR #22 integrata su `main`, Flutter `0.26.0+28`; ID stabili, schema 2 con lettura legacy schema 1 senza riscrittura, rimozione per ID, kind `file/url` riservato; CI 166 test, Windows EXE/MSIX, Android JDK17/21 e Markdown verdi. [Contratto](docs/P2-ICS-SOURCES.md).
 - [ ] Timeline/Gantt e filtri avanzati.
-- [x] P2.1 Import/export JSON non distruttivo (PR #20, 152 test e CI verde). [ ] Subscription ICS ancora da implementare.
+- [x] P2.1 Import/export JSON non distruttivo (PR #20, 152 test e CI verde). [x] Subscription ICS HTTPS manuale integrata in P2.3C (PR #24); refresh solo su richiesta, cache offline, nessun OAuth.
 - [ ] Collegamento Google Calendar/Outlook con consenso separato.
 - [ ] Liste condivise, ruoli, assegnazioni e audit.
 - [ ] Allegati con storage S3 compatibile.

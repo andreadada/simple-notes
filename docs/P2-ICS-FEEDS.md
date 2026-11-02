@@ -44,5 +44,5 @@ Collegamenti: [P2.3B](P2-ICS-RECURRENCE.md) · [P2.3A](P2-ICS-SOURCES.md) · [St
 
 ## Evoluzione P2.3D — Etichette e gestione
 
-La P2.3D candidata aggiunge una label visibile opzionale e un pannello per controllare il feed, il refresh riuscito, il numero di eventi e il nome editabile inline. I feed continuano a usare la URL originaria e non mostrano mai path/query token, conservando ID ed etichetta dopo refresh anche quando il server è irraggiungibile. Nessun auto-refresh né backend. [Specifiche](P2-ICS-SOURCE-MANAGEMENT.md).
+La P2.3D integrata in `main` (PR #25) aggiunge una label visibile opzionale e un pannello per controllare il feed, il refresh riuscito, il numero di eventi e il nome editabile inline. I feed continuano a usare la URL originaria e non mostrano mai path/query token, conservando ID ed etichetta dopo refresh anche quando il server è irraggiungibile. Nessun auto-refresh né backend. [Specifiche](P2-ICS-SOURCE-MANAGEMENT.md).
 

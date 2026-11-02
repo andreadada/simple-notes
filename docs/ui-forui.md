@@ -180,3 +180,8 @@ Le etichette di calendari file rimangono immutate in UI, ma le azioni di rimozio
 ## P2.3B — Eventi ricorrenti esterni
 
 Le istanze ICS rimangono card Forui non editabili, con lucchetto e sorgente. Import solo dopo preview/conferma; non aggiungere drag, checkbox o edit inline a eventi esterni. [Specifica](P2-ICS-RECURRENCE.md).
+
+## P2.3C — Feed ICS HTTPS Forui
+
+Il campo URL si apre in FTextField/NotesDialog solo dopo pressione del pulsante Aggiungi URL, avvia il download dopo Scarica feed, poi mostra preview/conferma. Bottone Aggiorna per ogni fonte URL; label hostname senza path/query token. Import/refresh in corso bloccano azioni concorrenti; errori conservano la cache. [Specifica](P2-ICS-FEEDS.md).
+

@@ -166,3 +166,8 @@ PR #22 è integrata su `main` con Flutter `0.26.0+28` e CI verde. La migrazione 
 ## P2.3B — Nessun deploy necessario
 
 Ricorrenze ICS da file ed eccezioni sono dispositivo/account-local. Nessuna modifica Compose, DB, volume, secret, JWT o endpoint. Per il rilascio cumulativo permane il controllo Flyway V10 già documentato. [Specifica](../docs/P2-ICS-RECURRENCE.md).
+
+## P2.3C — Nessun deploy backend
+
+I feed ICS HTTPS vengono richiesti dal client direttamente ai provider soltanto su consenso. Non aggiungere proxy, cron, migration, OAuth scope, secret o endpoint a Coolify. Rilascio cumulativo sempre soggetto a Flyway V10 e capability verificate. [Specifica](../docs/P2-ICS-FEEDS.md).
+

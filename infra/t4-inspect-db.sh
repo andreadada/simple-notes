@@ -5,6 +5,14 @@ set -euo pipefail
 # Run ON the VPS using the explicitly inspected Simple Notes container.
 : "${DB_CONTAINER:?Set DB_CONTAINER to the Simple Notes PostgreSQL container}"
 EXPECTED_POSTGRES_DB="${EXPECTED_POSTGRES_DB:-simplenotes}"
+# Optional exact-version gate for the cumulative V10 client release.
+# Empty keeps historical T4 inspections backward-compatible/read-only.
+REQUIRE_FLYWAY_VERSION="${REQUIRE_FLYWAY_VERSION:-}"
+if [[ -n "$REQUIRE_FLYWAY_VERSION" &&
+      ! "$REQUIRE_FLYWAY_VERSION" =~ ^([1-9]|10)$ ]]; then
+  echo "REFUSED: REQUIRE_FLYWAY_VERSION must be an integer from 1 to 10" >&2
+  exit 2
+fi
 command -v docker >/dev/null || { echo "docker is required" >&2; exit 2; }
 
 actual_db="$(docker exec "$DB_CONTAINER" sh -c 'printf "%s" "${POSTGRES_DB:-}"')"
@@ -68,11 +76,19 @@ fi
 if [[ "$latest" -lt 10 && "$recurrence_columns" != "0" ]]; then
   echo "REFUSED: V10 column present before successful migration" >&2; exit 2
 fi
+if [[ -n "$REQUIRE_FLYWAY_VERSION" &&
+      "$latest" != "$REQUIRE_FLYWAY_VERSION" ]]; then
+  echo "REFUSED: expected Flyway V$REQUIRE_FLYWAY_VERSION, found V$latest" >&2
+  exit 2
+fi
 
 printf 'T4_SOURCE_INSPECTION=PASS\n'
 printf 'DB_NAME=%s\nPOSTGRES_MAJOR=%s\nFLYWAY_LATEST=%s\n' \
   "$actual_db" "$major" "$latest"
 printf 'DUE_COLUMNS=%s\nBLOCK_COLUMNS=%s\nBLOCKS_JSON_COLUMNS=%s\nRECURRENCE_COLUMNS=%s\nFAILED_MIGRATIONS=0\n' "$due_columns" "$block_columns" "$blocks_json_columns" "$recurrence_columns"
+if [[ -n "$REQUIRE_FLYWAY_VERSION" ]]; then
+  printf 'FLYWAY_REQUIREMENT=PASS (V%s)\n' "$REQUIRE_FLYWAY_VERSION"
+fi
 for table in app_user task note sync_change sync_operation; do
   count="$(query "SELECT COUNT(*) FROM public.$table")"
   [[ "$count" =~ ^[0-9]+$ ]] || { echo "REFUSED: invalid row count" >&2; exit 2; }

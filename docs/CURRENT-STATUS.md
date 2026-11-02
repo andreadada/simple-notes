@@ -73,3 +73,7 @@ PR #24 integrata su `main`, Flutter `0.28.0+30`: fonte HTTPS con DNS pinning, pr
 
 PR #25 integrata su `main`, Flutter `0.29.0+31`: sorgenti ICS nel pannello compatto, titolo inline (`displayLabel` schema 3 opzionale), refresh riuscito e errori senza query token, etichetta di proiezione aggiornata senza alterare ID/UID/filename/URL. CI 191 test e build Windows/Android/Markdown verdi; nessun deploy o test hardware. [Specifica](P2-ICS-SOURCE-MANAGEMENT.md).
 
+## R1 — Gate server-first (strumenti in branch, 02/11/2026)
+
+Branch `feature/release-v10-readonly-gate`: verifica V10 rigorosa e capability API complete con token temporaneo, senza scritture, migrazioni, backup, deploy o installazioni. CI Compose con PostgreSQL **sintetico** e test JSON; non è evidenza della VPS. **Stato reale server V10 NON VERIFICATO (ultima attestazione V8)**. [Runbook operativo](RELEASE-V10-READINESS.md).
+

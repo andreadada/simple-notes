@@ -175,3 +175,7 @@ I feed ICS HTTPS vengono richiesti dal client direttamente ai provider soltanto 
 
 Il pannello di gestione e i nomi ICS salvano solo SharedPreferences owner-scoped sul dispositivo. Nessuna migration, backend, container, volume, endpoint o token nuovi. Le verifiche Flyway V10/Coolify restano distinte come gate del client cumulativo. [Specifica](../docs/P2-ICS-SOURCE-MANAGEMENT.md).
 
+## R1 — Read-only gate server-first V10
+
+I nuovi strumenti **non** eseguono deploy, Flyway migrate, backup o modifiche al DB: `REQUIRE_FLYWAY_VERSION=10 bash infra/t4-inspect-db.sh` valida il database reale, `REQUIRE_TIME_BLOCK_SCHEMA=1 REQUIRE_FULL_SCHEMA=1 bash infra/t4-check-api.sh` verifica health HTTPS e capability con JWT temporaneo; `bash infra/release-readiness.sh` li concatena e produce `RELEASE_SERVER_GATE=PASS` solo se entrambi riusciti. Solo dopo deploy server autorizzato, con `DB_CONTAINER` verificato. Le CI usano fixture sintetiche; database VPS V10 e client Windows/Android non sono attestati. [Runbook](../docs/RELEASE-V10-READINESS.md).
+

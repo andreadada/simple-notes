@@ -98,3 +98,7 @@ Fetch URL **solo su gesto esplicito** utente, nessun auto-refresh/background o t
 
 Il nome visibile ICS si modifica **direttamente nel testo** con InlineEditableTitle; niente pulsante Rinomina o modal. Non modificare `IcsCalendar.name`, URI feed, ID o UID evento: usare `displayLabel` opzionale (max 80 caratteri) distinto dall'identità originale. Reimport file e refresh URL preservano il label, eventi read-only visualizzano quello rinominato senza mutare il JSON dei master. Pannello sorgenti mostra solo hostname/refresh riuscito, mai URL completo/query-token. Storage schema 3 owner-scoped, non riscrivere al caricamento, nessuna modifica API/sync. [Contratto](docs/P2-ICS-SOURCE-MANAGEMENT.md).
 
+## Regola rilascio R1 — Vietato confondere CI con deploy VPS
+
+Il gate server-first per il client cumulativo richiede **Flyway V10 reale**, nessuna migration fallita, colonne V7–V10, health UP e capability autenticate `taskDueSchema`, `timeBlockSchema`, `timeBlocksSchema`, `recurrenceSchema`, `noteRestoreSchema` tutti versione 1. Usare solo il wrapper read-only `infra/release-readiness.sh` con container verificato e token temporaneo nell'ambiente. Nessun reset/redeploy/backfill automatico, nessun segreto nel repo/chat; un test su DB sintetico non prova lo stato VPS. Conservare il workflow T4 senza strict flag per ispezioni storiche. [Runbook](docs/RELEASE-V10-READINESS.md).
+

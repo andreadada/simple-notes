@@ -1,8 +1,8 @@
-# Rollout coordinato — Simple Notes backend V10 e client P2.3A
+# Rollout coordinato — Simple Notes backend V10 e client P2.3D
 
 > **Stato operativo 02/11/2026:** P2.3D gestione fonti ICS integrata su `main` ([PR #25](https://github.com/andreadada/simple-notes/pull/25), Flutter `0.29.0+31`; [CI Flutter](https://github.com/andreadada/simple-notes/actions/runs/41471546808) success: **191 test**, Windows EXE/MSIX, Android JDK17/21; [Markdown](https://github.com/andreadada/simple-notes/actions/runs/41471546568) success). Nessun deploy, reset, installazione o test hardware. Backend Flyway V10 in repo, VPS ultima attestazione V8. [Stato](CURRENT-STATUS.md) · [Gestione ICS](P2-ICS-SOURCE-MANAGEMENT.md).
 
-**Stato:** runbook per backend Flyway V10 e client P2.3A `0.26.0+28` (**P0–P1.18, P2.1 e P2.2 integrate in `main`, PR #21, CI Flutter/Markdown verdi**). Non è attestato un deploy Coolify, un'installazione o un collaudo cumulativo; l'utente intende effettuare personalmente il deploy dopo gli incrementi. I comandi sono read-only salvo la procedura Redeploy espressamente distinta.
+**Stato:** runbook per backend Flyway V10 e client cumulativo P2.3D `0.29.0+31` (PR #25 su `main`, 191 test Flutter, Windows/Android e Markdown CI verdi). Non è attestato un deploy Coolify, un'installazione o un collaudo cumulativo; l'utente intende effettuare personalmente il deploy dopo gli incrementi. I comandi sono read-only salvo la procedura Redeploy espressamente distinta.
 
 ## Prima di agire
 
@@ -151,4 +151,8 @@ Nel collaudo cumulativo utilizzare URL ICS HTTPS di prova: consenso, preview, ri
 ### P2.3D — Identità e gestione ICS
 
 Nel collaudo finale verificare: apertura del pannello Sorgenti, label editabile inline/annullamento, file reimport con stesso nome originale, feed refresh e ultimo success UTC/local, errori che preservano cache, rimozione per ID, owner switch e nessun token in UI. Nuovo metadato opzionale su schema 3 senza migration SQL; non fare downgrade su client incompatibili. Backend V10 e capability restano gate del client cumulativo. [Specifica](P2-ICS-SOURCE-MANAGEMENT.md).
+
+## Aggiornamento gate R1 — Verifica rigorosa prima dei nuovi client
+
+Il precedente `t4-check-api.sh` controllava solo due capability. La modalità `REQUIRE_FULL_SCHEMA=1`, insieme a `REQUIRE_TIME_BLOCK_SCHEMA=1`, verifica ora il contratto completo V10, mentre `REQUIRE_FLYWAY_VERSION=10` obbliga lo schema PostgreSQL giusto. Il wrapper `infra/release-readiness.sh` esegue entrambi in **sola lettura**. Le prove CI su PostgreSQL sintetico non dimostrano che la VPS reale sia aggiornata (ultima versione verificata V8). Non eseguire deploy/reset/downgrade finché non esiste un piano autorizzato e conservativo. [Runbook R1](RELEASE-V10-READINESS.md).
 

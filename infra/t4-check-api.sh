@@ -7,8 +7,12 @@ API_BASE_URL="${API_BASE_URL:-https://api.notes.ddone.it}"
 # Keep the T4/V7 probe useful before the release, but allow an explicit
 # strict V8 assertion after Coolify is upgraded.
 REQUIRE_TIME_BLOCK_SCHEMA="${REQUIRE_TIME_BLOCK_SCHEMA:-0}"
+REQUIRE_FULL_SCHEMA="${REQUIRE_FULL_SCHEMA:-0}"
 [[ "$REQUIRE_TIME_BLOCK_SCHEMA" == 0 || "$REQUIRE_TIME_BLOCK_SCHEMA" == 1 ]] || {
   echo "REFUSED: REQUIRE_TIME_BLOCK_SCHEMA must be 0 or 1" >&2; exit 2
+}
+[[ "$REQUIRE_FULL_SCHEMA" == 0 || "$REQUIRE_FULL_SCHEMA" == 1 ]] || {
+  echo "REFUSED: REQUIRE_FULL_SCHEMA must be 0 or 1" >&2; exit 2
 }
 : "${T4_BEARER_TOKEN:?A real authenticated user access token is required}"
 for command in curl python3; do
@@ -34,16 +38,14 @@ capabilities="$(
       --proto '=https' --tlsv1.2 --connect-timeout 5 --max-time 20 \
       "$base/api/v1/capabilities"
 )"
-printf '%s' "$capabilities" | REQUIRE_TIME_BLOCK_SCHEMA="$REQUIRE_TIME_BLOCK_SCHEMA" python3 -c '
-import json,sys,os
-obj=json.load(sys.stdin)
-assert obj.get("taskDueSchema") == 1, "backend missing taskDueSchema:1"
-kinds=set(obj.get("taskDueKinds",[]))
-assert {"none","date","datetime","legacy"}.issubset(kinds), "missing due kinds"
-assert obj.get("requiresExplicitDueForModernTasks") is True, "missing upgrade protection"
-if os.environ["REQUIRE_TIME_BLOCK_SCHEMA"] == "1":
-    assert obj.get("timeBlockSchema") == 1, "backend missing timeBlockSchema:1"
-    assert obj.get("noteRestoreSchema") == 1, "backend missing noteRestoreSchema:1"
-' || { echo "REFUSED: backend capability contract is incompatible." >&2; exit 1; }
-echo "PASS: HTTPS health UP and authenticated taskDueSchema=1 validated (require time blocks: $REQUIRE_TIME_BLOCK_SCHEMA)."
+script_dir="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd -P)"
+if ! printf '%s' "$capabilities" |
+    REQUIRE_TIME_BLOCK_SCHEMA="$REQUIRE_TIME_BLOCK_SCHEMA" \
+    REQUIRE_FULL_SCHEMA="$REQUIRE_FULL_SCHEMA" \
+    python3 "$script_dir/validate-release-capabilities.py"; then
+  echo "REFUSED: backend capability contract is incompatible." >&2
+  exit 1
+fi
+echo "PASS: HTTPS health UP and authenticated API capability contract verified."
+echo "Required: due=1, time-block=$REQUIRE_TIME_BLOCK_SCHEMA, full=$REQUIRE_FULL_SCHEMA."
 echo "This does NOT prove the client sync round-trip or real backup readiness."

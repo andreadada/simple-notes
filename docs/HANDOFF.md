@@ -318,3 +318,7 @@ PR #24 merged su `main`, Flutter `0.28.0+30`; CI 182 test, Windows EXE/MSIX, And
 
 PR #25 merged su `main`, Flutter `0.29.0+31` (191 test Flutter, Windows/Android/Markdown CI verdi): nuovo displayLabel su `IcsCalendar` (JSON schema 3, legacy 1/2/3 letti senza rewrite), `IcsLibrary.renameById` e overlay `onDay` con label proiettata; nuovi `ics_source_details.dart` e pannello Forui inline in `ics_calendar_controls.dart`. Identità di file/URL, recurrence UID e sorgenti locali immutate anche dopo reimport/refresh; nessun backend, API, Flyway, Drift o deploy. [Contratto](P2-ICS-SOURCE-MANAGEMENT.md).
 
+## Handoff R1 — Verifica server-first V10 (branch, 02/11/2026)
+
+`infra/release-readiness.sh` orchestra sola lettura: `t4-inspect-db.sh` con `REQUIRE_FLYWAY_VERSION=10` e `t4-check-api.sh` con `REQUIRE_FULL_SCHEMA=1` + `REQUIRE_TIME_BLOCK_SCHEMA=1`. `validate-release-capabilities.py` controlla la risposta autenticata senza stamparla; test sintetici Compose validano V6 rifiutata/V10 accettata/V10 incompleta rifiutata. Nessun secret, deploy o restore richiesto dal tooling; il test VPS reale richiede accesso dell'operatore e bearer locale. [Runbook](RELEASE-V10-READINESS.md).
+

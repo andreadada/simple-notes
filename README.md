@@ -82,3 +82,7 @@ Aggiunta di un URL HTTPS nella vista calendario, download solo su conferma, proi
 
 La vista Calendario ha un pannello **Sorgenti** richiudibile: mostra file e feed HTTPS, conta eventi/serie, indica l'ultimo refresh riuscito, permette aggiornamento manuale e rimozione con conferma. Il titolo di ciascuna sorgente è modificabile subito, inline; non cambia il filename né il link usato per l'import. I feed con token non mostrano il loro URL. Nessun nuovo backend o OAuth. [Specifica](docs/P2-ICS-SOURCE-MANAGEMENT.md).
 
+## Gate server-first per il collaudo cumulativo
+
+Disponibile in branch il controllo di sola lettura `infra/release-readiness.sh` per Flyway V10, health e capability API autenticate. Non installa o distribuisce: l'ultima attestazione VPS è V8 e serve una verifica dell'operatore prima del test client Windows/Android `0.29.0+31`. [Runbook](docs/RELEASE-V10-READINESS.md).
+

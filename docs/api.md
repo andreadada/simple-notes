@@ -98,3 +98,7 @@ I GET diretti ai provider ICS via HTTPS non sono API Simple Notes e non includon
 
 Modifica etichetta sorgente, conteggi eventi e ultimo refresh sono metadati e projection client-only: nessuna API, DTO, capability, nuova Flyway o token OAuth. Il feed HTTPS continua a scaricarsi soltanto tramite gesto utente. [Specifica](P2-ICS-SOURCE-MANAGEMENT.md).
 
+## R1 — Gate capacità API per client cumulativo V10
+
+La risposta autenticata `GET /api/v1/capabilities` deve includere `taskDueSchema:1`, `timeBlockSchema:1`, `timeBlocksSchema:1`, `recurrenceSchema:1`, `noteRestoreSchema:1`, `taskDueKinds` e `requiresExplicitDueForModernTasks:true`. Il probe rigido read-only (`REQUIRE_FULL_SCHEMA=1`) fallisce senza uno di questi campi; non cambia endpoint né backend. [Runbook](RELEASE-V10-READINESS.md).
+

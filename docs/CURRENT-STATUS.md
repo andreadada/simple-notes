@@ -4,8 +4,9 @@
 
 | Area | Stato verificato | Gate ancora aperti |
 |---|---|---|
-| `main` | **P0–P1.18 + P2.1 + P2.2 + P2.3A/B/C integrate**. [PR #24](https://github.com/andreadada/simple-notes/pull/24) merged, commit [`3170cc3e`](https://github.com/andreadada/simple-notes/commit/3170cc3e1a2d8e86664b87d82ec8ea208c8afd4d), Flutter **`0.28.0+30`** | Test fisici Windows/Android ancora aperti |
+| `main` | **P0–P1.18 + P2.1 + P2.2 + P2.3A/B/C/D integrate**. [PR #25](https://github.com/andreadada/simple-notes/pull/25) merged, commit [`5be50240`](https://github.com/andreadada/simple-notes/commit/5be502407a02d55911cff8fbae02b5f257fecf4c), Flutter **`0.29.0+31`** | Collaudo reale Windows/Android ancora aperto |
 | P1.18 integrata (storico) | [PR #19](https://github.com/andreadada/simple-notes/pull/19) merged, Flutter **`0.23.0+25`**, temi chiaro/scuro/sistema, preferenza locale e Sticky | CI verde; test visivi e su dispositivi fisici ancora aperti |
+| CI P2.3D | [Flutter CI #41471546808](https://github.com/andreadada/simple-notes/actions/runs/41471546808) **success** (191 test, Windows EXE/MSIX, Android JDK17/21); [Markdown #41471546568](https://github.com/andreadada/simple-notes/actions/runs/41471546568) **success** | Non certifica migrazione dati installati o prove fisiche |
 | CI P2.3C | [Flutter CI #41460378203](https://github.com/andreadada/simple-notes/actions/runs/41460378203) **success** (182 test, Windows EXE/MSIX, Android JDK17/21); [Markdown #41460378261](https://github.com/andreadada/simple-notes/actions/runs/41460378261) **success** | Non sostituisce prove reali URL HTTPS e sync server-first |
 | CI P2.3B | [Flutter CI #41350187352](https://github.com/andreadada/simple-notes/actions/runs/41350187352) **success** (174 test, Windows EXE/MSIX, Android JDK17/21); [Markdown #41350191590](https://github.com/andreadada/simple-notes/actions/runs/41350191590) **success** | Non certifica upgrade ICS schema 2→3 o test reali |
 | CI P2.3A | [Flutter CI #41339906564](https://github.com/andreadada/simple-notes/actions/runs/41339906564): **success** (166 test, Windows EXE/MSIX, Android JDK17/21). [Markdown #41339910458](https://github.com/andreadada/simple-notes/actions/runs/41339910458): **success** | Non certifica l'upgrade ICS schema 1→2 sui dispositivi reali |
@@ -29,6 +30,7 @@
 - **P2.3A (integrata in main, PR #22):** ID stabili per sorgenti ICS, formato locale schema 2 con lettura legacy schema 1, `file/url` (URL ancora senza fetch) e rimozione per ID. [Specifica](P2-ICS-SOURCES.md).
 - **P2.3B (integrata, PR #23):** ricorrenze RRULE/RDATE/EXDATE/RECURRENCE-ID locali con proiezione lazy e schema 3. [Specifica](P2-ICS-RECURRENCE.md).
 - **P2.3C (main, PR #24):** HTTPS ICS manuale, DNS pinning e restrizioni SSRF/redirect, cache offline, refresh esplicito; nessun OAuth/backend. [Specifica](P2-ICS-FEEDS.md).
+- **P2.3D (main, PR #25):** pannello ICS collassabile, nomi inline senza cambiare file/URL, conteggi, ultimo refresh riuscito e gestione per ID. [Specifica](P2-ICS-SOURCE-MANAGEMENT.md).
 - **P2 successiva/P3:** subscription ICS via URL integrate in P2.3C; ricorrenze complete, export CSV, backup completo, condivisione e smart opzionali **non implementati**.
 
 ## Gate di rilascio ancora aperti
@@ -67,7 +69,7 @@ PR #23 merged su `main`, Flutter `0.27.0+29`, RRULE/RDATE/EXDATE/RECURRENCE-ID c
 
 PR #24 integrata su `main`, Flutter `0.28.0+30`: fonte HTTPS con DNS pinning, protezioni SSRF, refresh manuale e cache locale preservata su fallimento. Nessun backend, Flyway, outbox o OAuth in più. CI Flutter 182 test, build Windows/Android e Markdown verdi; collaudo fisico ancora aperto. [Specifica](P2-ICS-FEEDS.md).
 
-## P2.3D — Gestione fonti ICS (branch, candidata 02/11/2026)
+## P2.3D — Gestione fonti ICS (main, PR #25, 02/11/2026)
 
-Branch `feature/p2-3d-ics-source-management`, Flutter `0.29.0+31`: sorgenti ICS nel pannello compatto, titolo inline (`displayLabel` schema 3 opzionale), refresh riuscito e errori senza query token, etichetta di proiezione aggiornata senza alterare ID/UID/filename/URL. CI e merge da attestare, nessun deploy o test hardware. [Specifica](P2-ICS-SOURCE-MANAGEMENT.md).
+PR #25 integrata su `main`, Flutter `0.29.0+31`: sorgenti ICS nel pannello compatto, titolo inline (`displayLabel` schema 3 opzionale), refresh riuscito e errori senza query token, etichetta di proiezione aggiornata senza alterare ID/UID/filename/URL. CI 191 test e build Windows/Android/Markdown verdi; nessun deploy o test hardware. [Specifica](P2-ICS-SOURCE-MANAGEMENT.md).
 

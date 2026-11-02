@@ -1,6 +1,6 @@
 # Simple Notes
 
-> **Stato operativo 02/11/2026:** P2.3C feed ICS HTTPS integrata su `main` ([PR #24](https://github.com/andreadada/simple-notes/pull/24), Flutter `0.28.0+30`; [CI Flutter](https://github.com/andreadada/simple-notes/actions/runs/41460378203) verde: **182 test**, Windows EXE/MSIX, Android JDK17/21; [Markdown](https://github.com/andreadada/simple-notes/actions/runs/41460378261) verde). Nessun deploy, installazione, reset o collaudo hardware. Backend repo V10, VPS ultima attestazione V8. [Stato](docs/CURRENT-STATUS.md) · [Feed ICS](docs/P2-ICS-FEEDS.md).
+> **Stato operativo 02/11/2026:** P2.3D gestione sorgenti ICS integrata su `main` ([PR #25](https://github.com/andreadada/simple-notes/pull/25), Flutter `0.29.0+31`; [Flutter CI](https://github.com/andreadada/simple-notes/actions/runs/41471546808) **success**: 191 test, Windows EXE/MSIX, Android JDK17/21; [Markdown](https://github.com/andreadada/simple-notes/actions/runs/41471546568) **success**). Nessun deploy, reset, installazione o test hardware; backend repo Flyway V10, ultima VPS attestata V8. [Stato](docs/CURRENT-STATUS.md) · [Gestione ICS](docs/P2-ICS-SOURCE-MANAGEMENT.md).
 
 App offline-first per **Windows 11 e Android** dedicata ad attività, note e pianificazione. Flutter/Forui con Drift SQLite locale, Google OAuth e sincronizzazione con Spring Boot/PostgreSQL su Coolify.
 
@@ -78,7 +78,7 @@ Flutter `0.27.0+29`: le serie RRULE importate da file possono mostrare ripetizio
 
 Aggiunta di un URL HTTPS nella vista calendario, download solo su conferma, proiezione read-only offline con refresh manuale e cache conservata su errore. I link privati con query-token non vengono mostrati nell'interfaccia. Nessun server o OAuth aggiuntivo. [Specifica](docs/P2-ICS-FEEDS.md).
 
-## P2.3D — Gestione calendari esterni (candidata)
+## P2.3D — Gestione calendari esterni (main, PR #25)
 
 La vista Calendario ha un pannello **Sorgenti** richiudibile: mostra file e feed HTTPS, conta eventi/serie, indica l'ultimo refresh riuscito, permette aggiornamento manuale e rimozione con conferma. Il titolo di ciascuna sorgente è modificabile subito, inline; non cambia il filename né il link usato per l'import. I feed con token non mostrano il loro URL. Nessun nuovo backend o OAuth. [Specifica](docs/P2-ICS-SOURCE-MANAGEMENT.md).
 

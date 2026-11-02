@@ -1,6 +1,6 @@
 # Simple Notes — Passaggio di consegne (handoff)
 
-> **Stato operativo 02/11/2026:** P2.3C feed ICS HTTPS integrata su `main` ([PR #24](https://github.com/andreadada/simple-notes/pull/24), Flutter `0.28.0+30`; [CI Flutter](https://github.com/andreadada/simple-notes/actions/runs/41460378203) verde: **182 test**, Windows EXE/MSIX, Android JDK17/21; [Markdown](https://github.com/andreadada/simple-notes/actions/runs/41460378261) verde). Nessun deploy, installazione, reset o collaudo hardware. Backend repo V10, VPS ultima attestazione V8. [Stato](CURRENT-STATUS.md) · [Feed ICS](P2-ICS-FEEDS.md).
+> **Stato operativo 02/11/2026:** P2.3D gestione sorgenti ICS integrata su `main` ([PR #25](https://github.com/andreadada/simple-notes/pull/25), Flutter `0.29.0+31`; [Flutter CI](https://github.com/andreadada/simple-notes/actions/runs/41471546808) **success**: 191 test, Windows EXE/MSIX, Android JDK17/21; [Markdown](https://github.com/andreadada/simple-notes/actions/runs/41471546568) **success**). Nessun deploy, reset, installazione o test hardware; backend repo Flyway V10, ultima VPS attestata V8. [Stato](CURRENT-STATUS.md) · [Gestione ICS](P2-ICS-SOURCE-MANAGEMENT.md).
 
 <!-- CURRENT-STATUS-REF -->
 
@@ -314,7 +314,7 @@ PR #23 merged su `main`, Flutter `0.27.0+29`. Nuovi `ui/ics_recurrence_rule.dart
 
 PR #24 merged su `main`, Flutter `0.28.0+30`; CI 182 test, Windows EXE/MSIX, Android JDK17/21 e Markdown verdi. `ui/ics_feed.dart` per HTTPS DNS-pinned, URL policy, same-host redirects, timeout e byte limit, e servizio immutable subscribe/refresh. Dialog Forui in `ics_calendar_controls.dart`, cache offline in `IcsLibrary` schema 3, metadato UTC opzionale. Nessun deploy, backend, API o outbox. [Contratto](P2-ICS-FEEDS.md).
 
-## Handoff P2.3D — Sorgenti ICS (branch, 02/11/2026)
+## Handoff P2.3D — Sorgenti ICS (main, PR #25, 02/11/2026)
 
-`feature/p2-3d-ics-source-management`, Flutter `0.29.0+31`: nuovo displayLabel su `IcsCalendar` (JSON schema 3, legacy 1/2/3 letti senza rewrite), `IcsLibrary.renameById` e overlay `onDay` con label proiettata; nuovi `ics_source_details.dart` e pannello Forui inline in `ics_calendar_controls.dart`. Identità di file/URL, recurrence UID e sorgenti locali immutate anche dopo reimport/refresh; nessun backend, API, Flyway, Drift o deploy. [Contratto](P2-ICS-SOURCE-MANAGEMENT.md).
+PR #25 merged su `main`, Flutter `0.29.0+31` (191 test Flutter, Windows/Android/Markdown CI verdi): nuovo displayLabel su `IcsCalendar` (JSON schema 3, legacy 1/2/3 letti senza rewrite), `IcsLibrary.renameById` e overlay `onDay` con label proiettata; nuovi `ics_source_details.dart` e pannello Forui inline in `ics_calendar_controls.dart`. Identità di file/URL, recurrence UID e sorgenti locali immutate anche dopo reimport/refresh; nessun backend, API, Flyway, Drift o deploy. [Contratto](P2-ICS-SOURCE-MANAGEMENT.md).
 

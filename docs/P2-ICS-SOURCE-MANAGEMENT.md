@@ -1,6 +1,6 @@
 # P2.3D — Gestione sorgenti ICS e nomi editabili inline
 
-**Stato:** candidata Flutter `0.29.0+31` nel branch `feature/p2-3d-ics-source-management` (2 novembre 2026). CI, merge e test dispositivi reali da attestare separatamente. Nessuna migrazione Flyway, Drift o backend; nessun deploy Coolify.
+**Stato 02/11/2026:** integrata su `main` con [PR #25](https://github.com/andreadada/simple-notes/pull/25), Flutter `0.29.0+31`; [CI Flutter #41471546808](https://github.com/andreadada/simple-notes/actions/runs/41471546808) verde (**191 test**, Windows EXE/MSIX, Android JDK17/21), [Markdown #41471546568](https://github.com/andreadada/simple-notes/actions/runs/41471546568) verde. Test dispositivi reali e deploy non eseguiti. Nessuna migrazione Flyway, Drift o backend; nessun deploy Coolify.
 
 ## Obiettivo e UX
 

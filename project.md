@@ -1,12 +1,12 @@
 # Simple Notes — Progetto e roadmap
 
-> **Stato operativo 02/11/2026:** P2.3C feed ICS HTTPS integrata su `main` ([PR #24](https://github.com/andreadada/simple-notes/pull/24), Flutter `0.28.0+30`; [CI Flutter](https://github.com/andreadada/simple-notes/actions/runs/41460378203) verde: **182 test**, Windows EXE/MSIX, Android JDK17/21; [Markdown](https://github.com/andreadada/simple-notes/actions/runs/41460378261) verde). Nessun deploy, installazione, reset o collaudo hardware. Backend repo V10, VPS ultima attestazione V8. [Stato](docs/CURRENT-STATUS.md) · [Feed ICS](docs/P2-ICS-FEEDS.md).
+> **Stato operativo 02/11/2026:** P2.3D gestione sorgenti ICS integrata su `main` ([PR #25](https://github.com/andreadada/simple-notes/pull/25), Flutter `0.29.0+31`; [Flutter CI](https://github.com/andreadada/simple-notes/actions/runs/41471546808) **success**: 191 test, Windows EXE/MSIX, Android JDK17/21; [Markdown](https://github.com/andreadada/simple-notes/actions/runs/41471546568) **success**). Nessun deploy, reset, installazione o test hardware; backend repo Flyway V10, ultima VPS attestata V8. [Stato](docs/CURRENT-STATUS.md) · [Gestione ICS](docs/P2-ICS-SOURCE-MANAGEMENT.md).
 
 <!-- CURRENT-STATUS-REF -->
 
 **Obiettivo:** Windows 11 + Android offline-first, Google OAuth, Flutter/Forui/Drift + Spring Boot/PostgreSQL su Coolify. Regole UX in [design.md](design.md); deploy sicuro in [P1-RELEASE-BATCH.md](docs/P1-RELEASE-BATCH.md). Le checklist sotto includono traguardi storici: `[x]` significa **codice verificato nella CI o prova specifica**, non distribuzione sul VPS.
 
-## Gate corrente (CI P2.3C superata; distribuzione non eseguita)
+## Gate corrente (CI P2.3D superata; distribuzione non eseguita)
 
 - [x] P1.7 Android con scheduler inexact, ledger, opt-in e CI verde (PR #6). [ ] Prova fisica Android app chiusa/reboot e controllo permessi; [x] codice packaging MSIX + promemoria Windows integrato (PR #7, CI verde); [ ] test fisici MSIX/identità/dati e firma pubblica.
 - [ ] Verificare Flyway V10, health **e** capability su Coolify prima di nuovi client.
@@ -367,11 +367,12 @@ Esempio: `2026-10-21 14:20 CEST | commit abc1234 | Aggiunto modulo promemoria e 
 
 - 2026-11-02 | merge(p2.3c) | PR #24 merged (`3170cc3e`), Flutter 0.28.0+30, CI Flutter #41460378203 PASS (182 test, Windows/Android), Markdown #41460378261 PASS. Nessun deploy o test fisico; prossimo P2.3D gestione UI sorgenti.
 
-## P2.3D — Gestione fonti ICS (candidata)
+## P2.3D — Gestione fonti ICS (main, PR #25)
 
 - [x] Etichette ICS inline senza pulsante Rinomina, identità file/URL e UID intatti, schema 3 invariato.
 - [x] Pannello Forui compatto su richiesta con origine, conteggi, refresh riuscito, errori cache e azioni per ID.
-- [ ] CI/merge da attestare; nessun deploy o collaudo fisico. [Specifiche](docs/P2-ICS-SOURCE-MANAGEMENT.md).
+- [x] PR #25 merged e CI 191 test, Windows EXE/MSIX, Android JDK17/21 e Markdown verdi. [ ] Nessun deploy o collaudo fisico. [Specifiche](docs/P2-ICS-SOURCE-MANAGEMENT.md).
 
 - 2026-11-02 | feat(p2.3d) | Branch `feature/p2-3d-ics-source-management`, Flutter `0.29.0+31`: editor inline delle sorgenti e status refresh sicuri; PR/CI da verificare.
 
+- 2026-11-02 | merge(p2.3d) | PR #25 integrata su `main` (`5be50240`), Flutter `0.29.0+31`, Flutter CI #41471546808 success (191 test, Windows EXE/MSIX, Android JDK17/21), Markdown #41471546568 success. Nessun deploy, reset o prova fisica. Prossimo gate: server-first Flyway V10 e collaudo cumulativo.

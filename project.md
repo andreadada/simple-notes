@@ -376,3 +376,12 @@ Esempio: `2026-10-21 14:20 CEST | commit abc1234 | Aggiunto modulo promemoria e 
 - 2026-11-02 | feat(p2.3d) | Branch `feature/p2-3d-ics-source-management`, Flutter `0.29.0+31`: editor inline delle sorgenti e status refresh sicuri; PR/CI da verificare.
 
 - 2026-11-02 | merge(p2.3d) | PR #25 integrata su `main` (`5be50240`), Flutter `0.29.0+31`, Flutter CI #41471546808 success (191 test, Windows EXE/MSIX, Android JDK17/21), Markdown #41471546568 success. Nessun deploy, reset o prova fisica. Prossimo gate: server-first Flyway V10 e collaudo cumulativo.
+
+## R1 — Gate di rilascio server-first V10 (strumenti read-only, candidata)
+
+- [x] Verifica opzionale versione Flyway **V10 esatta** in `infra/t4-inspect-db.sh` senza migrazioni o mutazioni di dati.
+- [x] Verifica autenticata di capability complete (task due, time block singolo/multiplo, recurrence, note restore) in `infra/t4-check-api.sh` con flag strict; comando cumulativo `infra/release-readiness.sh`.
+- [x] Test sintetici PostgreSQL 17 e capability senza credenziali in Compose CI; [ ] stato VPS reale V10/API **non ancora verificato**, [ ] Windows↔Android E2E, deploy e firma non autorizzati. [Runbook](docs/RELEASE-V10-READINESS.md).
+
+- 2026-11-02 | candidate(r1) | Preparato gate read-only Flyway V10 e API full-schema con CI sintetica. Nessun accesso/modifica al DB VPS, Coolify, SQLite o outbox; test hardware ancora aperti.
+

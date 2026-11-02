@@ -148,3 +148,8 @@ Note (senza credenziali o dati privati): __________________
 **Criterio di completamento T4.2:** screenshot o diagnostiche copiate dai **due dispositivi aggiornati**, insieme al risultato della sequenza; passaggio test offline e riconciliazione cloud. La CI simulata è distinta dalla prova reale e non basta da sola.
 
 Non occorre alcun nuovo deploy PostgreSQL: **Flyway V7 è stata verificata sul database reale**. Il contratto API va comunque controllato con il nuovo comando diagnostico autenticato.
+
+## R1 — Gate attuale prima di testare nuovi client
+
+La versione Flutter cumulativa è `0.29.0+31`, non i numeri T4.2 storici di seguito. Prima di provarla su Windows/Android con backend cloud, identificare il DB PostgreSQL di produzione, e verificare **Flyway V10** con health e capability autenticate tramite `infra/release-readiness.sh` senza alterare dati. Finché la VPS reale resta non verificata, non considerare il successo di compilazione una conferma di sync. [Runbook aggiornato](RELEASE-V10-READINESS.md).
+

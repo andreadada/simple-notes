@@ -171,3 +171,7 @@ Verificare con URL HTTPS di prova: import confermato, riavvio offline, refresh, 
 
 Usare file e feed di test: rinominare il titolo direttamente, salvare con Enter/blur e annullare con Esc, chiudere/riaprire la pagina e riavviare l'app. Reimportare lo stesso file/aggiornare feed HTTPS: non perdere etichetta, UID, eventi o ID; cancellare per ID e cambiare account senza dati visibili dell'altro. Non visualizzare mai token URL; ultimo refresh deve rappresentare l'ultimo **successo**, non un errore. Test Android/Windows prima del rilascio cumulativo, dopo gate V10 del backend. [Specifica](P2-ICS-SOURCE-MANAGEMENT.md).
 
+## R1 — Gate V10 di sola lettura, non un deploy
+
+Da VPS identificare esattamente il container Simple Notes con `docker ps`, leggere l'inventario con `DB_CONTAINER=... EXPECTED_POSTGRES_DB=simplenotes bash infra/t4-inspect-db.sh`. Un server ancora V8 non abilita il client completo. **Soltanto dopo** un eventuale upgrade Coolify autorizzato e protetto usare `DB_CONTAINER=... T4_BEARER_TOKEN=<JWT_TEMPORANEO_NELL_ENV> bash infra/release-readiness.sh`: richiede Flyway V10, `FAILED_MIGRATIONS=0`, colonne V7–V10, health UP e capability JSON autenticata complete. Il token non va mai copiato in chat o messo nella cronologia. Il comando è read-only e non effettua backup/restore/deploy. [Procedura](RELEASE-V10-READINESS.md).
+

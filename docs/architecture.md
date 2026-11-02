@@ -101,3 +101,7 @@ La UI calendario continua a invocare `IcsLibrary.onDay`, che unisce eventi singo
 
 `IcsCalendar` mantiene il nome originario e un `displayLabel` opzionale; `IcsLibrary.renameById` salva soltanto metadati locali, `onDay` crea una proiezione con etichetta per la UI. `ics_source_details.dart` formatta conteggi, tipo e tempo refresh; `ics_calendar_controls.dart` presenta un pannello collassabile Forui con modifica direttamente sul testo. Nessuna migrazione backend/Drift. [Specifica](P2-ICS-SOURCE-MANAGEMENT.md).
 
+## R1 — Gate architetturale server-first
+
+Il client Flutter `0.29.0+31` contiene funzionalità sync che richiedono Flyway V10 e le capability versione 1. Gli strumenti `infra/release-readiness.sh`, `t4-inspect-db.sh`, `t4-check-api.sh` verificano il contratto solo dopo un eventuale deploy approvato. Nessun nuovo microservizio, endpoint o migration; test sintetici non equivalgono a stato reale VPS. [Runbook](RELEASE-V10-READINESS.md).
+

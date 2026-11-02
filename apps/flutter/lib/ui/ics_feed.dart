@@ -38,7 +38,8 @@ abstract final class IcsFeedPolicy {
           (a == 100 && b >= 64 && b <= 127) ||
           (a == 169 && b == 254) ||
           (a == 172 && b >= 16 && b <= 31) ||
-          (a == 192 && (b == 168 || b == 0 || b == 88 && c == 99)) ||
+          (a == 192 && (b == 168 || b == 0 || b == 2 ||
+              b == 88 && c == 99)) ||
           (a == 198 && (b == 18 || b == 19 ||
               b == 51 && c == 100)) ||
           (a == 203 && b == 0 && c == 113)) {
@@ -92,10 +93,10 @@ class IcsFeedClient {
 
   Future<List<int>> download(String url) async {
     final initial = IcsFeedPolicy.validate(url);
-    final client = HttpClient()
-      ..findProxy = (_) => 'DIRECT'
-      ..connectionTimeout = const Duration(seconds: 6)
-      ..autoUncompress = true;
+    final client = HttpClient();
+    client.findProxy = (_) => 'DIRECT';
+    client.connectionTimeout = const Duration(seconds: 6);
+    client.autoUncompress = true;
     client.connectionFactory = (Uri uri, String? proxyHost, int? proxyPort) async {
       if (proxyHost != null || proxyPort != null) {
         throw const FormatException('Proxy del feed non consentito.');

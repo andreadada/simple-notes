@@ -68,7 +68,7 @@ class IcsEvent {
 }
 
 /// A stable source identity is distinct from the display name and event UID.
-/// URL sources are reserved for a later step: no network calls are made here.
+/// URL feeds are fetched only after an explicit user action.
 enum IcsSourceKind { file, url }
 
 String _legacyFileId(String name) =>
@@ -86,23 +86,27 @@ class IcsCalendar {
   /// The library assigns an identity on import, preserving it on reimport.
   const IcsCalendar(this.name, this.events,
       {this.id = '', this.kind = IcsSourceKind.file, this.sourceUrl,
-       this.series = const []});
+       this.series = const [], this.lastFetchedUtc});
   final String id, name;
   final IcsSourceKind kind;
-  /// A private HTTPS feed URL, not read or fetched until URL subscriptions ship.
+  /// Private feed URL; never expose full URLs with query tokens in UI/logs.
   final String? sourceUrl;
+  /// Optional last successful refresh time; null for legacy URL metadata.
+  final DateTime? lastFetchedUtc;
   final List<IcsEvent> events;
   final List<IcsRecurringEvent> series;
 
   IcsCalendar withId(String value) =>
       IcsCalendar(name, events, id: value, kind: kind, sourceUrl: sourceUrl,
-          series: series);
+          series: series, lastFetchedUtc: lastFetchedUtc);
 
   Map<String, dynamic> toJson() => {
     'id': id.isEmpty ? _legacyFileId(name) : id,
     'kind': kind.name,
     'name': name,
     if (sourceUrl != null) 'sourceUrl': sourceUrl,
+    if (lastFetchedUtc != null)
+      'lastFetchedUtc': lastFetchedUtc!.toUtc().toIso8601String(),
     'events': events.map((e) => e.toJson()).toList(),
     if (series.isNotEmpty)
       'series': series.map((item) => item.toJson()).toList(),
@@ -115,6 +119,12 @@ class IcsCalendar {
     final kind = schema == 1 ? IcsSourceKind.file :
         IcsSourceKind.values.byName(raw['kind'] as String);
     final sourceUrl = schema == 1 ? null : raw['sourceUrl'] as String?;
+    final rawFetched = raw['lastFetchedUtc'] as String?;
+    final fetched = rawFetched == null ? null : DateTime.parse(rawFetched);
+    if (rawFetched != null && (!fetched!.isUtc ||
+        fetched.toIso8601String() != rawFetched)) {
+      throw const FormatException('Timestamp refresh ICS non valido.');
+    }
     final events = (raw['events'] as List).map((e) =>
         IcsEvent.fromJson(Map<String, dynamic>.from(e as Map))).toList();
     final series = schema == 3 && raw['series'] != null
@@ -129,12 +139,14 @@ class IcsCalendar {
         series.any((s) => s.master.source != name) ||
         {...events.map((e) => e.uid), ...series.map((s) => s.master.uid)}
             .length != events.length + series.length ||
-        (kind == IcsSourceKind.file && sourceUrl != null) ||
+        (kind == IcsSourceKind.file &&
+            (sourceUrl != null || fetched != null)) ||
         (kind == IcsSourceKind.url && !_validSubscriptionUrl(sourceUrl))) {
       throw const FormatException('Sorgente calendario ICS non valida.');
     }
     return IcsCalendar(name, List.unmodifiable(events), id: id,
-        kind: kind, sourceUrl: sourceUrl, series: List.unmodifiable(series));
+        kind: kind, sourceUrl: sourceUrl, series: List.unmodifiable(series),
+        lastFetchedUtc: fetched);
   }
 }
 
@@ -162,7 +174,10 @@ class IcsLibrary {
     for (final item in calendars) {
       if ((calendar.id.isNotEmpty && item.id == calendar.id) ||
           (calendar.kind == IcsSourceKind.file &&
-           item.kind == IcsSourceKind.file && item.name == calendar.name)) {
+           item.kind == IcsSourceKind.file && item.name == calendar.name) ||
+          (calendar.kind == IcsSourceKind.url &&
+           item.kind == IcsSourceKind.url &&
+           item.sourceUrl == calendar.sourceUrl)) {
         existing = item;
         break;
       }
@@ -215,8 +230,11 @@ class IcsLibrary {
           .map((c) => c.name).toSet();
       final fileCount =
           list.where((c) => c.kind == IcsSourceKind.file).length;
+      final urls = list.where((c) => c.kind == IcsSourceKind.url)
+          .map((c) => c.sourceUrl).toSet();
+      final urlCount = list.where((c) => c.kind == IcsSourceKind.url).length;
       if (list.length > maxSources || ids.length != list.length ||
-          filenames.length != fileCount) {
+          filenames.length != fileCount || urls.length != urlCount) {
         throw const FormatException('Troppe sorgenti ICS o identificativi duplicati.');
       }
       return IcsLibrary(List.unmodifiable(list));

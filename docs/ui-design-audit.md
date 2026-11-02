@@ -135,3 +135,8 @@ P2.3A non cambia il layout del Calendario né la scelta Forui: modifica soltanto
 ## Audit P2.3B — Nessuna modifica UX editabile
 
 La vista giorno/settimana/mese mostra le istanze ricorrenti tramite lo stesso componente ICS read-only; nessuna nuova superficie o mutazione. CI e prova visuale/device sono gate separati. [Specifica](P2-ICS-RECURRENCE.md).
+
+## P2.3C — Audit UX URL ICS
+
+Verificare su dispositivi reali dialog URL, conferma preview, refresh, riavvio offline e fallback di rete; URL/query token non devono apparire in UI, screenshot/report, messaggi errore. I VEVENT sono read-only, nessun drag/edit. [Specifica](P2-ICS-FEEDS.md).
+

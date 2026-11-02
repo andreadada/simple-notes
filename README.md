@@ -73,3 +73,8 @@ Integrato su `main` con [PR #22](https://github.com/andreadada/simple-notes/pull
 ## P2.3B — Ricorrenze ICS (main, PR #23)
 
 Flutter `0.27.0+29`: le serie RRULE importate da file possono mostrare ripetizioni ed eccezioni RDATE/EXDATE/RECURRENCE-ID, generate solo per il giorno visualizzato. Archivio locale schema 3 con lettura versioni 1/2, senza cloud o feed URL; nessun deploy. [Specifica](docs/P2-ICS-RECURRENCE.md).
+
+## P2.3C — Feed ICS da URL (candidata)
+
+Aggiunta di un URL HTTPS nella vista calendario, download solo su conferma, proiezione read-only offline con refresh manuale e cache conservata su errore. I link privati con query-token non vengono mostrati nell'interfaccia. Nessun server o OAuth aggiuntivo. [Specifica](docs/P2-ICS-FEEDS.md).
+

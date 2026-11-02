@@ -54,3 +54,8 @@ Collegamenti: [P2.2 ICS](P2-ICS.md) · [Stato corrente](CURRENT-STATUS.md) · [R
 ## Evoluzione schema 3 con P2.3B
 
 La P2.3A schema 2 è compatibile in lettura con P2.3B; il nuovo schema 3 aggiunge `series` e salva solo a seguito di azione esplicita. Client P2.3A non leggono archivi schema 3: non fare downgrade non pianificati. [Specifiche](P2-ICS-RECURRENCE.md).
+
+## Evoluzione P2.3C — URL feed
+
+`kind=url` non è più soltanto metadato: la P2.3C candidata permette import/refresh HTTPS su richiesta. `lastFetchedUtc` opzionale nello schema 3, label solo hostname, token URI in query non visualizzato. Su errore restano le occorrenze cached. [Specifiche](P2-ICS-FEEDS.md).
+

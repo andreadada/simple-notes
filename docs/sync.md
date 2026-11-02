@@ -90,3 +90,8 @@ L'evoluzione locale degli ICS aggiunge solo `id`, `kind` ed eventuale URL di fut
 ## P2.3B — Ricorrenze ICS escluse da sync
 
 Master, RRULE, date aggiuntive/escluse e override per RECURRENCE-ID appartengono soltanto a SharedPreferences locali e alla vista in sola lettura. Non producono mutation, cursor, tombstone, task o API call. [Specifica](P2-ICS-RECURRENCE.md).
+
+## P2.3C — Feed ICS fuori dalla sync
+
+Le richieste HTTPS avvengono dal dispositivo verso il provider ICS soltanto su richiesta esplicita; URL/cache owner-scoped non sono sincronizzati tra dispositivi e non producono outbox, mutation, task o token OAuth. [Specifica](P2-ICS-FEEDS.md).
+

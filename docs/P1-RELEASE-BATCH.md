@@ -143,3 +143,8 @@ Il client `0.26.0+28` integrato su `main` (PR #22, CI verde) legge `schema=1` e 
 ### P2.3B — Archivio locale schema 3
 
 Nel collaudo cumulativo di Flutter candidata `0.27.0+29` controllare eventi RRULE e singole exception, senza task/outbox. Schema 1/2 leggibili, schema 3 scritto solo su conferma; downgrade verso client precedenti vietato senza conservazione dati. Nessuna nuova migration backend per P2.3B, ma resta gate server V10 del client cumulativo. [Specifica](P2-ICS-RECURRENCE.md).
+
+### P2.3C — Feed ICS HTTPS
+
+Nel collaudo cumulativo utilizzare URL ICS HTTPS di prova: consenso, preview, riavvio offline, refresh esplicito, errori HTTP/redirect/ICS senza perdita cache, cancellazione e separazione account. Niente upgrade DB per questa funzione, ma mantenere gate Flyway V10, capability autenticate, firma e verifica E2E delle altre funzionalità. [Specifica](P2-ICS-FEEDS.md).
+

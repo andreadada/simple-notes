@@ -162,3 +162,8 @@ Nel client Flutter `0.26.0+28`, leggere i dati P2.2 `schema=1` non deve modifica
 ## Gate P2.3B — Test senza perdita dati
 
 Con file di prova Windows/Android verificare import/reimport, RDATE/EXDATE, override e cancellazioni, fusi IANA/DST, rilettura vecchi schema 1/2, riavvio e cambio account. File non supportati devono fallire senza alterare l'archivio. Non tornare a client 0.26 dopo scrittura schema 3. Nessun deploy per questa feature locale. [Runbook](P2-ICS-RECURRENCE.md).
+
+## Gate P2.3C — Test feed HTTPS
+
+Verificare con URL HTTPS di prova: import confermato, riavvio offline, refresh, errore rete/redirect/ICS invalida senza perdita cache, rimozione per ID e account isolation. URL e query token non devono apparire nel testo delle card o nei log. Nessun deploy necessario per i soli feed locali. [Specifica](P2-ICS-FEEDS.md).
+

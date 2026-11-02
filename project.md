@@ -356,3 +356,12 @@ Esempio: `2026-10-21 14:20 CEST | commit abc1234 | Aggiunto modulo promemoria e 
 - 2026-11-01 | feat(p2.3b) | Branch `feature/p2-3b-ics-recurrence`, ricorrenze ICS locali con exception e schema 3. CI/merge/hardware non ancora attestati. Nessun deploy o reset.
 
 - 2026-11-01 | merge(p2.3b) | PR #23 integrata su `main` (`41732169`), Flutter 0.27.0+29, CI #41350187352 success (174 test, Windows EXE/MSIX, Android JDK17/21), Markdown #41350191590 success. Nessun deploy, reset o collaudo fisico; prossimo P2.3C feed HTTPS.
+
+## P2.3C — Feed ICS HTTPS (branch, candidata)
+
+- [x] URL HTTPS con DNS pinning e controllo indirizzi privati, redirect consentiti solo sul medesimo host, limite 1 MiB e timeout.
+- [x] Forui import/refresh manuale, snapshot locale last-known-good, niente task/outbox/cloud.
+- [ ] CI e merge da attestare, nessun deploy o collaudo hardware. [Specifica](docs/P2-ICS-FEEDS.md).
+
+- 2026-11-02 | feat(p2.3c) | Branch `feature/p2-3c-ics-https-feeds`; URL manuali con cache locale e rete protetta. CI/merge non attestati.
+

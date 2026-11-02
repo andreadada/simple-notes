@@ -89,3 +89,8 @@ Il client ICS schema 2, identificativi sorgente e distinzione file/URL sono pers
 ## P2.3B — Nessun nuovo endpoint
 
 RRULE e gli override dei VEVENT vengono interpretati localmente dal client, senza DTO, API, OAuth scope, SQL/Flyway o capability aggiuntive. [Specifica](P2-ICS-RECURRENCE.md).
+
+## P2.3C — Nessun endpoint aggiunto
+
+I GET diretti ai provider ICS via HTTPS non sono API Simple Notes e non includono credenziali dell'app: niente nuovi DTO, capability, Flyway, backend o Cloud sync. [Specifica](P2-ICS-FEEDS.md).
+

@@ -229,3 +229,8 @@ La fonte degli eventi ICS non coincide con il nome file visualizzato: il modello
 ## Vincolo P2.3B — Ricorrenze ICS
 
 Eventi esterni restano read-only; non trasformarli in task, non notificare, non creare outbox. Serie infinite RRULE non vanno espanse all'import: calcolare solo le occorrenze visibili, rispettando fine esclusiva, giorni civili e DST. Parametri RFC non implementati bloccano l'import senza modificare i dati. [Specifica](docs/P2-ICS-RECURRENCE.md).
+
+## Vincolo P2.3C — Interazione feed ICS
+
+Aggiungere URL con dialog Forui, scaricare soltanto dopo gesto esplicito; mostrare solo hostname e mai query token nell'UI. Durante download bloccare operazioni concorrenti. Refresh solo manuale, snapshot precedente intatto su errore. I VEVENT esterni rimangono read-only. P2.3D: nome editabile inline, gestione fonti. [Specifica](docs/P2-ICS-FEEDS.md).
+

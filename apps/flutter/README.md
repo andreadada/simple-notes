@@ -198,3 +198,8 @@ Il modello `ui/ics_calendar.dart` assegna ID stabili a file e futuri feed, disti
 ## P2.3B — RRULE e istanze ICS (main, PR #23)
 
 `ics_recurrence_rule.dart` valida FREQ, INTERVAL, COUNT, UNTIL e BYDAY settimanale; `ics_recurring_event.dart` proietta istanze con DST e singoli override. Il parser integra RDATE/EXDATE/RECURRENCE-ID, usando preferenze locali schema 3 e leggendo vecchi archivi schema 1/2 senza riscrittura. CI verde; prove fisiche ancora da svolgere. [Specifica](../../docs/P2-ICS-RECURRENCE.md).
+
+## P2.3C — URL ICS e cache locale
+
+`lib/ui/ics_feed.dart` valida URL, IP DNS, redirect e bytes, effettuando fetch HTTPS solo su comando utente. Il servizio rinnova la sorgente locale solo dopo parsing completo. In `IcsCalendarControls`: dialog Forui URL e bottone Aggiorna. Metadato `lastFetchedUtc` opzionale nello schema ICS 3. Flutter `0.28.0+30`. [Specifica](../../docs/P2-ICS-FEEDS.md).
+

@@ -92,3 +92,8 @@ L'overlay ICS rimane in `SharedPreferences` per owner e non usa SQLite, API o ou
 ## P2.3B — Proiezione lazy delle serie ICS
 
 La UI calendario continua a invocare `IcsLibrary.onDay`, che unisce eventi singoli e occorrenze ricorrenti generate per il solo giorno richiesto. Regole e stato ricorrenze persistono nel JSON owner-scoped schema 3. Nessuna estensione Spring Boot, SQLite/Drift o API. [Specifica](P2-ICS-RECURRENCE.md).
+
+## P2.3C — Layer download feed ICS
+
+`ui/ics_feed.dart` isola validazione HTTPS/DNS, pinning socket, redirects e limiti. `IcsFeedService` sostituisce la sorgente tramite `IcsLibrary` solo dopo download e parsing, mentre la UI conserva il modello read-only e SharedPreferences owner-scoped. Niente API/SQL. [Specifica](P2-ICS-FEEDS.md).
+

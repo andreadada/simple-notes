@@ -8,6 +8,9 @@ on:
       - infra/t4-preflight.sh
       - infra/t4-check-api.sh
       - infra/t4-inspect-db.sh
+      - infra/validate-release-capabilities.py
+      - infra/test_release_capabilities.py
+      - infra/release-readiness.sh
       - .github/workflows/compose-ci.yml
   pull_request:
     paths:
@@ -18,6 +21,9 @@ on:
       - infra/t4-preflight.sh
       - infra/t4-check-api.sh
       - infra/t4-inspect-db.sh
+      - infra/validate-release-capabilities.py
+      - infra/test_release_capabilities.py
+      - infra/release-readiness.sh
   workflow_dispatch:
 
 jobs:
@@ -28,7 +34,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Validate backup script syntax (no Docker operations)
-        run: bash -n infra/backup-postgres.sh infra/verify-restore.sh infra/t4-preflight.sh infra/t4-check-api.sh infra/t4-inspect-db.sh
+        run: bash -n infra/backup-postgres.sh infra/verify-restore.sh infra/t4-preflight.sh infra/t4-check-api.sh infra/t4-inspect-db.sh infra/release-readiness.sh
+      - name: Unit-test strict release capability contract offline
+        run: python3 -m unittest discover -s infra -p 'test_release_capabilities.py' -v
       - name: Validate build Compose without runtime secrets
         run: |
           # Coolify uses a build-time.env with no runtime-only credentials.
@@ -89,6 +97,45 @@ jobs:
           # Read-only inventory must accept this specific synthetic database.
           DB_CONTAINER="$db_name" EXPECTED_POSTGRES_DB=synthetic \
             bash infra/t4-inspect-db.sh
+          # A V6 database MUST fail a strict V10 client release gate.
+          if DB_CONTAINER="$db_name" EXPECTED_POSTGRES_DB=synthetic \
+              REQUIRE_FLYWAY_VERSION=10 bash infra/t4-inspect-db.sh; then
+            echo "ERROR: V6 database was incorrectly accepted as V10" >&2
+            exit 1
+          fi
+          # Synthetic-only additive rehearsal of columns and Flyway entries.
+          # No production DB, Docker volume, or live API is connected.
+          docker exec "$db_name" psql -U ciuser -d synthetic \
+            -v ON_ERROR_STOP=1 -c '
+              ALTER TABLE task ADD COLUMN due_kind TEXT,
+                ADD COLUMN due_date DATE,
+                ADD COLUMN due_time TIME,
+                ADD COLUMN due_timezone TEXT,
+                ADD COLUMN due_offset_seconds INTEGER,
+                ADD COLUMN block_start_at TIMESTAMPTZ,
+                ADD COLUMN block_end_at TIMESTAMPTZ,
+                ADD COLUMN block_timezone TEXT,
+                ADD COLUMN blocks_json TEXT NOT NULL DEFAULT '"'"'[]'"'"',
+                ADD COLUMN recurrence_json TEXT NOT NULL DEFAULT '"'"'{"kind":"none"}'"'"';
+              INSERT INTO flyway_schema_history (installed_rank,version,success)
+                VALUES (7,'"'"'7'"'"',true),(8,'"'"'8'"'"',true),
+                       (9,'"'"'9'"'"',true),(10,'"'"'10'"'"',true);
+            '
+          DB_CONTAINER="$db_name" EXPECTED_POSTGRES_DB=synthetic \
+            REQUIRE_FLYWAY_VERSION=10 bash infra/t4-inspect-db.sh
+          # Flyway V10 history alone is not proof if the column is absent.
+          docker exec "$db_name" psql -U ciuser -d synthetic \
+            -v ON_ERROR_STOP=1 -c 'ALTER TABLE task DROP COLUMN recurrence_json;'
+          if DB_CONTAINER="$db_name" EXPECTED_POSTGRES_DB=synthetic \
+              REQUIRE_FLYWAY_VERSION=10 bash infra/t4-inspect-db.sh; then
+            echo "ERROR: incomplete V10 schema was incorrectly accepted" >&2
+            exit 1
+          fi
+          docker exec "$db_name" psql -U ciuser -d synthetic \
+            -v ON_ERROR_STOP=1 -c \
+              'ALTER TABLE task ADD COLUMN recurrence_json TEXT NOT NULL DEFAULT '"'"'{"kind":"none"}'"'"';'
+          DB_CONTAINER="$db_name" EXPECTED_POSTGRES_DB=synthetic \
+            REQUIRE_FLYWAY_VERSION=10 bash infra/t4-inspect-db.sh
           if DB_CONTAINER="$db_name" EXPECTED_POSTGRES_DB=wrong_database \
               bash infra/t4-inspect-db.sh; then
             echo "ERROR: wrong DB identity was accepted" >&2

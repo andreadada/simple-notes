@@ -47,8 +47,8 @@ void main() {
     expect(icsSourceEventCount(source), '1 eventi · 0 serie');
     expect(icsSourceRefreshLabel(source),
         contains('Ultimo aggiornamento riuscito:'));
-    final details = icsSourceKindLabel(source) + ' ' +
-        icsSourceRefreshLabel(source);
+    final details = '${icsSourceKindLabel(source)} '
+        '${icsSourceRefreshLabel(source)}';
     expect(details, isNot(contains('PRIVATE')));
     expect(details, isNot(contains('private.ics')));
     final local = fixtureLibrary().calendars.first;

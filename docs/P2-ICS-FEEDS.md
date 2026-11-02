@@ -1,6 +1,6 @@
 # P2.3C — Sottoscrizioni ICS HTTPS con aggiornamento manuale
 
-**Stato:** implementazione in branch `feature/p2-3c-ics-https-feeds` (02/11/2026), Flutter candidata `0.28.0+30`. CI e merge da attestare. Non è un sistema di sincronizzazione cloud del calendario e non richiede alcuna migrazione backend.
+**Stato 02/11/2026:** integrata su `main` con [PR #24](https://github.com/andreadada/simple-notes/pull/24), Flutter `0.28.0+30`; [CI Flutter](https://github.com/andreadada/simple-notes/actions/runs/41460378203) **success** (182 test, Windows EXE/MSIX, Android JDK17/21), [Markdown](https://github.com/andreadada/simple-notes/actions/runs/41460378261) **success**. Test real-device e deploy non eseguiti. Non è un sistema di sincronizzazione cloud del calendario e non richiede alcuna migrazione backend.
 
 ## Flusso utente
 
@@ -17,6 +17,7 @@
 - **Proxy disabilitati** (`DIRECT`), niente credenziali aggiuntive, cookie inviati o bypass dei certificati. Accettate solo risposte HTTPS 200.
 - Redirect automatici disabilitati; massimo **due** redirect espliciti, sempre stesso host HTTPS e porta 443, senza loop o downgrade. Ogni nuovo socket viene risolto e controllato nuovamente. Redirect cross-origin falliscono chiusi (anche se legittimi: è una limitazione deliberata di sicurezza).
 - Timeout connessione 6 secondi, timeout totale download 20 secondi, limite di 1 MiB anche **dopo decompressione**; file vuoti o non-ICS bloccano il salvataggio.
+- **Limite privacy:** l'URL completo (incluso l'eventuale token nella query) è memorizzato nello SharedPreferences del dispositivo, non cifrato ulteriormente dall'app. È protetto dalle normali restrizioni di accesso dell'OS, non da crittografia end-to-end; non importare feed sensibili su dispositivi non fidati. Una gestione separata in secure storage richiederebbe una migrazione futura.
 - Gli URL possono includere token privati nella query: **non** mostrarli nelle etichette dei feed, nei messaggi errore, diagnostica, Analytics, log o PR. Sono salvati soltanto nelle preferenze locali dell'owner. Non rappresentano un login Google Calendar/Outlook; l'utente deve ottenere un URL ICS esportato e consentire esplicitamente la richiesta.
 - Nessuna garanzia per feed con redirect verso provider/CDN esterni: in questa fase è richiesto un URL HTTPS diretto o un redirect sullo stesso host.
 

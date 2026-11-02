@@ -1,6 +1,6 @@
 # Simple Notes
 
-> **Stato operativo 01/11/2026:** P2.3B ricorrenze ICS integrata in `main` ([PR #23](https://github.com/andreadada/simple-notes/pull/23), Flutter `0.27.0+29`; [CI Flutter](https://github.com/andreadada/simple-notes/actions/runs/41350187352) verde: **174 test**, Windows EXE/MSIX, Android JDK17/21; [Markdown](https://github.com/andreadada/simple-notes/actions/runs/41350191590) verde). Nessun deploy, reset o test hardware. Backend repo Flyway V10, ultima VPS V8 attestata. [Stato](docs/CURRENT-STATUS.md) · [ICS RRULE](docs/P2-ICS-RECURRENCE.md).
+> **Stato operativo 02/11/2026:** P2.3C feed ICS HTTPS integrata su `main` ([PR #24](https://github.com/andreadada/simple-notes/pull/24), Flutter `0.28.0+30`; [CI Flutter](https://github.com/andreadada/simple-notes/actions/runs/41460378203) verde: **182 test**, Windows EXE/MSIX, Android JDK17/21; [Markdown](https://github.com/andreadada/simple-notes/actions/runs/41460378261) verde). Nessun deploy, installazione, reset o collaudo hardware. Backend repo V10, VPS ultima attestazione V8. [Stato](docs/CURRENT-STATUS.md) · [Feed ICS](docs/P2-ICS-FEEDS.md).
 
 App offline-first per **Windows 11 e Android** dedicata ad attività, note e pianificazione. Flutter/Forui con Drift SQLite locale, Google OAuth e sincronizzazione con Spring Boot/PostgreSQL su Coolify.
 
@@ -74,7 +74,7 @@ Integrato su `main` con [PR #22](https://github.com/andreadada/simple-notes/pull
 
 Flutter `0.27.0+29`: le serie RRULE importate da file possono mostrare ripetizioni ed eccezioni RDATE/EXDATE/RECURRENCE-ID, generate solo per il giorno visualizzato. Archivio locale schema 3 con lettura versioni 1/2, senza cloud o feed URL; nessun deploy. [Specifica](docs/P2-ICS-RECURRENCE.md).
 
-## P2.3C — Feed ICS da URL (candidata)
+## P2.3C — Feed ICS da URL (main, PR #24)
 
 Aggiunta di un URL HTTPS nella vista calendario, download solo su conferma, proiezione read-only offline con refresh manuale e cache conservata su errore. I link privati con query-token non vengono mostrati nell'interfaccia. Nessun server o OAuth aggiuntivo. [Specifica](docs/P2-ICS-FEEDS.md).
 

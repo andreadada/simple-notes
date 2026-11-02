@@ -1,6 +1,6 @@
 # Simple Notes — Passaggio di consegne (handoff)
 
-> **Stato operativo 01/11/2026:** P2.3B ricorrenze ICS integrata in `main` ([PR #23](https://github.com/andreadada/simple-notes/pull/23), Flutter `0.27.0+29`; [CI Flutter](https://github.com/andreadada/simple-notes/actions/runs/41350187352) verde: **174 test**, Windows EXE/MSIX, Android JDK17/21; [Markdown](https://github.com/andreadada/simple-notes/actions/runs/41350191590) verde). Nessun deploy, reset o test hardware. Backend repo Flyway V10, ultima VPS V8 attestata. [Stato](CURRENT-STATUS.md) · [ICS RRULE](P2-ICS-RECURRENCE.md).
+> **Stato operativo 02/11/2026:** P2.3C feed ICS HTTPS integrata su `main` ([PR #24](https://github.com/andreadada/simple-notes/pull/24), Flutter `0.28.0+30`; [CI Flutter](https://github.com/andreadada/simple-notes/actions/runs/41460378203) verde: **182 test**, Windows EXE/MSIX, Android JDK17/21; [Markdown](https://github.com/andreadada/simple-notes/actions/runs/41460378261) verde). Nessun deploy, installazione, reset o collaudo hardware. Backend repo V10, VPS ultima attestazione V8. [Stato](CURRENT-STATUS.md) · [Feed ICS](P2-ICS-FEEDS.md).
 
 <!-- CURRENT-STATUS-REF -->
 
@@ -310,7 +310,7 @@ PR #22 integrata su `main`, Flutter `0.26.0+28`. Estensione locale `IcsCalendar`
 
 PR #23 merged su `main`, Flutter `0.27.0+29`. Nuovi `ui/ics_recurrence_rule.dart` e `ui/ics_recurring_event.dart` per le serie RRULE ed eccezioni calcolate per giorno; `ics_calendar.dart` interpreta VEVENT master/override e salva JSON ICS schema 3 solo dopo conferma. Nessuna nuova API, Flyway, Drift, outbox o rete. CI 174 test, Windows EXE/MSIX, Android JDK17/21 e Markdown verdi; hardware batch separato. [Contratto](P2-ICS-RECURRENCE.md).
 
-## Handoff P2.3C (candidata 02/11/2026)
+## Handoff P2.3C (main, PR #24, 02/11/2026)
 
-Branch `feature/p2-3c-ics-https-feeds`, Flutter `0.28.0+30`. `ui/ics_feed.dart` per HTTPS DNS-pinned, URL policy, same-host redirects, timeout e byte limit, e servizio immutable subscribe/refresh. Dialog Forui in `ics_calendar_controls.dart`, cache offline in `IcsLibrary` schema 3, metadato UTC opzionale. Nessun deploy, backend, API o outbox. [Contratto](P2-ICS-FEEDS.md).
+PR #24 merged su `main`, Flutter `0.28.0+30`; CI 182 test, Windows EXE/MSIX, Android JDK17/21 e Markdown verdi. `ui/ics_feed.dart` per HTTPS DNS-pinned, URL policy, same-host redirects, timeout e byte limit, e servizio immutable subscribe/refresh. Dialog Forui in `ics_calendar_controls.dart`, cache offline in `IcsLibrary` schema 3, metadato UTC opzionale. Nessun deploy, backend, API o outbox. [Contratto](P2-ICS-FEEDS.md).
 

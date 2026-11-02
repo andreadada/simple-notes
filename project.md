@@ -1,12 +1,12 @@
 # Simple Notes — Progetto e roadmap
 
-> **Stato operativo 01/11/2026:** P2.3B ricorrenze ICS integrata in `main` ([PR #23](https://github.com/andreadada/simple-notes/pull/23), Flutter `0.27.0+29`; [CI Flutter](https://github.com/andreadada/simple-notes/actions/runs/41350187352) verde: **174 test**, Windows EXE/MSIX, Android JDK17/21; [Markdown](https://github.com/andreadada/simple-notes/actions/runs/41350191590) verde). Nessun deploy, reset o test hardware. Backend repo Flyway V10, ultima VPS V8 attestata. [Stato](docs/CURRENT-STATUS.md) · [ICS RRULE](docs/P2-ICS-RECURRENCE.md).
+> **Stato operativo 02/11/2026:** P2.3C feed ICS HTTPS integrata su `main` ([PR #24](https://github.com/andreadada/simple-notes/pull/24), Flutter `0.28.0+30`; [CI Flutter](https://github.com/andreadada/simple-notes/actions/runs/41460378203) verde: **182 test**, Windows EXE/MSIX, Android JDK17/21; [Markdown](https://github.com/andreadada/simple-notes/actions/runs/41460378261) verde). Nessun deploy, installazione, reset o collaudo hardware. Backend repo V10, VPS ultima attestazione V8. [Stato](docs/CURRENT-STATUS.md) · [Feed ICS](docs/P2-ICS-FEEDS.md).
 
 <!-- CURRENT-STATUS-REF -->
 
 **Obiettivo:** Windows 11 + Android offline-first, Google OAuth, Flutter/Forui/Drift + Spring Boot/PostgreSQL su Coolify. Regole UX in [design.md](design.md); deploy sicuro in [P1-RELEASE-BATCH.md](docs/P1-RELEASE-BATCH.md). Le checklist sotto includono traguardi storici: `[x]` significa **codice verificato nella CI o prova specifica**, non distribuzione sul VPS.
 
-## Gate corrente (CI P2.3B superata; distribuzione non eseguita)
+## Gate corrente (CI P2.3C superata; distribuzione non eseguita)
 
 - [x] P1.7 Android con scheduler inexact, ledger, opt-in e CI verde (PR #6). [ ] Prova fisica Android app chiusa/reboot e controllo permessi; [x] codice packaging MSIX + promemoria Windows integrato (PR #7, CI verde); [ ] test fisici MSIX/identità/dati e firma pubblica.
 - [ ] Verificare Flyway V10, health **e** capability su Coolify prima di nuovi client.
@@ -357,11 +357,12 @@ Esempio: `2026-10-21 14:20 CEST | commit abc1234 | Aggiunto modulo promemoria e 
 
 - 2026-11-01 | merge(p2.3b) | PR #23 integrata su `main` (`41732169`), Flutter 0.27.0+29, CI #41350187352 success (174 test, Windows EXE/MSIX, Android JDK17/21), Markdown #41350191590 success. Nessun deploy, reset o collaudo fisico; prossimo P2.3C feed HTTPS.
 
-## P2.3C — Feed ICS HTTPS (branch, candidata)
+## P2.3C — Feed ICS HTTPS (main, PR #24)
 
 - [x] URL HTTPS con DNS pinning e controllo indirizzi privati, redirect consentiti solo sul medesimo host, limite 1 MiB e timeout.
 - [x] Forui import/refresh manuale, snapshot locale last-known-good, niente task/outbox/cloud.
-- [ ] CI e merge da attestare, nessun deploy o collaudo hardware. [Specifica](docs/P2-ICS-FEEDS.md).
+- [x] CI Flutter 182 test, Windows EXE/MSIX, Android JDK17/21 e Markdown verdi; [ ] E2E hardware e deploy cumulativo ancora aperti. [Specifica](docs/P2-ICS-FEEDS.md).
 
 - 2026-11-02 | feat(p2.3c) | Branch `feature/p2-3c-ics-https-feeds`; URL manuali con cache locale e rete protetta. CI/merge non attestati.
 
+- 2026-11-02 | merge(p2.3c) | PR #24 merged (`3170cc3e`), Flutter 0.28.0+30, CI Flutter #41460378203 PASS (182 test, Windows/Android), Markdown #41460378261 PASS. Nessun deploy o test fisico; prossimo P2.3D gestione UI sorgenti.

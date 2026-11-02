@@ -1,11 +1,12 @@
 # Stato corrente — Simple Notes
 
-**Aggiornato 1 novembre 2026.** Questo documento prevale sulla cronologia. **Codice/CI, deploy Coolify, installazione e collaudo fisico sono stati distinti.**
+**Aggiornato 2 novembre 2026.** Questo documento prevale sulla cronologia. **Codice/CI, deploy Coolify, installazione e collaudo fisico sono stati distinti.**
 
 | Area | Stato verificato | Gate ancora aperti |
 |---|---|---|
-| `main` | **P0–P1.18 + P2.1 + P2.2 + P2.3A + P2.3B integrate**. [PR #23](https://github.com/andreadada/simple-notes/pull/23) merged, commit [`41732169`](https://github.com/andreadada/simple-notes/commit/41732169b7e5145d87c7f2da028e502b7dbf32b4), Flutter **`0.27.0+29`** | Collaudo Windows/Android reali ancora aperto |
+| `main` | **P0–P1.18 + P2.1 + P2.2 + P2.3A/B/C integrate**. [PR #24](https://github.com/andreadada/simple-notes/pull/24) merged, commit [`3170cc3e`](https://github.com/andreadada/simple-notes/commit/3170cc3e1a2d8e86664b87d82ec8ea208c8afd4d), Flutter **`0.28.0+30`** | Test fisici Windows/Android ancora aperti |
 | P1.18 integrata (storico) | [PR #19](https://github.com/andreadada/simple-notes/pull/19) merged, Flutter **`0.23.0+25`**, temi chiaro/scuro/sistema, preferenza locale e Sticky | CI verde; test visivi e su dispositivi fisici ancora aperti |
+| CI P2.3C | [Flutter CI #41460378203](https://github.com/andreadada/simple-notes/actions/runs/41460378203) **success** (182 test, Windows EXE/MSIX, Android JDK17/21); [Markdown #41460378261](https://github.com/andreadada/simple-notes/actions/runs/41460378261) **success** | Non sostituisce prove reali URL HTTPS e sync server-first |
 | CI P2.3B | [Flutter CI #41350187352](https://github.com/andreadada/simple-notes/actions/runs/41350187352) **success** (174 test, Windows EXE/MSIX, Android JDK17/21); [Markdown #41350191590](https://github.com/andreadada/simple-notes/actions/runs/41350191590) **success** | Non certifica upgrade ICS schema 2→3 o test reali |
 | CI P2.3A | [Flutter CI #41339906564](https://github.com/andreadada/simple-notes/actions/runs/41339906564): **success** (166 test, Windows EXE/MSIX, Android JDK17/21). [Markdown #41339910458](https://github.com/andreadada/simple-notes/actions/runs/41339910458): **success** | Non certifica l'upgrade ICS schema 1→2 sui dispositivi reali |
 | CI P2.2 | [Flutter CI #41157322208](https://github.com/andreadada/simple-notes/actions/runs/41157322208): **success** (162 test, Windows EXE/MSIX, Android JDK17/21). [Markdown #41157326277](https://github.com/andreadada/simple-notes/actions/runs/41157326277): **success** | Non certifica picker ICS su dispositivi fisici o deploy |
@@ -27,7 +28,8 @@
 - **P2.2 (integrata in main, PR #21):** file ICS esterni, locali per account, read-only in calendario giorno/settimana/mese, fino a 5 fonti; nessun task/outbox/cloud. [Specifica](P2-ICS.md).
 - **P2.3A (integrata in main, PR #22):** ID stabili per sorgenti ICS, formato locale schema 2 con lettura legacy schema 1, `file/url` (URL ancora senza fetch) e rimozione per ID. [Specifica](P2-ICS-SOURCES.md).
 - **P2.3B (integrata, PR #23):** ricorrenze RRULE/RDATE/EXDATE/RECURRENCE-ID locali con proiezione lazy e schema 3. [Specifica](P2-ICS-RECURRENCE.md).
-- **P2 successiva/P3:** subscription ICS via URL, ricorrenze complete, export CSV, backup completo, condivisione e smart opzionali **non implementati**.
+- **P2.3C (main, PR #24):** HTTPS ICS manuale, DNS pinning e restrizioni SSRF/redirect, cache offline, refresh esplicito; nessun OAuth/backend. [Specifica](P2-ICS-FEEDS.md).
+- **P2 successiva/P3:** subscription ICS via URL integrate in P2.3C; ricorrenze complete, export CSV, backup completo, condivisione e smart opzionali **non implementati**.
 
 ## Gate di rilascio ancora aperti
 
@@ -61,7 +63,7 @@ PR #19 merged con CI di codice e documentazione verde sullo SHA finale. Restano 
 
 PR #23 merged su `main`, Flutter `0.27.0+29`, RRULE/RDATE/EXDATE/RECURRENCE-ID con proiezione lazy su giorno, schema locale 3 leggibile insieme ai vecchi 1/2, nessun fetch URL. **CI 174 test/Windows/Android/Markdown verde; nessun deploy Coolify o collaudo hardware.** [Specifica](P2-ICS-RECURRENCE.md).
 
-## P2.3C — Feed HTTPS ICS (candidata 02/11/2026)
+## P2.3C — Feed HTTPS ICS (main, PR #24, 02/11/2026)
 
-Branch `feature/p2-3c-ics-https-feeds`, Flutter `0.28.0+30`: fonte HTTPS con DNS pinning, protezioni SSRF, refresh manuale e cache locale preservata su fallimento. Nessun backend, Flyway, outbox o OAuth in più. CI/merge e collaudo fisico da verificare. [Specifica](P2-ICS-FEEDS.md).
+PR #24 integrata su `main`, Flutter `0.28.0+30`: fonte HTTPS con DNS pinning, protezioni SSRF, refresh manuale e cache locale preservata su fallimento. Nessun backend, Flyway, outbox o OAuth in più. CI Flutter 182 test, build Windows/Android e Markdown verdi; collaudo fisico ancora aperto. [Specifica](P2-ICS-FEEDS.md).
 

@@ -89,3 +89,8 @@ Archivio JSON locale `schema=2` nella **stessa** preferenza owner-scoped ICS v1.
 ## Vincolo P2.3B — Serie ICS
 
 Evento esterno ricorrente sempre **read-only** e **device-local per account**: non creare task, notifiche, API o outbox. RRULE solo per sottoinsieme dichiarato, senza materializzare serie infinite; EXDATE prevale su RDATE/RRULE, RECURRENCE-ID individua l'occorrenza originale. Non ignorare parametri RFC ignoti: import fail-closed. JSON schema 3 letto insieme a schema 1/2 senza scrittura al load; vietato downgrade silenzioso a client P2.3A. [Specifica](docs/P2-ICS-RECURRENCE.md).
+
+## Regola P2.3C — Fonti ICS HTTPS
+
+Fetch URL **solo su gesto esplicito** utente, nessun auto-refresh/background o token OAuth. Controllare DNS per socket, rifiutare IP privati e redirect cross-host, non esporre query token in UI/log. Conservare la cache dopo errori, isolare per owner, non convertire VEVENT in task/outbox. Il caricamento schema 1/2/3 non deve riscrivere preferenze. [Specifica](docs/P2-ICS-FEEDS.md).
+

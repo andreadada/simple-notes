@@ -60,3 +60,8 @@ PR #19 merged con CI di codice e documentazione verde sullo SHA finale. Restano 
 ## P2.3B — Ricorrenze ICS integrate (main, PR #23, 01/11/2026)
 
 PR #23 merged su `main`, Flutter `0.27.0+29`, RRULE/RDATE/EXDATE/RECURRENCE-ID con proiezione lazy su giorno, schema locale 3 leggibile insieme ai vecchi 1/2, nessun fetch URL. **CI 174 test/Windows/Android/Markdown verde; nessun deploy Coolify o collaudo hardware.** [Specifica](P2-ICS-RECURRENCE.md).
+
+## P2.3C — Feed HTTPS ICS (candidata 02/11/2026)
+
+Branch `feature/p2-3c-ics-https-feeds`, Flutter `0.28.0+30`: fonte HTTPS con DNS pinning, protezioni SSRF, refresh manuale e cache locale preservata su fallimento. Nessun backend, Flyway, outbox o OAuth in più. CI/merge e collaudo fisico da verificare. [Specifica](P2-ICS-FEEDS.md).
+

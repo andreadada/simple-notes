@@ -45,3 +45,8 @@ Con [PR #22](https://github.com/andreadada/simple-notes/pull/22) su `main` è st
 ## Estensione P2.3B — Ricorrenze locali
 
 La P2.2 storicamente rifiutava ogni ricorrenza. La P2.3B integrata in `main` (PR #23) introduce un subset RFC5545 esplicito, con serie/exception e proiezione lazy; opzioni avanzate non supportate restano errori bloccanti prima del salvataggio. Nuovo schema 3 con lettura 1/2; nessun URL fetch o cloud. [Specifica](P2-ICS-RECURRENCE.md).
+
+## Evoluzione P2.3C — Feed HTTPS
+
+La P2.2 era file-only. La candidata P2.3C introduce URL HTTPS diretti con download e refresh manuali e cache offline; parser RFC della P2.3B invariato e fallimenti senza modifica dello storico locale. Nessuna sincronizzazione task. [Specifica](P2-ICS-FEEDS.md).
+

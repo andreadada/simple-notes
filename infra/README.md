@@ -1,7 +1,7 @@
 # Backend — Coolify
 
 <!-- CURRENT-STATUS-REF -->
-> **Stato operativo 01/11/2026:** P2.3B ricorrenze ICS integrata su `main` ([PR #23](https://github.com/andreadada/simple-notes/pull/23), Flutter `0.27.0+29`; [CI Flutter](https://github.com/andreadada/simple-notes/actions/runs/41350187352) verde: 174 test, Windows EXE/MSIX, Android JDK17/21; [Markdown](https://github.com/andreadada/simple-notes/actions/runs/41350191590) verde). Nessun deploy Coolify, reset o test hardware. Backend Flyway V10 repo, VPS ultima attestazione V8. [Stato](../docs/CURRENT-STATUS.md) · [Specifica](../docs/P2-ICS-RECURRENCE.md).
+> **Stato operativo 02/11/2026:** P2.3C feed ICS HTTPS integrata su `main` ([PR #24](https://github.com/andreadada/simple-notes/pull/24), Flutter `0.28.0+30`; [CI Flutter](https://github.com/andreadada/simple-notes/actions/runs/41460378203) **success**: 182 test, Windows EXE/MSIX, Android JDK17/21; [Markdown](https://github.com/andreadada/simple-notes/actions/runs/41460378261) **success**). Nessun deploy, reset o test fisico. Backend repo Flyway V10, ultima VPS attestata V8. [Stato](../docs/CURRENT-STATUS.md) · [Feed ICS](../docs/P2-ICS-FEEDS.md).
 
 
 ## Cronologia — rilascio 0.7.0+9 (superato da P1.6)

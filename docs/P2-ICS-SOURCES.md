@@ -57,5 +57,5 @@ La P2.3A schema 2 è compatibile in lettura con P2.3B; il nuovo schema 3 aggiung
 
 ## Evoluzione P2.3C — URL feed
 
-`kind=url` non è più soltanto metadato: la P2.3C candidata permette import/refresh HTTPS su richiesta. `lastFetchedUtc` opzionale nello schema 3, label solo hostname, token URI in query non visualizzato. Su errore restano le occorrenze cached. [Specifiche](P2-ICS-FEEDS.md).
+`kind=url` non è più soltanto metadato: la P2.3C integrata in `main` con PR #24 permette import/refresh HTTPS su richiesta. `lastFetchedUtc` opzionale nello schema 3, label solo hostname, token URI in query non visualizzato. Su errore restano le occorrenze cached. [Specifiche](P2-ICS-FEEDS.md).
 

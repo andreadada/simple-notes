@@ -23,6 +23,12 @@ class IcsEvent {
   final String uid, title, source;
   final String? startDay, endDay;
   final DateTime? startUtc, endUtc;
+
+  /// Display-only projection; preserves the original UID and source key.
+  IcsEvent withSource(String label) => IcsEvent(
+    uid: uid, title: title, source: label, startDay: startDay,
+    endDay: endDay, startUtc: startUtc, endUtc: endUtc,
+  );
   bool get allDay => startDay != null;
   bool onDay(DateTime d) {
     if (allDay) {
@@ -86,8 +92,13 @@ class IcsCalendar {
   /// The library assigns an identity on import, preserving it on reimport.
   const IcsCalendar(this.name, this.events,
       {this.id = '', this.kind = IcsSourceKind.file, this.sourceUrl,
-       this.series = const [], this.lastFetchedUtc});
+       this.series = const [], this.lastFetchedUtc,
+       this.displayLabel});
+  /// Original file name or feed hostname remains the immutable import key.
   final String id, name;
+  /// Optional custom label; not used by file reimports or URL refreshes.
+  final String? displayLabel;
+  String get label => displayLabel ?? name;
   final IcsSourceKind kind;
   /// Private feed URL; never expose full URLs with query tokens in UI/logs.
   final String? sourceUrl;
@@ -98,12 +109,19 @@ class IcsCalendar {
 
   IcsCalendar withId(String value) =>
       IcsCalendar(name, events, id: value, kind: kind, sourceUrl: sourceUrl,
-          series: series, lastFetchedUtc: lastFetchedUtc);
+          series: series, lastFetchedUtc: lastFetchedUtc,
+          displayLabel: displayLabel);
+
+  IcsCalendar withDisplayLabel(String? value) => IcsCalendar(
+    name, events, id: id, kind: kind, sourceUrl: sourceUrl,
+    series: series, lastFetchedUtc: lastFetchedUtc, displayLabel: value,
+  );
 
   Map<String, dynamic> toJson() => {
     'id': id.isEmpty ? _legacyFileId(name) : id,
     'kind': kind.name,
     'name': name,
+    if (displayLabel != null) 'displayLabel': displayLabel,
     if (sourceUrl != null) 'sourceUrl': sourceUrl,
     if (lastFetchedUtc != null)
       'lastFetchedUtc': lastFetchedUtc!.toUtc().toIso8601String(),
@@ -115,6 +133,7 @@ class IcsCalendar {
   factory IcsCalendar.fromJson(Map<String, dynamic> raw,
       {required int schema}) {
     final name = raw['name'] as String;
+    final displayLabel = schema == 3 ? raw['displayLabel'] as String? : null;
     final id = schema == 1 ? _legacyFileId(name) : raw['id'] as String;
     final kind = schema == 1 ? IcsSourceKind.file :
         IcsSourceKind.values.byName(raw['kind'] as String);
@@ -132,6 +151,10 @@ class IcsCalendar {
             Map<String, dynamic>.from(item as Map))).toList()
         : <IcsRecurringEvent>[];
     if (name.trim().isEmpty || name.length > 180 ||
+        (displayLabel != null &&
+         (displayLabel.isEmpty || displayLabel.length > 80 ||
+          displayLabel != displayLabel.trim() ||
+          RegExp(r'[\x00-\x1f\x7f]').hasMatch(displayLabel))) ||
         !RegExp(r'^[a-zA-Z0-9._:-]{1,128}$').hasMatch(id) ||
         (events.isEmpty && series.isEmpty) ||
         events.length + series.length > IcsParser.maxEvents ||
@@ -146,7 +169,7 @@ class IcsCalendar {
     }
     return IcsCalendar(name, List.unmodifiable(events), id: id,
         kind: kind, sourceUrl: sourceUrl, series: List.unmodifiable(series),
-        lastFetchedUtc: fetched);
+        lastFetchedUtc: fetched, displayLabel: displayLabel);
   }
 }
 
@@ -158,8 +181,10 @@ class IcsLibrary {
       0, (int sum, IcsCalendar c) => sum + c.events.length + c.series.length);
   List<IcsEvent> onDay(DateTime day) => [
     for (final c in calendars) ...[
-      for (final e in c.events) if (e.onDay(day)) e,
-      for (final group in c.series) ...group.onDay(day),
+      for (final e in c.events) if (e.onDay(day)) e.withSource(c.label),
+      for (final group in c.series)
+        for (final occurrence in group.onDay(day))
+          occurrence.withSource(c.label),
     ],
   ]..sort((a, b) {
     if (a.allDay != b.allDay) return a.allDay ? -1 : 1;
@@ -167,7 +192,7 @@ class IcsLibrary {
         a.startUtc!.compareTo(b.startUtc!);
   });
 
-  /// File reimports reuse identity by filename; URL sources match by id only.
+  /// File reimports reuse original filename; URLs reuse id or exact URL.
   /// No changes are persisted until the caller confirms and saves.
   IcsLibrary replace(IcsCalendar calendar) {
     IcsCalendar? existing;
@@ -188,13 +213,34 @@ class IcsLibrary {
     final id = existing == null ?
         (calendar.id.isEmpty ? const Uuid().v4() : calendar.id) :
         (existing.id.isEmpty ? _legacyFileId(existing.name) : existing.id);
-    final candidate = IcsCalendar.fromJson(calendar.withId(id).toJson(),
-        schema: 3);
+    final withLabel = calendar.withId(id).withDisplayLabel(
+        calendar.displayLabel ?? existing?.displayLabel);
+    final candidate = IcsCalendar.fromJson(withLabel.toJson(), schema: 3);
     final rest = calendars.where((c) => !identical(c, existing)).toList();
     if (rest.length >= maxSources) {
       throw const FormatException('Massimo cinque calendari ICS.');
     }
     return IcsLibrary(List.unmodifiable([...rest, candidate]));
+  }
+
+  /// Inline display rename preserves original import identity, event UID,
+  /// recurrence metadata, ordering and other sources.
+  IcsLibrary renameById(String id, String nextLabel) {
+    final label = nextLabel.trim();
+    if (label.isEmpty || label.length > 80 ||
+        RegExp(r'[\x00-\x1f\x7f]').hasMatch(label)) {
+      throw const FormatException('Nome calendario non valido (max 80 caratteri).');
+    }
+    if (!calendars.any((c) => c.id == id)) {
+      throw const FormatException('Sorgente ICS non trovata.');
+    }
+    return IcsLibrary(List.unmodifiable([
+      for (final calendar in calendars)
+        if (calendar.id == id)
+          IcsCalendar.fromJson(calendar.withDisplayLabel(
+              label == calendar.name ? null : label).toJson(), schema: 3)
+        else calendar,
+    ]));
   }
 
   /// Remove exactly one source, even if a future URL feed shares a file label.

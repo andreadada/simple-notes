@@ -95,3 +95,7 @@ Master, RRULE, date aggiuntive/escluse e override per RECURRENCE-ID appartengono
 
 Le richieste HTTPS avvengono dal dispositivo verso il provider ICS soltanto su richiesta esplicita; URL/cache owner-scoped non sono sincronizzati tra dispositivi e non producono outbox, mutation, task o token OAuth. [Specifica](P2-ICS-FEEDS.md).
 
+## P2.3D — Nomi sorgenti ICS locali
+
+`displayLabel` è salvata nelle stesse SharedPreferences ICS per owner e dispositivo; rinominarla non causa task/outbox/cursor, non chiama provider HTTPS né Simple Notes API e non sincronizza il nome sugli altri dispositivi. I master VEVENT mantengono filename/hostname originali. [Specifica](P2-ICS-SOURCE-MANAGEMENT.md).
+

@@ -59,3 +59,7 @@ La P2.3A schema 2 è compatibile in lettura con P2.3B; il nuovo schema 3 aggiung
 
 `kind=url` non è più soltanto metadato: la P2.3C integrata in `main` con PR #24 permette import/refresh HTTPS su richiesta. `lastFetchedUtc` opzionale nello schema 3, label solo hostname, token URI in query non visualizzato. Su errore restano le occorrenze cached. [Specifiche](P2-ICS-FEEDS.md).
 
+## Evoluzione P2.3D — Identità distinta da etichetta
+
+`IcsCalendar.name` mantiene il filename/hostname originale. `displayLabel` opzionale su JSON schema 3 è solo presentazione: edit inline, reimport e refresh usano ID/nome originale/URL, mai l'etichetta. I dati legacy rimangono leggibili senza nuova scrittura al load. [Specifica](P2-ICS-SOURCE-MANAGEMENT.md).
+

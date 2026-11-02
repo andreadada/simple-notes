@@ -94,3 +94,7 @@ RRULE e gli override dei VEVENT vengono interpretati localmente dal client, senz
 
 I GET diretti ai provider ICS via HTTPS non sono API Simple Notes e non includono credenziali dell'app: niente nuovi DTO, capability, Flyway, backend o Cloud sync. [Specifica](P2-ICS-FEEDS.md).
 
+## P2.3D — Nessun endpoint
+
+Modifica etichetta sorgente, conteggi eventi e ultimo refresh sono metadati e projection client-only: nessuna API, DTO, capability, nuova Flyway o token OAuth. Il feed HTTPS continua a scaricarsi soltanto tramite gesto utente. [Specifica](P2-ICS-SOURCE-MANAGEMENT.md).
+

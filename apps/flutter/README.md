@@ -203,3 +203,7 @@ Il modello `ui/ics_calendar.dart` assegna ID stabili a file e futuri feed, disti
 
 `lib/ui/ics_feed.dart` valida URL, IP DNS, redirect e bytes, effettuando fetch HTTPS solo su comando utente. Il servizio rinnova la sorgente locale solo dopo parsing completo. In `IcsCalendarControls`: dialog Forui URL e bottone Aggiorna. Metadato `lastFetchedUtc` opzionale nello schema ICS 3. Flutter `0.28.0+30`. [Specifica](../../docs/P2-ICS-FEEDS.md).
 
+## P2.3D — Gestione ICS inline
+
+Flutter `0.29.0+31`: `ui/ics_source_details.dart` descrive tipo, conteggi e ultimo refresh; `ics_calendar_controls.dart` ospita il pannello Forui e `InlineEditableTitle` (Enter/blur salva, Esc annulla). Il modello `IcsCalendar.displayLabel` è opzionale nello schema 3, con ID, URL, nome originario e RRULE invariati; `onDay` proietta la label solo in UI. Nessun deploy/SQL, test dispositivi alla fine del batch. [Specifica](../../docs/P2-ICS-SOURCE-MANAGEMENT.md).
+

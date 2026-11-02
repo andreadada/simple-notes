@@ -94,3 +94,7 @@ Evento esterno ricorrente sempre **read-only** e **device-local per account**: n
 
 Fetch URL **solo su gesto esplicito** utente, nessun auto-refresh/background o token OAuth. Controllare DNS per socket, rifiutare IP privati e redirect cross-host, non esporre query token in UI/log. Conservare la cache dopo errori, isolare per owner, non convertire VEVENT in task/outbox. Il caricamento schema 1/2/3 non deve riscrivere preferenze. [Specifica](docs/P2-ICS-FEEDS.md).
 
+## Regole P2.3D — ICS source displayLabel
+
+Il nome visibile ICS si modifica **direttamente nel testo** con InlineEditableTitle; niente pulsante Rinomina o modal. Non modificare `IcsCalendar.name`, URI feed, ID o UID evento: usare `displayLabel` opzionale (max 80 caratteri) distinto dall'identità originale. Reimport file e refresh URL preservano il label, eventi read-only visualizzano quello rinominato senza mutare il JSON dei master. Pannello sorgenti mostra solo hostname/refresh riuscito, mai URL completo/query-token. Storage schema 3 owner-scoped, non riscrivere al caricamento, nessuna modifica API/sync. [Contratto](docs/P2-ICS-SOURCE-MANAGEMENT.md).
+

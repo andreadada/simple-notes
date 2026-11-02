@@ -1,6 +1,6 @@
 # Simple Notes — Progetto e roadmap
 
-> **Stato operativo 02/11/2026:** P2.3D gestione sorgenti ICS integrata su `main` ([PR #25](https://github.com/andreadada/simple-notes/pull/25), Flutter `0.29.0+31`; [Flutter CI](https://github.com/andreadada/simple-notes/actions/runs/41471546808) **success**: 191 test, Windows EXE/MSIX, Android JDK17/21; [Markdown](https://github.com/andreadada/simple-notes/actions/runs/41471546568) **success**). Nessun deploy, reset, installazione o test hardware; backend repo Flyway V10, ultima VPS attestata V8. [Stato](docs/CURRENT-STATUS.md) · [Gestione ICS](docs/P2-ICS-SOURCE-MANAGEMENT.md).
+> **Stato operativo 02/11/2026:** R1 gate server-first integrato su `main` ([PR #26](https://github.com/andreadada/simple-notes/pull/26), commit [`f19ee8b0`](https://github.com/andreadada/simple-notes/commit/f19ee8b0a5bea2cb2c2231d85b3e8ad10a5233a7); [Compose CI](https://github.com/andreadada/simple-notes/actions/runs/41523319857) **success** con PostgreSQL 17 sintetico, [Markdown](https://github.com/andreadada/simple-notes/actions/runs/41523319860) **success**). Flutter resta `0.29.0+31` e 191 test già attestati. **VPS reale V10, health/capability live, backup recente e collaudo hardware non verificati**; ultimo stato VPS attestato V8. Nessun deploy o intervento su dati. [Stato](docs/CURRENT-STATUS.md) · [R1]( docs/RELEASE-V10-READINESS.md).
 
 <!-- CURRENT-STATUS-REF -->
 
@@ -377,11 +377,12 @@ Esempio: `2026-10-21 14:20 CEST | commit abc1234 | Aggiunto modulo promemoria e 
 
 - 2026-11-02 | merge(p2.3d) | PR #25 integrata su `main` (`5be50240`), Flutter `0.29.0+31`, Flutter CI #41471546808 success (191 test, Windows EXE/MSIX, Android JDK17/21), Markdown #41471546568 success. Nessun deploy, reset o prova fisica. Prossimo gate: server-first Flyway V10 e collaudo cumulativo.
 
-## R1 — Gate di rilascio server-first V10 (strumenti read-only, candidata)
+## R1 — Gate di rilascio server-first V10 (main, PR #26)
 
 - [x] Verifica opzionale versione Flyway **V10 esatta** in `infra/t4-inspect-db.sh` senza migrazioni o mutazioni di dati.
 - [x] Verifica autenticata di capability complete (task due, time block singolo/multiplo, recurrence, note restore) in `infra/t4-check-api.sh` con flag strict; comando cumulativo `infra/release-readiness.sh`.
-- [x] Test sintetici PostgreSQL 17 e capability senza credenziali in Compose CI; [ ] stato VPS reale V10/API **non ancora verificato**, [ ] Windows↔Android E2E, deploy e firma non autorizzati. [Runbook](docs/RELEASE-V10-READINESS.md).
+- [x] Test sintetici PostgreSQL 17 e capability senza credenziali in Compose CI; [x] PR #26 e CI Compose/Markdown verdi; [ ] stato VPS reale V10/API **non ancora verificato**, [ ] Windows↔Android E2E, deploy e firma non autorizzati. [Runbook](docs/RELEASE-V10-READINESS.md).
 
 - 2026-11-02 | candidate(r1) | Preparato gate read-only Flyway V10 e API full-schema con CI sintetica. Nessun accesso/modifica al DB VPS, Coolify, SQLite o outbox; test hardware ancora aperti.
 
+- 2026-11-02 | merge(r1) | PR #26 (`f19ee8b0`) integrata su `main`, Compose CI #41523319857 e Markdown #41523319860 verdi. Solo controlli read-only aggiunti: VPS live V10, backup recente, deploy e E2E Windows/Android ancora aperti. [Runbook](docs/RELEASE-V10-READINESS.md).

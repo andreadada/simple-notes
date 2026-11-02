@@ -1,6 +1,6 @@
 # AGENTS.md — Istruzioni operative per agenti AI
 
-> **Stato operativo 02/11/2026:** P2.3D gestione sorgenti ICS integrata su `main` ([PR #25](https://github.com/andreadada/simple-notes/pull/25), Flutter `0.29.0+31`; [Flutter CI](https://github.com/andreadada/simple-notes/actions/runs/41471546808) **success**: 191 test, Windows EXE/MSIX, Android JDK17/21; [Markdown](https://github.com/andreadada/simple-notes/actions/runs/41471546568) **success**). Nessun deploy, reset, installazione o test hardware; backend repo Flyway V10, ultima VPS attestata V8. [Stato](docs/CURRENT-STATUS.md) · [Gestione ICS](docs/P2-ICS-SOURCE-MANAGEMENT.md).
+> **Stato operativo 02/11/2026:** R1 gate server-first integrato su `main` ([PR #26](https://github.com/andreadada/simple-notes/pull/26), commit [`f19ee8b0`](https://github.com/andreadada/simple-notes/commit/f19ee8b0a5bea2cb2c2231d85b3e8ad10a5233a7); [Compose CI](https://github.com/andreadada/simple-notes/actions/runs/41523319857) **success** con PostgreSQL 17 sintetico, [Markdown](https://github.com/andreadada/simple-notes/actions/runs/41523319860) **success**). Flutter resta `0.29.0+31` e 191 test già attestati. **VPS reale V10, health/capability live, backup recente e collaudo hardware non verificati**; ultimo stato VPS attestato V8. Nessun deploy o intervento su dati. [Stato](docs/CURRENT-STATUS.md) · [R1]( docs/RELEASE-V10-READINESS.md).
 
 <!-- CURRENT-STATUS-REF -->
 
@@ -100,5 +100,5 @@ Il nome visibile ICS si modifica **direttamente nel testo** con InlineEditableTi
 
 ## Regola rilascio R1 — Vietato confondere CI con deploy VPS
 
-Il gate server-first per il client cumulativo richiede **Flyway V10 reale**, nessuna migration fallita, colonne V7–V10, health UP e capability autenticate `taskDueSchema`, `timeBlockSchema`, `timeBlocksSchema`, `recurrenceSchema`, `noteRestoreSchema` tutti versione 1. Usare solo il wrapper read-only `infra/release-readiness.sh` con container verificato e token temporaneo nell'ambiente. Nessun reset/redeploy/backfill automatico, nessun segreto nel repo/chat; un test su DB sintetico non prova lo stato VPS. Conservare il workflow T4 senza strict flag per ispezioni storiche. [Runbook](docs/RELEASE-V10-READINESS.md).
+Il gate server-first (PR #26, CI sintetica verde) per il client cumulativo richiede **Flyway V10 reale**, nessuna migration fallita, colonne V7–V10, health UP e capability autenticate `taskDueSchema`, `timeBlockSchema`, `timeBlocksSchema`, `recurrenceSchema`, `noteRestoreSchema` tutti versione 1. Usare solo il wrapper read-only `infra/release-readiness.sh` con container verificato e token temporaneo nell'ambiente. Nessun reset/redeploy/backfill automatico, nessun segreto nel repo/chat; un test su DB sintetico non prova lo stato VPS. Conservare il workflow T4 senza strict flag per ispezioni storiche. [Runbook](docs/RELEASE-V10-READINESS.md).
 

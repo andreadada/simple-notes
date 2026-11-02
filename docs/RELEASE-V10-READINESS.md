@@ -1,6 +1,6 @@
 # Gate cumulativo R1 — Server-first Flyway V10 e capability
 
-**Stato 02/11/2026:** strumenti di verifica **read-only in sviluppo** su branch `feature/release-v10-readonly-gate`. La VPS reale **non è stata interrogata** durante questo incremento: l'ultima attestazione documentata è Flyway V8; il repository contiene Flyway V10. **Nessun deploy, backup, restore, reset o installazione effettuato.**
+**Stato 02/11/2026:** strumenti read-only integrati su `main` con [PR #26](https://github.com/andreadada/simple-notes/pull/26). [Compose CI #41523319857](https://github.com/andreadada/simple-notes/actions/runs/41523319857) e [Markdown #41523319860](https://github.com/andreadada/simple-notes/actions/runs/41523319860) success, esclusivamente su dati sintetici. La VPS reale **non è stata interrogata** durante questo incremento: l'ultima attestazione documentata è Flyway V8; il repository contiene Flyway V10. **Nessun deploy, backup, restore, reset o installazione effettuato.**
 
 ## Obiettivo e limiti
 

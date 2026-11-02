@@ -1,6 +1,6 @@
 # Simple Notes
 
-> **Stato operativo 02/11/2026:** P2.3D gestione sorgenti ICS integrata su `main` ([PR #25](https://github.com/andreadada/simple-notes/pull/25), Flutter `0.29.0+31`; [Flutter CI](https://github.com/andreadada/simple-notes/actions/runs/41471546808) **success**: 191 test, Windows EXE/MSIX, Android JDK17/21; [Markdown](https://github.com/andreadada/simple-notes/actions/runs/41471546568) **success**). Nessun deploy, reset, installazione o test hardware; backend repo Flyway V10, ultima VPS attestata V8. [Stato](docs/CURRENT-STATUS.md) · [Gestione ICS](docs/P2-ICS-SOURCE-MANAGEMENT.md).
+> **Stato operativo 02/11/2026:** R1 gate server-first integrato su `main` ([PR #26](https://github.com/andreadada/simple-notes/pull/26), commit [`f19ee8b0`](https://github.com/andreadada/simple-notes/commit/f19ee8b0a5bea2cb2c2231d85b3e8ad10a5233a7); [Compose CI](https://github.com/andreadada/simple-notes/actions/runs/41523319857) **success** con PostgreSQL 17 sintetico, [Markdown](https://github.com/andreadada/simple-notes/actions/runs/41523319860) **success**). Flutter resta `0.29.0+31` e 191 test già attestati. **VPS reale V10, health/capability live, backup recente e collaudo hardware non verificati**; ultimo stato VPS attestato V8. Nessun deploy o intervento su dati. [Stato](docs/CURRENT-STATUS.md) · [R1]( docs/RELEASE-V10-READINESS.md).
 
 App offline-first per **Windows 11 e Android** dedicata ad attività, note e pianificazione. Flutter/Forui con Drift SQLite locale, Google OAuth e sincronizzazione con Spring Boot/PostgreSQL su Coolify.
 
@@ -84,5 +84,5 @@ La vista Calendario ha un pannello **Sorgenti** richiudibile: mostra file e feed
 
 ## Gate server-first per il collaudo cumulativo
 
-Disponibile in branch il controllo di sola lettura `infra/release-readiness.sh` per Flyway V10, health e capability API autenticate. Non installa o distribuisce: l'ultima attestazione VPS è V8 e serve una verifica dell'operatore prima del test client Windows/Android `0.29.0+31`. [Runbook](docs/RELEASE-V10-READINESS.md).
+Integrato in `main` (PR #26) il controllo di sola lettura `infra/release-readiness.sh` per Flyway V10, health e capability API autenticate. Non installa o distribuisce: l'ultima attestazione VPS è V8 e serve una verifica dell'operatore prima del test client Windows/Android `0.29.0+31`. [Runbook](docs/RELEASE-V10-READINESS.md).
 

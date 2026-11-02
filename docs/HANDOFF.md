@@ -1,6 +1,6 @@
 # Simple Notes — Passaggio di consegne (handoff)
 
-> **Stato operativo 02/11/2026:** P2.3D gestione sorgenti ICS integrata su `main` ([PR #25](https://github.com/andreadada/simple-notes/pull/25), Flutter `0.29.0+31`; [Flutter CI](https://github.com/andreadada/simple-notes/actions/runs/41471546808) **success**: 191 test, Windows EXE/MSIX, Android JDK17/21; [Markdown](https://github.com/andreadada/simple-notes/actions/runs/41471546568) **success**). Nessun deploy, reset, installazione o test hardware; backend repo Flyway V10, ultima VPS attestata V8. [Stato](CURRENT-STATUS.md) · [Gestione ICS](P2-ICS-SOURCE-MANAGEMENT.md).
+> **Stato operativo 02/11/2026:** R1 gate server-first integrato su `main` ([PR #26](https://github.com/andreadada/simple-notes/pull/26), commit [`f19ee8b0`](https://github.com/andreadada/simple-notes/commit/f19ee8b0a5bea2cb2c2231d85b3e8ad10a5233a7); [Compose CI](https://github.com/andreadada/simple-notes/actions/runs/41523319857) **success** con PostgreSQL 17 sintetico, [Markdown](https://github.com/andreadada/simple-notes/actions/runs/41523319860) **success**). Flutter resta `0.29.0+31` e 191 test già attestati. **VPS reale V10, health/capability live, backup recente e collaudo hardware non verificati**; ultimo stato VPS attestato V8. Nessun deploy o intervento su dati. [Stato](CURRENT-STATUS.md) · [R1]( RELEASE-V10-READINESS.md).
 
 <!-- CURRENT-STATUS-REF -->
 
@@ -318,7 +318,7 @@ PR #24 merged su `main`, Flutter `0.28.0+30`; CI 182 test, Windows EXE/MSIX, And
 
 PR #25 merged su `main`, Flutter `0.29.0+31` (191 test Flutter, Windows/Android/Markdown CI verdi): nuovo displayLabel su `IcsCalendar` (JSON schema 3, legacy 1/2/3 letti senza rewrite), `IcsLibrary.renameById` e overlay `onDay` con label proiettata; nuovi `ics_source_details.dart` e pannello Forui inline in `ics_calendar_controls.dart`. Identità di file/URL, recurrence UID e sorgenti locali immutate anche dopo reimport/refresh; nessun backend, API, Flyway, Drift o deploy. [Contratto](P2-ICS-SOURCE-MANAGEMENT.md).
 
-## Handoff R1 — Verifica server-first V10 (branch, 02/11/2026)
+## Handoff R1 — Verifica server-first V10 (main, PR #26, 02/11/2026)
 
-`infra/release-readiness.sh` orchestra sola lettura: `t4-inspect-db.sh` con `REQUIRE_FLYWAY_VERSION=10` e `t4-check-api.sh` con `REQUIRE_FULL_SCHEMA=1` + `REQUIRE_TIME_BLOCK_SCHEMA=1`. `validate-release-capabilities.py` controlla la risposta autenticata senza stamparla; test sintetici Compose validano V6 rifiutata/V10 accettata/V10 incompleta rifiutata. Nessun secret, deploy o restore richiesto dal tooling; il test VPS reale richiede accesso dell'operatore e bearer locale. [Runbook](RELEASE-V10-READINESS.md).
+PR #26 merged su `main`; Compose CI #41523319857 e Markdown #41523319860 success con fixture, VPS reale **non verificata**. `infra/release-readiness.sh` orchestra sola lettura: `t4-inspect-db.sh` con `REQUIRE_FLYWAY_VERSION=10` e `t4-check-api.sh` con `REQUIRE_FULL_SCHEMA=1` + `REQUIRE_TIME_BLOCK_SCHEMA=1`. `validate-release-capabilities.py` controlla la risposta autenticata senza stamparla; test sintetici Compose validano V6 rifiutata/V10 accettata/V10 incompleta rifiutata. Nessun secret, deploy o restore richiesto dal tooling; il test VPS reale richiede accesso dell'operatore e bearer locale. [Runbook](RELEASE-V10-READINESS.md).
 

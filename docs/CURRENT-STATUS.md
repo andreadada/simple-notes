@@ -4,7 +4,7 @@
 
 | Area | Stato verificato | Gate ancora aperti |
 |---|---|---|
-| `main` | **P0–P1.18 + P2.1 + P2.2 + P2.3A/B/C/D integrate**. [PR #25](https://github.com/andreadada/simple-notes/pull/25) merged, commit [`5be50240`](https://github.com/andreadada/simple-notes/commit/5be502407a02d55911cff8fbae02b5f257fecf4c), Flutter **`0.29.0+31`** | Collaudo reale Windows/Android ancora aperto |
+| `main` | **R1 gate server-first read-only + P0–P2.3D integrate**. [PR #26](https://github.com/andreadada/simple-notes/pull/26) merged, commit [`f19ee8b0`](https://github.com/andreadada/simple-notes/commit/f19ee8b0a5bea2cb2c2231d85b3e8ad10a5233a7). Flutter **`0.29.0+31`** (codice invariato) | Verifica live VPS e test fisici Windows/Android ancora aperti |
 | P1.18 integrata (storico) | [PR #19](https://github.com/andreadada/simple-notes/pull/19) merged, Flutter **`0.23.0+25`**, temi chiaro/scuro/sistema, preferenza locale e Sticky | CI verde; test visivi e su dispositivi fisici ancora aperti |
 | CI P2.3D | [Flutter CI #41471546808](https://github.com/andreadada/simple-notes/actions/runs/41471546808) **success** (191 test, Windows EXE/MSIX, Android JDK17/21); [Markdown #41471546568](https://github.com/andreadada/simple-notes/actions/runs/41471546568) **success** | Non certifica migrazione dati installati o prove fisiche |
 | CI P2.3C | [Flutter CI #41460378203](https://github.com/andreadada/simple-notes/actions/runs/41460378203) **success** (182 test, Windows EXE/MSIX, Android JDK17/21); [Markdown #41460378261](https://github.com/andreadada/simple-notes/actions/runs/41460378261) **success** | Non sostituisce prove reali URL HTTPS e sync server-first |
@@ -14,6 +14,7 @@
 | CI P2.1 | [Flutter CI #41114448268](https://github.com/andreadada/simple-notes/actions/runs/41114448268): **success** (152 test, Windows EXE/MSIX, Android JDK17/21). [Markdown #41114449602](https://github.com/andreadada/simple-notes/actions/runs/41114449602): **success** | Non dimostra test fisico, OAuth, upgrade ZIP→MSIX o rilascio |
 | CI P1.18 | [Flutter CI #41067872668](https://github.com/andreadada/simple-notes/actions/runs/41067872668): **success** (148 test, Windows EXE/MSIX, Android JDK17/21). [Markdown #41067872675](https://github.com/andreadada/simple-notes/actions/runs/41067872675): **success** | Non dimostra test fisico, OAuth né upgrade ZIP→MSIX |
 | CI P1.17 | [Flutter CI #40797207231](https://github.com/andreadada/simple-notes/actions/runs/40797207231): **success** per analyze/test, Windows release + MSIX di sviluppo, Android JDK17 e JDK21. [Markdown #40797207130](https://github.com/andreadada/simple-notes/actions/runs/40797207130): **success** | La CI non certifica interazioni fisiche, Google login o notifiche |
+| Gate R1 (codice) | [PR #26](https://github.com/andreadada/simple-notes/pull/26) merged; [Compose CI #41523319857](https://github.com/andreadada/simple-notes/actions/runs/41523319857) success (V6 rifiutata, V10 incompleta rifiutata, V10 sintetica accettata), [Markdown #41523319860](https://github.com/andreadada/simple-notes/actions/runs/41523319860) success | **Non certifica Flyway V10 reale, health e API autenticata in VPS** |
 | Backend nel repository | Spring Boot / PostgreSQL 17, Flyway **V10**; client Drift/SQLite **V8** | VPS Coolify ultima attestazione **V8**; V9–V10 reali, health e capability ancora da verificare |
 | Distribuzione | Nessun deploy, installazione o reset PostgreSQL, SQLite, outbox, SharedPreferences eseguito per P2.2 | Upgrade server-first, conservazione dati e collaudo cumulativo |
 
@@ -73,7 +74,7 @@ PR #24 integrata su `main`, Flutter `0.28.0+30`: fonte HTTPS con DNS pinning, pr
 
 PR #25 integrata su `main`, Flutter `0.29.0+31`: sorgenti ICS nel pannello compatto, titolo inline (`displayLabel` schema 3 opzionale), refresh riuscito e errori senza query token, etichetta di proiezione aggiornata senza alterare ID/UID/filename/URL. CI 191 test e build Windows/Android/Markdown verdi; nessun deploy o test hardware. [Specifica](P2-ICS-SOURCE-MANAGEMENT.md).
 
-## R1 — Gate server-first (strumenti in branch, 02/11/2026)
+## R1 — Gate server-first (main, PR #26, 02/11/2026)
 
-Branch `feature/release-v10-readonly-gate`: verifica V10 rigorosa e capability API complete con token temporaneo, senza scritture, migrazioni, backup, deploy o installazioni. CI Compose con PostgreSQL **sintetico** e test JSON; non è evidenza della VPS. **Stato reale server V10 NON VERIFICATO (ultima attestazione V8)**. [Runbook operativo](RELEASE-V10-READINESS.md).
+PR #26 integrata su `main`: verifica V10 rigorosa e capability API complete con token temporaneo, senza scritture, migrazioni, backup, deploy o installazioni. CI Compose #41523319857 e Markdown #41523319860 **verdi** con PostgreSQL **sintetico** e test JSON; non è evidenza della VPS. **Stato reale server V10 NON VERIFICATO (ultima attestazione V8)**. [Runbook operativo](RELEASE-V10-READINESS.md).
 

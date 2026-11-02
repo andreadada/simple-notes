@@ -370,6 +370,106 @@ void main() {
     ]), 'range.ics'), throwsFormatException);
   });
 
+
+  test('inline ICS display name keeps immutable file identity on reimport', () {
+    final initial = const IcsLibrary().replace(
+        IcsParser.parse(ics(event()), 'original.ics'));
+    final id = initial.calendars.single.id;
+    final renamed = initial.renameById(id, '  Calendario università  ');
+    final cal = renamed.calendars.single;
+    expect(cal.id, id);
+    expect(cal.name, 'original.ics');
+    expect(cal.label, 'Calendario università');
+    expect(cal.displayLabel, 'Calendario università');
+    expect(cal.events.single.source, 'original.ics');
+    expect(renamed.onDay(DateTime(2026, 11, 3)).single.source,
+        'Calendario università');
+    final loaded = IcsLibrary.deserialize(renamed.serialize());
+    expect(loaded.calendars.single.label, 'Calendario università');
+    final reimported = loaded.replace(IcsParser.parse(
+        ics(event(summary: 'Nuovo titolo')), 'original.ics'));
+    expect(reimported.calendars, hasLength(1));
+    expect(reimported.calendars.single.id, id);
+    expect(reimported.calendars.single.label, 'Calendario università');
+    expect(reimported.onDay(DateTime(2026, 11, 3)).single.title,
+        'Nuovo titolo');
+    expect(reimported.renameById(id, 'original.ics')
+        .calendars.single.displayLabel, isNull);
+  });
+
+  test('inline rename is stable across duplicate labels and account stores', () {
+    final source = IcsParser.parse(ics(event()), 'uni.ics');
+    final fileLib = const IcsLibrary().replace(source);
+    final fileId = fileLib.calendars.single.id;
+    final feed = IcsCalendar('calendar.example.org',
+        IcsParser.parse(ics(event()), 'calendar.example.org').events,
+        id: 'feed-unique', kind: IcsSourceKind.url,
+        sourceUrl: 'https://calendar.example.org/private.ics?token=abc',
+        lastFetchedUtc: DateTime.utc(2026, 11, 2));
+    final mix = fileLib.replace(feed);
+    final changed = mix.renameById(fileId, 'Miei eventi')
+        .renameById('feed-unique', 'Miei eventi');
+    expect(changed.calendars.length, 2);
+    expect(changed.calendars.map((c) => c.label), everyElement('Miei eventi'));
+    expect(changed.calendars.first.id, fileId);
+    expect(changed.calendars.last.id, 'feed-unique');
+    expect(changed.calendars.last.sourceUrl, feed.sourceUrl);
+    expect(changed.calendars.last.lastFetchedUtc, feed.lastFetchedUtc);
+    expect(changed.removeById('feed-unique').calendars.single.id, fileId);
+    expect(icsOwnerKey('one'), isNot(icsOwnerKey('two')));
+  });
+
+  test('invalid display labels fail without changing any saved ICS data', () {
+    final original = const IcsLibrary().replace(
+        IcsParser.parse(ics(event()), 'file.ics'));
+    final id = original.calendars.single.id;
+    final saved = original.serialize();
+    for (final label in ['', '  ', 'a' * 81, 'ciao\naltro', 'ciao\taltro']) {
+      expect(() => original.renameById(id, label), throwsFormatException);
+      expect(original.serialize(), saved);
+    }
+    expect(() => original.renameById('missing', 'Lavoro'),
+        throwsFormatException);
+    final invalid = jsonDecode(saved) as Map<String, dynamic>;
+    final entry = (invalid['calendars'] as List).single as Map<String, dynamic>;
+    for (final label in ['', ' x ', 'x\nz', 'a' * 81]) {
+      entry['displayLabel'] = label;
+      expect(() => IcsLibrary.deserialize(jsonEncode(invalid)),
+          throwsFormatException);
+    }
+  });
+
+  test('legacy source name remains valid without new label migration', () {
+    final original = const IcsLibrary().replace(
+        IcsParser.parse(ics(event()), 'legacy.ics'));
+    final raw = jsonDecode(original.serialize()) as Map<String, dynamic>;
+    raw['schema'] = 2;
+    final archive = jsonEncode(raw);
+    final loaded = IcsLibrary.deserialize(archive);
+    expect(loaded.calendars.single.displayLabel, isNull);
+    expect(loaded.calendars.single.label, 'legacy.ics');
+    expect(jsonDecode(archive)['schema'], 2);
+    expect(loaded.serialize(), isNotEmpty);
+  });
+
+  test('recurring instance source label updates without touching the master',
+      () {
+    final source = IcsParser.parse(ics(event(
+      extra: ['RRULE:FREQ=DAILY;COUNT=2'],
+    )), 'recurrence.ics');
+    final library = const IcsLibrary().replace(source);
+    final id = library.calendars.single.id;
+    final renamed = library.renameById(id, 'Riunioni ricorrenti');
+    expect(renamed.calendars.single.series.single.master.source,
+        'recurrence.ics');
+    expect(renamed.onDay(DateTime(2026, 11, 3)).single.source,
+        'Riunioni ricorrenti');
+    expect(renamed.onDay(DateTime(2026, 11, 4)).single.source,
+        'Riunioni ricorrenti');
+    expect(IcsLibrary.deserialize(renamed.serialize())
+        .onDay(DateTime(2026, 11, 4)).single.source, 'Riunioni ricorrenti');
+  });
+
   test('limits imported file count and do not write on parse failures', () {
     var lib=const IcsLibrary();
     for(var i=0;i<IcsLibrary.maxSources;i++) {

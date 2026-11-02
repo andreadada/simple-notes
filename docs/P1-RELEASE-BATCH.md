@@ -1,8 +1,8 @@
-# Rollout coordinato — Simple Notes backend V10 e client P2.3A
+# Rollout coordinato — Simple Notes backend V10 e client P2.3D
 
 > **Stato operativo 02/11/2026:** P2.3D gestione fonti ICS integrata su `main` ([PR #25](https://github.com/andreadada/simple-notes/pull/25), Flutter `0.29.0+31`; [CI Flutter](https://github.com/andreadada/simple-notes/actions/runs/41471546808) success: **191 test**, Windows EXE/MSIX, Android JDK17/21; [Markdown](https://github.com/andreadada/simple-notes/actions/runs/41471546568) success). Nessun deploy, reset, installazione o test hardware. Backend Flyway V10 in repo, VPS ultima attestazione V8. [Stato](CURRENT-STATUS.md) · [Gestione ICS](P2-ICS-SOURCE-MANAGEMENT.md).
 
-**Stato:** runbook per backend Flyway V10 e client P2.3A `0.26.0+28` (**P0–P1.18, P2.1 e P2.2 integrate in `main`, PR #21, CI Flutter/Markdown verdi**). Non è attestato un deploy Coolify, un'installazione o un collaudo cumulativo; l'utente intende effettuare personalmente il deploy dopo gli incrementi. I comandi sono read-only salvo la procedura Redeploy espressamente distinta.
+**Stato:** runbook per backend Flyway V10 e client cumulativo P2.3D `0.29.0+31` (PR #25 su `main`, 191 test Flutter, Windows/Android e Markdown CI verdi). Non è attestato un deploy Coolify, un'installazione o un collaudo cumulativo; l'utente intende effettuare personalmente il deploy dopo gli incrementi. I comandi sono read-only salvo la procedura Redeploy espressamente distinta.
 
 ## Prima di agire
 

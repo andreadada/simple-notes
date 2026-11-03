@@ -87,3 +87,7 @@ Collaudo su profili e dati di prova, senza `uninstall`, `pm clear`, reset SQLite
 **Esiti CI degli script:** eseguibili con database PostgreSQL 17 **sintetico** e mock capability senza credenziali; non rappresentano la condizione attuale della VPS. Non registrare un PASS reale finché i comandi sopra non saranno eseguiti e osservati dall'operatore.
 
 Riferimenti: [Stato](CURRENT-STATUS.md) · [Runbook precedente](P1-RELEASE-BATCH.md) · [Operazioni](OPERATIONS.md) · [T4](T4-DEVICE-SYNC.md) · [Backend](../infra/README.md).
+
+## Evidenze reali aggiornate 03/11/2026
+
+L'utente ha eseguito l'ispezione **read-only** del DB Simple Notes: PostgreSQL 17 e Flyway V10 PASS con nessuna migrazione fallita e colonne V7–V10 coerenti. Le precedenti note con VPS V8 sono **storiche e superate**. Il client Windows ha riportato login Google e owner coerenti, API compatibile secondo diagnostica, pending 0. Il gate strict `release-readiness.sh` si è fermato per JWT non fornito e **non** è PASS; health e capability complete richiedono ulteriore verifica. L'utente ha rinviato i test Windows↔Android al batch finale senza autorizzare un reset o un nuovo deploy. [Registro](DEVICE-ACCEPTANCE-DEFERRED.md).

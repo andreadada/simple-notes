@@ -181,3 +181,6 @@ Sulla VPS l'utente ha eseguito `t4-inspect-db.sh` in lettura: PostgreSQL 17, Fly
 
 P2.4A: esportazione CSV locale per attività, note, liste; collaudo native save/share rinviato allo stesso batch, test automatici obbligatori. [Specifica](P2-CSV-EXPORT.md).
 
+## P2.4B1 — Backup locale cifrato, nessun ripristino live
+
+Nel menu account si può creare il .snb con password Forui e verificarlo nello stesso account senza modificare i dati. Questa preview autentica il file ma **non è un restore**. Non provare sostituzioni del file SQLite, import di pending outbox, reset di secure storage o reinstallazione: la fase P2.4B2 richiede checkpoint verificato, cold-start, sync sospesa e rollback. PostgreSQL VPS Flyway V10 è già stato attestato; nessun deploy server è necessario per P2.4B1. Prove save/share su dispositivi reali restano rinviate. [Runbook](P2-FULL-BACKUP.md).

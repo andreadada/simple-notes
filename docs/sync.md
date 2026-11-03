@@ -103,3 +103,6 @@ Le richieste HTTPS avvengono dal dispositivo verso il provider ICS soltanto su r
 
 L'azione CSV legge `AppDatabase.snapshot()` locale dopo scelta dell'utente, serializza i soli dati selezionati e non chiama backend/OAuth, non modifica cursor/outbox/versioni e non presume che tutti i dati di altri dispositivi siano sincronizzati. Diagnostica Windows recente (pending 0) e prove server V10 sono documentate separatamente, Android E2E rinviato. [CSV](P2-CSV-EXPORT.md) · [Evidenze](DEVICE-ACCEPTANCE-DEFERRED.md).
 
+## P2.4B1 — Backup conserva outbox, non la reinvia
+
+Il file .snb cifrato include `pending_mutations`, IDs originari, versioni remote, cursor e owner binding. Creazione/verifica backup non eseguono sync, non riscrivono SQLite, non ripristinano operazioni. Sync automatica del client può proseguire durante la cattura: le cinque tabelle sono lette in una transazione coerente, ma preferenze e SQLite non sono atomiche fra loro. Non usare un vecchio snapshot in un profilo live: occorrono in P2.4B2 blocco sync e politica anti-replay/409. [Specifica](P2-FULL-BACKUP.md).

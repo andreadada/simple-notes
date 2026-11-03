@@ -106,3 +106,6 @@ La risposta autenticata `GET /api/v1/capabilities` deve includere `taskDueSchema
 
 Il CSV viene generato interamente dalla SQLite locale, senza chiamate HTTP a Simple Notes, token applicativi o sincronizzazione. Il backend VPS ha Flyway V10 verificata ma la risposta capability strict autenticata non è stata attestata. [Specifica](P2-CSV-EXPORT.md) · [Evidenze](DEVICE-ACCEPTANCE-DEFERRED.md).
 
+## P2.4B1 — Nessuna API o JWT di backup
+
+Il backup .snb viene generato offline dal client, cifrato con password locale e verificato senza rete. Non aggiunge endpoint backend, scope Google, capability, migration PostgreSQL o upload. Le credenziali OAuth sono escluse. Il gate API strict della VPS e i test Windows↔Android restano separati e rinviati. [Specifica](P2-FULL-BACKUP.md).

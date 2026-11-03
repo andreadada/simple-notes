@@ -41,3 +41,7 @@ La CI Flutter verifica analyze/test, Windows EXE/MSIX, Android JDK17/21, e i doc
 P2.4B: progettazione del backup completo (SQLite, pending outbox, SharedPreferences, credenziali in secure storage **non esportabili in chiaro**, ripristino con controllo owner, versione e rollback). Non fare un finto backup JSON/CSV. Altri P2/P3: condivisione, regole intelligenti e integrazioni opzionali.
 
 [Stato](CURRENT-STATUS.md) · [Roadmap](../project.md) · [Archivio JSON](P2-PORTABLE-ARCHIVE.md) · [Collaudo](DEVICE-ACCEPTANCE-DEFERRED.md).
+
+## P2.4B1 — CSV non è un backup
+
+Il CSV P2.4A è un export leggibile in chiaro e non reimportabile. P2.4B1 introduce .snb cifrato per SQLite incluse tombstone/outbox e preferenze locali, verificabile con password senza modificare dati. Il ripristino resta un lavoro distinto P2.4B2. [Specifica](P2-FULL-BACKUP.md).

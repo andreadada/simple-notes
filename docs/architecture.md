@@ -109,3 +109,6 @@ Il client Flutter `0.29.0+31` contiene funzionalità sync che richiedono Flyway 
 
 `lib/data/portable_csv.dart` trasforma lo snapshot locale `LocalData` in tre CSV diversi e ne controlla dimensione/iniezione di formule. `main.dart` offre il selettore Forui e usa gli adattatori esistenti `file_selector` e `share_plus`. Nessun endpoint Spring, Flyway, Drift migration, token o outbox creato. Prove real-device rinviate per decisione dell'utente. [Specifiche](P2-CSV-EXPORT.md).
 
+## P2.4B1 — Architettura archivio cifrato locale
+
+Nuovo modulo `lib/data/full_backup.dart`: `FullBackupSource.capture` combina `AppDatabase.fullBackupRows` (transazione read-only per cinque tabelle SQLite Drift V8, incluse tombstone/outbox) e preferenze locali per owner. Whitelist di tabelle/colonne/sync settings e validatori di dominio fail-closed; `FullBackupCodec` cifra AES-256-GCM con chiave PBKDF2-HMAC-SHA256 (180.000 iterazioni). Il file .snb contiene owner solo nel payload cifrato. La cattura delle SharedPreferences avviene separatamente e non offre atomicità globale tra storage. Nessun RESTORE live fino a P2.4B2 cold-start con rollback e stop sync. [Specifica](P2-FULL-BACKUP.md).

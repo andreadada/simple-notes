@@ -87,3 +87,7 @@ L'utente ha eseguito `t4-inspect-db.sh` su VPS: PostgreSQL 17, `FLYWAY_LATEST=10
 ## P2.4A — Esportazione CSV (main, PR #27)
 
 PR #27 merged, Flutter `0.30.0+32`, CSV separati attività/note attive/liste, UTC/date civili, JSON per slot/tag/subtask, BOM UTF-8, CSV quoting e blocco formula injection. Nessuna API/migration o import CSV. CI 198 test/Windows/Android e Markdown verdi, prove fisiche rinviate. [Specifica](P2-CSV-EXPORT.md).
+
+## P2.4B1 — Backup cifrato (candidato, 03/11/2026)
+
+Su branch `feature/p2-4b1-encrypted-full-backup`, Flutter `0.31.0+33`: archivio .snb cifrato AES-256-GCM/PBKDF2, snapshot logico SQLite V8 completo di tombstone/outbox/sync settings e preferenze locali owner-scoped. Menu account Forui Crea backup/Verifica backup, validazione password/integrità/owner/schema **senza scrivere nulla**. **Non esiste ancora un ripristino effettivo**: P2.4B2 richiederà cold-start, blocco sync, checkpoint e rollback. CI/merge da attestare. Le verifiche fisiche restano differite, VPS Flyway V10 già verificata. [Specifica](P2-FULL-BACKUP.md).

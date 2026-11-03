@@ -397,3 +397,13 @@ Esempio: `2026-10-21 14:20 CEST | commit abc1234 | Aggiunto modulo promemoria e 
 - 2026-11-03 | feat(p2.4a) | Export CSV e test senza operazioni su produzione; prove fisiche differite per scelta utente.
 
 - 2026-11-03 | merge(p2.4a) | PR #27 (`218d1d0b`) integrata su `main`, Flutter `0.30.0+32`; [Flutter CI #41562133925](https://github.com/andreadada/simple-notes/actions/runs/41562133925) success (198 test, Windows EXE/MSIX, Android JDK17/21), [Markdown #41561797719](https://github.com/andreadada/simple-notes/actions/runs/41561797719) success. DB V10 VPS e diagnostica Windows già verificati. Manual E2E, API strict, backup completo ancora aperti.
+
+## P2.4B1 — Backup cifrato e anteprima non distruttiva (candidata, 03/11/2026)
+
+- [x] Snapshot di tutte le cinque tabelle SQLite V8: attività, liste, note incluse nel cestino, operazioni in attesa con ID originali, versioni remote e impostazioni di sincronizzazione.
+- [x] Preferenze locali per owner: ICS, Pomodoro, Habit, Countdown, tema. Nessuna credenziale Google/JWT/secure storage.
+- [x] File .snb cifrato AES-256-GCM con PBKDF2 e password, verifica autenticità/owner/schema **solo in lettura**, flusso Forui Windows/Android.
+- [ ] P2.4B2: ripristino reale cold-start con sincronizzazione sospesa, checkpoint, rollback e gestione anti-replay; **non abilitato in P2.4B1**.
+- [ ] CI/merge da registrare; test manuali posticipati su richiesta. [Specifica](docs/P2-FULL-BACKUP.md).
+
+- 2026-11-03 | feat(p2.4b1) | Backup locale cifrato e verifica read-only, nessun restore live né deploy/operazioni database esterne. Flutter candidata 0.31.0+33.

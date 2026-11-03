@@ -238,3 +238,7 @@ Aggiungere URL con dialog Forui, scaricare soltanto dopo gesto esplicito; mostra
 
 La label è già un campo editabile inline senza pulsante Rinomina: Enter/blur salva, Esc annulla, underline della larghezza dei glifi, limite 80 caratteri. Le fonti appaiono solo aprendo **Sorgenti (N)**; tipo, ultimi refresh riusciti e conteggi sono informativi, le azioni Aggiorna/Rimuovi restano chiare e manuali. Nessun path o query-token URL in UI. Non confondere label e filename/URL, e non editare gli eventi ICS che restano esterni. [Specifica](docs/P2-ICS-SOURCE-MANAGEMENT.md).
 
+## Vincolo UI P2.4A — CSV senza sovraccarico
+
+Una voce menu **Esporta CSV** apre il dialog Forui con scelta Attività/Note/Liste; non tre pulsanti permanenti o un form nuovo. Export avviato solo dopo scelta, messaggi sintetici, nessun token o contenuto mostrato nei messaggi. Informare che il CSV è in chiaro, non reimportabile e non equivalente a backup. Windows dialog Salva con nome, Android condivisione sistema. [Specifica](docs/P2-CSV-EXPORT.md).
+

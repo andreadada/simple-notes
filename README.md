@@ -86,3 +86,7 @@ La vista Calendario ha un pannello **Sorgenti** richiudibile: mostra file e feed
 
 Integrato in `main` (PR #26) il controllo di sola lettura `infra/release-readiness.sh` per Flyway V10, health e capability API autenticate. Non installa o distribuisce: l'ultima attestazione VPS è V8 e serve una verifica dell'operatore prima del test client Windows/Android `0.29.0+31`. [Runbook](docs/RELEASE-V10-READINESS.md).
 
+## P2.4A — CSV locale (candidata)
+
+Nel menu profilo **Esporta CSV** consente di scegliere attività, note attive o liste; su Windows salva un file tramite la finestra di sistema, su Android usa la condivisione. File UTF-8 con BOM, escaping di virgole/apici/righe e protezione contro formule di fogli di calcolo. Non è un backup né un formato importabile. [Specifica](docs/P2-CSV-EXPORT.md). Test real-device Windows/Android rinviati esplicitamente dall'utente al batch finale: [Registro](docs/DEVICE-ACCEPTANCE-DEFERRED.md).
+

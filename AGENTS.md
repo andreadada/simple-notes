@@ -102,3 +102,7 @@ Il nome visibile ICS si modifica **direttamente nel testo** con InlineEditableTi
 
 Il gate server-first (PR #26, CI sintetica verde) per il client cumulativo richiede **Flyway V10 reale**, nessuna migration fallita, colonne V7–V10, health UP e capability autenticate `taskDueSchema`, `timeBlockSchema`, `timeBlocksSchema`, `recurrenceSchema`, `noteRestoreSchema` tutti versione 1. Usare solo il wrapper read-only `infra/release-readiness.sh` con container verificato e token temporaneo nell'ambiente. Nessun reset/redeploy/backfill automatico, nessun segreto nel repo/chat; un test su DB sintetico non prova lo stato VPS. Conservare il workflow T4 senza strict flag per ispezioni storiche. [Runbook](docs/RELEASE-V10-READINESS.md).
 
+## Regola P2.4A — CSV è un export, NON backup
+
+CSV si genera soltanto dal locale `AppDatabase.snapshot()` dopo scelta esplicita; niente modifiche SQLite, outbox o sync, nessun trashedNotes, owner, credenziali o URL ICS privati. Limite 8 MiB/10.000 record, UTF-8 BOM, quoting RFC4180 e formule neutralizzate prima di quoting. La selezione CSV usa Forui e le destinazioni native esistenti; non creare un importer CSV implicito. **Test manuali Windows↔Android rinviati dall'utente**, ma CI/test automatici obbligatori; non marcarli completati. [CSV](docs/P2-CSV-EXPORT.md) · [Rinvio](docs/DEVICE-ACCEPTANCE-DEFERRED.md).
+

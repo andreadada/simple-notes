@@ -411,14 +411,18 @@ class _NotesHomeState extends ConsumerState<NotesHome> {
     try {
       final password = await _backupPassword(create: true);
       if (password == null || !mounted ||
-          ref.read(cloudAuthProvider).userId != owner) return;
+          ref.read(cloudAuthProvider).userId != owner) {
+        return;
+      }
       final prefs = await SharedPreferences.getInstance();
       final snapshot = await const FullBackupSource().capture(
         database: ref.read(databaseProvider), preferences: prefs,
         ownerId: owner,
       );
       final bytes = await const FullBackupCodec().encrypt(snapshot, password);
-      if (!mounted || ref.read(cloudAuthProvider).userId != owner) return;
+      if (!mounted || ref.read(cloudAuthProvider).userId != owner) {
+        return;
+      }
       final filename = 'simple-notes-backup-'
           '${DateTime.now().toIso8601String().substring(0, 10)}.snb';
       final output = XFile.fromData(
@@ -470,15 +474,21 @@ class _NotesHomeState extends ConsumerState<NotesHome> {
       if (await file.length() > FullBackupCodec.maxFileBytes) {
         throw const FormatException('File di backup troppo grande.');
       }
-      if (!mounted || ref.read(cloudAuthProvider).userId != owner) return;
+      if (!mounted || ref.read(cloudAuthProvider).userId != owner) {
+        return;
+      }
       final password = await _backupPassword(create: false);
       if (password == null || !mounted ||
-          ref.read(cloudAuthProvider).userId != owner) return;
+          ref.read(cloudAuthProvider).userId != owner) {
+        return;
+      }
       final snapshot = await const FullBackupCodec().inspect(
         await file.readAsBytes(),
         password: password, expectedOwnerId: owner,
       );
-      if (!mounted || ref.read(cloudAuthProvider).userId != owner) return;
+      if (!mounted || ref.read(cloudAuthProvider).userId != owner) {
+        return;
+      }
       await showFDialog<void>(
         context: context,
         builder: (ctx, style, animation) => NotesDialog(

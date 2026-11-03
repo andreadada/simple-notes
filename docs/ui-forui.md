@@ -189,3 +189,7 @@ Il campo URL si apre in FTextField/NotesDialog solo dopo pressione del pulsante 
 
 Pannello Sorgenti (N) collassabile e card Forui/tema condiviso. `InlineEditableTitle` è il nome già editabile (Enter/blur/Esc), non introdurre un comando Rinomina né dialog di modifica. Metadati in testo secondario (tipo, eventi/serie, ultimo refresh UTC offset locale), refresh URL manuale, rimozione confermata; stringhe URL contenenti token escluse da UI. [Specifica](P2-ICS-SOURCE-MANAGEMENT.md).
 
+## P2.4A — Scelta CSV nel menu account
+
+Una voce **Esporta CSV** apre dialog Forui con testo esplicativo e tre azioni (Attività, Note, Liste), senza tre icone sempre visibili né un form di configurazione. Annulla non salva, il salvataggio Windows e lo share Android usano finestre di sistema. `_archiveBusy` blocca import/export simultanei; niente token o contenuti in feedback. [CSV](P2-CSV-EXPORT.md).
+

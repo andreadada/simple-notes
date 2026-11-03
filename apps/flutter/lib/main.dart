@@ -37,6 +37,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uuid/uuid.dart';
 import 'data/local_store.dart';
 import 'data/portable_archive.dart';
+import 'data/portable_csv.dart';
 import 'data/app_database.dart';
 import 'auth/cloud_auth.dart';
 import 'sync/cloud_sync.dart';
@@ -244,6 +245,82 @@ class _NotesHomeState extends ConsumerState<NotesHome> {
     }
   }
 
+  Future<void> _exportCsv() async {
+    if (_archiveBusy) return;
+    setState(() => _archiveBusy = true);
+    try {
+      final dataset = await showFDialog<CsvDataset>(
+        context: context,
+        builder: (ctx, style, animation) => NotesDialog(
+          style: style,
+          animation: animation,
+          title: const Text('Esporta CSV'),
+          body: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text('Scegli i dati locali da esportare. '
+                  'Il CSV può contenere informazioni personali e non è '
+                  'un backup completo né un file reimportabile.'),
+              const SizedBox(height: 12),
+              Wrap(spacing: 8, runSpacing: 8, children: [
+                for (final option in CsvDataset.values)
+                  FButton(
+                    key: Key('csv-export-${option.filePart}'),
+                    variant: FButtonVariant.outline,
+                    onPress: () => Navigator.pop(ctx, option),
+                    child: Text(option.label),
+                  ),
+              ]),
+            ],
+          ),
+          actions: [
+            FButton(
+              variant: FButtonVariant.ghost,
+              onPress: () => Navigator.pop(ctx),
+              child: const Text('Annulla'),
+            ),
+          ],
+        ),
+      );
+      if (dataset == null || !mounted) return;
+      // Read SQLite after explicit selection, not an outdated widget snapshot.
+      final data = await ref.read(databaseProvider).snapshot();
+      final bytes = PortableCsv(data).encode(dataset);
+      final filename =
+          'simple-notes-${dataset.filePart}-'
+          '${DateTime.now().toIso8601String().substring(0, 10)}.csv';
+      final output = XFile.fromData(
+        Uint8List.fromList(bytes), name: filename, mimeType: 'text/csv',
+      );
+      if (defaultTargetPlatform == TargetPlatform.windows) {
+        final location = await getSaveLocation(
+          suggestedName: filename,
+          acceptedTypeGroups: [
+            const XTypeGroup(label: 'CSV', extensions: ['csv']),
+          ],
+        );
+        if (location == null) return;
+        await output.saveTo(location.path);
+        _archiveMessage('CSV salvato. Conservalo in un luogo sicuro.');
+      } else {
+        // User chooses a destination in the system share sheet on Android.
+        final result = await SharePlus.instance.share(ShareParams(
+          files: [output], fileNameOverrides: [filename],
+        ));
+        if (result.status == ShareResultStatus.success) {
+          _archiveMessage('CSV condiviso. Conservalo in un luogo sicuro.');
+        }
+      }
+    } on FormatException catch (error) {
+      _archiveMessage(error.message);
+    } catch (_) {
+      _archiveMessage('Impossibile esportare il CSV. I dati restano invariati.');
+    } finally {
+      if (mounted) setState(() => _archiveBusy = false);
+    }
+  }
+
   Future<void> _importArchive() async {
     if (_archiveBusy) return;
     setState(() => _archiveBusy = true);
@@ -434,6 +511,8 @@ Ctrl+/ · Questo elenco'''),
         await _exportArchive();
       } else if (value == 'import') {
         await _importArchive();
+      } else if (value == 'csv-export') {
+        await _exportCsv();
       } else if (value == 'sync') {
         await ref.read(cloudSyncProvider.notifier).synchronize();
       } else if (value == 'diagnostics') {
@@ -547,6 +626,12 @@ Ctrl+/ · Questo elenco'''),
             ),
         ]),
         .group(children: [
+          .item(
+            title: const Text('Esporta CSV'),
+            prefix: const Icon(Icons.table_view_outlined, size: 18),
+            enabled: !_archiveBusy,
+            onPress: () => accountAction('csv-export'),
+          ),
           .item(
             title: const Text('Esporta dati JSON'),
             prefix: const Icon(Icons.file_download_outlined, size: 18),

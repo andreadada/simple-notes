@@ -156,3 +156,9 @@ Nel collaudo finale verificare: apertura del pannello Sorgenti, label editabile 
 
 Il precedente `t4-check-api.sh` controllava solo due capability. La modalità `REQUIRE_FULL_SCHEMA=1`, insieme a `REQUIRE_TIME_BLOCK_SCHEMA=1`, verifica ora il contratto completo V10, mentre `REQUIRE_FLYWAY_VERSION=10` obbliga lo schema PostgreSQL giusto. Il wrapper `infra/release-readiness.sh` esegue entrambi in **sola lettura**. Le prove CI su PostgreSQL sintetico non dimostrano che la VPS reale sia aggiornata (ultima versione verificata V8). Non eseguire deploy/reset/downgrade finché non esiste un piano autorizzato e conservativo. [Runbook R1](RELEASE-V10-READINESS.md).
 
+## 03/11/2026 — Prove di sistema differite
+
+VPS PostgreSQL 17/Flyway V10 realmente verificata in sola lettura, migrazioni fallite 0. Diagnostica Windows coerente, pending 0, sync recente; nessun report Android e nessun `RELEASE_SERVER_GATE=PASS` strict perché il JWT non è stato fornito. L'utente ha scelto di posticipare il collaudo manuale cumulativo (Windows↔Android, ZIP→MSIX, firme, preservazione dei dati, ICS, reminder e ora CSV), **non** i test automatici CI. Non presentare il batch come superato. [Registro](DEVICE-ACCEPTANCE-DEFERRED.md).
+
+P2.4A aggiunge export CSV in sola lettura di task, note e liste, senza backend o DB migration; test picker/share restano nel batch. [Specifica](P2-CSV-EXPORT.md).
+

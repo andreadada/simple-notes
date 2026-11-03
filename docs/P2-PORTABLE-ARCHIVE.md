@@ -27,3 +27,8 @@
 6. Non confondere il JSON portabile con un backup completo di SQLite + SharedPreferences + secure storage; [runbook](P1-RELEASE-BATCH.md).
 
 **Incrementi successivi distinti:** ICS read-only / CSV, poi backup/ripristino reale con conflict policy e isolation esplicite.
+
+## P2.4A — CSV distinto dal JSON portabile
+
+Il menu account offre anche **Esporta CSV** da attività, note attive e liste. Il JSON P2.1 resta l'unico formato di import additivo attualmente supportato; i CSV non sono importabili nell'app, né costituiscono backup completo. Entrambi escludono credenziali, outbox e preferenze private del profilo e contengono dati in chiaro. [Specifica CSV](P2-CSV-EXPORT.md).
+

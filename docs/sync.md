@@ -99,3 +99,7 @@ Le richieste HTTPS avvengono dal dispositivo verso il provider ICS soltanto su r
 
 `displayLabel` è salvata nelle stesse SharedPreferences ICS per owner e dispositivo; rinominarla non causa task/outbox/cursor, non chiama provider HTTPS né Simple Notes API e non sincronizza il nome sugli altri dispositivi. I master VEVENT mantengono filename/hostname originali. [Specifica](P2-ICS-SOURCE-MANAGEMENT.md).
 
+## P2.4A — CSV non invia modifiche
+
+L'azione CSV legge `AppDatabase.snapshot()` locale dopo scelta dell'utente, serializza i soli dati selezionati e non chiama backend/OAuth, non modifica cursor/outbox/versioni e non presume che tutti i dati di altri dispositivi siano sincronizzati. Diagnostica Windows recente (pending 0) e prove server V10 sono documentate separatamente, Android E2E rinviato. [CSV](P2-CSV-EXPORT.md) · [Evidenze](DEVICE-ACCEPTANCE-DEFERRED.md).
+

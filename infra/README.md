@@ -179,3 +179,7 @@ Il pannello di gestione e i nomi ICS salvano solo SharedPreferences owner-scoped
 
 I nuovi strumenti **non** eseguono deploy, Flyway migrate, backup o modifiche al DB: `REQUIRE_FLYWAY_VERSION=10 bash infra/t4-inspect-db.sh` valida il database reale, `REQUIRE_TIME_BLOCK_SCHEMA=1 REQUIRE_FULL_SCHEMA=1 bash infra/t4-check-api.sh` verifica health HTTPS e capability con JWT temporaneo; `bash infra/release-readiness.sh` li concatena e produce `RELEASE_SERVER_GATE=PASS` solo se entrambi riusciti. Solo dopo deploy server autorizzato, con `DB_CONTAINER` verificato. Le CI usano fixture sintetiche; database VPS V10 e client Windows/Android non sono attestati. [Runbook](../docs/RELEASE-V10-READINESS.md).
 
+## 03/11/2026 — VPS V10 verificata, nessun nuovo deploy richiesto per CSV
+
+L'utente ha verificato dal container PostgreSQL Simple Notes: V10, FAILED_MIGRATIONS=0, colonne V7–V10 complete. Il gate strict API/health con bearer non è terminato: non dichiarare RELEASE_SERVER_GATE=PASS. P2.4A è client-only, non richiede compose, nuove tabelle o altri deploy. Prove manuali Windows/Android rinviate. [Evidenze](../docs/DEVICE-ACCEPTANCE-DEFERRED.md) · [CSV](../docs/P2-CSV-EXPORT.md).
+

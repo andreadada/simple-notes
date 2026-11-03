@@ -102,3 +102,7 @@ Modifica etichetta sorgente, conteggi eventi e ultimo refresh sono metadati e pr
 
 La risposta autenticata `GET /api/v1/capabilities` deve includere `taskDueSchema:1`, `timeBlockSchema:1`, `timeBlocksSchema:1`, `recurrenceSchema:1`, `noteRestoreSchema:1`, `taskDueKinds` e `requiresExplicitDueForModernTasks:true`. Il probe rigido read-only (`REQUIRE_FULL_SCHEMA=1`) fallisce senza uno di questi campi; non cambia endpoint né backend. [Runbook](RELEASE-V10-READINESS.md).
 
+## P2.4A — Nessuna API o capability aggiuntiva
+
+Il CSV viene generato interamente dalla SQLite locale, senza chiamate HTTP a Simple Notes, token applicativi o sincronizzazione. Il backend VPS ha Flyway V10 verificata ma la risposta capability strict autenticata non è stata attestata. [Specifica](P2-CSV-EXPORT.md) · [Evidenze](DEVICE-ACCEPTANCE-DEFERRED.md).
+

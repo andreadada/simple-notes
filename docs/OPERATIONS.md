@@ -175,3 +175,9 @@ Usare file e feed di test: rinominare il titolo direttamente, salvare con Enter/
 
 Da VPS identificare esattamente il container Simple Notes con `docker ps`, leggere l'inventario con `DB_CONTAINER=... EXPECTED_POSTGRES_DB=simplenotes bash infra/t4-inspect-db.sh`. Un server ancora V8 non abilita il client completo. **Soltanto dopo** un eventuale upgrade Coolify autorizzato e protetto usare `DB_CONTAINER=... T4_BEARER_TOKEN=<JWT_TEMPORANEO_NELL_ENV> bash infra/release-readiness.sh`: richiede Flyway V10, `FAILED_MIGRATIONS=0`, colonne V7–V10, health UP e capability JSON autenticata complete. Il token non va mai copiato in chat o messo nella cronologia. Il comando è read-only e non effettua backup/restore/deploy. [Procedura](RELEASE-V10-READINESS.md).
 
+## 03/11/2026 — V10 realmente verificata; test manuali posticipati
+
+Sulla VPS l'utente ha eseguito `t4-inspect-db.sh` in lettura: PostgreSQL 17, Flyway **V10**, tutte le colonne previste, `FAILED_MIGRATIONS=0`. Il client Windows ha riportato API compatibile secondo diagnostica integrata, account coerente, Google connesso, pending=0, ultima sync 02:24:58; **non** rappresenta il gate API strict che richiede JWT né Android E2E. I 3 task nella tabella server contro 0 task visualizzati Windows richiedono eventuale audit futuro: i conteggi non sono equivalenti a perdita di dati. Su richiesta dell'utente, rimandare E2E manuale, non eseguire reset/uninstall/redeploy solo per questo. [Registro](DEVICE-ACCEPTANCE-DEFERRED.md).
+
+P2.4A: esportazione CSV locale per attività, note, liste; collaudo native save/share rinviato allo stesso batch, test automatici obbligatori. [Specifica](P2-CSV-EXPORT.md).
+

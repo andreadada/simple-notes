@@ -144,3 +144,7 @@ Verificare su dispositivi reali dialog URL, conferma preview, refresh, riavvio o
 
 Controlli visibili nel Calendario: Importa, Aggiungi URL e Sorgenti (N). Pannello opt-in, title inline con larghezza dei glifi, nomi duplicati consentiti con IDs distinti, errori refresh locali senza perdere cache; verificare layout 320/390px mobile, tastiera, contrasto, light/dark e flusso Esc/Enter/blur. La CI non sostituisce la prova visiva su Windows/Android. [Specifica](P2-ICS-SOURCE-MANAGEMENT.md).
 
+## Audit P2.4A — Collaudo nativo rinviato
+
+Da controllare a fine batch su Windows e Android: dialog CSV, accessibilità/focus, annulla, save/share, contenuti in chiaro segnalati e conservazione SQLite/outbox su errore. Non segnare i test fisici PASS solo per CI Flutter o diagnostica Windows parziale. [Registro](DEVICE-ACCEPTANCE-DEFERRED.md) · [Specifica](P2-CSV-EXPORT.md).
+

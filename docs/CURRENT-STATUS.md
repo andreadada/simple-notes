@@ -1,6 +1,6 @@
 # Stato corrente — Simple Notes
 
-**Aggiornato 2 novembre 2026.** Questo documento prevale sulla cronologia. **Codice/CI, deploy Coolify, installazione e collaudo fisico sono stati distinti.**
+**Aggiornato 3 novembre 2026.** Questo documento prevale sulla cronologia. **Codice/CI, deploy Coolify, installazione e collaudo fisico sono stati distinti.**
 
 | Area | Stato verificato | Gate ancora aperti |
 |---|---|---|
@@ -15,8 +15,8 @@
 | CI P1.18 | [Flutter CI #41067872668](https://github.com/andreadada/simple-notes/actions/runs/41067872668): **success** (148 test, Windows EXE/MSIX, Android JDK17/21). [Markdown #41067872675](https://github.com/andreadada/simple-notes/actions/runs/41067872675): **success** | Non dimostra test fisico, OAuth né upgrade ZIP→MSIX |
 | CI P1.17 | [Flutter CI #40797207231](https://github.com/andreadada/simple-notes/actions/runs/40797207231): **success** per analyze/test, Windows release + MSIX di sviluppo, Android JDK17 e JDK21. [Markdown #40797207130](https://github.com/andreadada/simple-notes/actions/runs/40797207130): **success** | La CI non certifica interazioni fisiche, Google login o notifiche |
 | Gate R1 (codice) | [PR #26](https://github.com/andreadada/simple-notes/pull/26) merged; [Compose CI #41523319857](https://github.com/andreadada/simple-notes/actions/runs/41523319857) success (V6 rifiutata, V10 incompleta rifiutata, V10 sintetica accettata), [Markdown #41523319860](https://github.com/andreadada/simple-notes/actions/runs/41523319860) success | **Non certifica Flyway V10 reale, health e API autenticata in VPS** |
-| Backend nel repository | Spring Boot / PostgreSQL 17, Flyway **V10**; client Drift/SQLite **V8** | VPS Coolify ultima attestazione **V8**; V9–V10 reali, health e capability ancora da verificare |
-| Distribuzione | Nessun deploy, installazione o reset PostgreSQL, SQLite, outbox, SharedPreferences eseguito per P2.2 | Upgrade server-first, conservazione dati e collaudo cumulativo |
+| Backend nel repository | Spring Boot/PostgreSQL 17, Flyway **V10**; client Drift/SQLite **V8** | VPS reale Flyway **V10 verificata il 03/11/2026**; API strict e health non attestate |
+| Test reali | VPS V10 verificata; Windows Google connesso e pending 0, sync recente | Android E2E, API strict e firma/persistenza ancora aperti e rimandati |
 
 ## Funzioni integrate nel codice
 
@@ -32,11 +32,11 @@
 - **P2.3B (integrata, PR #23):** ricorrenze RRULE/RDATE/EXDATE/RECURRENCE-ID locali con proiezione lazy e schema 3. [Specifica](P2-ICS-RECURRENCE.md).
 - **P2.3C (main, PR #24):** HTTPS ICS manuale, DNS pinning e restrizioni SSRF/redirect, cache offline, refresh esplicito; nessun OAuth/backend. [Specifica](P2-ICS-FEEDS.md).
 - **P2.3D (main, PR #25):** pannello ICS collassabile, nomi inline senza cambiare file/URL, conteggi, ultimo refresh riuscito e gestione per ID. [Specifica](P2-ICS-SOURCE-MANAGEMENT.md).
-- **P2 successiva/P3:** subscription ICS via URL integrate in P2.3C; ricorrenze complete, export CSV, backup completo, condivisione e smart opzionali **non implementati**.
+- **P2.4A candidata:** CSV da dati locali implementato in branch, CI/merge da attestare; backup completo, condivisione e smart ancora non implementati. [CSV](P2-CSV-EXPORT.md).
 
 ## Gate di rilascio ancora aperti
 
-1. **Coolify server-first:** verificare in read-only schema Flyway **V10**, `FAILED_MIGRATIONS=0`, health `UP` e capability autenticate `taskDueSchema:1`, `timeBlockSchema:1`, `timeBlocksSchema:1`, `recurrenceSchema:1` prima di installare client aggiornati.
+1. **Coolify server-first:** Flyway **V10** e `FAILED_MIGRATIONS=0` verificati il 03/11/2026; restano health `UP` e capability autenticate `taskDueSchema:1`, `timeBlockSchema:1`, `timeBlocksSchema:1`, `recurrenceSchema:1` prima di installare client aggiornati.
 2. **Windows reale:** prova ZIP completo, apertura/chiusura/riapertura tray, voce Esci, assenza icone orfane e doppie tray nelle finestre Sticky. Per MSIX usare **solo un profilo di prova**, con firma/publisher/identity coerenti.
 3. **Collaudo Windows ↔ Android:** login e sessione, sync offline/retry, 409/426, liste/task/note, calendario/ricorrenze, reminder, resize, temi chiaro/scuro/sistema, accessibilità e persistenza al riavvio.
 4. **Preservazione dati:** nessun reset o uninstall. Verificare esplicitamente SQLite, outbox, secure storage e SharedPreferences nel passaggio ZIP→MSIX; la sola CI non dimostra compatibilità del percorso.
@@ -78,3 +78,11 @@ PR #25 integrata su `main`, Flutter `0.29.0+31`: sorgenti ICS nel pannello compa
 
 PR #26 integrata su `main`: verifica V10 rigorosa e capability API complete con token temporaneo, senza scritture, migrazioni, backup, deploy o installazioni. CI Compose #41523319857 e Markdown #41523319860 **verdi** con PostgreSQL **sintetico** e test JSON; non è evidenza della VPS. **Stato reale server V10 NON VERIFICATO (ultima attestazione V8)**. [Runbook operativo](RELEASE-V10-READINESS.md).
 
+
+## Evidenze reali e test rinviati (03/11/2026)
+
+L'utente ha eseguito `t4-inspect-db.sh` su VPS: PostgreSQL 17, `FLYWAY_LATEST=10`, `FAILED_MIGRATIONS=0`, colonne scadenze=5, blocchi=3, `blocks_json`=1, `recurrence_json`=1; app_user=1/task=3/note=1/sync_change=57/sync_operation=57. Diagnostica Windows: API compatibile secondo il client, Google connesso, owner coerente, pending=0, task visibili=0, note=1, cursor=91, ultima sync 2026-11-03 02:24:58. Il gate strict con JWT **non ha prodotto PASS**, nessun report Android. La differenza fra righe fisiche server e task visibili Windows va verificata in seguito, senza dedurre perdita di dati. **L'utente ha rinviato esplicitamente E2E hardware** al batch futuro; non dichiararlo completato. [Registro](DEVICE-ACCEPTANCE-DEFERRED.md).
+
+## P2.4A — Esportazione CSV (branch, candidata)
+
+Flutter `0.30.0+32`, CSV separati attività/note attive/liste, UTC/date civili, JSON per slot/tag/subtask, BOM UTF-8, CSV quoting e blocco formula injection. Nessuna API/migration o import CSV. CI e merge da attestare, prove fisiche rinviate. [Specifica](P2-CSV-EXPORT.md).

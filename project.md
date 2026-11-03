@@ -9,8 +9,8 @@
 ## Gate corrente (CI P2.3D superata; distribuzione non eseguita)
 
 - [x] P1.7 Android con scheduler inexact, ledger, opt-in e CI verde (PR #6). [ ] Prova fisica Android app chiusa/reboot e controllo permessi; [x] codice packaging MSIX + promemoria Windows integrato (PR #7, CI verde); [ ] test fisici MSIX/identità/dati e firma pubblica.
-- [ ] Verificare Flyway V10, health **e** capability su Coolify prima di nuovi client.
-- [ ] Eseguire il collaudo E2E Windows↔Android **solo a fine batch**, preservando database e dati locali.
+- [x] Flyway V10 verificata nella VPS reale il 03/11/2026, 0 migrazioni fallite; [ ] health/capability strict ancora aperti.
+- [ ] Collaudo E2E Windows↔Android **esplicitamente rinviato dall'utente al batch finale**, preservando database e dati locali.
 - [ ] Concludere hardening, signing, offsite secondo decisione esplicita prima di release pubblica.
 
 ## Regole vincolanti — COME FARE
@@ -386,3 +386,12 @@ Esempio: `2026-10-21 14:20 CEST | commit abc1234 | Aggiunto modulo promemoria e 
 - 2026-11-02 | candidate(r1) | Preparato gate read-only Flyway V10 e API full-schema con CI sintetica. Nessun accesso/modifica al DB VPS, Coolify, SQLite o outbox; test hardware ancora aperti.
 
 - 2026-11-02 | merge(r1) | PR #26 (`f19ee8b0`) integrata su `main`, Compose CI #41523319857 e Markdown #41523319860 verdi. Solo controlli read-only aggiunti: VPS live V10, backup recente, deploy e E2E Windows/Android ancora aperti. [Runbook](docs/RELEASE-V10-READINESS.md).
+
+## P2.4A — CSV locale (branch candidata, 03/11/2026)
+
+- [x] Export CSV read-only di task, note attive, liste, scelta Forui e destinazione Windows/Android, UTF-8 BOM, RFC4180, neutralizzazione formule, limiti 8 MiB e 10.000 elementi.
+- [x] Test automatici codec, dataset, dati esclusi, injection, limiti, outbox invariata; [ ] CI/merge ancora da attestare.
+- [x] VPS PostgreSQL 17/Flyway V10 verificata e diagnostica Windows positiva; [ ] API strict, Android e test reali cumulativi **rinviati**. [Registro](docs/DEVICE-ACCEPTANCE-DEFERRED.md).
+- [ ] P2.4B backup reale separato: non trattare CSV o JSON portabile come backup completo. [CSV](docs/P2-CSV-EXPORT.md).
+
+- 2026-11-03 | feat(p2.4a) | Export CSV e test senza operazioni su produzione; prove fisiche differite per scelta utente.

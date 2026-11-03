@@ -1,6 +1,6 @@
 # Simple Notes
 
-> **Stato operativo 03/11/2026:** P2.4A CSV integrata su `main` ([PR #27](https://github.com/andreadada/simple-notes/pull/27), commit [`218d1d0b`](https://github.com/andreadada/simple-notes/commit/218d1d0b4bbc4670c7e1d25d3dead594bb97a30a), Flutter `0.30.0+32`; [CI Flutter](https://github.com/andreadada/simple-notes/actions/runs/41562133925) **success**: 198 test, Windows EXE/MSIX, Android JDK17/21; [Markdown](https://github.com/andreadada/simple-notes/actions/runs/41561797719) **success**). VPS reale PostgreSQL 17/Flyway V10 verificata (03/11/2026), Windows diagnostica positiva. API strict e test fisici Windows↔Android **rinviati**, nessun reset o deploy effettuato dall'assistente. [Stato](docs/CURRENT-STATUS.md) · [CSV](docs/P2-CSV-EXPORT.md) · [E2E differiti](docs/DEVICE-ACCEPTANCE-DEFERRED.md).
+> **Stato operativo 03/11/2026:** P2.4B1 backup cifrato e verifica read-only integrati su `main` ([PR #28](https://github.com/andreadada/simple-notes/pull/28), [commit `95741a20`](https://github.com/andreadada/simple-notes/commit/95741a2013246296dd3e278ec09ae8e72f14a836), Flutter `0.31.0+33`). [Flutter CI #41636993011](https://github.com/andreadada/simple-notes/actions/runs/41636993011) **success**: 204 test, Windows EXE/MSIX, Android JDK17/21; [Markdown #41636993004](https://github.com/andreadada/simple-notes/actions/runs/41636993004) **success**. VPS PostgreSQL 17/Flyway V10 attestata il 03/11; diagnostica Windows positiva. **Restore scrivente P2.4B2, API strict e test fisici Windows↔Android NON completati**; nessun reset, restore o deploy eseguito dall'assistente. [Stato](docs/CURRENT-STATUS.md) · [Backup](docs/P2-FULL-BACKUP.md) · [Collaudo rinviato](docs/DEVICE-ACCEPTANCE-DEFERRED.md).
 
 App offline-first per **Windows 11 e Android** dedicata ad attività, note e pianificazione. Flutter/Forui con Drift SQLite locale, Google OAuth e sincronizzazione con Spring Boot/PostgreSQL su Coolify.
 
@@ -84,12 +84,12 @@ La vista Calendario ha un pannello **Sorgenti** richiudibile: mostra file e feed
 
 ## Gate server-first per il collaudo cumulativo
 
-Integrato in `main` (PR #26) il controllo di sola lettura `infra/release-readiness.sh` per Flyway V10, health e capability API autenticate. Non installa o distribuisce: l'ultima attestazione VPS è V8 e serve una verifica dell'operatore prima del test client Windows/Android `0.29.0+31`. [Runbook](docs/RELEASE-V10-READINESS.md).
+Integrato in `main` (PR #26) il controllo di sola lettura `infra/release-readiness.sh` per Flyway V10, health e capability API autenticate. Non installa o distribuisce: l'utente ha confermato VPS Flyway V10 in sola lettura il 03/11/2026; API strict e prove Windows↔Android restano aperte. Versione corrente Flutter `0.31.0+33`. [Runbook](docs/RELEASE-V10-READINESS.md).
 
 ## P2.4A — CSV locale (main, PR #27)
 
 Nel menu profilo **Esporta CSV** consente di scegliere attività, note attive o liste; su Windows salva un file tramite la finestra di sistema, su Android usa la condivisione. File UTF-8 con BOM, escaping di virgole/apici/righe e protezione contro formule di fogli di calcolo. Non è un backup né un formato importabile. [Specifica](docs/P2-CSV-EXPORT.md). Test real-device Windows/Android rinviati esplicitamente dall'utente al batch finale: [Registro](docs/DEVICE-ACCEPTANCE-DEFERRED.md).
 
-## P2.4B1 — Backup cifrato del profilo (candidato)
+## P2.4B1 — Backup cifrato del profilo (main, PR #28)
 
 `Avatar → Crea backup cifrato` salva un file .snb protetto da password; `Avatar → Verifica backup` controlla integrità, account e conteggi **senza ripristinare**. Include tutti i dati locali SQLite con cestino/outbox, e preferenze ICS, Pomodoro, Habit, Countdown e tema; esclude i token Google. **Il ripristino operativo è previsto in P2.4B2, non ancora disponibile**. [Specifica](docs/P2-FULL-BACKUP.md).

@@ -72,3 +72,5 @@ Il gate manuale si chiude soltanto con prove reali documentate da utente/operato
 ## P2.4B1 — Verifiche .snb rinviate
 
 Nel batch fisico finale provare salvataggio Windows e condivisione Android del backup cifrato, password/confirm, controllo stessa password/account, rifiuto account diversi, file alterati o futuri, e assenza di scritture in verifica. Le credenziali OAuth non devono essere esportate. **Nessun restore live in P2.4B1**; implementazione P2.4B2 condizionata da cold-start, sync sospesa, checkpoint e rollback. [Contratto](P2-FULL-BACKUP.md).
+
+**Aggiornamento codice 03/11/2026:** P2.4B1 [PR #28](https://github.com/andreadada/simple-notes/pull/28) integrata in `main`, Flutter `0.31.0+33`, 204 test automatici e build Windows/Android verdi ([CI #41636993011](https://github.com/andreadada/simple-notes/actions/runs/41636993011)). Questo **non è** un test fisico della creazione/apertura del file, né prova un ripristino; P2.4B2 rimane da implementare.

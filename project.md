@@ -1,6 +1,6 @@
 # Simple Notes — Progetto e roadmap
 
-> **Stato operativo 03/11/2026:** P2.4A CSV integrata su `main` ([PR #27](https://github.com/andreadada/simple-notes/pull/27), commit [`218d1d0b`](https://github.com/andreadada/simple-notes/commit/218d1d0b4bbc4670c7e1d25d3dead594bb97a30a), Flutter `0.30.0+32`; [CI Flutter](https://github.com/andreadada/simple-notes/actions/runs/41562133925) **success**: 198 test, Windows EXE/MSIX, Android JDK17/21; [Markdown](https://github.com/andreadada/simple-notes/actions/runs/41561797719) **success**). VPS reale PostgreSQL 17/Flyway V10 verificata (03/11/2026), Windows diagnostica positiva. API strict e test fisici Windows↔Android **rinviati**, nessun reset o deploy effettuato dall'assistente. [Stato](docs/CURRENT-STATUS.md) · [CSV](docs/P2-CSV-EXPORT.md) · [E2E differiti](docs/DEVICE-ACCEPTANCE-DEFERRED.md).
+> **Stato operativo 03/11/2026:** P2.4B1 backup cifrato e verifica read-only integrati su `main` ([PR #28](https://github.com/andreadada/simple-notes/pull/28), [commit `95741a20`](https://github.com/andreadada/simple-notes/commit/95741a2013246296dd3e278ec09ae8e72f14a836), Flutter `0.31.0+33`). [Flutter CI #41636993011](https://github.com/andreadada/simple-notes/actions/runs/41636993011) **success**: 204 test, Windows EXE/MSIX, Android JDK17/21; [Markdown #41636993004](https://github.com/andreadada/simple-notes/actions/runs/41636993004) **success**. VPS PostgreSQL 17/Flyway V10 attestata il 03/11; diagnostica Windows positiva. **Restore scrivente P2.4B2, API strict e test fisici Windows↔Android NON completati**; nessun reset, restore o deploy eseguito dall'assistente. [Stato](docs/CURRENT-STATUS.md) · [Backup](docs/P2-FULL-BACKUP.md) · [Collaudo rinviato](docs/DEVICE-ACCEPTANCE-DEFERRED.md).
 
 <!-- CURRENT-STATUS-REF -->
 
@@ -392,18 +392,20 @@ Esempio: `2026-10-21 14:20 CEST | commit abc1234 | Aggiunto modulo promemoria e 
 - [x] Export CSV read-only di task, note attive, liste, scelta Forui e destinazione Windows/Android, UTF-8 BOM, RFC4180, neutralizzazione formule, limiti 8 MiB e 10.000 elementi.
 - [x] Test codec, dataset, dati esclusi, injection, limiti, outbox invariata; [x] **PR #27 merged**, CI 198 test, Windows EXE/MSIX, Android JDK17/21, Markdown verdi.
 - [x] VPS PostgreSQL 17/Flyway V10 verificata e diagnostica Windows positiva; [ ] API strict, Android e test reali cumulativi **rinviati**. [Registro](docs/DEVICE-ACCEPTANCE-DEFERRED.md).
-- [ ] P2.4B backup reale separato: non trattare CSV o JSON portabile come backup completo. [CSV](docs/P2-CSV-EXPORT.md).
+- [x] P2.4B1 archivio cifrato locale e verifica read-only; [ ] P2.4B2 ripristino effettivo, checkpoint e rollback ancora da implementare. Non trattare CSV o JSON portabile come backup completo. [CSV](docs/P2-CSV-EXPORT.md).
 
 - 2026-11-03 | feat(p2.4a) | Export CSV e test senza operazioni su produzione; prove fisiche differite per scelta utente.
 
 - 2026-11-03 | merge(p2.4a) | PR #27 (`218d1d0b`) integrata su `main`, Flutter `0.30.0+32`; [Flutter CI #41562133925](https://github.com/andreadada/simple-notes/actions/runs/41562133925) success (198 test, Windows EXE/MSIX, Android JDK17/21), [Markdown #41561797719](https://github.com/andreadada/simple-notes/actions/runs/41561797719) success. DB V10 VPS e diagnostica Windows già verificati. Manual E2E, API strict, backup completo ancora aperti.
 
-## P2.4B1 — Backup cifrato e anteprima non distruttiva (candidata, 03/11/2026)
+## P2.4B1 — Backup cifrato e anteprima non distruttiva (main, PR #28, 03/11/2026)
 
 - [x] Snapshot di tutte le cinque tabelle SQLite V8: attività, liste, note incluse nel cestino, operazioni in attesa con ID originali, versioni remote e impostazioni di sincronizzazione.
 - [x] Preferenze locali per owner: ICS, Pomodoro, Habit, Countdown, tema. Nessuna credenziale Google/JWT/secure storage.
 - [x] File .snb cifrato AES-256-GCM con PBKDF2 e password, verifica autenticità/owner/schema **solo in lettura**, flusso Forui Windows/Android.
 - [ ] P2.4B2: ripristino reale cold-start con sincronizzazione sospesa, checkpoint, rollback e gestione anti-replay; **non abilitato in P2.4B1**.
-- [ ] CI/merge da registrare; test manuali posticipati su richiesta. [Specifica](docs/P2-FULL-BACKUP.md).
+- [x] **PR #28 merged**, [Flutter CI #41636993011](https://github.com/andreadada/simple-notes/actions/runs/41636993011) verde (204 test, Windows EXE/MSIX, Android JDK17/21), [Markdown #41636993004](https://github.com/andreadada/simple-notes/actions/runs/41636993004) verde. [ ] Test fisici posticipati su richiesta. [Specifica](docs/P2-FULL-BACKUP.md).
 
-- 2026-11-03 | feat(p2.4b1) | Backup locale cifrato e verifica read-only, nessun restore live né deploy/operazioni database esterne. Flutter candidata 0.31.0+33.
+- 2026-11-03 | feat(p2.4b1) | Backup locale cifrato e verifica read-only, nessun restore live né deploy/operazioni database esterne. Flutter `0.31.0+33` integrata in main.
+
+- 2026-11-03 | merge(p2.4b1) | PR #28, commit `95741a20`, Flutter `0.31.0+33`; Flutter CI #41636993011: **204 test + Windows/Android verdi**. Markdown #41636993004 verde. Nessun restore o test fisico eseguito; P2.4B2 resta aperta e richiede avvio isolato, snapshot preventivo, anti-replay outbox e rollback.

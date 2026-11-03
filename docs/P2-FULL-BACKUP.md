@@ -1,6 +1,6 @@
 # P2.4B1 — Backup cifrato del profilo e verifica non distruttiva
 
-**Stato 03/11/2026:** implementazione candidata nel branch `feature/p2-4b1-encrypted-full-backup`, Flutter `0.31.0+33`. Analisi/CI, PR e merge da verificare prima del rilascio. **Il ripristino live non è ancora implementato né abilitato.**
+**Stato 03/11/2026:** integrata su `main` con [PR #28](https://github.com/andreadada/simple-notes/pull/28), Flutter `0.31.0+33`. [Flutter CI #41636993011](https://github.com/andreadada/simple-notes/actions/runs/41636993011) **success** (204 test, Windows EXE/MSIX, Android JDK17/21), [Markdown #41636993004](https://github.com/andreadada/simple-notes/actions/runs/41636993004) **success**. **Il ripristino live NON è implementato né abilitato** (P2.4B2); test real-device rinviati.
 
 ## Perché due fasi
 

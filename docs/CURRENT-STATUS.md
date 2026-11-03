@@ -4,8 +4,9 @@
 
 | Area | Stato verificato | Gate ancora aperti |
 |---|---|---|
-| `main` | **P0–P2.4A e R1 integrate**. [PR #27](https://github.com/andreadada/simple-notes/pull/27) merged, commit [`218d1d0b`](https://github.com/andreadada/simple-notes/commit/218d1d0b4bbc4670c7e1d25d3dead594bb97a30a), Flutter **`0.30.0+32`** | Prove fisiche differite su richiesta; API strict non verificata |
+| `main` | **P0–P2.4B1 e R1 integrate**, Flutter **`0.31.0+33`**, [PR #28](https://github.com/andreadada/simple-notes/pull/28) merged, commit [`95741a20`](https://github.com/andreadada/simple-notes/commit/95741a2013246296dd3e278ec09ae8e72f14a836) | **P2.4B2 restore non implementato**; API strict e prove reali differite |
 | P1.18 integrata (storico) | [PR #19](https://github.com/andreadada/simple-notes/pull/19) merged, Flutter **`0.23.0+25`**, temi chiaro/scuro/sistema, preferenza locale e Sticky | CI verde; test visivi e su dispositivi fisici ancora aperti |
+| CI P2.4B1 | [Flutter #41636993011](https://github.com/andreadada/simple-notes/actions/runs/41636993011) **success**: 204 test, Windows EXE/MSIX, Android JDK17/21; [Markdown #41636993004](https://github.com/andreadada/simple-notes/actions/runs/41636993004) **success** | Nessun restore live, prova picker/share o Windows↔Android su dispositivi reali |
 | CI P2.4A | [Flutter #41562133925](https://github.com/andreadada/simple-notes/actions/runs/41562133925) **success**: 198 test, Windows EXE/MSIX, Android JDK17/21; [Markdown #41561797719](https://github.com/andreadada/simple-notes/actions/runs/41561797719) **success** | Collaudo CSV nativo e Windows↔Android rinviati |
 | CI P2.3D | [Flutter CI #41471546808](https://github.com/andreadada/simple-notes/actions/runs/41471546808) **success** (191 test, Windows EXE/MSIX, Android JDK17/21); [Markdown #41471546568](https://github.com/andreadada/simple-notes/actions/runs/41471546568) **success** | Non certifica migrazione dati installati o prove fisiche |
 | CI P2.3C | [Flutter CI #41460378203](https://github.com/andreadada/simple-notes/actions/runs/41460378203) **success** (182 test, Windows EXE/MSIX, Android JDK17/21); [Markdown #41460378261](https://github.com/andreadada/simple-notes/actions/runs/41460378261) **success** | Non sostituisce prove reali URL HTTPS e sync server-first |
@@ -33,7 +34,7 @@
 - **P2.3B (integrata, PR #23):** ricorrenze RRULE/RDATE/EXDATE/RECURRENCE-ID locali con proiezione lazy e schema 3. [Specifica](P2-ICS-RECURRENCE.md).
 - **P2.3C (main, PR #24):** HTTPS ICS manuale, DNS pinning e restrizioni SSRF/redirect, cache offline, refresh esplicito; nessun OAuth/backend. [Specifica](P2-ICS-FEEDS.md).
 - **P2.3D (main, PR #25):** pannello ICS collassabile, nomi inline senza cambiare file/URL, conteggi, ultimo refresh riuscito e gestione per ID. [Specifica](P2-ICS-SOURCE-MANAGEMENT.md).
-- **P2.4A integrata:** CSV da dati locali integrata in `main` (PR #27, CI verde); backup completo, condivisione e smart ancora non implementati. [CSV](P2-CSV-EXPORT.md).
+- **P2.4A e P2.4B1 integrate:** CSV locale (PR #27), backup cifrato `.snb` e verifica senza scritture (PR #28). **Ripristino completo P2.4B2, condivisione e smart non implementati**. [CSV](P2-CSV-EXPORT.md).
 
 ## Gate di rilascio ancora aperti
 
@@ -77,7 +78,7 @@ PR #25 integrata su `main`, Flutter `0.29.0+31`: sorgenti ICS nel pannello compa
 
 ## R1 — Gate server-first (main, PR #26, 02/11/2026)
 
-PR #26 integrata su `main`: verifica V10 rigorosa e capability API complete con token temporaneo, senza scritture, migrazioni, backup, deploy o installazioni. CI Compose #41523319857 e Markdown #41523319860 **verdi** con PostgreSQL **sintetico** e test JSON; non è evidenza della VPS. **Stato reale server V10 NON VERIFICATO (ultima attestazione V8)**. [Runbook operativo](RELEASE-V10-READINESS.md).
+PR #26 integrata su `main`: verifica V10 rigorosa e capability API complete con token temporaneo, senza scritture, migrazioni, backup, deploy o installazioni. CI Compose #41523319857 e Markdown #41523319860 **verdi** con PostgreSQL **sintetico** e test JSON; non è evidenza della VPS. **Nota storica R1:** alla creazione del gate la VPS era attestata V8; il 03/11/2026 l'utente ha verificato con `t4-inspect-db.sh` Flyway **V10**, colonne previste e 0 migration failed. Il gate API strict resta aperto. [Runbook operativo](RELEASE-V10-READINESS.md).
 
 
 ## Evidenze reali e test rinviati (03/11/2026)
@@ -88,6 +89,6 @@ L'utente ha eseguito `t4-inspect-db.sh` su VPS: PostgreSQL 17, `FLYWAY_LATEST=10
 
 PR #27 merged, Flutter `0.30.0+32`, CSV separati attività/note attive/liste, UTC/date civili, JSON per slot/tag/subtask, BOM UTF-8, CSV quoting e blocco formula injection. Nessuna API/migration o import CSV. CI 198 test/Windows/Android e Markdown verdi, prove fisiche rinviate. [Specifica](P2-CSV-EXPORT.md).
 
-## P2.4B1 — Backup cifrato (candidato, 03/11/2026)
+## P2.4B1 — Backup cifrato (main, PR #28, 03/11/2026)
 
-Su branch `feature/p2-4b1-encrypted-full-backup`, Flutter `0.31.0+33`: archivio .snb cifrato AES-256-GCM/PBKDF2, snapshot logico SQLite V8 completo di tombstone/outbox/sync settings e preferenze locali owner-scoped. Menu account Forui Crea backup/Verifica backup, validazione password/integrità/owner/schema **senza scrivere nulla**. **Non esiste ancora un ripristino effettivo**: P2.4B2 richiederà cold-start, blocco sync, checkpoint e rollback. CI/merge da attestare. Le verifiche fisiche restano differite, VPS Flyway V10 già verificata. [Specifica](P2-FULL-BACKUP.md).
+PR #28 merged su `main`, Flutter `0.31.0+33`: archivio .snb cifrato AES-256-GCM/PBKDF2, snapshot logico SQLite V8 completo di tombstone/outbox/sync settings e preferenze locali owner-scoped. Menu account Forui Crea backup/Verifica backup, validazione password/integrità/owner/schema **senza scrivere nulla**. **Non esiste ancora un ripristino effettivo**: P2.4B2 richiederà cold-start, blocco sync, checkpoint e rollback. CI Flutter (204 test e build native) e Markdown verdi; le verifiche fisiche restano differite, VPS Flyway V10 già verificata. [Specifica](P2-FULL-BACKUP.md).

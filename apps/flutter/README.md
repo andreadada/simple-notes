@@ -1,6 +1,6 @@
 # Flutter client — P0 e P1
 
-> **Stato operativo 03/11/2026:** P2.4A CSV integrata su `main` ([PR #27](https://github.com/andreadada/simple-notes/pull/27), commit [`218d1d0b`](https://github.com/andreadada/simple-notes/commit/218d1d0b4bbc4670c7e1d25d3dead594bb97a30a), Flutter `0.30.0+32`; [CI Flutter](https://github.com/andreadada/simple-notes/actions/runs/41562133925) **success**: 198 test, Windows EXE/MSIX, Android JDK17/21; [Markdown](https://github.com/andreadada/simple-notes/actions/runs/41561797719) **success**). VPS reale PostgreSQL 17/Flyway V10 verificata (03/11/2026), Windows diagnostica positiva. API strict e test fisici Windows↔Android **rinviati**, nessun reset o deploy effettuato dall'assistente. [Stato](../../docs/CURRENT-STATUS.md) · [CSV](../../docs/P2-CSV-EXPORT.md) · [E2E differiti](../../docs/DEVICE-ACCEPTANCE-DEFERRED.md).
+> **Stato operativo 03/11/2026:** P2.4B1 backup cifrato e verifica read-only integrati su `main` ([PR #28](https://github.com/andreadada/simple-notes/pull/28), [commit `95741a20`](https://github.com/andreadada/simple-notes/commit/95741a2013246296dd3e278ec09ae8e72f14a836), Flutter `0.31.0+33`). [Flutter CI #41636993011](https://github.com/andreadada/simple-notes/actions/runs/41636993011) **success**: 204 test, Windows EXE/MSIX, Android JDK17/21; [Markdown #41636993004](https://github.com/andreadada/simple-notes/actions/runs/41636993004) **success**. VPS PostgreSQL 17/Flyway V10 attestata il 03/11; diagnostica Windows positiva. **Restore scrivente P2.4B2, API strict e test fisici Windows↔Android NON completati**; nessun reset, restore o deploy eseguito dall'assistente. [Stato](../../docs/CURRENT-STATUS.md) · [Backup](../../docs/P2-FULL-BACKUP.md) · [Collaudo rinviato](../../docs/DEVICE-ACCEPTANCE-DEFERRED.md).
 
 <!-- CURRENT-STATUS-REF -->
 
@@ -211,6 +211,6 @@ Flutter `0.29.0+31`: `ui/ics_source_details.dart` descrive tipo, conteggi e ulti
 
 `lib/data/portable_csv.dart` genera tre CSV separati da `AppDatabase.snapshot()`, solo lettura: task con scadenza civile/UTC, priorità, tag, recurrence, slot e subtasks; note attive con corpo; liste e task_count. `main.dart` offre la scelta via dialog Forui e salva con `file_selector` Windows o `share_plus` Android. Dati in chiaro, CSV formula injection neutralizzata, niente outbox/API o import. CI e prove nativo hardware da distinguere; prove fisiche rinviate. [Specifica](../../docs/P2-CSV-EXPORT.md).
 
-## P2.4B1 — Backup locale cifrato (0.31.0+33 candidato)
+## P2.4B1 — Backup locale cifrato (0.31.0+33, main, PR #28)
 
 `lib/data/full_backup.dart` cifra JSON completo dell'archivio SQLite V8 e delle preferenze locali owner-scoped in AES-256-GCM/PBKDF2 (file .snb). `AppDatabase.fullBackupRows` acquisisce in una transazione tutte le righe incluse le tombstone e la coda sync. `main.dart` espone creazione e verifica di un backup, **non il ripristino**. OAuth/secure storage e stato OS non esportati. Nessun server o migrazione. [Specifiche](../../docs/P2-FULL-BACKUP.md).

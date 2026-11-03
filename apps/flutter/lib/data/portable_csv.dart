@@ -130,3 +130,4 @@ class PortableCsv {
     final safe = (dangerous || startsControl) ? "'$value" : value;
     return '"${safe.replaceAll('"', '""')}"';
   }
+}

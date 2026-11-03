@@ -4,6 +4,7 @@ import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:simple_notes/data/app_database.dart';
 import 'package:simple_notes/data/portable_csv.dart';
+import 'package:simple_notes/data/models.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();

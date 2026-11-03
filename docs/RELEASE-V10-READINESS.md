@@ -4,7 +4,7 @@
 
 ## Obiettivo e limiti
 
-Prima di usare su Windows e Android il client cumulativo Flutter `0.29.0+31`, verificare il **backend esistente** con identità precisa del container PostgreSQL, senza introdurre un secondo DB/volume e senza cancellare SQLite/outbox o SharedPreferences. Distinguere sempre questi tre livelli:
+Prima di usare su Windows e Android il client cumulativo Flutter `0.30.0+32`, verificare il **backend esistente** con identità precisa del container PostgreSQL, senza introdurre un secondo DB/volume e senza cancellare SQLite/outbox o SharedPreferences. Distinguere sempre questi tre livelli:
 
 1. **Codice e CI:** repository `main`, backend V10 con migrazioni V8/V9/V10 e capability dichiarate.
 2. **Reale VPS:** versione Flyway, colonne presenti, migrazioni fallite, health HTTPS e capability autenticate. Sono evidenze che **non** possono essere dedotte da GitHub Actions.
@@ -91,3 +91,5 @@ Riferimenti: [Stato](CURRENT-STATUS.md) · [Runbook precedente](P1-RELEASE-BATCH
 ## Evidenze reali aggiornate 03/11/2026
 
 L'utente ha eseguito l'ispezione **read-only** del DB Simple Notes: PostgreSQL 17 e Flyway V10 PASS con nessuna migrazione fallita e colonne V7–V10 coerenti. Le precedenti note con VPS V8 sono **storiche e superate**. Il client Windows ha riportato login Google e owner coerenti, API compatibile secondo diagnostica, pending 0. Il gate strict `release-readiness.sh` si è fermato per JWT non fornito e **non** è PASS; health e capability complete richiedono ulteriore verifica. L'utente ha rinviato i test Windows↔Android al batch finale senza autorizzare un reset o un nuovo deploy. [Registro](DEVICE-ACCEPTANCE-DEFERRED.md).
+
+**Nota 03/11/2026:** la versione client ora è `0.30.0+32` (P2.4A PR #27); gli export CSV non aggiungono endpoint o migrazioni. Il gate PostgreSQL V10 reale è già PASS; il check API full-schema con JWT resta **non concluso**, come l'accettazione Windows↔Android rinviata. [Registro](DEVICE-ACCEPTANCE-DEFERRED.md).

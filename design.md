@@ -1,6 +1,6 @@
 # Simple Notes — Design & Product Specification
 
-> **Stato operativo 02/11/2026:** P2.3D gestione sorgenti ICS integrata su `main` ([PR #25](https://github.com/andreadada/simple-notes/pull/25), Flutter `0.29.0+31`; [Flutter CI](https://github.com/andreadada/simple-notes/actions/runs/41471546808) **success**: 191 test, Windows EXE/MSIX, Android JDK17/21; [Markdown](https://github.com/andreadada/simple-notes/actions/runs/41471546568) **success**). Nessun deploy, reset, installazione o test hardware; backend repo Flyway V10, ultima VPS attestata V8. [Stato](docs/CURRENT-STATUS.md) · [Gestione ICS](docs/P2-ICS-SOURCE-MANAGEMENT.md).
+> **Stato operativo 03/11/2026:** P2.4A CSV integrata su `main` ([PR #27](https://github.com/andreadada/simple-notes/pull/27), Flutter `0.30.0+32`, [Flutter CI #41562133925](https://github.com/andreadada/simple-notes/actions/runs/41562133925) **success** (198 test, Windows EXE/MSIX, Android JDK17/21), [Markdown](https://github.com/andreadada/simple-notes/actions/runs/41561797719) **success**). VPS PostgreSQL 17/Flyway V10 **verificata in sola lettura** il 03/11/2026, diagnostica Windows positiva; API strict ed E2E fisici rinviati per decisione utente. Nessun deploy/reset/installazione effettuato dall'assistente. [Stato](docs/CURRENT-STATUS.md) · [CSV](docs/P2-CSV-EXPORT.md) · [E2E differiti](docs/DEVICE-ACCEPTANCE-DEFERRED.md).
 
 <!-- CURRENT-STATUS-REF -->
 

@@ -1,7 +1,7 @@
 # Backend — Coolify
 
 <!-- CURRENT-STATUS-REF -->
-> **Stato operativo 02/11/2026:** R1 gate server-first integrato su `main` ([PR #26](https://github.com/andreadada/simple-notes/pull/26), commit [`f19ee8b0`](https://github.com/andreadada/simple-notes/commit/f19ee8b0a5bea2cb2c2231d85b3e8ad10a5233a7); [Compose CI](https://github.com/andreadada/simple-notes/actions/runs/41523319857) **success** con PostgreSQL 17 sintetico, [Markdown](https://github.com/andreadada/simple-notes/actions/runs/41523319860) **success**). Flutter resta `0.29.0+31` e 191 test già attestati. **VPS reale V10, health/capability live, backup recente e collaudo hardware non verificati**; ultimo stato VPS attestato V8. Nessun deploy o intervento su dati. [Stato](../docs/CURRENT-STATUS.md) · [R1]( ../docs/RELEASE-V10-READINESS.md).
+> **Stato operativo 03/11/2026:** P2.4A CSV integrata su `main` ([PR #27](https://github.com/andreadada/simple-notes/pull/27), Flutter `0.30.0+32`, [Flutter CI #41562133925](https://github.com/andreadada/simple-notes/actions/runs/41562133925) **success** (198 test, Windows EXE/MSIX, Android JDK17/21), [Markdown](https://github.com/andreadada/simple-notes/actions/runs/41561797719) **success**). VPS PostgreSQL 17/Flyway V10 **verificata in sola lettura** il 03/11/2026, diagnostica Windows positiva; API strict ed E2E fisici rinviati per decisione utente. Nessun deploy/reset/installazione effettuato dall'assistente. [Stato](../docs/CURRENT-STATUS.md) · [CSV](../docs/P2-CSV-EXPORT.md) · [E2E differiti](../docs/DEVICE-ACCEPTANCE-DEFERRED.md).
 
 
 ## Cronologia — rilascio 0.7.0+9 (superato da P1.6)

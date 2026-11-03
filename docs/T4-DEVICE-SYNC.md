@@ -153,3 +153,7 @@ Non occorre alcun nuovo deploy PostgreSQL: **Flyway V7 è stata verificata sul d
 
 La versione Flutter cumulativa è `0.29.0+31`, non i numeri T4.2 storici di seguito. Prima di provarla su Windows/Android con backend cloud, identificare il DB PostgreSQL di produzione, e verificare **Flyway V10** con health e capability autenticate tramite `infra/release-readiness.sh` senza alterare dati. Finché la VPS reale resta non verificata, non considerare il successo di compilazione una conferma di sync. [Runbook aggiornato](RELEASE-V10-READINESS.md).
 
+## Rinvio collaudo del 03/11/2026
+
+L'utente ha rimandato l'E2E Windows↔Android. La diagnostica Windows dell'app corrente è positiva (Google connesso, owner coerente, pending=0, cursor=91, ultima sync 02:24:58), la VPS reale Flyway V10 è confermata; il report Android, le prove di conflitto/offline, la firma dei package e l'API strict non sono verificati. Non usare la versione T4.2 storica di questa guida come build corrente: Flutter candidata P2.4A `0.30.0+32`. [Evidenze](DEVICE-ACCEPTANCE-DEFERRED.md) · [Stato](CURRENT-STATUS.md).
+

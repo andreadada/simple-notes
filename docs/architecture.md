@@ -105,3 +105,7 @@ La UI calendario continua a invocare `IcsLibrary.onDay`, che unisce eventi singo
 
 Il client Flutter `0.29.0+31` contiene funzionalità sync che richiedono Flyway V10 e le capability versione 1. Gli strumenti `infra/release-readiness.sh`, `t4-inspect-db.sh`, `t4-check-api.sh` verificano il contratto solo dopo un eventuale deploy approvato. Nessun nuovo microservizio, endpoint o migration; test sintetici non equivalgono a stato reale VPS. [Runbook](RELEASE-V10-READINESS.md).
 
+## P2.4A — Export CSV client-only
+
+`lib/data/portable_csv.dart` trasforma lo snapshot locale `LocalData` in tre CSV diversi e ne controlla dimensione/iniezione di formule. `main.dart` offre il selettore Forui e usa gli adattatori esistenti `file_selector` e `share_plus`. Nessun endpoint Spring, Flyway, Drift migration, token o outbox creato. Prove real-device rinviate per decisione dell'utente. [Specifiche](P2-CSV-EXPORT.md).
+

@@ -90,3 +90,6 @@ Integrato in `main` (PR #26) il controllo di sola lettura `infra/release-readine
 
 Nel menu profilo **Esporta CSV** consente di scegliere attività, note attive o liste; su Windows salva un file tramite la finestra di sistema, su Android usa la condivisione. File UTF-8 con BOM, escaping di virgole/apici/righe e protezione contro formule di fogli di calcolo. Non è un backup né un formato importabile. [Specifica](docs/P2-CSV-EXPORT.md). Test real-device Windows/Android rinviati esplicitamente dall'utente al batch finale: [Registro](docs/DEVICE-ACCEPTANCE-DEFERRED.md).
 
+## P2.4B1 — Backup cifrato del profilo (candidato)
+
+`Avatar → Crea backup cifrato` salva un file .snb protetto da password; `Avatar → Verifica backup` controlla integrità, account e conteggi **senza ripristinare**. Include tutti i dati locali SQLite con cestino/outbox, e preferenze ICS, Pomodoro, Habit, Countdown e tema; esclude i token Google. **Il ripristino operativo è previsto in P2.4B2, non ancora disponibile**. [Specifica](docs/P2-FULL-BACKUP.md).

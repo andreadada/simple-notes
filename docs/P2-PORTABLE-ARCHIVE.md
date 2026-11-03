@@ -32,3 +32,6 @@
 
 Il menu account offre anche **Esporta CSV** da attività, note attive e liste. Il JSON P2.1 resta l'unico formato di import additivo attualmente supportato; i CSV non sono importabili nell'app, né costituiscono backup completo. Entrambi escludono credenziali, outbox e preferenze private del profilo e contengono dati in chiaro. [Specifica CSV](P2-CSV-EXPORT.md).
 
+## P2.4B1 — Distinzione fra JSON e backup cifrato
+
+Il JSON P2.1 importa copie attive con nuove UUID e outbox; non include tombstone/remoteVersion/cursor/preferenze. Il .snb P2.4B1 conserva dati locali completi e preferenze in forma cifrata, ma consente solo la verifica: **il restore scrivente è rinviato a P2.4B2**. [Contratto](P2-FULL-BACKUP.md).

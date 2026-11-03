@@ -106,3 +106,6 @@ Il gate server-first (PR #26, CI sintetica verde) per il client cumulativo richi
 
 CSV si genera soltanto dal locale `AppDatabase.snapshot()` dopo scelta esplicita; niente modifiche SQLite, outbox o sync, nessun trashedNotes, owner, credenziali o URL ICS privati. Limite 8 MiB/10.000 record, UTF-8 BOM, quoting RFC4180 e formule neutralizzate prima di quoting. La selezione CSV usa Forui e le destinazioni native esistenti; non creare un importer CSV implicito. **Test manuali Windows↔Android rinviati dall'utente**, ma CI/test automatici obbligatori; non marcarli completati. [CSV](docs/P2-CSV-EXPORT.md) · [Rinvio](docs/DEVICE-ACCEPTANCE-DEFERRED.md).
 
+## Vincoli P2.4B — Backup reale senza perdita
+
+Il formato .snb deve essere cifrato obbligatoriamente (AES-256-GCM, PBKDF2 e salt/nonce casuali) e includere tutte le tabelle SQLite e preferenze del solo owner. Mai includere JWT/refresh token, file di secure storage, log di password o dati di altri account. Rifiutare schema/tabelle/colonne ignote invece di produrre backup incompleti. In P2.4B1 **solo export + inspect read-only**: nessun pulsante di restore che sovrascriva SQLite, SharedPreferences o sync outbox. P2.4B2 dovrà operare a cold-start, con stop sync, checkpoint verificato e rollback prima di consentire restore. Test fisici rinviati dall'utente, ma CI obbligatoria. [Specifiche](docs/P2-FULL-BACKUP.md).

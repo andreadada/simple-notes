@@ -242,3 +242,6 @@ La label è già un campo editabile inline senza pulsante Rinomina: Enter/blur s
 
 Una voce menu **Esporta CSV** apre il dialog Forui con scelta Attività/Note/Liste; non tre pulsanti permanenti o un form nuovo. Export avviato solo dopo scelta, messaggi sintetici, nessun token o contenuto mostrato nei messaggi. Informare che il CSV è in chiaro, non reimportabile e non equivalente a backup. Windows dialog Salva con nome, Android condivisione sistema. [Specifica](docs/P2-CSV-EXPORT.md).
 
+## UI P2.4B1 — Password Forui, nessun finto ripristino
+
+Il menu account offre Crea backup cifrato e Verifica backup. Dialog Forui con campo password nascosto e conferma password in creazione; file Windows Save As e Android share sheet, nessuna password memorizzata. Preview mostra solo data e conteggi, non contenuto o credenziali, e dichiara «nessun dato ripristinato». Non aggiungere «Ripristina» fino alla fase P2.4B2 e ai gate di sicurezza. [Specifica](docs/P2-FULL-BACKUP.md).

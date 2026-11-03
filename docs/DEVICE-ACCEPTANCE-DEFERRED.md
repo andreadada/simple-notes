@@ -68,3 +68,7 @@ Il gate manuale si chiude soltanto con prove reali documentate da utente/operato
 ## Stato codice P2.4A dopo il rinvio
 
 [PR #27](https://github.com/andreadada/simple-notes/pull/27) integrata su `main`, Flutter `0.30.0+32`: [CI Flutter #41562133925](https://github.com/andreadada/simple-notes/actions/runs/41562133925) **success** (198 test + Windows/Android), [Markdown #41561797719](https://github.com/andreadada/simple-notes/actions/runs/41561797719) **success**. Questo conferma solo codice/build automatizzati, non picker CSV o sincronizzazione cross-device su hardware. Il rinvio delle verifiche manuali resta in vigore.
+
+## P2.4B1 — Verifiche .snb rinviate
+
+Nel batch fisico finale provare salvataggio Windows e condivisione Android del backup cifrato, password/confirm, controllo stessa password/account, rifiuto account diversi, file alterati o futuri, e assenza di scritture in verifica. Le credenziali OAuth non devono essere esportate. **Nessun restore live in P2.4B1**; implementazione P2.4B2 condizionata da cold-start, sync sospesa, checkpoint e rollback. [Contratto](P2-FULL-BACKUP.md).

@@ -64,3 +64,7 @@ L'utente ha tentato il comando `infra/release-readiness.sh`, che si è **fermato
 Il gate manuale si chiude soltanto con prove reali documentate da utente/operatori, su versioni e dispositivi identificati, senza dati/token nel report. `CI PASS` prova il codice testato, non l'installazione, il backend live o la conservazione dati. La scelta di rimandare il collaudo **non** vale come autorizzazione a deploy, reset o rilascio pubblico.
 
 [Stato](CURRENT-STATUS.md) · [Runbook R1](RELEASE-V10-READINESS.md) · [Piano batch](P1-RELEASE-BATCH.md) · [Roadmap](../project.md).
+
+## Stato codice P2.4A dopo il rinvio
+
+[PR #27](https://github.com/andreadada/simple-notes/pull/27) integrata su `main`, Flutter `0.30.0+32`: [CI Flutter #41562133925](https://github.com/andreadada/simple-notes/actions/runs/41562133925) **success** (198 test + Windows/Android), [Markdown #41561797719](https://github.com/andreadada/simple-notes/actions/runs/41561797719) **success**. Questo conferma solo codice/build automatizzati, non picker CSV o sincronizzazione cross-device su hardware. Il rinvio delle verifiche manuali resta in vigore.

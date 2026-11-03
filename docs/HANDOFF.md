@@ -1,6 +1,6 @@
 # Simple Notes — Passaggio di consegne (handoff)
 
-> **Stato operativo 02/11/2026:** R1 gate server-first integrato su `main` ([PR #26](https://github.com/andreadada/simple-notes/pull/26), commit [`f19ee8b0`](https://github.com/andreadada/simple-notes/commit/f19ee8b0a5bea2cb2c2231d85b3e8ad10a5233a7); [Compose CI](https://github.com/andreadada/simple-notes/actions/runs/41523319857) **success** con PostgreSQL 17 sintetico, [Markdown](https://github.com/andreadada/simple-notes/actions/runs/41523319860) **success**). Flutter resta `0.29.0+31` e 191 test già attestati. **VPS reale V10 verificata 03/11/2026**, health e capability strict, backup recente e collaudo Android ancora da verificare. Nessun deploy o intervento su dati. [Stato](CURRENT-STATUS.md) · [R1]( RELEASE-V10-READINESS.md).
+> **Stato operativo 03/11/2026:** P2.4A CSV integrata su `main` ([PR #27](https://github.com/andreadada/simple-notes/pull/27), commit [`218d1d0b`](https://github.com/andreadada/simple-notes/commit/218d1d0b4bbc4670c7e1d25d3dead594bb97a30a), Flutter `0.30.0+32`; [CI Flutter](https://github.com/andreadada/simple-notes/actions/runs/41562133925) **success**: 198 test, Windows EXE/MSIX, Android JDK17/21; [Markdown](https://github.com/andreadada/simple-notes/actions/runs/41561797719) **success**). VPS reale PostgreSQL 17/Flyway V10 verificata (03/11/2026), Windows diagnostica positiva. API strict e test fisici Windows↔Android **rinviati**, nessun reset o deploy effettuato dall'assistente. [Stato](CURRENT-STATUS.md) · [CSV](P2-CSV-EXPORT.md) · [E2E differiti](DEVICE-ACCEPTANCE-DEFERRED.md).
 
 <!-- CURRENT-STATUS-REF -->
 
@@ -327,4 +327,4 @@ PR #26 merged su `main`; Compose CI #41523319857 e Markdown #41523319860 success
 
 VPS `t4-inspect-db.sh` PASS Flyway V10, PostgreSQL 17, zero fallimenti, colonne V7–V10 coerenti; conteggi 1 user/3 task/1 note/57 changes/57 operations. Windows diag API client compatibile, Google connesso, owner coerente, 0 pending, 0 task visibili, 1 nota, cursor 91, sync 02:24:58. API strict JWT non passata per token mancante; Android assente. Nessuna inferenza di perdita dati da conteggi differenti; collaudo fisico rinviato esplicitamente. [Registro](DEVICE-ACCEPTANCE-DEFERRED.md).
 
-P2.4A branch `feature/p2-4a-csv-export` Flutter candidata 0.30.0+32: CSV esplicito di attività/note/liste, solo lettura locale, protezione formule, scelta Forui e salvataggio/share. Non è backup né import. CI/merge da attestare. [Specifica](P2-CSV-EXPORT.md).
+P2.4A branch `feature/p2-4a-csv-export` Flutter candidata 0.30.0+32: CSV esplicito di attività/note/liste, solo lettura locale, protezione formule, scelta Forui e salvataggio/share. Non è backup né import. CI/merge attestati nella PR #27. [Specifica](P2-CSV-EXPORT.md).

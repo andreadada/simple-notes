@@ -1,12 +1,12 @@
 # Simple Notes — Progetto e roadmap
 
-> **Stato operativo 02/11/2026:** R1 gate server-first integrato su `main` ([PR #26](https://github.com/andreadada/simple-notes/pull/26), commit [`f19ee8b0`](https://github.com/andreadada/simple-notes/commit/f19ee8b0a5bea2cb2c2231d85b3e8ad10a5233a7); [Compose CI](https://github.com/andreadada/simple-notes/actions/runs/41523319857) **success** con PostgreSQL 17 sintetico, [Markdown](https://github.com/andreadada/simple-notes/actions/runs/41523319860) **success**). Flutter resta `0.29.0+31` e 191 test già attestati. **VPS reale V10, health/capability live, backup recente e collaudo hardware non verificati**; ultimo stato VPS attestato V8. Nessun deploy o intervento su dati. [Stato](docs/CURRENT-STATUS.md) · [R1]( docs/RELEASE-V10-READINESS.md).
+> **Stato operativo 03/11/2026:** P2.4A CSV integrata su `main` ([PR #27](https://github.com/andreadada/simple-notes/pull/27), commit [`218d1d0b`](https://github.com/andreadada/simple-notes/commit/218d1d0b4bbc4670c7e1d25d3dead594bb97a30a), Flutter `0.30.0+32`; [CI Flutter](https://github.com/andreadada/simple-notes/actions/runs/41562133925) **success**: 198 test, Windows EXE/MSIX, Android JDK17/21; [Markdown](https://github.com/andreadada/simple-notes/actions/runs/41561797719) **success**). VPS reale PostgreSQL 17/Flyway V10 verificata (03/11/2026), Windows diagnostica positiva. API strict e test fisici Windows↔Android **rinviati**, nessun reset o deploy effettuato dall'assistente. [Stato](CURRENT-STATUS.md) · [CSV](P2-CSV-EXPORT.md) · [E2E differiti](DEVICE-ACCEPTANCE-DEFERRED.md).
 
 <!-- CURRENT-STATUS-REF -->
 
 **Obiettivo:** Windows 11 + Android offline-first, Google OAuth, Flutter/Forui/Drift + Spring Boot/PostgreSQL su Coolify. Regole UX in [design.md](design.md); deploy sicuro in [P1-RELEASE-BATCH.md](docs/P1-RELEASE-BATCH.md). Le checklist sotto includono traguardi storici: `[x]` significa **codice verificato nella CI o prova specifica**, non distribuzione sul VPS.
 
-## Gate corrente (CI P2.3D superata; distribuzione non eseguita)
+## Gate corrente (CI P2.4A superata; test fisici differiti)
 
 - [x] P1.7 Android con scheduler inexact, ledger, opt-in e CI verde (PR #6). [ ] Prova fisica Android app chiusa/reboot e controllo permessi; [x] codice packaging MSIX + promemoria Windows integrato (PR #7, CI verde); [ ] test fisici MSIX/identità/dati e firma pubblica.
 - [x] Flyway V10 verificata nella VPS reale il 03/11/2026, 0 migrazioni fallite; [ ] health/capability strict ancora aperti.
@@ -387,11 +387,13 @@ Esempio: `2026-10-21 14:20 CEST | commit abc1234 | Aggiunto modulo promemoria e 
 
 - 2026-11-02 | merge(r1) | PR #26 (`f19ee8b0`) integrata su `main`, Compose CI #41523319857 e Markdown #41523319860 verdi. Solo controlli read-only aggiunti: VPS live V10, backup recente, deploy e E2E Windows/Android ancora aperti. [Runbook](docs/RELEASE-V10-READINESS.md).
 
-## P2.4A — CSV locale (branch candidata, 03/11/2026)
+## P2.4A — CSV locale (main, PR #27, 03/11/2026)
 
 - [x] Export CSV read-only di task, note attive, liste, scelta Forui e destinazione Windows/Android, UTF-8 BOM, RFC4180, neutralizzazione formule, limiti 8 MiB e 10.000 elementi.
-- [x] Test automatici codec, dataset, dati esclusi, injection, limiti, outbox invariata; [ ] CI/merge ancora da attestare.
+- [x] Test codec, dataset, dati esclusi, injection, limiti, outbox invariata; [x] **PR #27 merged**, CI 198 test, Windows EXE/MSIX, Android JDK17/21, Markdown verdi.
 - [x] VPS PostgreSQL 17/Flyway V10 verificata e diagnostica Windows positiva; [ ] API strict, Android e test reali cumulativi **rinviati**. [Registro](docs/DEVICE-ACCEPTANCE-DEFERRED.md).
 - [ ] P2.4B backup reale separato: non trattare CSV o JSON portabile come backup completo. [CSV](docs/P2-CSV-EXPORT.md).
 
 - 2026-11-03 | feat(p2.4a) | Export CSV e test senza operazioni su produzione; prove fisiche differite per scelta utente.
+
+- 2026-11-03 | merge(p2.4a) | PR #27 (`218d1d0b`) integrata su `main`, Flutter `0.30.0+32`; [Flutter CI #41562133925](https://github.com/andreadada/simple-notes/actions/runs/41562133925) success (198 test, Windows EXE/MSIX, Android JDK17/21), [Markdown #41561797719](https://github.com/andreadada/simple-notes/actions/runs/41561797719) success. DB V10 VPS e diagnostica Windows già verificati. Manual E2E, API strict, backup completo ancora aperti.

@@ -1,6 +1,6 @@
 # Simple Notes
 
-> **Stato operativo 02/11/2026:** R1 gate server-first integrato su `main` ([PR #26](https://github.com/andreadada/simple-notes/pull/26), commit [`f19ee8b0`](https://github.com/andreadada/simple-notes/commit/f19ee8b0a5bea2cb2c2231d85b3e8ad10a5233a7); [Compose CI](https://github.com/andreadada/simple-notes/actions/runs/41523319857) **success** con PostgreSQL 17 sintetico, [Markdown](https://github.com/andreadada/simple-notes/actions/runs/41523319860) **success**). Flutter resta `0.29.0+31` e 191 test già attestati. **VPS reale V10, health/capability live, backup recente e collaudo hardware non verificati**; ultimo stato VPS attestato V8. Nessun deploy o intervento su dati. [Stato](docs/CURRENT-STATUS.md) · [R1]( docs/RELEASE-V10-READINESS.md).
+> **Stato operativo 03/11/2026:** P2.4A CSV integrata su `main` ([PR #27](https://github.com/andreadada/simple-notes/pull/27), commit [`218d1d0b`](https://github.com/andreadada/simple-notes/commit/218d1d0b4bbc4670c7e1d25d3dead594bb97a30a), Flutter `0.30.0+32`; [CI Flutter](https://github.com/andreadada/simple-notes/actions/runs/41562133925) **success**: 198 test, Windows EXE/MSIX, Android JDK17/21; [Markdown](https://github.com/andreadada/simple-notes/actions/runs/41561797719) **success**). VPS reale PostgreSQL 17/Flyway V10 verificata (03/11/2026), Windows diagnostica positiva. API strict e test fisici Windows↔Android **rinviati**, nessun reset o deploy effettuato dall'assistente. [Stato](docs/CURRENT-STATUS.md) · [CSV](docs/P2-CSV-EXPORT.md) · [E2E differiti](docs/DEVICE-ACCEPTANCE-DEFERRED.md).
 
 App offline-first per **Windows 11 e Android** dedicata ad attività, note e pianificazione. Flutter/Forui con Drift SQLite locale, Google OAuth e sincronizzazione con Spring Boot/PostgreSQL su Coolify.
 
@@ -86,7 +86,7 @@ La vista Calendario ha un pannello **Sorgenti** richiudibile: mostra file e feed
 
 Integrato in `main` (PR #26) il controllo di sola lettura `infra/release-readiness.sh` per Flyway V10, health e capability API autenticate. Non installa o distribuisce: l'ultima attestazione VPS è V8 e serve una verifica dell'operatore prima del test client Windows/Android `0.29.0+31`. [Runbook](docs/RELEASE-V10-READINESS.md).
 
-## P2.4A — CSV locale (candidata)
+## P2.4A — CSV locale (main, PR #27)
 
 Nel menu profilo **Esporta CSV** consente di scegliere attività, note attive o liste; su Windows salva un file tramite la finestra di sistema, su Android usa la condivisione. File UTF-8 con BOM, escaping di virgole/apici/righe e protezione contro formule di fogli di calcolo. Non è un backup né un formato importabile. [Specifica](docs/P2-CSV-EXPORT.md). Test real-device Windows/Android rinviati esplicitamente dall'utente al batch finale: [Registro](docs/DEVICE-ACCEPTANCE-DEFERRED.md).
 

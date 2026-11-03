@@ -1,6 +1,6 @@
 # Flutter client — P0 e P1
 
-> **Stato operativo 02/11/2026:** P2.3D gestione sorgenti ICS integrata su `main` ([PR #25](https://github.com/andreadada/simple-notes/pull/25), Flutter `0.29.0+31`; [Flutter CI](https://github.com/andreadada/simple-notes/actions/runs/41471546808) **success**: 191 test, Windows EXE/MSIX, Android JDK17/21; [Markdown](https://github.com/andreadada/simple-notes/actions/runs/41471546568) **success**). Nessun deploy, reset, installazione o test hardware; backend repo Flyway V10, ultima VPS attestata V8. [Stato](../../docs/CURRENT-STATUS.md) · [Gestione ICS](../../docs/P2-ICS-SOURCE-MANAGEMENT.md).
+> **Stato operativo 03/11/2026:** P2.4A CSV integrata su `main` ([PR #27](https://github.com/andreadada/simple-notes/pull/27), commit [`218d1d0b`](https://github.com/andreadada/simple-notes/commit/218d1d0b4bbc4670c7e1d25d3dead594bb97a30a), Flutter `0.30.0+32`; [CI Flutter](https://github.com/andreadada/simple-notes/actions/runs/41562133925) **success**: 198 test, Windows EXE/MSIX, Android JDK17/21; [Markdown](https://github.com/andreadada/simple-notes/actions/runs/41561797719) **success**). VPS reale PostgreSQL 17/Flyway V10 verificata (03/11/2026), Windows diagnostica positiva. API strict e test fisici Windows↔Android **rinviati**, nessun reset o deploy effettuato dall'assistente. [Stato](../../docs/CURRENT-STATUS.md) · [CSV](../../docs/P2-CSV-EXPORT.md) · [E2E differiti](../../docs/DEVICE-ACCEPTANCE-DEFERRED.md).
 
 <!-- CURRENT-STATUS-REF -->
 
@@ -207,7 +207,7 @@ Il modello `ui/ics_calendar.dart` assegna ID stabili a file e futuri feed, disti
 
 Flutter `0.29.0+31`: `ui/ics_source_details.dart` descrive tipo, conteggi e ultimo refresh; `ics_calendar_controls.dart` ospita il pannello Forui e `InlineEditableTitle` (Enter/blur salva, Esc annulla). Il modello `IcsCalendar.displayLabel` è opzionale nello schema 3, con ID, URL, nome originario e RRULE invariati; `onDay` proietta la label solo in UI. Nessun deploy/SQL, test dispositivi alla fine del batch. [Specifica](../../docs/P2-ICS-SOURCE-MANAGEMENT.md).
 
-## P2.4A — CSV export (0.30.0+32 candidata)
+## P2.4A — CSV export (0.30.0+32, main, PR #27)
 
 `lib/data/portable_csv.dart` genera tre CSV separati da `AppDatabase.snapshot()`, solo lettura: task con scadenza civile/UTC, priorità, tag, recurrence, slot e subtasks; note attive con corpo; liste e task_count. `main.dart` offre la scelta via dialog Forui e salva con `file_selector` Windows o `share_plus` Android. Dati in chiaro, CSV formula injection neutralizzata, niente outbox/API o import. CI e prove nativo hardware da distinguere; prove fisiche rinviate. [Specifica](../../docs/P2-CSV-EXPORT.md).
 

@@ -1,6 +1,6 @@
 # P2.4A — Esportazione CSV mirata (attività, note, liste)
 
-**Stato:** incremento candidato Flutter `0.30.0+32`, branch `feature/p2-4a-csv-export`, 3 novembre 2026. CI/merge da attestare. Nessun deploy, migrazione Flyway/Drift, nuova API, import CSV o modifica al database.
+**Stato 03/11/2026:** integrata su `main` con [PR #27](https://github.com/andreadada/simple-notes/pull/27), Flutter `0.30.0+32`; [Flutter CI #41562133925](https://github.com/andreadada/simple-notes/actions/runs/41562133925) **success** (198 test, Windows EXE/MSIX, Android JDK17/21), [Markdown #41561797719](https://github.com/andreadada/simple-notes/actions/runs/41561797719) **success**. Test dispositivi reali differiti. Nessun deploy, migrazione Flyway/Drift, nuova API, import CSV o modifica al database.
 
 ## Funzione utente
 

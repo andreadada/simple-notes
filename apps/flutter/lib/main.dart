@@ -38,6 +38,7 @@ import 'package:uuid/uuid.dart';
 import 'data/local_store.dart';
 import 'data/portable_archive.dart';
 import 'data/portable_csv.dart';
+import 'data/full_backup.dart';
 import 'data/app_database.dart';
 import 'auth/cloud_auth.dart';
 import 'sync/cloud_sync.dart';
@@ -321,6 +322,199 @@ class _NotesHomeState extends ConsumerState<NotesHome> {
     }
   }
 
+  /// Password is ephemeral: the Forui dialog owns/disposes the controllers.
+  /// It is never persisted to SharedPreferences, SQLite or application logs.
+  Future<String?> _backupPassword({required bool create}) async {
+    final first = TextEditingController();
+    final second = TextEditingController();
+    String? validationError;
+    return showFDialog<String>(
+      context: context,
+      builder: (ctx, style, animation) => StatefulBuilder(
+        builder: (innerContext, refresh) => NotesEditorControllerScope(
+          controllers: [first, second],
+          child: NotesDialog(
+            style: style, animation: animation,
+            title: Text(create ? 'Crea backup cifrato' : 'Verifica backup cifrato'),
+            body: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(create
+                  ? 'Scegli una password di almeno 12 caratteri. Il backup '
+                    'contiene dati personali, cestino, modifiche ancora da '
+                    'sincronizzare e impostazioni locali. Nessuna credenziale '
+                    'Google viene esportata. Conserva la password separatamente.'
+                  : 'Inserisci la password del backup. La verifica è '
+                    'soltanto di lettura: non ripristina e non modifica dati.'),
+                const SizedBox(height: 12),
+                FTextField.password(
+                  key: const Key('full-backup-password'),
+                  control: FTextFieldControl.managed(controller: first),
+                  label: const Text('Password del backup'),
+                  hint: 'Almeno 12 caratteri',
+                ),
+                if (create) ...[
+                  const SizedBox(height: 8),
+                  FTextField.password(
+                    key: const Key('full-backup-confirm'),
+                    control: FTextFieldControl.managed(controller: second),
+                    label: const Text('Conferma password'),
+                  ),
+                ],
+                if (validationError != null)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 8),
+                    child: Text(validationError!,
+                      style: TextStyle(
+                        color: Theme.of(innerContext).colorScheme.error)),
+                  ),
+              ],
+            ),
+            actions: [
+              FButton(variant: FButtonVariant.ghost,
+                onPress: () => Navigator.pop(ctx),
+                child: const Text('Annulla')),
+              FButton(
+                key: const Key('full-backup-password-submit'),
+                onPress: () {
+                  final text = first.text;
+                  if (text.trim().length < 12 || text.length > 256) {
+                    refresh(() => validationError =
+                        'Usa una password di almeno 12 caratteri.');
+                    return;
+                  }
+                  if (create && text != second.text) {
+                    refresh(() => validationError =
+                        'Le password non coincidono.');
+                    return;
+                  }
+                  Navigator.pop(ctx, text);
+                },
+                child: Text(create ? 'Crea backup' : 'Verifica'),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Future<void> _exportFullBackup() async {
+    if (_archiveBusy) return;
+    final owner = ref.read(cloudAuthProvider).userId;
+    if (owner == null || !ref.read(cloudAuthProvider).authenticated) {
+      _archiveMessage('Accedi con Google per creare un backup del profilo.');
+      return;
+    }
+    setState(() => _archiveBusy = true);
+    try {
+      final password = await _backupPassword(create: true);
+      if (password == null || !mounted ||
+          ref.read(cloudAuthProvider).userId != owner) return;
+      final prefs = await SharedPreferences.getInstance();
+      final snapshot = await const FullBackupSource().capture(
+        database: ref.read(databaseProvider), preferences: prefs,
+        ownerId: owner,
+      );
+      final bytes = await const FullBackupCodec().encrypt(snapshot, password);
+      if (!mounted || ref.read(cloudAuthProvider).userId != owner) return;
+      final filename = 'simple-notes-backup-'
+          '${DateTime.now().toIso8601String().substring(0, 10)}.snb';
+      final output = XFile.fromData(
+        Uint8List.fromList(bytes), name: filename,
+        mimeType: 'application/octet-stream',
+      );
+      if (defaultTargetPlatform == TargetPlatform.windows) {
+        final location = await getSaveLocation(
+          suggestedName: filename,
+          acceptedTypeGroups: [
+            const XTypeGroup(label: 'Simple Notes Backup',
+              extensions: ['snb']),
+          ],
+        );
+        if (location == null) return;
+        await output.saveTo(location.path);
+        _archiveMessage('Backup cifrato salvato. Conserva la password.');
+      } else {
+        final result = await SharePlus.instance.share(ShareParams(
+          files: [output], fileNameOverrides: [filename],
+        ));
+        if (result.status == ShareResultStatus.success) {
+          _archiveMessage('Backup cifrato condiviso. Conserva la password.');
+        }
+      }
+    } on FormatException catch (error) {
+      _archiveMessage(error.message);
+    } catch (_) {
+      _archiveMessage('Backup non riuscito. Nessun dato locale modificato.');
+    } finally {
+      if (mounted) setState(() => _archiveBusy = false);
+    }
+  }
+
+  Future<void> _inspectFullBackup() async {
+    if (_archiveBusy) return;
+    final owner = ref.read(cloudAuthProvider).userId;
+    if (owner == null || !ref.read(cloudAuthProvider).authenticated) {
+      _archiveMessage('Accedi con lo stesso account del backup.');
+      return;
+    }
+    setState(() => _archiveBusy = true);
+    try {
+      final file = await openFile(acceptedTypeGroups: [
+        const XTypeGroup(label: 'Simple Notes Backup',
+          extensions: ['snb']),
+      ]);
+      if (file == null) return;
+      if (await file.length() > FullBackupCodec.maxFileBytes) {
+        throw const FormatException('File di backup troppo grande.');
+      }
+      if (!mounted || ref.read(cloudAuthProvider).userId != owner) return;
+      final password = await _backupPassword(create: false);
+      if (password == null || !mounted ||
+          ref.read(cloudAuthProvider).userId != owner) return;
+      final snapshot = await const FullBackupCodec().inspect(
+        await file.readAsBytes(),
+        password: password, expectedOwnerId: owner,
+      );
+      if (!mounted || ref.read(cloudAuthProvider).userId != owner) return;
+      await showFDialog<void>(
+        context: context,
+        builder: (ctx, style, animation) => NotesDialog(
+          style: style, animation: animation,
+          title: const Text('Backup verificato'),
+          body: Text(
+            'Creato (UTC): ${snapshot.createdAtUtc.toIso8601String()}\n'
+            'Attività (incluse cancellate): '
+                '${snapshot.count('task_entries')}\n'
+            'Liste (incluse cancellate): '
+                '${snapshot.count('task_list_entries')}\n'
+            'Note (incluso cestino): '
+                '${snapshot.count('note_entries')}\n'
+            'Operazioni sync in attesa: '
+                '${snapshot.count('pending_mutations')}\n'
+            'Preferenze locali incluse: '
+                '${snapshot.preferences.values.where((v) => v != null).length}\n\n'
+            'Integrità e account verificati. Nessun dato è stato '
+            'ripristinato o modificato. Il ripristino effettivo '
+            'sarà abilitato soltanto con i controlli P2.4B2.',
+          ),
+          actions: [
+            FButton(onPress: () => Navigator.pop(ctx),
+              child: const Text('Chiudi')),
+          ],
+        ),
+      );
+    } on FormatException catch (error) {
+      _archiveMessage(error.message);
+    } catch (_) {
+      _archiveMessage('Impossibile verificare il backup. Dati invariati.');
+    } finally {
+      if (mounted) setState(() => _archiveBusy = false);
+    }
+  }
+
   Future<void> _importArchive() async {
     if (_archiveBusy) return;
     setState(() => _archiveBusy = true);
@@ -513,6 +707,10 @@ Ctrl+/ · Questo elenco'''),
         await _importArchive();
       } else if (value == 'csv-export') {
         await _exportCsv();
+      } else if (value == 'full-backup') {
+        await _exportFullBackup();
+      } else if (value == 'verify-full-backup') {
+        await _inspectFullBackup();
       } else if (value == 'sync') {
         await ref.read(cloudSyncProvider.notifier).synchronize();
       } else if (value == 'diagnostics') {
@@ -626,6 +824,18 @@ Ctrl+/ · Questo elenco'''),
             ),
         ]),
         .group(children: [
+          .item(
+            title: const Text('Crea backup cifrato'),
+            prefix: const Icon(Icons.lock_outline, size: 18),
+            enabled: !_archiveBusy && cloud.authenticated,
+            onPress: () => accountAction('full-backup'),
+          ),
+          .item(
+            title: const Text('Verifica backup'),
+            prefix: const Icon(Icons.verified_user_outlined, size: 18),
+            enabled: !_archiveBusy && cloud.authenticated,
+            onPress: () => accountAction('verify-full-backup'),
+          ),
           .item(
             title: const Text('Esporta CSV'),
             prefix: const Icon(Icons.table_view_outlined, size: 18),

@@ -49,9 +49,9 @@ void main() {
   );
 
   test('task CSV preserves dates and flattened domain fields', () {
-    final csv = utf8.decode(
-        PortableCsv(fixture()).encode(CsvDataset.tasks));
-    expect(csv.codeUnitAt(0), 0xFEFF);
+    final bytes = PortableCsv(fixture()).encode(CsvDataset.tasks);
+    expect(bytes.take(3).toList(), [0xEF, 0xBB, 0xBF]);
+    final csv = utf8.decode(bytes);
     expect(csv, contains('\r\n'));
     expect(csv, contains('"id","title","description","completed"'));
     expect(csv, contains('"Esercizio, da ""consegnare"""'));
@@ -69,8 +69,10 @@ void main() {
   });
 
   test('notes CSV escapes quotes, commas, CRLF and excludes trash', () {
-    final csv = utf8.decode(PortableCsv(fixture()).encode(CsvDataset.notes));
-    expect(csv, startsWith('\uFEFF"id","title","body","created_at_utc"\r\n'));
+    final bytes = PortableCsv(fixture()).encode(CsvDataset.notes);
+    expect(bytes.take(3).toList(), [0xEF, 0xBB, 0xBF]);
+    final csv = utf8.decode(bytes);
+    expect(csv, startsWith('"id","title","body","created_at_utc"\r\n'));
     expect(csv, contains('"Prima,""seconda""\nTerza"'));
     expect(csv, contains('2026-11-03T09:00:00.000Z'));
     expect(csv, isNot(contains('SEGRETO_CESTINO')));
@@ -108,8 +110,9 @@ void main() {
     final empty = const PortableCsv(LocalData());
     for (final dataset in CsvDataset.values) {
       expect(empty.count(dataset), 0);
-      final csv = utf8.decode(empty.encode(dataset));
-      expect(csv, startsWith('\uFEFF'));
+      final bytes = empty.encode(dataset);
+      expect(bytes.take(3).toList(), [0xEF, 0xBB, 0xBF]);
+      final csv = utf8.decode(bytes);
       expect(csv.endsWith('\r\n'), isTrue);
       expect(csv.split('\r\n').length, 2);
     }

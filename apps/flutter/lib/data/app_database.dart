@@ -135,6 +135,31 @@ class AppDatabase extends _$AppDatabase {
     return NativeDatabase(File(p.join(directory.path, 'simple_notes.sqlite')));
   });
 
+  /// P2.4B1: consistent, READ-ONLY snapshot of *all* local SQLite rows.
+  /// Includes tombstones, remote versions, outbox and sync settings; unlike
+  /// LocalData.snapshot() it does not discard deleted rows or sync metadata.
+  /// Never exposes OAuth credentials (those live in OS secure storage).
+  Future<Map<String, List<Map<String, Object?>>>> fullBackupRows(
+      String expectedOwnerId) => transaction(() async {
+    final owner = await setting('boundOwnerId');
+    if (expectedOwnerId.isEmpty || owner != expectedOwnerId) {
+      throw StateError('Archivio SQLite non associato a questo account.');
+    }
+    const tables = [
+      'task_entries', 'task_list_entries', 'note_entries',
+      'pending_mutations', 'sync_settings',
+    ];
+    final result = <String, List<Map<String, Object?>>>{};
+    for (final table in tables) {
+      final rows = await customSelect('SELECT * FROM "$table"').get();
+      result[table] = List.unmodifiable([
+        for (final row in rows)
+          Map<String, Object?>.unmodifiable(row.data),
+      ]);
+    }
+    return Map.unmodifiable(result);
+  });
+
   Future<LocalData> snapshot() async {
     final tasks = await (select(taskEntries)
           ..where((t) => t.deletedAt.isNull()))

@@ -193,3 +193,6 @@ Pannello Sorgenti (N) collassabile e card Forui/tema condiviso. `InlineEditableT
 
 Una voce **Esporta CSV** apre dialog Forui con testo esplicativo e tre azioni (Attività, Note, Liste), senza tre icone sempre visibili né un form di configurazione. Annulla non salva, il salvataggio Windows e lo share Android usano finestre di sistema. `_archiveBusy` blocca import/export simultanei; niente token o contenuti in feedback. [CSV](P2-CSV-EXPORT.md).
 
+## P2.4B1 — Password e anteprima con Forui
+
+Nel menu avatar Crea backup cifrato / Verifica backup. `NotesDialog` e `FTextField.password` con controller gestiti e password mai persistita; secondo campo solo alla creazione. Il dialog di verifica mostra conteggi aggregati e non valori degli elementi; chiarire «nessun dato ripristinato». Windows Save As / Android share sheet, nessun comando Ripristina fino a P2.4B2. [Specifica](P2-FULL-BACKUP.md).

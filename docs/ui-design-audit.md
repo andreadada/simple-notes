@@ -148,3 +148,6 @@ Controlli visibili nel Calendario: Importa, Aggiungi URL e Sorgenti (N). Pannell
 
 Da controllare a fine batch su Windows e Android: dialog CSV, accessibilità/focus, annulla, save/share, contenuti in chiaro segnalati e conservazione SQLite/outbox su errore. Non segnare i test fisici PASS solo per CI Flutter o diagnostica Windows parziale. [Registro](DEVICE-ACCEPTANCE-DEFERRED.md) · [Specifica](P2-CSV-EXPORT.md).
 
+## P2.4B1 — Collaudo UI differito
+
+Nel batch manuale verificare dialog Forui password/confirm (focus, hide/show, Esc, accessibilità, contrasto), picker save/share e preview senza leak di contenuti o owner. Errori per password errata, schema futuro, file troppo grande, account diverso devono lasciare dati e cursor invariati. Non considerare la CI prova fisica; non eseguire restore sul profilo reale. [Specifica](P2-FULL-BACKUP.md).

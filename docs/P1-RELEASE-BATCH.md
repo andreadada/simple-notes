@@ -162,3 +162,6 @@ VPS PostgreSQL 17/Flyway V10 realmente verificata in sola lettura, migrazioni fa
 
 P2.4A aggiunge export CSV in sola lettura di task, note e liste, senza backend o DB migration; test picker/share restano nel batch. [Specifica](P2-CSV-EXPORT.md).
 
+## P2.4B1 — Gate futuri backup .snb
+
+Nel batch di collaudo rinviato provare password e conferma, salvataggio Windows, condivisione Android, verifica del file con account corretto, rifiuto password errata/owner diverso/file alterato e preservazione SQLite/outbox/ICS. Il backup cifrato include preferenze locali e dati cancellati, ma non credenziali OAuth/OS; non autorizza downgrade/installazioni distruttive. P2.4B2 deve implementare prima un restore isolato offline con backup preventivo e rollback. [Contratto](P2-FULL-BACKUP.md).

@@ -183,3 +183,6 @@ I nuovi strumenti **non** eseguono deploy, Flyway migrate, backup o modifiche al
 
 L'utente ha verificato dal container PostgreSQL Simple Notes: V10, FAILED_MIGRATIONS=0, colonne V7–V10 complete. Il gate strict API/health con bearer non è terminato: non dichiarare RELEASE_SERVER_GATE=PASS. P2.4A è client-only, non richiede compose, nuove tabelle o altri deploy. Prove manuali Windows/Android rinviate. [Evidenze](../docs/DEVICE-ACCEPTANCE-DEFERRED.md) · [CSV](../docs/P2-CSV-EXPORT.md).
 
+## P2.4B1 — Backup client diverso dal dump PostgreSQL
+
+`simple-notes-backup-YYYY-MM-DD.snb` è un archivio locale client SQLite/SharedPreferences cifrato, non un dump server PostgreSQL. Non richiede modifica di SQL/Flyway, container, Coolify, OAuth o storage volumi. La policy di backup VPS/offsite e la prova restore server isolata rimangono procedure separate. **Il ripristino client .snb non è ancora abilitato**. [Specifica](../docs/P2-FULL-BACKUP.md).

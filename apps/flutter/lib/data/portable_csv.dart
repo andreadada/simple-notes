@@ -22,11 +22,16 @@ class PortableCsv {
   static const maxRecords = 10000;
   final LocalData data;
 
-  int count(CsvDataset dataset) => switch (dataset) {
-        CsvDataset.tasks => data.tasks.length,
-        CsvDataset.notes => data.notes.length,
-        CsvDataset.lists => data.lists.length,
-      };
+  int count(CsvDataset dataset) {
+    switch (dataset) {
+      case CsvDataset.tasks:
+        return data.tasks.length;
+      case CsvDataset.notes:
+        return data.notes.length;
+      case CsvDataset.lists:
+        return data.lists.length;
+    }
+  }
 
   /// UTF-8 BOM for Excel interoperability, RFC4180 comma + CRLF + escaping.
   /// All columns are quoted and spreadsheet formula-like values are prefixed

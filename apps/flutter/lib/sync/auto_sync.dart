@@ -68,7 +68,7 @@ class _AutoSyncHostState extends ConsumerState<AutoSyncHost>
   // to press Google Login again after the connection comes back.
   void _retryOfflineSession() {
     if (!mounted || !_active || _restoringSession ||
-        !ref.read(restoreSyncGateProvider).canSync) return;
+        !ref.read(restoreSyncGateProvider).canSync) { return; }
     final session = ref.read(cloudAuthProvider);
     if (session.authenticated ||
         !(session.error?.startsWith('Offline:') == true ||
@@ -83,7 +83,7 @@ class _AutoSyncHostState extends ConsumerState<AutoSyncHost>
 
   void _schedule({Duration delay = _editDebounce}) {
     if (!mounted || !_active ||
-        !ref.read(restoreSyncGateProvider).canSync) return;
+        !ref.read(restoreSyncGateProvider).canSync) { return; }
     final auth = ref.read(cloudAuthProvider);
     if (!auth.authenticated || auth.userId == null) return;
     if (ref.read(cloudSyncProvider).conflict ||
@@ -103,7 +103,7 @@ class _AutoSyncHostState extends ConsumerState<AutoSyncHost>
 
   Future<void> _run() async {
     if (!mounted || !_active ||
-        !ref.read(restoreSyncGateProvider).canSync) return;
+        !ref.read(restoreSyncGateProvider).canSync) { return; }
     if (_inFlight) {
       _queued = true;
       return;

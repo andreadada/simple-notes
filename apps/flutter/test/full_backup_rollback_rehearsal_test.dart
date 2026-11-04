@@ -61,7 +61,7 @@ void main() {
           ThemeModePreference.key, target ? 'light' : 'dark');
       final keys = FullBackupSource.preferenceKeys(ownerId);
       await prefs.setString(keys['habits']!, HabitsState().serialize());
-      return const FullBackupSource().capture(
+      return await const FullBackupSource().capture(
         database: db, preferences: prefs,
         ownerId: ownerId, now: created,
       );

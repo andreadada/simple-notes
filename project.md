@@ -194,6 +194,8 @@ Dettagli e matrice: [docs/ui-design-audit.md](docs/ui-design-audit.md). Aggiorna
 
 ## Edit Timespan
 
+- 2026-11-04 | feat(p2.4b2f) | Confronto backup locale/cloud in sola lettura con azione Forui facoltativa e GET inventory JWT-scoped, riepilogo anonimo dei rischi, test privacy/invalidità; restore/replay sempre disabilitati. PR impilata su CI #37, CI/merge da verificare. [Specifica](docs/P2-FULL-BACKUP.md).
+
 - 2026-11-04 | ci(deduplicate-pr-workflows) | Concurrency per PR nei workflow Flutter/backend/Compose/docs; push limitati a main, stop automatico dei soli run obsoleti della stessa PR, nessun test disabilitato. Merge/CI da verificare.
 
 - 2026-11-04 | feat(p2.4b2e) | Confronto .snb autenticato con profilo locale in sola lettura, dialog Forui, conteggi di record/tombstone, outbox, preferenze e cursor; test privacy/same-owner, nessun restore o sync. CI/merge da verificare. [Specifica](docs/P2-FULL-BACKUP.md).
@@ -492,3 +494,12 @@ Esempio: `2026-10-21 14:20 CEST | commit abc1234 | Aggiunto modulo promemoria e 
 - [ ] E2E fisici Windows/Android e recupero power-loss/ZIP-MSIX ancora rinviati.
 
 - 2026-11-04 | merge(p2.4b2d) | PR #35 integrata su main dopo analisi, test Linux, test recovery su Windows e build Android/Windows; restore utente ancora disabilitato.
+
+
+### P2.4B2F — Ricognizione cloud opzionale nel confronto
+
+- [x] Azione Forui esplicita, token già valido, nessun refresh, solo GET `/sync/inventory`, account verificato e client chiuso.
+- [x] Confronto locale/backup/cloud per revisioni, tombstone, eventi non osservati, outbox importata e cursor.
+- [x] Test scenari remote-only, tombstone, owner differente, no secrets e snapshot invalidi.
+- [ ] Reconciliation remota transazionale con precondizioni, decisione umana sui conflitti, eventuale restore live *non autorizzato*.
+- [ ] Test fisici e deploy backend/Coolify, da eseguire solo a gate successivi e autorizzazione separata.

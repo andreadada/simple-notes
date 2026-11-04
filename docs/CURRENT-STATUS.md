@@ -143,3 +143,8 @@ Nuova azione Forui nel menu account per confrontare localmente backup cifrato e 
 
 ## CI più rapida per PR (04/11/2026, branch indipendente)
 Flutter, backend e Compose continuano a verificare i push su `main`, ma non avviano più una pipeline duplicata per ogni push di un branch già associato a una PR. Tutti e quattro i workflow (anche documentazione) cancellano automaticamente soltanto le esecuzioni obsolete della *stessa PR* quando arrivano commit nuovi. Nessuna riduzione di test, build, controlli di sicurezza o validazione. PR e CI/merge da verificare; nessun deploy.
+
+
+## P2.4B2F — Confronto locale + verifica cloud opzionale (04/11/2026, sviluppo)
+
+Aggiunti `backup_cloud_safety.dart` e test, e pulsante Forui «Consulta inventario cloud» nel dialog confronto .snb: GET autenticato esplicito su `/sync/inventory`, solo con access token già valido, nessun refresh/post di sincronizzazione. Segnala rischi e divergenze solo con conteggi e non concede restore o replay. API 404/offline significa **non verificato**, non assenza di conflitti. Deriva da PR CI #37 per evitare build duplicate; CI e merge di entrambe vanno verificati. Nessun deploy o accesso in scrittura.

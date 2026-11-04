@@ -231,3 +231,8 @@ Su app autenticata, la nuova opzione **«Confronta backup con questo dispositivo
 
 ## Esecuzioni CI senza duplicati
 Le build automatiche sui branch feature sono lanciate tramite `pull_request`; `push` continua a scattare su `main`. Un commit successivo sulla stessa PR interrompe solo la pipeline precedente e avvia quella per il nuovo HEAD. Quando si valuta un merge, controllare lo SHA **corrente** della PR e tutti i job: un vecchio verde non basta. I test non sono stati disabilitati o ridotti. Nessun effetto su Coolify/VPS.
+
+
+## P2.4B2F — Confronto remoto non distruttivo
+
+La voce «Confronta backup con questo dispositivo» continua a funzionare senza rete. Se l'utente preme «Consulta inventario cloud», Simple Notes legge **solo** `GET /api/v1/sync/inventory`; non usa operazioni di sync e non salva la risposta. Un 404 è normale quando il backend non è stato ancora distribuito dopo il merge della PR #34 e lascia il restore disabilitato. L'access token non viene registrato in log o memorizzato nel report. Il confronto non è una prova transazionale del cloud e non consente ripristino di dati reali. Nessun deploy Coolify, migration o reset DB compiuto.

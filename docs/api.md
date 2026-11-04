@@ -116,3 +116,8 @@ Il backup .snb viene generato offline dal client, cifrato con password locale e 
 Endpoint autenticato **solo GET** che restituisce l'ultima revisione conosciuta per ciascuna coppia `entityType/entityId` dell'account JWT, inclusi tombstone. Risposta `{cursor: long, items: [{entityType, entityId, version, deleted, changeId}], complete: true}`; non contiene titoli, contenuto delle note, payload task, token o operation ID. L'account è letto esclusivamente dal JWT e filtrato in SQL. Implementazione tramite transazione `REPEATABLE_READ` di sola lettura PostgreSQL e `DISTINCT ON`, cursor e righe dallo stesso snapshot transazionale. La query ha massimo 10.001 righe per bloccare (HTTP 413) gli account con oltre 10.000 entità, senza risposte parziali.
 
 La risposta offre inventario coerente al momento della lettura, **non** una prenotazione del futuro stato server: scritture simultanee successive possono invalidare il confronto. Non è una API per ripristinare; non invia/modifica operazioni e non autorizza upload. Il client deve continuare a trattare outbox/cursor importati come non affidabili. Nessuna migrazione database nuova.
+
+
+## Consumo GET inventory dall'app (P2.4B2F)
+
+`RestoreServerInventoryReader` viene ora richiamato soltanto dopo pressione esplicita di «Consulta inventario cloud» nel dialog confronto backup. Il client usa access token **non scaduto**, controlla il medesimo account prima e dopo, accetta solo risposta completa con schema previsto e non esegue refresh/POST o altre scritture. Un backend senza l'endpoint (404) lascia il confronto soltanto locale. Inventario letto = osservazione puntuale, non autorizzazione di restore o replay; restano necessarie precondizioni lato server.

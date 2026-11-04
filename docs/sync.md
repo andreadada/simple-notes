@@ -111,3 +111,8 @@ Il file .snb cifrato include `pending_mutations`, IDs originari, versioni remote
 ## P2.4B2C3 — Inventario remoto per sola consultazione
 
 `GET /api/v1/sync/inventory` (Bearer JWT) restituisce revisioni attuali e tombstone per l'account attivo senza payload. Si ottiene in un'unica vista `REPEATABLE_READ` con cursor massimo e latest `changeId` per entità, cap 10.000 entità e fail-closed oltre soglia. Non è un token di lock, non riserva versioni e non rende sicuro un replay: il restore deve prima applicare una nuova policy di riconciliazione e verificare precondizioni ottimistiche lato server. Endpoint ancora **da rilasciare** su Coolify, nessun deploy eseguito.
+
+
+## P2.4B2F — Inventory GET manuale dal confronto backup
+
+Il client può richiedere volontariamente `/api/v1/sync/inventory` dall'UI di confronto .snb; passa il token della sessione corrente solo se non scaduto, non richiama refresh e non invoca `/sync/apply`. La risposta è metadata-only e confrontata localmente con note, liste, task e outbox dell'archivio; i risultati non sbloccano auto-sync o replay. In caso di errore, 404 o dati mancanti, resta una verifica incompleta. Il ledger non sostituisce un futuro handshake di riconciliazione con revisione attesa e CAS.

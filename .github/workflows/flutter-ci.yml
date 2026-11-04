@@ -1,7 +1,6 @@
 name: Flutter CI
 on:
   push:
-    branches: [main]
     paths:
       - 'apps/flutter/**'
       - 'tools/t4-build-devices.ps1'
@@ -16,10 +15,6 @@ on:
       - 'infra/reset-test-workspace.sh'
       - '.github/workflows/flutter-ci.yml'
   workflow_dispatch:
-concurrency:
-  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
-  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
-
 jobs:
   analyze-test:
     runs-on: ubuntu-latest

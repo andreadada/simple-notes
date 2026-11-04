@@ -130,9 +130,16 @@ P2.4B2C2 include anche parser e test GET-only per `/sync/inventory` previsto dal
 Aggiunto `GET /sync/inventory` lato Spring Boot: ultimo change per entità e cursor in snapshot coerente `REPEATABLE_READ`, filtraggio JWT, tombstone, limite 10k, nessun testo/credenziale. Test integrazione A/B e letture non mutanti. Branch backend indipendente da PR Flutter #33; controlli CI e merge da verificare. **Non deployato**, nessuna modifica al DB reale né migrazione.
 
 
-## P2.4B2D — Compensazione persistente su directory di test (04/11/2026, PR in sviluppo)
+## P2.4B2D — Compensazione persistente su directory di test (04/11/2026, integrata su main via PR #35)
 
 Nuovo `full_backup_disk_recovery_rehearsal.dart`: recovery di SQLite e preferenze su **file temporanei isolati**, checkpoint .snb cifrato letto e autenticato, lock OS consultivo, journal append-only, rollback e verifica post-riavvio. Test di crash dopo SQL, dopo preferenze e durante recovery; fail-closed su password, account, archivio o registro errato. Nessun ripristino o AutoSync su profilo installato. Mancano fsync directory/compatibilità OS e protocollo di ripristino live. CI/merge da verificare.
+
+
+## P2.4B2E — Confronto .snb con dispositivo (04/11/2026, PR in sviluppo)
+
+Nuova azione Forui nel menu account per confrontare localmente backup cifrato e snapshot corrente con sola lettura, senza chiamate cloud. Il report espone solo conteggi di differenze, tombstone, outbox, preferenze, cursor e rischi; non espone note o token e non autorizza mai restore/sync. Test unitari di confronto owner-scoped e casi obsoleti/malformed. CI/merge da verificare. Il restore vero resta disabilitato e non è stato eseguito alcun deploy.
+
+**Checkpoint release:** PR #35 integrata con analisi, widget test, recupero temporaneo Windows e build Android 17/21, Windows verdi. PR #36 aggiunge il confronto locale in sola lettura; ogni nuova modifica è soggetta alla propria CI.
 
 ## CI più rapida per PR (04/11/2026, branch indipendente)
 Flutter, backend e Compose continuano a verificare i push su `main`, ma non avviano più una pipeline duplicata per ogni push di un branch già associato a una PR. Tutti e quattro i workflow (anche documentazione) cancellano automaticamente soltanto le esecuzioni obsolete della *stessa PR* quando arrivano commit nuovi. Nessuna riduzione di test, build, controlli di sicurezza o validazione. PR e CI/merge da verificare; nessun deploy.

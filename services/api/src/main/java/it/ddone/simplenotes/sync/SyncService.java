@@ -11,6 +11,7 @@ import java.util.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.annotation.Isolation;
 import org.springframework.web.server.ResponseStatusException;
 
 @Service
@@ -33,6 +34,41 @@ public class SyncService {
         this.lists = lists;
         this.notes = notes;
         this.json = json;
+    }
+
+    /// P2.4B2C3: one consistent PostgreSQL snapshot of owner-scoped latest
+    /// revisions. This is GET-only; it does not mutate or acknowledge sync.
+    /// Distinct latest rows include tombstones, but never payload contents.
+    /// Large accounts fail closed rather than returning a partial inventory.
+    @Transactional(readOnly = true, isolation = Isolation.REPEATABLE_READ)
+    public SyncController.Inventory inventory(UUID owner) {
+        long cursor = ((Number) em.createNativeQuery(
+                "SELECT COALESCE(MAX(id),0) FROM sync_change WHERE owner_id = :owner")
+            .setParameter("owner", owner).getSingleResult()).longValue();
+
+        @SuppressWarnings("unchecked")
+        List<Object[]> rows = em.createNativeQuery(
+                "SELECT DISTINCT ON (entity_type, entity_id) " +
+                "entity_type, entity_id, version, deleted, id " +
+                "FROM sync_change WHERE owner_id = :owner " +
+                "ORDER BY entity_type, entity_id, id DESC")
+            .setParameter("owner", owner)
+            .setMaxResults(10001)
+            .getResultList();
+        if (rows.size() > 10000) {
+            throw new ResponseStatusException(HttpStatus.PAYLOAD_TOO_LARGE,
+                "Inventory exceeds safety limit; no partial snapshot returned");
+        }
+        List<SyncController.InventoryItem> latest = new ArrayList<>(rows.size());
+        for (Object[] row : rows) {
+            latest.add(new SyncController.InventoryItem(
+                (String) row[0],
+                (UUID) row[1],
+                ((Number) row[2]).longValue(),
+                (Boolean) row[3],
+                ((Number) row[4]).longValue()));
+        }
+        return new SyncController.Inventory(cursor, List.copyOf(latest), true);
     }
 
     @Transactional

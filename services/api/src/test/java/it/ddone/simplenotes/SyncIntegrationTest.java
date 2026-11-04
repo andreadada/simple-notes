@@ -395,4 +395,57 @@ class SyncIntegrationTest {
             .andExpect(jsonPath("$.changes[0].payload.due.instant").value("2026-10-24T22:00:00Z"));
     }
 
+    @Test
+    void inventoryIsReadOnlyOwnerScopedAndContainsNoPayload() throws Exception {
+        var a = users.save(new AppUser("inventory-a-" + UUID.randomUUID(),
+            "inventory-a@example.com", "Inventory A"));
+        var b = users.save(new AppUser("inventory-b-" + UUID.randomUUID(),
+            "inventory-b@example.com", "Inventory B"));
+        String idA = UUID.randomUUID().toString();
+        String idB = UUID.randomUUID().toString();
+        String authA = "Bearer " + jwt(a.id);
+        String authB = "Bearer " + jwt(b.id);
+        String api = "/api/v1/sync/apply";
+
+        String first = """
+            {"operationId":"%s","entityId":"%s","entityType":"note",
+             "action":"upsert","payload":{"title":"First","body":"SECRET_ALPHA"}}
+            """.formatted(UUID.randomUUID(), idA);
+        String second = """
+            {"operationId":"%s","entityId":"%s","entityType":"note",
+             "action":"upsert","payload":{"title":"Other","body":"SECRET_BETA"}}
+            """.formatted(UUID.randomUUID(), idB);
+        mvc.perform(post(api).header("Authorization", authA)
+            .contentType(MediaType.APPLICATION_JSON).content(first))
+            .andExpect(status().isOk());
+        mvc.perform(post(api).header("Authorization", authB)
+            .contentType(MediaType.APPLICATION_JSON).content(second))
+            .andExpect(status().isOk());
+
+        String inventory = "/api/v1/sync/inventory";
+        mvc.perform(get(inventory)).andExpect(status().isUnauthorized());
+        mvc.perform(get(inventory).header("Authorization", authA))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.complete").value(true))
+            .andExpect(jsonPath("$.cursor").isNumber())
+            .andExpect(jsonPath("$.items.length()").value(1))
+            .andExpect(jsonPath("$.items[0].entityId").value(idA))
+            .andExpect(jsonPath("$.items[0].entityType").value("note"))
+            .andExpect(jsonPath("$.items[0].version").value(0))
+            .andExpect(jsonPath("$.items[0].deleted").value(false))
+            .andExpect(jsonPath("$.items[0].payload").doesNotExist())
+            .andExpect(content().string(
+                org.hamcrest.Matchers.not(org.hamcrest.Matchers.containsString("SECRET_ALPHA"))))
+            .andExpect(content().string(
+                org.hamcrest.Matchers.not(org.hamcrest.Matchers.containsString("SECRET_BETA"))));
+        mvc.perform(get(inventory).header("Authorization", authB))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.items.length()").value(1))
+            .andExpect(jsonPath("$.items[0].entityId").value(idB));
+        // Repeated inventory fetch does not create changes or acknowledgments.
+        mvc.perform(get("/api/v1/sync/changes").header("Authorization", authA))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.changes.length()").value(1));
+    }
+
 }

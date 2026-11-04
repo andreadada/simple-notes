@@ -112,3 +112,8 @@ Prova incrementale della compensazione delle cinque tabelle SQLite e delle prefe
 ## P2.4B2C1 — Cold-start fail-closed / anti-replay (04/11/2026, PR di sviluppo)
 
 Realizzati guard e journal append-only per **simulare** interruzioni e recovery tra nuovi processi in directory temporanea; blocco su file incompleti, identità non valida o digest cambiati; ricostruzione del checkpoint verificata solo via sandbox B2B2; valutazione outbox e cursore importati sempre in quarantena senza autorizzazione AutoSync. Nessun collegamento allo startup in produzione né a profili installati. **Non equivale a recovery persistente verificato**: fsync directory, lock multiprocesso, rollback cross-store reale e riconciliazione online restano P2C2+. PR #31 è la dipendenza di questo incremento; merge e CI vanno verificati.
+
+
+## P2.4B2C3 — Endpoint backend read-only (04/11/2026, PR separata)
+
+Aggiunto `GET /sync/inventory` lato Spring Boot: ultimo change per entità e cursor in snapshot coerente `REPEATABLE_READ`, filtraggio JWT, tombstone, limite 10k, nessun testo/credenziale. Test integrazione A/B e letture non mutanti. Branch backend indipendente da PR Flutter #33; controlli CI e merge da verificare. **Non deployato**, nessuna modifica al DB reale né migrazione.

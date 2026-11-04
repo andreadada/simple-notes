@@ -131,3 +131,8 @@ FullBackupCheckpointPreflight effettua una cattura logica validata dello snapsho
 ## Vincolo P2.4B2C1 — journal fail-closed ma non operativo
 
 `FullBackupColdStartGuard` e `FileRestoreJournal` sono **solo prototipi per test isolati**: il journal è in directory esplicita temporanea, manca fsync directory e protezione multi-processo, e non va collegato a startup/AutoSyncHost o a un path del profilo installato. Un file temporaneo, una sequenza mancante, un hash non valido o un account diverso devono bloccare il recovery. `RestoreReplayRisk` **non autorizza mai** il replay delle `pending_mutations` o del `syncCursor` importato, nemmeno con cursor uguale/outbox vuota; è necessaria riconciliazione remota esplicita e testata. [Specifica](docs/P2-FULL-BACKUP.md).
+
+
+## Vincolo P2.4B2C3 — inventario remoto senza dati riservati
+
+L'API `/api/v1/sync/inventory` è **solo GET** e deve filtrare ogni query con owner dal JWT, usare snapshot coerente in sola lettura, omettere completamente i payload di task/note, non presentare risposte parziali senza contrassegno e non aggiornare `sync_change`/`sync_operation`. Anche con inventory completo l'upload di outbox/cursori restaurati deve restare vietato finché non esiste protocollo esplicito di riconciliazione e precondizioni concorrenti. Non eseguire il deploy Coolify né migrazioni senza autorizzazione. [API](docs/api.md).

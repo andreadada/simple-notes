@@ -356,3 +356,8 @@ Branch impilato dopo P2.4B2A e P2.4B2B1: `data/full_backup_rollback_rehearsal.da
 ## Handoff 04/11/2026 — P2.4B2C1
 
 Nuovo `lib/data/full_backup_recovery_guard.dart`: journal append-only di soli digest/fasi scritto nella directory **isolata specificata dal test**, guard che simula il cold-start da un nuovo oggetto, rifiuta marker incompleti/forgiati o file .snb/owner cambiati e usa la prova di rollback B2B2. `RestoreReplayRisk` identifica outbox importata, operationId sovrapposti e regressioni cursor ma **vieta sempre** il replay/auto-sync fino a una riconciliazione remota non ancora implementata. `test/full_backup_recovery_guard_test.dart` copre ripartenze, crash iniettati, casi di dati invalidi, marker corrotti e zero outbox. Nessuna modifica runtime al profilo utente, VPS o API. Prima di integrare: completare CI, merge ordinato, quindi cold-start offline persistente/locked, rollback cross-store reale e policy di risoluzione conflitti contro server. [Specifica](P2-FULL-BACKUP.md).
+
+
+## Handoff 04/11/2026 — P2.4B2C3 (API inventory)
+
+In branch backend dedicato, `SyncController.inventory` usa `SyncService.inventory` per ottenere ultime revisioni per entità e cursor owner-scoped in transazione `REPEATABLE_READ`, senza payload e con limite di 10.000 entità. Test aggiunto in `SyncIntegrationTest`: utenti diversi, JWT necessario, nessun contenuto nota visibile e letture senza effetti su sync_change. Questo lavoro è indipendente dal branch Flutter interlock e cloud GET preflight; non richiede Flyway. Dopo CI e merge: definire l'uso dell'inventario per conflitti, verificare supporto capabilities e fare il deploy **solo** con successiva autorizzazione/runbook. Non riattivare outbox importata automaticamente. [API](api.md).

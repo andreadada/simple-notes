@@ -105,3 +105,6 @@ Nel menu profilo **Esporta CSV** consente di scegliere attività, note attive o 
 
 
 **P2.4B2C1 (sviluppo):** guard di avvio isolato con registro di recupero append-only, simulazioni di crash e blocco anti-replay per outbox/cursore importati. È una prova su directory temporanea e SQLite in memoria: nessun ripristino live o sospensione effettiva di AutoSync. [Dettagli](docs/P2-FULL-BACKUP.md).
+
+
+**P2.4B2C3 (API in sviluppo):** endpoint autenticato di sola lettura per consultare revisioni cloud e tombstone senza contenuti privati, pensato per il futuro confronto prima di ripristinare. Non presente sulla VPS finché non avviene un deploy separato. [API](docs/api.md).

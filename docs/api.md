@@ -109,3 +109,10 @@ Il CSV viene generato interamente dalla SQLite locale, senza chiamate HTTP a Sim
 ## P2.4B1 — Nessuna API o JWT di backup
 
 Il backup .snb viene generato offline dal client, cifrato con password locale e verificato senza rete. Non aggiunge endpoint backend, scope Google, capability, migration PostgreSQL o upload. Le credenziali OAuth sono escluse. Il gate API strict della VPS e i test Windows↔Android restano separati e rinviati. [Specifica](P2-FULL-BACKUP.md).
+
+
+## P2.4B2C3 — GET /api/v1/sync/inventory (branch API, 04/11/2026)
+
+Endpoint autenticato **solo GET** che restituisce l'ultima revisione conosciuta per ciascuna coppia `entityType/entityId` dell'account JWT, inclusi tombstone. Risposta `{cursor: long, items: [{entityType, entityId, version, deleted, changeId}], complete: true}`; non contiene titoli, contenuto delle note, payload task, token o operation ID. L'account è letto esclusivamente dal JWT e filtrato in SQL. Implementazione tramite transazione `REPEATABLE_READ` di sola lettura PostgreSQL e `DISTINCT ON`, cursor e righe dallo stesso snapshot transazionale. La query ha massimo 10.001 righe per bloccare (HTTP 413) gli account con oltre 10.000 entità, senza risposte parziali.
+
+La risposta offre inventario coerente al momento della lettura, **non** una prenotazione del futuro stato server: scritture simultanee successive possono invalidare il confronto. Non è una API per ripristinare; non invia/modifica operazioni e non autorizza upload. Il client deve continuare a trattare outbox/cursor importati come non affidabili. Nessuna migrazione database nuova.

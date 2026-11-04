@@ -116,3 +116,8 @@ Il formato .snb deve essere cifrato obbligatoriamente (AES-256-GCM, PBKDF2 e sal
 ## Gate P2.4B2A — solo ripristino isolato
 
 FullBackupRestoreRehearsal decifra e ricostruisce SQLite esclusivamente in un nuovo NativeDatabase.memory(). Mai usare la stessa procedura su AppDatabase persistente né aggiungere una voce «Ripristina» prima di cold-start isolato, checkpoint recuperabile, rollback SQLite+preferenze e strategia anti-replay provati. Un report di rehearsal non autorizza sync, re-invio della outbox o interventi VPS. [Contratto](docs/P2-FULL-BACKUP.md).
+
+
+## P2.4B2B1 — checkpoint come gate, mai consenso di restore
+
+FullBackupCheckpointPreflight effettua una cattura logica validata dello snapshot corrente, la cifra, chiede a uno store di scrivere un **file nuovo**, lo rilegge e confronta SHA-256, payload e prova SQLite isolata. FileFullBackupCheckpointStore non deve mai sovrascrivere un backup, usare path impliciti del profilo o essere invocato da una UI di restore live. Il receipt non autorizza restore o sync. Mancano ancora robustezza crash/power loss, rollback SharedPreferences, cold-start e anti-replay prima dell'attivazione. [Contratto](docs/P2-FULL-BACKUP.md).

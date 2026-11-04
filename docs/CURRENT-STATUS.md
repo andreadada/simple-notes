@@ -97,3 +97,8 @@ PR #28 merged su `main`, Flutter `0.31.0+33`: archivio .snb cifrato AES-256-GCM/
 ## P2.4B2A — Avanzamento 04/11/2026 (branch, non ancora certificato main)
 
 Predisposta una prova di restore **solo in memoria**, separata dall'app installata: preflight .snb password/account, cinque tabelle SQLite V8 scritte in una transazione, confronto integrale dei valori grezzi e verifica decodifica Drift; test di errore iniettato, rollback e retry. Non modifica database installato, SharedPreferences, credenziali o server, e NON abilita la sync. Fino a merge e CI finali lo stato ufficiale main resta P2.4B1. Il vero P2.4B2 richiede ancora checkpoint reale, cold-start e anti-replay. [Specifica](P2-FULL-BACKUP.md).
+
+
+## P2.4B2B1 — Preflight checkpoint (04/11/2026, branch in sviluppo)
+
+Oltre alla rehearsal SQLite isolata P2.4B2A (PR #29), preparata una fase di salvataggio verificato: file .snb cifrato nuovo e non sovrascrivibile, scrittura temporanea/flush/rename, verifica read-back SHA-256 e AES-GCM, account e payload, rehearsal in memoria e receipt senza permesso di sync. Test su directory temporanee e fault; nessuna scrittura sul dispositivo dell'utente. **Il restore live non esiste ancora**, e rimangono da provare fsync/cold-start, rollback SQLite + preferenze, controllo anti-replay e compatibilità package. Stato main fino a merge verificato: P2.4B1.

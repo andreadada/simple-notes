@@ -636,7 +636,8 @@ class _NotesHomeState extends ConsumerState<NotesHome> {
                       });
                       return;
                     }
-                    if (worksheet != null && dialogContext.mounted) {
+                    if (worksheet != null && worksheet!.items.isNotEmpty &&
+                        dialogContext.mounted) {
                       await _showReconciliationWorksheet(
                         dialogContext,
                         worksheet!,
@@ -674,7 +675,7 @@ class _NotesHomeState extends ConsumerState<NotesHome> {
                       dryRun = draft;
                     });
                   },
-                  child: Text(worksheet == null
+                  child: Text(worksheet == null || worksheet!.items.isEmpty
                       ? 'Simula altra strategia'
                       : 'Esamina conflitti'),
                 ),
@@ -834,7 +835,8 @@ class _NotesHomeState extends ConsumerState<NotesHome> {
                             const SizedBox(width: 8),
                             FButton(
                               variant: FButtonVariant.ghost,
-                              onPress: () {
+                              onPress: item.availableChoices.length < 2
+                                  ? null : () {
                                 final options = item.availableChoices;
                                 final next = options[
                                     (options.indexOf(item.choice) + 1) %

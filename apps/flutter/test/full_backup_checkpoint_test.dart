@@ -136,7 +136,7 @@ void main() {
     await expectLater(service.prepare(
       current: current, expectedOwnerId: owner,
       password: password, store: _FailingStore(),
-    ), throwsFileSystemException);
+    ), throwsA(isA<FileSystemException>()));
     await expectLater(service.prepare(
       current: current, expectedOwnerId: 'not-this-account',
       password: password, store: _TruncatedStore(),

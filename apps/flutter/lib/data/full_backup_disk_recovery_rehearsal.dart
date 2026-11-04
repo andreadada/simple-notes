@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'dart:math';
 
 import 'package:crypto/crypto.dart' as hash;
 import 'package:drift/native.dart';
@@ -56,7 +57,11 @@ class DiskRestoreRehearsal {
   }
 
   Future<void> _replacePrefs(Map<String, String?> values) async {
-    final staged = File(path.join(directory.path, 'prefs-stage.tmp'));
+    // A unique name ensures an orphan temporary file from abrupt process
+    // death cannot block the next compensation attempt. Never overwrite it.
+    final nonce = Random.secure().nextInt(1 << 32);
+    final staged = File(path.join(
+        directory.path, 'prefs-stage-$nonce.tmp'));
     await staged.create(exclusive: true);
     try {
       await staged.writeAsString(jsonEncode(values), flush: true);

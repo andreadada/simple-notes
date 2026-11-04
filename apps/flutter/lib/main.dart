@@ -43,6 +43,7 @@ import 'data/full_backup.dart';
 import 'data/full_backup_compare.dart';
 import 'data/backup_cloud_safety.dart';
 import 'data/reconciliation_dry_run.dart';
+import 'data/reconciliation_worksheet.dart';
 import 'data/restore_cloud_inventory.dart';
 import 'data/app_database.dart';
 import 'auth/cloud_auth.dart';
@@ -598,6 +599,7 @@ class _NotesHomeState extends ConsumerState<NotesHome> {
       String? cloudSummary;
       ReconciliationDryRun? dryRun;
       RestoreServerInventory? lastInventory;
+      ReconciliationWorksheet? worksheet;
       var hypotheticalStrategy = ReconciliationStrategy.deferAll;
       var cloudBusy = false;
       await showFDialog<void>(
@@ -621,7 +623,31 @@ class _NotesHomeState extends ConsumerState<NotesHome> {
               if (lastInventory != null)
                 FButton(
                   variant: FButtonVariant.ghost,
-                  onPress: cloudBusy ? null : () {
+                  onPress: cloudBusy ? null : () async {
+                    if (worksheet != null && dialogContext.mounted) {
+                      await _showReconciliationWorksheet(
+                        dialogContext,
+                        worksheet!,
+                        () {
+                          final strategies = ReconciliationStrategy.values;
+                          final next = strategies[
+                              (hypotheticalStrategy.index + 1) %
+                                  strategies.length];
+                          final newDraft =
+                              const ReconciliationDryRunPlanner().preview(
+                            current: current,
+                            imported: backup,
+                            cloud: lastInventory!,
+                            strategy: next,
+                          );
+                          refresh(() {
+                            hypotheticalStrategy = next;
+                            dryRun = newDraft;
+                          });
+                        },
+                      );
+                      return;
+                    }
                     final strategies = ReconciliationStrategy.values;
                     final next = strategies[(hypotheticalStrategy.index + 1) %
                         strategies.length];
@@ -636,7 +662,9 @@ class _NotesHomeState extends ConsumerState<NotesHome> {
                       dryRun = draft;
                     });
                   },
-                  child: const Text('Simula altra strategia'),
+                  child: Text(worksheet == null
+                      ? 'Simula altra strategia'
+                      : 'Esamina conflitti'),
                 ),
               FButton(
                 variant: FButtonVariant.ghost,
@@ -679,7 +707,20 @@ class _NotesHomeState extends ConsumerState<NotesHome> {
                         imported: backup,
                         cloud: remote,
                       );
+                      ReconciliationWorksheet? newSheet;
+                      try {
+                        newSheet = const ReconciliationWorksheetBuilder()
+                            .preview(
+                          current: current,
+                          imported: backup,
+                          cloud: remote,
+                        );
+                      } on FormatException {
+                        // Keep the aggregate analysis when the review is too
+                        // large; never expose a silently truncated worksheet.
+                      }
                       refresh(() {
+                        worksheet = newSheet;
                         lastInventory = remote;
                         hypotheticalStrategy = ReconciliationStrategy.deferAll;
                         cloudSummary = report.summary;
@@ -720,6 +761,104 @@ class _NotesHomeState extends ConsumerState<NotesHome> {
     } finally {
       if (mounted) setState(() => _archiveBusy = false);
     }
+  }
+
+  /// Non-persistent per-item worksheet. The app never passes these choices
+  /// to the DB, SharedPreferences, restore codec, or CloudSync.
+  Future<void> _showReconciliationWorksheet(
+    BuildContext parent,
+    ReconciliationWorksheet initial,
+    VoidCallback simulateOverallStrategy,
+  ) async {
+    var sheet = initial;
+    await showFDialog<void>(
+      context: parent,
+      builder: (ctx, style, animation) => StatefulBuilder(
+        builder: (innerContext, updateSheet) => NotesDialog(
+          style: style, animation: animation,
+          title: const Text('Esamina conflitti · sola simulazione'),
+          body: SizedBox(
+            width: 520,
+            height: 420,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(sheet.summary),
+                const SizedBox(height: 12),
+                Expanded(
+                  child: ListView.builder(
+                    itemCount: sheet.items.length,
+                    itemBuilder: (context, index) {
+                      final item = sheet.items[index];
+                      final device = item.onDevice ? 'sì' : 'no';
+                      final backup = item.inBackup ? 'sì' : 'no';
+                      final cloud = item.observedInCloud ? 'sì' : 'no';
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 8),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    item.kind + ': ' + item.title,
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                  Text(
+                                    'Dispositivo $device · '
+                                    'Backup $backup · Cloud $cloud',
+                                  ),
+                                  Text(item.choiceLabel),
+                                ],
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            FButton(
+                              variant: FButtonVariant.ghost,
+                              onPress: () {
+                                final options = item.availableChoices;
+                                final next = options[
+                                    (options.indexOf(item.choice) + 1) %
+                                        options.length];
+                                updateSheet(() {
+                                  sheet = sheet.choose(item.opaqueKey, next);
+                                });
+                              },
+                              child: const Text('Cambia'),
+                            ),
+                          ],
+                        ),
+                      );
+                    },
+                  ),
+                ),
+                const SizedBox(height: 8),
+                const Text(
+                  'Ipotesi locali temporanee: chiudendo il dialog '
+                  'non viene salvato nulla.',
+                ),
+              ],
+            ),
+          ),
+          actions: [
+            FButton(
+              variant: FButtonVariant.ghost,
+              onPress: () {
+                simulateOverallStrategy();
+                updateSheet(() {});
+              },
+              child: const Text('Simula strategia generale'),
+            ),
+            FButton(
+              onPress: () => Navigator.pop(ctx),
+              child: const Text('Chiudi'),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
   Future<void> _importArchive() async {

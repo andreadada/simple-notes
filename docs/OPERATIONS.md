@@ -206,3 +206,8 @@ La prova cross-store di P2.4B2B2 è una funzione interna che decifra checkpoint 
 ## P2.4B2C1 — Prova cold-start, nessun comando operativo
 
 Il guard crea e rilegge marcatori di fase in una directory temporanea esplicitamente passata dai test. La sola funzione di recovery richiama una simulazione su database SQLite **in memoria**; non tocca il file `simple_notes.sqlite` installato, preferenze dell'utente, credenziali, Coolify o cloud. L'outbox di un backup importato resta sempre in quarantena, inclusi i casi senza modifiche in coda. **Non utilizzare** il prototipo di journal per ripristinare un profilo reale: assenti lock multiprocesso, fsync directory e recovery cross-store persistente. [Specifica](P2-FULL-BACKUP.md).
+
+
+## P2.4B2C2 — Protezione runtime e controlli cloud di sola lettura
+
+Su Windows/Android, il controllo `ApplicationSupport/simple-notes-recovery-v1` viene effettuato all'avvio **prima del DB**. Se il percorso esiste o non è verificabile, l'app non apre il profilo e mostra la schermata di recupero sospeso. Non eliminare manualmente marker o directory sospette e non usare gli script di reset: è prevista una recovery controllata successiva. La semplice assenza della directory preserva il normale comportamento in installazioni precedenti. Il cloud preflight è esclusivamente GET e richiede un client esplicito, ma non è collegato alla UI o ad alcuna procedura automatica. Non modifica VPS/Coolify né dati reali. Test manuali su profili fisici ancora da pianificare dopo il completamento delle gate.

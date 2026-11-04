@@ -194,6 +194,8 @@ Dettagli e matrice: [docs/ui-design-audit.md](docs/ui-design-audit.md). Aggiorna
 
 ## Edit Timespan
 
+- 2026-11-04 | feat(p2.4b2c2) | Gate d'avvio nativo pre-DB/OAuth su directory di recovery (fail-closed), interlock AutoSync/CloudSync e scanner cloud solo GET con review anti-replay; test isolati + MockClient e documentazione. Nessun restore live/deploy; CI/merge da verificare. [Specifica](docs/P2-FULL-BACKUP.md).
+
 - 2026-11-04 | feat(p2.4b2c1) | Guardia cold-start isolata con journal append-only in directory di prova, hash account/backup, validazione fasi, retry dopo crash simulato e quarantena obbligatoria outbox/cursor importati. Nessuna modifica runtime/restore live; CI/merge da verificare. [Specifica](docs/P2-FULL-BACKUP.md).
 
 - 2026-11-04 | feat(p2.4b2b2) | Rehearsal SQLite+preferenze su istanza in memoria: doppia autenticazione .snb, transazione, fault injection SQL/preferenze/post-commit e compensazione verificata dello stato originale; nessun restore live o sync autorizzata. CI/merge da verificare, E2E fisici differiti. [Specifica](docs/P2-FULL-BACKUP.md).
@@ -450,3 +452,13 @@ Esempio: `2026-10-21 14:20 CEST | commit abc1234 | Aggiunto modulo promemoria e 
 - [x] Segnalazione operationId comuni, outbox importata e cursor regredito/ignoto; automatic-sync sempre vietata.
 - [ ] Cold-start **reale** offline con lock multiprocesso, fsync directory, checkpoint persistente, recovery cross-store verificato.
 - [ ] Recupero/risoluzione conflitti remoti e policy consenso prima di qualunque upload importato; E2E fisici.
+
+
+### P2.4B2C2 — Startup embargo e ricognizione cloud
+
+- [x] Probe nativo read-only prima di SQLite/Auth, con blocco dell'avvio su recovery pendente; web stub.
+- [x] Gate sincronizzazione su scheduling AutoSync, CloudSync manuale e conflict resolution.
+- [x] Lettore remoto paginato GET-only e review locale/remote che rifiuta ogni replay.
+- [x] Test directory temporanea, interlock senza DB/OAuth, risposte HTTP/paginazione invalide.
+- [ ] Lock multi-processo, gestione delle richieste già in volo, sblocco verified/consenso, restore persistente cross-store.
+- [ ] Feed di remote snapshot affidabile + conflitti user-controlled e E2E fisici Windows/Android.

@@ -131,3 +131,8 @@ FullBackupCheckpointPreflight effettua una cattura logica validata dello snapsho
 ## Vincolo P2.4B2C1 — journal fail-closed ma non operativo
 
 `FullBackupColdStartGuard` e `FileRestoreJournal` sono **solo prototipi per test isolati**: il journal è in directory esplicita temporanea, manca fsync directory e protezione multi-processo, e non va collegato a startup/AutoSyncHost o a un path del profilo installato. Un file temporaneo, una sequenza mancante, un hash non valido o un account diverso devono bloccare il recovery. `RestoreReplayRisk` **non autorizza mai** il replay delle `pending_mutations` o del `syncCursor` importato, nemmeno con cursor uguale/outbox vuota; è necessaria riconciliazione remota esplicita e testata. [Specifica](docs/P2-FULL-BACKUP.md).
+
+
+## Vincolo P2.4B2C2 — vietato aggirare l'interlock
+
+`main.dart` DEVE eseguire `probeRestoreStartup()` **prima** di istanziare AppDatabase, migrare SQLite, inizializzare Google OAuth o AutoSync. La directory riservata `simple-notes-recovery-v1`, anche vuota/errata, impone blocco fail-closed; non rimuovere automaticamente marker sospetti. `restoreSyncGateProvider` va sovrascritto nell'entrypoint di produzione e rispettato da **tutti** gli ingressi sync, compresi upload manuale e risoluzione conflitti. Il reader `RestoreCloudReadOnlyPreflight` ammette solo richieste GET e produce osservazioni non autorevoli: **non** usare i suoi dati per autorizzare upload/cursor importati. Nessun writer live fino a lock esclusivo, recovery persistente multi-store e riconciliazione cloud. [Specifica](docs/P2-FULL-BACKUP.md).

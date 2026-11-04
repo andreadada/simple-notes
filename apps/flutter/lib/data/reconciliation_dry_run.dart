@@ -176,8 +176,12 @@ class ReconciliationDryRunPlanner {
       } else {
         observed++;
       }
-      if (backup == null) reasons.add(ReconciliationHazard.missingFromBackup);
-      if (local == null) reasons.add(ReconciliationHazard.missingOnDevice);
+      if (backup == null) {
+        reasons.add(ReconciliationHazard.missingFromBackup);
+      }
+      if (local == null) {
+        reasons.add(ReconciliationHazard.missingOnDevice);
+      }
       if (remote != null && backup == null && local == null) {
         reasons.add(ReconciliationHazard.cloudOnly);
       }
@@ -205,7 +209,9 @@ class ReconciliationDryRunPlanner {
       if (localQueue.contains(key)) {
         reasons.add(ReconciliationHazard.deviceOutbox);
       }
-      if (reasons.isNotEmpty) reviewed++;
+      if (reasons.isNotEmpty) {
+        reviewed++;
+      }
       for (final reason in reasons) {
         counts[reason] = counts[reason]! + 1;
       }
@@ -240,7 +246,9 @@ class ReconciliationDryRunPlanner {
   static bool _validKey(String key) {
     final separator = key.indexOf(':');
     if (separator < 1 || separator == key.length - 1 ||
-        key.length > 1152) return false;
+        key.length > 1152) {
+      return false;
+    }
     return const {'note', 'task', 'list'}
         .contains(key.substring(0, separator));
   }

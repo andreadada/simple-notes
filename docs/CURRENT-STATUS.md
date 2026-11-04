@@ -133,3 +133,6 @@ Aggiunto `GET /sync/inventory` lato Spring Boot: ultimo change per entità e cur
 ## P2.4B2D — Compensazione persistente su directory di test (04/11/2026, PR in sviluppo)
 
 Nuovo `full_backup_disk_recovery_rehearsal.dart`: recovery di SQLite e preferenze su **file temporanei isolati**, checkpoint .snb cifrato letto e autenticato, lock OS consultivo, journal append-only, rollback e verifica post-riavvio. Test di crash dopo SQL, dopo preferenze e durante recovery; fail-closed su password, account, archivio o registro errato. Nessun ripristino o AutoSync su profilo installato. Mancano fsync directory/compatibilità OS e protocollo di ripristino live. CI/merge da verificare.
+
+## CI più rapida per PR (04/11/2026, branch indipendente)
+Flutter, backend e Compose continuano a verificare i push su `main`, ma non avviano più una pipeline duplicata per ogni push di un branch già associato a una PR. Tutti e quattro i workflow (anche documentazione) cancellano automaticamente soltanto le esecuzioni obsolete della *stessa PR* quando arrivano commit nuovi. Nessuna riduzione di test, build, controlli di sicurezza o validazione. PR e CI/merge da verificare; nessun deploy.

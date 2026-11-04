@@ -194,6 +194,8 @@ Dettagli e matrice: [docs/ui-design-audit.md](docs/ui-design-audit.md). Aggiorna
 
 ## Edit Timespan
 
+- 2026-11-04 | feat(p2.4b2b1) | Checkpoint cifrato `.snb` in file nuovo con read-back/verify (SHA256, AES-GCM, owner, confronto integrale, rehearsal SQLite); test isolati su directory temporanea e fault simulati. Non collegato all'app live e non abilita restore/auto-sync; CI/merge da verificare. [Specifica](docs/P2-FULL-BACKUP.md).
+
 - 2026-11-04 | feat(p2.4b2a) | Rehearsal di ripristino .snb isolata in SQLite memoria con verifica integrale e rollback sotto fault. Nessun restore live o deploy; CI/merge da verificare, test fisici rinviati. [Specifica](docs/P2-FULL-BACKUP.md).
 Formato: `AAAA-MM-GG HH:mm TZ | commit <sha> | commento sintetico` (data/ora del commit locale al progetto; hash verificato).
 Esempio: `2026-10-21 14:20 CEST | commit abc1234 | Aggiunto modulo promemoria e test`
@@ -418,3 +420,11 @@ Esempio: `2026-10-21 14:20 CEST | commit abc1234 | Aggiunto modulo promemoria e 
 - [x] P2.4B2A, rehearsal isolata: verifica AES-GCM/owner, ricostruzione delle cinque tabelle in SQLite temporaneo, prova uguaglianza dati/decodifica Drift, fault injection e rollback; senza scritture sul profilo corrente.
 - [ ] P2.4B2B, checkpoint: copia verificata del profilo attuale, staging/compensazione SharedPreferences, rollback cross-store e prove di crash.
 - [ ] P2.4B2C, cold-start/anti-replay: blocco sync/sessione/richieste concorrenti, controllo cloud/outbox/cursor, compatibilità ZIP/MSIX e Android, UI Forui solo dopo gate.
+
+
+### P2.4B2B1 — Checkpoint verificabile, non ancora rollback live
+
+- [x] Scrittura su nuovo file cifrato con nome casuale, temp-file flush/rename e controllo di rilettura, fingerprint, owner e SQL isolato.
+- [x] Test di integrità, mancata sovrascrittura, I/O fail-closed e account differente.
+- [ ] Durabilità completa dopo crash con fsync directory su tutte le piattaforme; compensazione SharedPreferences, rollback e recovery cross-store.
+- [ ] Integrazione cold-start e policy anti-replay; il receipt vieta restore live e automatic-sync.

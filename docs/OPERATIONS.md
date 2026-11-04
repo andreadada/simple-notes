@@ -191,3 +191,8 @@ Nel menu account si può creare il .snb con password Forui e verificarlo nello s
 ## P2.4B2A — Rehearsal senza impatto operativo
 
 FullBackupRestoreRehearsal ricostruisce SQLite V8 in un database temporaneo in memoria, dopo la verifica .snb. Non apre il SQLite installato, non modifica preferenze, non contatta Coolify o AutoSync e non espone un pulsante di restore. I test automatici coprono rollback e retry dopo fault. Questo risultato **non** autorizza il replay delle operazioni pendenti: il gate cold-start, checkpoint e anti-replay resta aperto. [Specifica](P2-FULL-BACKUP.md).
+
+
+## P2.4B2B1 — Checkpoint su directory esplicita, senza restore operativo
+
+Il nuovo FullBackupCheckpointPreflight cifra e verifica uno snapshot locale e prova a ricostruirlo in SQLite temporaneo. La prova di scrittura usa esclusivamente una directory specificata dal chiamante (test: directory temporanea), file .snb nuovo e read-back. Nessun comando Coolify, nessuna azione per l'utente finale e nessuna scrittura dell'archivio installato. Un receipt valido **non consente** ancora restore o replay outbox; fsync directory, compensazione preferenze, rollback reale e controllo versioni cloud sono obbligatori prima dell'attivazione. [Contratto](P2-FULL-BACKUP.md).

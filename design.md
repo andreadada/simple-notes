@@ -250,3 +250,8 @@ Il menu account offre Crea backup cifrato e Verifica backup. Dialog Forui con ca
 ## Gate UX P2.4B2A
 
 Nessuna voce di ripristino è aggiunta all'interfaccia per la sola rehearsal in memoria. Il menu conserva «Crea backup cifrato» e «Verifica backup»; la verifica non modifica dati. Per una futura azione «Ripristina» serviranno spiegazione delle conseguenze, checkpoint/rollback, modalità cold-start e divieto di replay automatico dell'outbox, con componenti Forui e conferma esplicita. [Specifica](docs/P2-FULL-BACKUP.md).
+
+
+## Vincolo UX P2.4B2B1
+
+Un checkpoint verificato con read-back non abilita da solo un'azione di ripristino. Restano invariati i due comandi visibili «Crea backup cifrato» e «Verifica backup». Il futuro restore richiede preflight del profilo attuale, conferma esplicita, cold-start esclusivo, rollback cross-store e policy anti-replay prima di introdurre una nuova UI Forui. [Contratto](docs/P2-FULL-BACKUP.md).

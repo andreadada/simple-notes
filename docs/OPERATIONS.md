@@ -223,3 +223,6 @@ La PR introduce `GET /api/v1/sync/inventory` senza modifiche DB, dati o nuove mi
 ## P2.4B2D — Recovery su file di test, non procedura utente
 
 La prova persistente crea una directory nuova sotto `Directory.systemTemp`. Le credenziali .snb, le preferenze simulate e SQLite risiedono solo lì; i test eliminano la propria cartella quando terminano. Nessun comando operativo, reset, invocazione Coolify o modifica dati sul PC/dispositivo è richiesto. Non reindirizzare il sandbox al percorso SQLite reale e non usare i suoi metodi per correggere un'installazione in errore; mancano fsync multipiattaforma, backup in caso di crash fisico, rollback SharedPreferences reali e compatibilità installazione. [Contratto](P2-FULL-BACKUP.md).
+
+## Esecuzioni CI senza duplicati
+Le build automatiche sui branch feature sono lanciate tramite `pull_request`; `push` continua a scattare su `main`. Un commit successivo sulla stessa PR interrompe solo la pipeline precedente e avvia quella per il nuovo HEAD. Quando si valuta un merge, controllare lo SHA **corrente** della PR e tutti i job: un vecchio verde non basta. I test non sono stati disabilitati o ridotti. Nessun effetto su Coolify/VPS.

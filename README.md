@@ -113,3 +113,6 @@ Il client include anche il lettore sperimentale di inventario cloud, con validaz
 
 
 **P2.4B2C3 (API in sviluppo):** endpoint autenticato di sola lettura per consultare revisioni cloud e tombstone senza contenuti privati, pensato per il futuro confronto prima di ripristinare. Non presente sulla VPS finché non avviene un deploy separato. [API](docs/api.md).
+
+
+**P2.4B2D (sviluppo):** test di recupero dopo interruzione anche su file SQLite e preferenze simulati su disco, all'interno di una directory temporanea dedicata. Il restore operativo non è disponibile: nessuna scrittura al profilo installato, nessun deploy e nessuna sincronizzazione di backup importati. [Specifica](docs/P2-FULL-BACKUP.md).

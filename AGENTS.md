@@ -143,3 +143,8 @@ FullBackupCheckpointPreflight effettua una cattura logica validata dello snapsho
 ## Vincolo P2.4B2C3 — inventario remoto senza dati riservati
 
 L'API `/api/v1/sync/inventory` è **solo GET** e deve filtrare ogni query con owner dal JWT, usare snapshot coerente in sola lettura, omettere completamente i payload di task/note, non presentare risposte parziali senza contrassegno e non aggiornare `sync_change`/`sync_operation`. Anche con inventory completo l'upload di outbox/cursori restaurati deve restare vietato finché non esiste protocollo esplicito di riconciliazione e precondizioni concorrenti. Non eseguire il deploy Coolify né migrazioni senza autorizzazione. [API](docs/api.md).
+
+
+## Vincolo P2.4B2D — file persistenti solo nel temp dei test
+
+`DiskRestoreRehearsal.create()` è una prova distruttiva *solo* su file creati nella propria directory `Directory.systemTemp`. Non aggiungere constructor o path override per puntare a `ApplicationSupport`/SQLite installata, né collegarlo a `main.dart`, CloudSync/AutoSyncHost, SharedPreferences reali, OAuth o UI. Non cancellare automaticamente marker sospetti in un profilo live. Il lock consultivo e il rename dei file non garantiscono da soli durabilità/recupero su Android e Windows; tali gate richiedono prove per piattaforma, lock multiprocesso, fsync della directory e procedure di compensazione cross-store. Nessuna sync di outbox importata senza riconciliazione esplicita. [Specifiche](docs/P2-FULL-BACKUP.md).

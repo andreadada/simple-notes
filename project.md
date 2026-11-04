@@ -194,6 +194,8 @@ Dettagli e matrice: [docs/ui-design-audit.md](docs/ui-design-audit.md). Aggiorna
 
 ## Edit Timespan
 
+- 2026-11-04 | feat(p2.4b2d) | Rehearsal di recovery persistente su directory OS temporanea (SQLite file + preferenze simulate su JSON), lock consultivo, checkpoint cifrato, fault injection in staging e rollback post-crash; nessun restore live né deploy. CI/merge da verificare. [Specifica](docs/P2-FULL-BACKUP.md).
+
 - 2026-11-04 | feat(p2.4b2c2) | Gate d'avvio nativo pre-DB/OAuth su directory di recovery (fail-closed), interlock AutoSync/CloudSync e scanner cloud solo GET con review anti-replay; test isolati + MockClient e documentazione. Nessun restore live/deploy; CI/merge da verificare. [Specifica](docs/P2-FULL-BACKUP.md).
 
 - 2026-11-04 | feat(p2.4b2c3) | Endpoint API GET inventario revisioni remoto JWT-scoped, snapshot read-only repeatable-read, nessun payload, limit 10k e test isolamento account. Nessuna migrazione/deploy né restore live; CI e merge da verificare. [API](docs/api.md).
@@ -466,3 +468,12 @@ Esempio: `2026-10-21 14:20 CEST | commit abc1234 | Aggiunto modulo promemoria e 
 - [ ] Feed di remote snapshot affidabile + conflitti user-controlled e E2E fisici Windows/Android.
 
 - [x] Client inventory API read-only con parser rigoroso e comparatore versioni/outbox; backend separato PR #34 senza deploy. Il risultato rimane sempre non autorizzante.
+
+
+### P2.4B2D — Recovery persistente esclusivamente in sandbox
+
+- [x] Directory dedicata creata dai test, checkpoint cifrato e file SQLite/prefs con read-back.
+- [x] Lock OS consultivo e journal append-only con fault injection dopo SQL/preferenze e durante recovery.
+- [x] Verifica da nuovo oggetto/nuovo handle SQLite, including tombstones/outbox, e prove errori fail-closed.
+- [ ] Durabilità fsync directory/crash macchina, coerenza SharedPreferences/SQLite reali, lock multi-engine e pacchetti Windows/MSIX.
+- [ ] Reconciliation remota owner-scoped e consenso esplicito, test E2E sui dispositivi, restore live ancora disabilitato.

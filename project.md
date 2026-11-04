@@ -462,3 +462,5 @@ Esempio: `2026-10-21 14:20 CEST | commit abc1234 | Aggiunto modulo promemoria e 
 - [x] Test directory temporanea, interlock senza DB/OAuth, risposte HTTP/paginazione invalide.
 - [ ] Lock multi-processo, gestione delle richieste già in volo, sblocco verified/consenso, restore persistente cross-store.
 - [ ] Feed di remote snapshot affidabile + conflitti user-controlled e E2E fisici Windows/Android.
+
+- [x] Client inventory API read-only con parser rigoroso e comparatore versioni/outbox; backend separato PR #34 senza deploy. Il risultato rimane sempre non autorizzante.

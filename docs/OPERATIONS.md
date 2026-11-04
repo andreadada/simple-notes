@@ -211,3 +211,5 @@ Il guard crea e rilegge marcatori di fase in una directory temporanea esplicitam
 ## P2.4B2C2 — Protezione runtime e controlli cloud di sola lettura
 
 Su Windows/Android, il controllo `ApplicationSupport/simple-notes-recovery-v1` viene effettuato all'avvio **prima del DB**. Se il percorso esiste o non è verificabile, l'app non apre il profilo e mostra la schermata di recupero sospeso. Non eliminare manualmente marker o directory sospette e non usare gli script di reset: è prevista una recovery controllata successiva. La semplice assenza della directory preserva il normale comportamento in installazioni precedenti. Il cloud preflight è esclusivamente GET e richiede un client esplicito, ma non è collegato alla UI o ad alcuna procedura automatica. Non modifica VPS/Coolify né dati reali. Test manuali su profili fisici ancora da pianificare dopo il completamento delle gate.
+
+Il reader client `RestoreServerInventoryReader` è intenzionalmente opt-in e in sviluppo: finché la PR backend #34 non è rilasciata, un 404 viene trattato come **blocco** (mai come permesso di usare il vecchio cursor). Nessun endpoint nuovo è stato distribuito su Coolify.

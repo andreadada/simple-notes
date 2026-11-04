@@ -117,3 +117,8 @@ Lo stato `RestoreSyncGate` viene iniettato nel `ProviderScope` prima di iniziali
 **Il feed eventi non garantisce uno snapshot completo del cloud** (compattazione e possibili modifiche concorrenti). In questa fase il lettore non viene chiamato né da main né dal guard del ripristino; serviranno un protocollo server-side coerente, scope autenticato, deduplica/decisione conflitti e un rilascio controllato del blocco prima di usarlo per un restore reale.
 
 Test aggiunti per marker mancanti/invalidi, embargo CloudSync prima di qualunque accesso DB/token, client cloud solo GET, paginazione, rifiuto errori e review senza replay. Restano differiti gli E2E fisici Windows/Android e le prove di durabilità dopo crash.
+
+
+### Addendum P2.4B2C2 — Parser inventario coerente con il contratto backend P2.4B2C3
+
+Oltre al lettore del feed eventi, `RestoreServerInventoryReader` acquisisce esplicitamente tramite GET `/api/v1/sync/inventory` l'inventario metadata-only della PR backend #34. Valida risposta completa, cursor, limiti 10k, identità uniche, versione, tombstone e changeId, rifiutando proprietà extra (es. payload), HTTP non-200, endpoint non ancora deployato o origini insicure. `RestoreServerInventoryReview` confronta outbox e versioni remote con backup target e checkpoint, segnalando revisioni sconosciute/conflittuali e cursori regrediti. I risultati **non autorizzano mai** restore o sincronizzazione importata. Il client non invoca questo endpoint durante il normale avvio; la compatibilità backend si testa con MockClient, e la VPS corrente non è stata aggiornata.

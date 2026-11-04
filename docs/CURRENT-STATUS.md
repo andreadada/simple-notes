@@ -121,3 +121,5 @@ Realizzati guard e journal append-only per **simulare** interruzioni e recovery 
 - Nuovo client esplicito cloud read-only (GET paginati e validati, max 100 pagine/10k eventi) e review versioni/outbox/cursor sempre non autorizzante.
 - Test unitari di bootstrap, gate e ricognizione cloud con server simulato; CI e merge ancora da verificare.
 - **Non pronto il restore reale:** lock multi-processo, recovery persistente SQLite+preferenze, scelta conflitti e E2E fisici restano mancanti.
+
+P2.4B2C2 include anche parser e test GET-only per `/sync/inventory` previsto dalla PR API #34, non ancora attivato/deployato; analisi dei conflitti solo informativa, senza replay.

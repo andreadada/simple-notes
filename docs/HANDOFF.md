@@ -367,3 +367,5 @@ Dopo le PR #29/#30/#31/#32 integrate in ordine, questo blocco introduce:
 4. Test `restore_startup_sync_gate_test.dart`, `restore_cloud_preflight_test.dart` con temp-dir e MockClient. Test E2E fisici rinviati.
 
 Obiettivo successivo: orchestratore di cold-start **esclusivo** + checkpoint persistente durabile con fsync e lock, rollback transazionale/compensato di SQLite + preferenze, protocollo remoto versionato e interfaccia per conflitti. Non rimuovere a mano la directory riservata durante il test di un recovery reale: la procedura di sblocco non esiste ancora. [Specifica](P2-FULL-BACKUP.md).
+
+P2.4B2C2 addendum: `restore_cloud_inventory.dart` e `restore_cloud_inventory_test.dart` validano contratto metadata-only di PR #34 (GET, completo, max 10k, owner da JWT backend), collisioni versioni e rifiuto di upload. Nessuna chiamata automatica da runtime e nessun deploy.

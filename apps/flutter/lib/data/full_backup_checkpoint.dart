@@ -50,7 +50,7 @@ class FileFullBackupCheckpointStore implements FullBackupCheckpointStore {
       throw StateError('Checkpoint già esistente: non sovrascrivere.');
     }
     final temporary = File(path.join(directory.path,
-        '.checkpoint-$checkpointId-' + _randomHex(8) + '.tmp'));
+        '.checkpoint-$checkpointId-${_randomHex(8)}.tmp'));
     await temporary.create(exclusive: true);
     try {
       await temporary.writeAsBytes(encryptedBytes, flush: true);

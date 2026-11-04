@@ -196,6 +196,8 @@ Dettagli e matrice: [docs/ui-design-audit.md](docs/ui-design-audit.md). Aggiorna
 
 - 2026-11-04 | feat(p2.4b2c2) | Gate d'avvio nativo pre-DB/OAuth su directory di recovery (fail-closed), interlock AutoSync/CloudSync e scanner cloud solo GET con review anti-replay; test isolati + MockClient e documentazione. Nessun restore live/deploy; CI/merge da verificare. [Specifica](docs/P2-FULL-BACKUP.md).
 
+- 2026-11-04 | feat(p2.4b2c3) | Endpoint API GET inventario revisioni remoto JWT-scoped, snapshot read-only repeatable-read, nessun payload, limit 10k e test isolamento account. Nessuna migrazione/deploy né restore live; CI e merge da verificare. [API](docs/api.md).
+
 - 2026-11-04 | feat(p2.4b2c1) | Guardia cold-start isolata con journal append-only in directory di prova, hash account/backup, validazione fasi, retry dopo crash simulato e quarantena obbligatoria outbox/cursor importati. Nessuna modifica runtime/restore live; CI/merge da verificare. [Specifica](docs/P2-FULL-BACKUP.md).
 
 - 2026-11-04 | feat(p2.4b2b2) | Rehearsal SQLite+preferenze su istanza in memoria: doppia autenticazione .snb, transazione, fault injection SQL/preferenze/post-commit e compensazione verificata dello stato originale; nessun restore live o sync autorizzata. CI/merge da verificare, E2E fisici differiti. [Specifica](docs/P2-FULL-BACKUP.md).

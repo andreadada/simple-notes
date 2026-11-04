@@ -110,3 +110,6 @@ Nel menu profilo **Esporta CSV** consente di scegliere attività, note attive o 
 **P2.4B2C2 (sviluppo):** protezione all'avvio su Windows/Android: un recovery pendente blocca il profilo prima di SQLite/OAuth e vieta la sincronizzazione. Disponibile anche un preflight cloud solo GET, senza autorizzare il replay delle vecchie modifiche. Non è ancora disponibile il restore dei dati reali. [Contratto](docs/P2-FULL-BACKUP.md).
 
 Il client include anche il lettore sperimentale di inventario cloud, con validazione stretta e confronto di sole versioni; richiede una API non ancora deployata e non può applicare modifiche.
+
+
+**P2.4B2C3 (API in sviluppo):** endpoint autenticato di sola lettura per consultare revisioni cloud e tombstone senza contenuti privati, pensato per il futuro confronto prima di ripristinare. Non presente sulla VPS finché non avviene un deploy separato. [API](docs/api.md).

@@ -137,6 +137,23 @@ void main() {
     ), throwsFormatException);
   });
 
+  test('rejects impossible cloud cursor and future change ID', () async {
+    final current = await archive();
+    expect(() => const BackupCloudSafetyReviewer().inspect(
+      current: current,
+      backup: current,
+      remote: const RestoreServerInventory(-1, {}),
+    ), throwsFormatException);
+    expect(() => const BackupCloudSafetyReviewer().inspect(
+      current: current,
+      backup: current,
+      remote: const RestoreServerInventory(2, {
+        'note:note-one': RestoreInventoryRevision(
+            version: 1, deleted: false, changeId: 3),
+      }),
+    ), throwsFormatException);
+  });
+
   test('review leaves both snapshots and inventory unchanged', () async {
     final current = await archive();
     final backup = await archive(cursor: 5);

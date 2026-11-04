@@ -128,3 +128,8 @@ P2.4B2C2 include anche parser e test GET-only per `/sync/inventory` previsto dal
 ## P2.4B2C3 — Endpoint backend read-only (04/11/2026, PR separata)
 
 Aggiunto `GET /sync/inventory` lato Spring Boot: ultimo change per entità e cursor in snapshot coerente `REPEATABLE_READ`, filtraggio JWT, tombstone, limite 10k, nessun testo/credenziale. Test integrazione A/B e letture non mutanti. Branch backend indipendente da PR Flutter #33; controlli CI e merge da verificare. **Non deployato**, nessuna modifica al DB reale né migrazione.
+
+
+## P2.4B2D — Compensazione persistente su directory di test (04/11/2026, PR in sviluppo)
+
+Nuovo `full_backup_disk_recovery_rehearsal.dart`: recovery di SQLite e preferenze su **file temporanei isolati**, checkpoint .snb cifrato letto e autenticato, lock OS consultivo, journal append-only, rollback e verifica post-riavvio. Test di crash dopo SQL, dopo preferenze e durante recovery; fail-closed su password, account, archivio o registro errato. Nessun ripristino o AutoSync su profilo installato. Mancano fsync directory/compatibilità OS e protocollo di ripristino live. CI/merge da verificare.

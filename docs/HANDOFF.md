@@ -374,3 +374,8 @@ P2.4B2C2 addendum: `restore_cloud_inventory.dart` e `restore_cloud_inventory_tes
 ## Handoff 04/11/2026 — P2.4B2C3 (API inventory)
 
 In branch backend dedicato, `SyncController.inventory` usa `SyncService.inventory` per ottenere ultime revisioni per entità e cursor owner-scoped in transazione `REPEATABLE_READ`, senza payload e con limite di 10.000 entità. Test aggiunto in `SyncIntegrationTest`: utenti diversi, JWT necessario, nessun contenuto nota visibile e letture senza effetti su sync_change. Questo lavoro è indipendente dal branch Flutter interlock e cloud GET preflight; non richiede Flyway. Dopo CI e merge: definire l'uso dell'inventario per conflitti, verificare supporto capabilities e fare il deploy **solo** con successiva autorizzazione/runbook. Non riattivare outbox importata automaticamente. [API](api.md).
+
+
+## Handoff 04/11/2026 — P2.4B2D
+
+Branch derivato da PR #33: `data/full_backup_disk_recovery_rehearsal.dart` e relativo test. Solo `DiskRestoreRehearsal.create()` può allocare una directory: nuova temp OS, contenente SQLite, preferenze JSON simulate, due .snb e journal delle fasi. Lock consultivo OS, transazione SQL, prefs atomiche tramite rename, verifica read-back, fault injection durante staging e compensazione persistente. La nuova istanza `coldStart()` prova recovery esatto fino a `rollbackVerified`, senza replay outbox. I file reali dell'app e i dati server non vengono aperti, aggiornati o eliminati. Prima di qualsiasi restore operativo: durabilità directory fsync e procedure Windows/Android, lock multi-engine, cold-start esclusivo, migrazioni ZIP→MSIX, rollback SharedPreferences *reali* e protocollo remoto precondizionato/consenso conflitti. Non interpretare test sandbox come release-ready. [Specifiche](P2-FULL-BACKUP.md).

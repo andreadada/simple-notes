@@ -126,6 +126,9 @@ jobs:
       - name: Generate Drift database
         working-directory: apps/flutter
         run: dart run build_runner build
+      - name: P2 disk recovery rehearsal (Windows temp sandbox only)
+        working-directory: apps/flutter
+        run: flutter test test/full_backup_disk_recovery_rehearsal_test.dart
       - name: Build Windows executable
         working-directory: apps/flutter
         run: flutter build windows --release

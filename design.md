@@ -272,3 +272,8 @@ Il journal di prova e il report anti-replay non devono aggiungere nuovi comandi 
 Se al cold-start compare una directory di recovery, la UI mostra soltanto un avviso di profilo sospeso e non monta NotesHome, Auth o AutoSync. È una scelta intenzionalmente fail-closed, non ancora una UI di ripristino. L'esito del preflight cloud GET e i conflitti osservati non possono essere presentati come «ripristino riuscito» né abilitare «sincronizza»: prima sono necessari ripristino persistente, sblocco verificabile e decisione dell'utente. [Specifica](docs/P2-FULL-BACKUP.md).
 
 L'inventario cloud per il restore è solo una futura vista informativa dei conflitti, non un'azione automatica. L'utente dovrà confermare ogni politica di riconciliazione quando il ripristino reale sarà disponibile.
+
+
+## UX P2.4B2D — nessuna UI di restore live
+
+Una prova di compensazione persistente sui file del sandbox non è un ripristino riuscito dell'app installata. La UI continua a offrire solo creazione e verifica di backup cifrati; nessun pulsante per ripristinare, nessuna cancellazione di marker e nessuna auto-sync al termine dei test. Il flusso futuro richiederà sicurezza verificata per piattaforma, recovery sullo storage installato e dialogo di riconciliazione con il cloud. [Specifica](docs/P2-FULL-BACKUP.md).

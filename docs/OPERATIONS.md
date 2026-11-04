@@ -218,3 +218,8 @@ Il reader client `RestoreServerInventoryReader` è intenzionalmente opt-in e in 
 ## P2.4B2C3 — API inventory non ancora su VPS
 
 La PR introduce `GET /api/v1/sync/inventory` senza modifiche DB, dati o nuove migrazioni. Nessun comando shell o deploy Coolify richiesto in questa fase; il backend in esecuzione sulla VPS potrebbe restituire 404 finché la release non è stata eseguita. NON usare l'endpoint in un restore reale fino a verifica contratto, autorizzazione deploy e riconciliazione esplicita. [Documentazione](api.md).
+
+
+## P2.4B2D — Recovery su file di test, non procedura utente
+
+La prova persistente crea una directory nuova sotto `Directory.systemTemp`. Le credenziali .snb, le preferenze simulate e SQLite risiedono solo lì; i test eliminano la propria cartella quando terminano. Nessun comando operativo, reset, invocazione Coolify o modifica dati sul PC/dispositivo è richiesto. Non reindirizzare il sandbox al percorso SQLite reale e non usare i suoi metodi per correggere un'installazione in errore; mancano fsync multipiattaforma, backup in caso di crash fisico, rollback SharedPreferences reali e compatibilità installazione. [Contratto](P2-FULL-BACKUP.md).

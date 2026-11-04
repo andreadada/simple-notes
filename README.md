@@ -119,3 +119,6 @@ Il client include anche il lettore sperimentale di inventario cloud, con validaz
 
 
 **P2.4B2E (sviluppo):** nuova azione nel menu account per confrontare un backup `.snb` con i dati del dispositivo e visualizzare differenze senza ripristinarle. Il riepilogo non mostra contenuti privati e non avvia la sincronizzazione. [Specifica](docs/P2-FULL-BACKUP.md).
+
+
+**P2.4B2F (sviluppo):** durante «Confronta backup con questo dispositivo» è possibile consultare, su richiesta, l'inventario versioni cloud (GET, senza sincronizzare). Il riepilogo indica solo rischi di conflitti, con privacy e blocco di ogni restore reale. Il backend deve contenere `/sync/inventory`, non ancora necessariamente distribuito. [Specifiche](docs/P2-FULL-BACKUP.md).

@@ -389,3 +389,8 @@ Branch dopo P2.4B2D: `lib/data/full_backup_compare.dart` con `FullBackupCompare.
 
 ## Handoff 04/11/2026 — Deduplicazione CI
 I workflow Flutter/Backend/Compose ora hanno `push.branches: [main]` e conservano i trigger `pull_request`; il workflow Markdown aveva già questa restrizione. `concurrency` per tutti usa nome workflow + numero PR/ref, con `cancel-in-progress` attivo **solo** per pull request. Evita doppie pipeline push+PR ed esecuzioni obsolete sulla stessa PR, ma conserva CI su main, manual dispatch ove esistente e tutti i job Flutter (test, Windows, Android JDK17/21), backend con Testcontainers e validazioni Compose. Non modifica runtime né API. Non abilitare cancellazione dei controlli su main.
+
+
+## Handoff 04/11/2026 — P2.4B2F
+
+`apps/flutter/lib/data/backup_cloud_safety.dart` aggiunge il terzo asse del confronto, inventario remoto metadata-only (owner filtrato dal JWT backend), senza poteri di scrittura. Nel menu account, «Confronta backup con questo dispositivo» resta locale finché l'utente non seleziona **«Consulta inventario cloud»**. L'azione usa `cloudAuthProvider.accessToken` solo se non scaduto, richiede owner invariato e recovery gate libero, costruisce/chiude un client HTTP per il GET, non esegue refresh, POST o sincronizzazione. Se backend non è distribuito o JSON è invalido mostra solo «non disponibile», senza accesso al profilo in scrittura. Nuovi test analizzano versioni, tombstone, ID remoti sconosciuti, assenza segreti e casi invalidi. Restano bloccanti: protocollo cloud di riconciliazione con precondizioni, scelta conflitti utente, power-loss/fync directory/lock multiprocesso, recovery persistente **installato** e test fisici. PR impilata su #37 fino al merge della base.

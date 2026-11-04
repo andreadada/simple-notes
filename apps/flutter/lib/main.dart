@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:file_selector/file_selector.dart';
+import 'package:http/http.dart' as http;
 import 'package:share_plus/share_plus.dart';
 
 import 'package:flutter/foundation.dart';
@@ -40,6 +41,8 @@ import 'data/portable_archive.dart';
 import 'data/portable_csv.dart';
 import 'data/full_backup.dart';
 import 'data/full_backup_compare.dart';
+import 'data/backup_cloud_safety.dart';
+import 'data/restore_cloud_inventory.dart';
 import 'data/app_database.dart';
 import 'auth/cloud_auth.dart';
 import 'sync/cloud_sync.dart';
@@ -591,24 +594,88 @@ class _NotesHomeState extends ConsumerState<NotesHome> {
       final comparison = const FullBackupCompare().preview(
         current: current, backup: backup,
       );
+      String? cloudSummary;
+      var cloudBusy = false;
       await showFDialog<void>(
         context: context,
-        builder: (ctx, style, animation) => NotesDialog(
-          style: style, animation: animation,
-          title: const Text('Confronto backup · sola lettura'),
-          body: SizedBox(
-            width: 440,
-            height: 340,
-            child: SingleChildScrollView(
-              child: Text(comparison.summary),
+        builder: (ctx, style, animation) => StatefulBuilder(
+          builder: (dialogContext, refresh) => NotesDialog(
+            style: style, animation: animation,
+            title: const Text('Confronto backup · sola lettura'),
+            body: SizedBox(
+              width: 460,
+              height: 360,
+              child: SingleChildScrollView(
+                child: Text([
+                  comparison.summary,
+                  if (cloudSummary != null) cloudSummary!,
+                ].join('\n\n')),
+              ),
             ),
+            actions: [
+              FButton(
+                variant: FButtonVariant.ghost,
+                onPress: cloudBusy ? null : () async {
+                  // The user must explicitly request the inventory GET.
+                  // No refresh token exchange, cloud writes or automatic sync.
+                  refresh(() => cloudBusy = true);
+                  try {
+                    final session = ref.read(cloudAuthProvider);
+                    final token = session.accessToken;
+                    final expires = session.accessExpiresAt;
+                    if (!CloudConfig.enabled ||
+                        !ref.read(restoreSyncGateProvider).canSync ||
+                        session.userId != owner || token == null ||
+                        expires == null ||
+                        !expires.isAfter(
+                            DateTime.now().add(const Duration(seconds: 30)))) {
+                      throw const FormatException(
+                          'Sessione cloud non disponibile.');
+                    }
+                    final client = http.Client();
+                    try {
+                      final remote = await const RestoreServerInventoryReader()
+                          .inspect(
+                        client: client,
+                        apiBase: Uri.parse(CloudConfig.apiBaseUrl),
+                        accessToken: () async => token,
+                      );
+                      if (!mounted || !dialogContext.mounted ||
+                          ref.read(cloudAuthProvider).userId != owner) {
+                        return;
+                      }
+                      final report = const BackupCloudSafetyReviewer().inspect(
+                        current: current,
+                        backup: backup,
+                        remote: remote,
+                      );
+                      refresh(() => cloudSummary = report.summary);
+                    } finally {
+                      client.close();
+                    }
+                  } catch (_) {
+                    if (dialogContext.mounted) {
+                      refresh(() => cloudSummary =
+                          'Inventario cloud non disponibile o incompatibile. '
+                          'I dati locali e remoti non sono stati modificati. '
+                          'Il ripristino resta disabilitato.');
+                    }
+                  } finally {
+                    if (dialogContext.mounted) {
+                      refresh(() => cloudBusy = false);
+                    }
+                  }
+                },
+                child: Text(cloudBusy
+                    ? 'Consultazione...'
+                    : 'Consulta inventario cloud'),
+              ),
+              FButton(
+                onPress: () => Navigator.pop(ctx),
+                child: const Text('Chiudi'),
+              ),
+            ],
           ),
-          actions: [
-            FButton(
-              onPress: () => Navigator.pop(ctx),
-              child: const Text('Chiudi'),
-            ),
-          ],
         ),
       );
     } on FormatException catch (error) {

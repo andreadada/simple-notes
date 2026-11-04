@@ -282,3 +282,8 @@ Una prova di compensazione persistente sui file del sandbox non è un ripristino
 ## UX P2.4B2E — visualizzazione differenze, nessun pulsante distruttivo
 
 Nel menu account autenticato, «Confronta backup con questo dispositivo» utilizza lo stesso flusso password Forui di «Verifica backup». Presenta un dialog scrollabile con differenze aggregate (task/liste/note, cestino, outbox, cursore, preferenze) e unico pulsante «Chiudi». Non mostra contenuti sensibili né pulsanti «Ripristina», «Sostituisci», «Riprova sync» o «Applica»: un confronto locale non garantisce la sicurezza dei dati cloud. [Specifica](docs/P2-FULL-BACKUP.md).
+
+
+## UX P2.4B2F — approfondimento cloud opt-in nel dialog backup
+
+Nel dialog Forui di confronto, il report locale è immediatamente disponibile; il pulsante secondario «Consulta inventario cloud» recupera una vista metadata-only dal server esclusivamente quando l'utente lo seleziona. Durante il GET mostra «Consultazione...», poi aggiunge le sole quantità aggregate (revisioni nuove, tombstone differenti, elementi sconosciuti) con avviso di eventuali aggiornamenti cloud. Se offline o 404, il dialog non si chiude e presenta messaggio generico non distruttivo. Un solo pulsante «Chiudi», nessun «Ripristina» né upload. Non esporre nomi, token, ID o dati delle note. [Specifiche](docs/P2-FULL-BACKUP.md).

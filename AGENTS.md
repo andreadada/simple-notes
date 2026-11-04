@@ -156,3 +156,8 @@ L'API `/api/v1/sync/inventory` è **solo GET** e deve filtrare ogni query con ow
 
 ## Regola CI — non duplicare push e PR
 Le CI Flutter, Backend e Compose devono girare per ogni pull request rilevante e per i push su `main`; non rieseguire lo stesso set di job sul push di un branch con PR. Usare il group `concurrency` per numero PR/ref e cancellare esecuzioni obsolete **solo** sulle PR, mai su `main`. Mantieni obbligatori analyze, widget test, build Windows e Android JDK17/21, integrazione PostgreSQL/Testcontainers, Compose e link Markdown. Prima dei merge verificare sempre l'ultimo HEAD SHA.
+
+
+## Vincolo P2.4B2F — inventario cloud consultabile solo su azione utente
+
+Il pulsante «Consulta inventario cloud» deve essere **opt-in**, non chiamato da startup, timer, auto-sync o selezione del backup. Usare solo GET `/sync/inventory` e token già valido della stessa sessione owner, rifiutare 404/risposte malformate e non loggare token, note, ID entità o payload. Un risultato rassicurante non è autorizzazione a ripristinare, cancellare o rieseguire l'outbox. La UI mostra soltanto conteggi e mantiene `canRestoreLive`, `canResumeAutoSync` e `canApplyImportedOperations` sempre false. Nessun deploy VPS/Coolify nel workflow di sviluppo. [Specifiche](docs/P2-FULL-BACKUP.md).

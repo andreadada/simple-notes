@@ -384,3 +384,5 @@ Branch derivato da PR #33: `data/full_backup_disk_recovery_rehearsal.dart` e rel
 ## Handoff 04/11/2026 — P2.4B2E
 
 Branch dopo P2.4B2D: `lib/data/full_backup_compare.dart` con `FullBackupCompare.preview` (solo memoria) e `test/full_backup_compare_test.dart` per identità, differenze e report privo di segreti. `main.dart` aggiunge «Confronta backup con questo dispositivo» nello stesso menu di «Verifica backup». L'utente seleziona .snb, inserisce password, il file viene autenticato same-owner, viene acquisito snapshot corrente *read-only*, poi dialog Forui di riepilogo con soli conteggi. Nessun restore, nessuna connessione al cloud, nessuna scrittura SQLite/SharedPreferences. Restano mancanti backup di checkpoint persistente live, durabilità multipiattaforma, blocco cross-process e consenso conflitti: nessuna UI per applicare dati o cancellare marker. [Specifica](P2-FULL-BACKUP.md).
+
+**Aggiornamento integrazione:** PR #35 (P2.4B2D) è stata mergiata su main dopo il completamento CI Flutter e del test recovery su Windows. PR #36 è l'unico nuovo incremento aperto di questa fase, con confronto backup locale; non comprende deploy o restore live.

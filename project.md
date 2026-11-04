@@ -488,3 +488,5 @@ Esempio: `2026-10-21 14:20 CEST | commit abc1234 | Aggiunto modulo promemoria e 
 - [x] Test differenze, backup identico, regressione cursor, account/schemi errati, immutabilità input.
 - [ ] UI di vero restore e sblocco progressivo: **non consentiti** prima di checkpoint durabile, lock esclusivo e riconciliazione col cloud.
 - [ ] E2E fisici Windows/Android e recupero power-loss/ZIP-MSIX ancora rinviati.
+
+- 2026-11-04 | merge(p2.4b2d) | PR #35 integrata su main dopo analisi, test Linux, test recovery su Windows e build Android/Windows; restore utente ancora disabilitato.

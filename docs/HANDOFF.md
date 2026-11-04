@@ -336,3 +336,8 @@ PR #28 merged su `main`, Flutter `0.31.0+33`, 204 test, Windows EXE/MSIX, Androi
 ### Prossimo lavoro concreto — P2.4B2
 
 Preparare il restore **solo in modalità cold-start e offline**, senza avvio di `AutoSyncHost` o modifica di database già aperti. Richiedere account corretto, verifica del file `.snb`, checkpoint locale indipendente dell'archivio corrente, simulazione restore isolata e rollback delle cinque tabelle e delle preferenze; nessun replay automatico di outbox vecchia. Non attivare un comando UI di restore finché test di fault injection, migrazioni versione, owner e packaging non sono superati. [Specifica](P2-FULL-BACKUP.md) · [Test differiti](DEVICE-ACCEPTANCE-DEFERRED.md).
+
+
+## Handoff 04/11/2026 — P2.4B2A: sandbox, non restore live
+
+Da main 1e317575 è stato preparato il primo incremento della P2.4B2. Il nuovo modulo FullBackupRestoreRehearsal costruisce solo un NativeDatabase.memory() separato, ricostruisce le cinque tabelle in una transazione e verifica equivalenza raw, modelli Drift e rollback/retry sotto fault. Test automatici per password/account, dati incompatibili e impatto zero sul profilo originale. Non si apre il SQLite reale, non si toccano preferenze, OAuth, server o outbox locale; automaticSyncAuthorized resta false. **Prossimo sottostep:** checkpoint persistente e verificabile del profilo, staging/compensazione preferenze, quindi cold-start e policy anti-replay prima di qualsiasi interfaccia di ripristino. La CI e il merge di questo branch vanno attestati separatamente. [Specifica](P2-FULL-BACKUP.md).

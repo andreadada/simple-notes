@@ -166,3 +166,8 @@ Il pulsante «Consulta inventario cloud» deve essere **opt-in**, non chiamato d
 ## Vincolo P2.4B2G — nessuna autorizzazione dal dry-run
 
 `ReconciliationDryRunPlanner` deve essere **puro e read-only**. Tutte le strategie (rimanda / preferisci locale / backup / cloud) sono ipotesi di presentazione, senza operazioni applicabili o salvataggio delle scelte. Il report mostra soltanto numeri e avvisi: vietati ID entità, note, titoli, payload, owner ID e token. Il fingerprint SHA-256 locale non è firma, consenso o precondizione server e non permette restore. Anche quando `entitiesNeedingReview == 0`, `canRestoreLive`, `canWriteToCloud`, `canReplayImportedOutbox`, `canResumeAutoSync` e `isExecutable` devono restare false. L'outbox importata resta sempre in quarantena; nessun deploy o modifica dati reali. [Specifica](docs/P2-FULL-BACKUP.md).
+
+
+## Vincolo P2.4B2H — per-item draft solo in RAM
+
+`ReconciliationWorksheet` e i suoi `DraftConflictChoice` devono essere **puramente locali e non eseguibili**. Nessuna chiamata HTTP, modifica SQLite o SharedPreferences, backup importato, journal rimosso o ripristino deve derivare da una scelta. La UI può mostrare titolo e tipo del record solo nel dialog esplicitamente aperto dall'owner autenticato; report/summary/log/token opachi **non** devono includere ID, titoli, body, owner, password o payload. Token falsificati, preferenze per sorgenti assenti e fingerprint/owner cambiati vanno rifiutati. Oltre 500 record fail-closed, senza paginazione/troncamento silenzioso. Tutti i getter di autorizzazione restano false anche con 0 conflitti. [Specifica](docs/P2-FULL-BACKUP.md).

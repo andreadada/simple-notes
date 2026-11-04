@@ -194,6 +194,8 @@ Dettagli e matrice: [docs/ui-design-audit.md](docs/ui-design-audit.md). Aggiorna
 
 ## Edit Timespan
 
+- 2026-11-04 | feat(p2.4b2h) | Scheda di revisione conflitti per item con token opachi/fingerprint, simulazioni locali e dialog Forui, controlli owner, test limiti/privacy/fail-closed. Zero scritture, CI/merge da verificare. [Specifica](docs/P2-FULL-BACKUP.md).
+
 - 2026-11-04 | feat(p2.4b2g) | Matrice dry-run dei rischi locale/backup/cloud (versioni, tombstone, assenze, outbox), quattro preferenze Forui ipotetiche, fingerprint bozza e test privacy/owner/fail-closed. Nessun restore o replay; PR e CI da verificare. [Specifica](docs/P2-FULL-BACKUP.md).
 
 - 2026-11-04 | feat(p2.4b2f) | Confronto backup locale/cloud in sola lettura con azione Forui facoltativa e GET inventory JWT-scoped, riepilogo anonimo dei rischi, test privacy/invalidità; restore/replay sempre disabilitati. PR impilata su CI #37, CI/merge da verificare. [Specifica](docs/P2-FULL-BACKUP.md).
@@ -514,3 +516,12 @@ Esempio: `2026-10-21 14:20 CEST | commit abc1234 | Aggiunto modulo promemoria e 
 - [x] Fingerprint di invalidazione bozza e test privacy, owner differente, versioni impossibili, outbox, immutabilità.
 - [ ] Reconciliation con precondizioni atomiche lato server, deduplica, selezione dettagliata per conflitto e refresh stato cloud.
 - [ ] Recovery live con lock/durabilità Windows/Android, E2E fisici e successivo deploy backend autorizzato.
+
+
+### P2.4B2H — Bozza di revisione per record
+
+- [x] Scheda in memoria per elementi divergenti, con identificativo opaco vincolato al fingerprint delle sorgenti.
+- [x] UI Forui per leggere tipo/titolo e simulare scelte distinte per singola entità; nessun salvataggio.
+- [x] Test token invalidi, owner differente, sorgenti assenti, fingerprint non più valido, cap 500, privacy e immutabilità.
+- [ ] Persistenza del consenso user-scoped con garanzie di revoca, CAS server e version check atomico.
+- [ ] Recupero reale con lock multiprocesso, durabilità Windows/Android, validazione offline/online e test fisici.

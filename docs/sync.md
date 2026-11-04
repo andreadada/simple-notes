@@ -106,3 +106,8 @@ L'azione CSV legge `AppDatabase.snapshot()` locale dopo scelta dell'utente, seri
 ## P2.4B1 — Backup conserva outbox, non la reinvia
 
 Il file .snb cifrato include `pending_mutations`, IDs originari, versioni remote, cursor e owner binding. Creazione/verifica backup non eseguono sync, non riscrivono SQLite, non ripristinano operazioni. Sync automatica del client può proseguire durante la cattura: le cinque tabelle sono lette in una transazione coerente, ma preferenze e SQLite non sono atomiche fra loro. Non usare un vecchio snapshot in un profilo live: occorrono in P2.4B2 blocco sync e politica anti-replay/409. [Specifica](P2-FULL-BACKUP.md).
+
+
+## P2.4B2C3 — Inventario remoto per sola consultazione
+
+`GET /api/v1/sync/inventory` (Bearer JWT) restituisce revisioni attuali e tombstone per l'account attivo senza payload. Si ottiene in un'unica vista `REPEATABLE_READ` con cursor massimo e latest `changeId` per entità, cap 10.000 entità e fail-closed oltre soglia. Non è un token di lock, non riserva versioni e non rende sicuro un replay: il restore deve prima applicare una nuova policy di riconciliazione e verificare precondizioni ottimistiche lato server. Endpoint ancora **da rilasciare** su Coolify, nessun deploy eseguito.

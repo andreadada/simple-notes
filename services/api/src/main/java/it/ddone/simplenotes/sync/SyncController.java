@@ -20,6 +20,12 @@ public class SyncController {
     public record Changes(List<Change> changes, long nextCursor, boolean hasMore) {}
     public record LatestChange(String entityType, UUID entityId, JsonNode payload,
         boolean deleted, long version, long changeId) {}
+    /// Metadata-only, scoped to the authenticated account. Never return note
+    /// contents, Google identifiers, raw operation IDs or any backup content.
+    public record InventoryItem(String entityType, UUID entityId,
+        long version, boolean deleted, long changeId) {}
+    public record Inventory(long cursor, List<InventoryItem> items,
+        boolean complete) {}
 
     private final SyncService service;
     public SyncController(SyncService service) { this.service = service; }
@@ -33,6 +39,11 @@ public class SyncController {
     public LatestChange latest(@AuthenticationPrincipal Jwt jwt,
             @RequestParam String entityType, @RequestParam UUID entityId) {
         return service.latest(owner(jwt), entityType, entityId);
+    }
+
+    @GetMapping("/inventory")
+    public Inventory inventory(@AuthenticationPrincipal Jwt jwt) {
+        return service.inventory(owner(jwt));
     }
 
     @GetMapping("/changes")

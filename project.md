@@ -194,6 +194,8 @@ Dettagli e matrice: [docs/ui-design-audit.md](docs/ui-design-audit.md). Aggiorna
 
 ## Edit Timespan
 
+- 2026-11-04 | feat(p2.4b2b2) | Rehearsal SQLite+preferenze su istanza in memoria: doppia autenticazione .snb, transazione, fault injection SQL/preferenze/post-commit e compensazione verificata dello stato originale; nessun restore live o sync autorizzata. CI/merge da verificare, E2E fisici differiti. [Specifica](docs/P2-FULL-BACKUP.md).
+
 - 2026-11-04 | feat(p2.4b2b1) | Checkpoint cifrato `.snb` in file nuovo con read-back/verify (SHA256, AES-GCM, owner, confronto integrale, rehearsal SQLite); test isolati su directory temporanea e fault simulati. Non collegato all'app live e non abilita restore/auto-sync; CI/merge da verificare. [Specifica](docs/P2-FULL-BACKUP.md).
 
 - 2026-11-04 | feat(p2.4b2a) | Rehearsal di ripristino .snb isolata in SQLite memoria con verifica integrale e rollback sotto fault. Nessun restore live o deploy; CI/merge da verificare, test fisici rinviati. [Specifica](docs/P2-FULL-BACKUP.md).
@@ -428,3 +430,12 @@ Esempio: `2026-10-21 14:20 CEST | commit abc1234 | Aggiunto modulo promemoria e 
 - [x] Test di integrità, mancata sovrascrittura, I/O fail-closed e account differente.
 - [ ] Durabilità completa dopo crash con fsync directory su tutte le piattaforme; compensazione SharedPreferences, rollback e recovery cross-store.
 - [ ] Integrazione cold-start e policy anti-replay; il receipt vieta restore live e automatic-sync.
+
+
+### P2.4B2B2 — Ripristino e rollback cross-store solo in sandbox
+
+- [x] Decifratura e verifica same-owner di checkpoint corrente e target .snb.
+- [x] Simulazione di sostituzione delle cinque tabelle SQLite e delle preferenze locali.
+- [x] Fault injection in transazione, tra preferenze e dopo commit; ritorno verificato al checkpoint.
+- [ ] Rollback su filesystem persistente/cold-start, recovery dopo crash, mutua esclusione di processi/engine e compensazione SharedPreferences reale.
+- [ ] Preflight anti-replay outbox/cursor, eventuale consenso alla risoluzione conflitti e rilascio controllato di AutoSync; test Android/ZIP→MSIX.

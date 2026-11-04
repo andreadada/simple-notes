@@ -121,3 +121,8 @@ FullBackupRestoreRehearsal decifra e ricostruisce SQLite esclusivamente in un nu
 ## P2.4B2B1 — checkpoint come gate, mai consenso di restore
 
 FullBackupCheckpointPreflight effettua una cattura logica validata dello snapshot corrente, la cifra, chiede a uno store di scrivere un **file nuovo**, lo rilegge e confronta SHA-256, payload e prova SQLite isolata. FileFullBackupCheckpointStore non deve mai sovrascrivere un backup, usare path impliciti del profilo o essere invocato da una UI di restore live. Il receipt non autorizza restore o sync. Mancano ancora robustezza crash/power loss, rollback SharedPreferences, cold-start e anti-replay prima dell'attivazione. [Contratto](docs/P2-FULL-BACKUP.md).
+
+
+## Vincolo P2.4B2B2 — rollback cross-store solo in memoria
+
+`FullBackupRollbackRehearsal` NON è una procedura di restore: il DB è sempre `NativeDatabase.memory()`, le preferenze sono una mappa privata e il rollback è provato prima di chiudere il sandbox. Non sostituire `NativeDatabase.memory()` con `AppDatabase()`, non indirizzare a file del profilo, non riprodurre l'outbox e non aggiungere una UI «Ripristina». Per passare a dati reali restano obbligatori cold-start, checkpoint fsync/recovery, rollback delle preferenze su disco, gestione credenziali, controllo anti-replay e test distruttivi **solo su profili di prova**. [Specifiche](docs/P2-FULL-BACKUP.md).

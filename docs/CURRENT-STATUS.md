@@ -102,3 +102,8 @@ Predisposta una prova di restore **solo in memoria**, separata dall'app installa
 ## P2.4B2B1 — Preflight checkpoint (04/11/2026, branch in sviluppo)
 
 Oltre alla rehearsal SQLite isolata P2.4B2A (PR #29), preparata una fase di salvataggio verificato: file .snb cifrato nuovo e non sovrascrivibile, scrittura temporanea/flush/rename, verifica read-back SHA-256 e AES-GCM, account e payload, rehearsal in memoria e receipt senza permesso di sync. Test su directory temporanee e fault; nessuna scrittura sul dispositivo dell'utente. **Il restore live non esiste ancora**, e rimangono da provare fsync/cold-start, rollback SQLite + preferenze, controllo anti-replay e compatibilità package. Stato main fino a merge verificato: P2.4B1.
+
+
+## P2.4B2B2 — Rehearsal rollback cross-store (04/11/2026, in PR)
+
+Prova incrementale della compensazione delle cinque tabelle SQLite e delle preferenze **solo in sandbox**: due .snb verificati per password/account, transazione SQLite in memoria, preferenze simulate in `Map`, fault injection durante SQL/preferenze/post-commit, ripristino esatto del checkpoint con SHA-256 e verifica Drift. Nessun restore installato, nessuna scrittura a SharedPreferences reali, nessun replay outbox o collegamento ad AutoSync/Coolify. La sicurezza su crash e storage persistente **non è ancora attestata**. PR #29/#30 e questo sottostep restano separati dalle CI e dal merge di `main`, che rimane P2.4B1 finché non verificati.

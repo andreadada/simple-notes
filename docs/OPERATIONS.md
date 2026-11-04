@@ -196,3 +196,8 @@ FullBackupRestoreRehearsal ricostruisce SQLite V8 in un database temporaneo in m
 ## P2.4B2B1 — Checkpoint su directory esplicita, senza restore operativo
 
 Il nuovo FullBackupCheckpointPreflight cifra e verifica uno snapshot locale e prova a ricostruirlo in SQLite temporaneo. La prova di scrittura usa esclusivamente una directory specificata dal chiamante (test: directory temporanea), file .snb nuovo e read-back. Nessun comando Coolify, nessuna azione per l'utente finale e nessuna scrittura dell'archivio installato. Un receipt valido **non consente** ancora restore o replay outbox; fsync directory, compensazione preferenze, rollback reale e controllo versioni cloud sono obbligatori prima dell'attivazione. [Contratto](P2-FULL-BACKUP.md).
+
+
+## P2.4B2B2 — Compensazione isolata
+
+La prova cross-store di P2.4B2B2 è una funzione interna che decifra checkpoint e backup target .snb, simula SQL e preferenze in memoria, inietta errori e **ripristina in sandbox** lo snapshot originario. Non usare dati reali né rimuovere file del client per provarla; il profilo Windows/Android, la VPS e la sync restano immutati. Non equivale a recovery su disco né abilita il restore nell'interfaccia. I test fisici sono differiti. [Contratto](P2-FULL-BACKUP.md).

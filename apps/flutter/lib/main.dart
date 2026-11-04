@@ -939,7 +939,7 @@ Ctrl+/ · Questo elenco'''),
           ),
           .item(
             title: const Text('Confronta backup con questo dispositivo'),
-            prefix: const Icon(Icons.compare_arrows_outlined, size: 18),
+            prefix: const Icon(Icons.compare_arrows, size: 18),
             enabled: !_archiveBusy && cloud.authenticated,
             onPress: () => accountAction('compare-full-backup'),
           ),

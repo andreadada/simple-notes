@@ -23,8 +23,8 @@ void main() {
     await db.upsertList(LocalTaskList(
         id: 'list-1', title: 'Lavoro', createdAt: date));
     await db.upsertTask(LocalTask(
-        id: 'task-1', title: 'Consegna', createdAt: date,
-        listId: 'list-1'));
+        id: 'task-1', title: 'Consegna', dueAt: null,
+        completed: false, createdAt: date, listId: 'list-1'));
     await db.upsertNote(LocalNote(
         id: 'note-1', title: 'Da conservare',
         body: 'Contenuto privato', createdAt: date));

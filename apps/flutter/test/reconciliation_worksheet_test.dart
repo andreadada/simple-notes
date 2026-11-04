@@ -93,6 +93,10 @@ void main() {
     expect(sheet.items.length, 1);
     final item = sheet.items.single;
     expect(item.kind, 'Nota');
+    expect(item.warnings, contains('Modifica locale in attesa'));
+    expect(item.warnings, contains('Modifica del backup in attesa'));
+    expect(item.warnings, contains('Contenuti dispositivo e backup diversi'));
+
     expect(item.title, privateTitle);
     expect(item.opaqueKey, hasLength(64));
     expect(item.opaqueKey, isNot(contains('note-one')));

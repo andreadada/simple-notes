@@ -822,6 +822,11 @@ class _NotesHomeState extends ConsumerState<NotesHome> {
                                     'Dispositivo $device · '
                                     'Backup $backup · Cloud $cloud',
                                   ),
+                                  Text(
+                                    item.warnings.join(' · '),
+                                    maxLines: 2,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
                                   Text(item.choiceLabel),
                                 ],
                               ),

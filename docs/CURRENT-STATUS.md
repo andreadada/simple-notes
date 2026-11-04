@@ -148,3 +148,8 @@ Flutter, backend e Compose continuano a verificare i push su `main`, ma non avvi
 ## P2.4B2F — Confronto locale + verifica cloud opzionale (04/11/2026, sviluppo)
 
 Aggiunti `backup_cloud_safety.dart` e test, e pulsante Forui «Consulta inventario cloud» nel dialog confronto .snb: GET autenticato esplicito su `/sync/inventory`, solo con access token già valido, nessun refresh/post di sincronizzazione. Segnala rischi e divergenze solo con conteggi e non concede restore o replay. API 404/offline significa **non verificato**, non assenza di conflitti. Deriva da PR CI #37 per evitare build duplicate; CI e merge di entrambe vanno verificati. Nessun deploy o accesso in scrittura.
+
+
+## P2.4B2G — Planner dry-run dei conflitti (04/11/2026, PR in sviluppo)
+
+Matrice deterministica di rischi (local/backup/cloud) e quattro strategie *solo ipotetiche*, collegata al dialog Forui dopo il GET dell'inventario. Aggrega assenze, versioni, tombstone, differenze di contenuti e code pendenti senza riportare dati privati; fingerprint SHA-256 lega la bozza a snapshot e inventario. Nessun nuovo endpoint, import, update, sync o autorizzazione live: piano sempre non eseguibile. Test unitari aggiunti, CI/merge non ancora verificati. Branch dipende dalla PR #38; nessun deploy.

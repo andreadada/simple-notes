@@ -122,3 +122,6 @@ Il client include anche il lettore sperimentale di inventario cloud, con validaz
 
 
 **P2.4B2F (sviluppo):** durante «Confronta backup con questo dispositivo» è possibile consultare, su richiesta, l'inventario versioni cloud (GET, senza sincronizzare). Il riepilogo indica solo rischi di conflitti, con privacy e blocco di ogni restore reale. Il backend deve contenere `/sync/inventory`, non ancora necessariamente distribuito. [Specifiche](docs/P2-FULL-BACKUP.md).
+
+
+**P2.4B2G (sviluppo):** nel confronto backup/cloud è disponibile una simulazione dei rischi e di quattro strategie di gestione dei conflitti, senza applicare modifiche. La matrice mostra soltanto conteggi e non sblocca ripristino o sincronizzazione. [Specifica](docs/P2-FULL-BACKUP.md).

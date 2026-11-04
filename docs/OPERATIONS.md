@@ -236,3 +236,8 @@ Le build automatiche sui branch feature sono lanciate tramite `pull_request`; `p
 ## P2.4B2F — Confronto remoto non distruttivo
 
 La voce «Confronta backup con questo dispositivo» continua a funzionare senza rete. Se l'utente preme «Consulta inventario cloud», Simple Notes legge **solo** `GET /api/v1/sync/inventory`; non usa operazioni di sync e non salva la risposta. Un 404 è normale quando il backend non è stato ancora distribuito dopo il merge della PR #34 e lascia il restore disabilitato. L'access token non viene registrato in log o memorizzato nel report. Il confronto non è una prova transazionale del cloud e non consente ripristino di dati reali. Nessun deploy Coolify, migration o reset DB compiuto.
+
+
+## P2.4B2G — Pianificazione dei conflitti (visualizzazione)
+
+Dal confronto `.snb`, la consultazione cloud è esplicita e GET-only. Una volta caricati metadati remoti, il report mostra una matrice aggregata e il pulsante «Simula altra strategia». Le preferenze sono **unicamente scenari esplicativi**; nessuna selezione viene persistita e nessuna richiesta cloud successiva viene inviata dalla simulazione. Un report senza rischi non garantisce correttezza di un restore: server e dispositivo possono cambiare. Non usare fingerprint della bozza o preferenza ipotetica per sbloccare il profilo, rimuovere marker, importare file o riattivare AutoSync. Nessuna modifica reale a VPS/Coolify/DB.

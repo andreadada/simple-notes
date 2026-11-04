@@ -116,3 +116,8 @@ Il file .snb cifrato include `pending_mutations`, IDs originari, versioni remote
 ## P2.4B2F — Inventory GET manuale dal confronto backup
 
 Il client può richiedere volontariamente `/api/v1/sync/inventory` dall'UI di confronto .snb; passa il token della sessione corrente solo se non scaduto, non richiama refresh e non invoca `/sync/apply`. La risposta è metadata-only e confrontata localmente con note, liste, task e outbox dell'archivio; i risultati non sbloccano auto-sync o replay. In caso di errore, 404 o dati mancanti, resta una verifica incompleta. Il ledger non sostituisce un futuro handshake di riconciliazione con revisione attesa e CAS.
+
+
+## P2.4B2G — Bozza read-only e outbox in quarantena
+
+Il confronto a tre vie usa l'unione degli ID e le outbox dei due snapshot, inclusi record assenti dal cloud ledger. Versioni e cancellazioni incompatibili restano conflitti non risolti; quattro strategie possono essere simulate soltanto come *etichette*, non come comandi. Una parità di versioni non rimuove il gate `canResumeAutoSync=false`. Una futura riconciliazione richiede precondizioni di versione remote, deduplica e approvazione esplicita da parte dell'utente prima di qualsiasi invio. Il GET inventory non è una prenotazione di versione.

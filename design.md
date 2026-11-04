@@ -287,3 +287,8 @@ Nel menu account autenticato, «Confronta backup con questo dispositivo» utiliz
 ## UX P2.4B2F — approfondimento cloud opt-in nel dialog backup
 
 Nel dialog Forui di confronto, il report locale è immediatamente disponibile; il pulsante secondario «Consulta inventario cloud» recupera una vista metadata-only dal server esclusivamente quando l'utente lo seleziona. Durante il GET mostra «Consultazione...», poi aggiunge le sole quantità aggregate (revisioni nuove, tombstone differenti, elementi sconosciuti) con avviso di eventuali aggiornamenti cloud. Se offline o 404, il dialog non si chiude e presenta messaggio generico non distruttivo. Un solo pulsante «Chiudi», nessun «Ripristina» né upload. Non esporre nomi, token, ID o dati delle note. [Specifiche](docs/P2-FULL-BACKUP.md).
+
+
+## UX P2.4B2G — simulazione strategie senza side-effect
+
+Dopo la consultazione esplicita dell'inventario cloud, lo stesso dialog Forui mostra un riepilogo numerico dei rischi. Il nuovo pulsante secondario «Simula altra strategia» alterna conservazione del dispositivo, backup, cloud o rimando. Mostrare sempre che si tratta di **una preferenza ipotetica**: nessun pulsante «Applica», «Ripristina» o «Sincronizza», nessun elenco con contenuti riservati. Per ogni strategia permane l'avviso che il cloud può evolvere dopo la lettura e nessun permesso di modifica è rilasciato. [Specifica](docs/P2-FULL-BACKUP.md).

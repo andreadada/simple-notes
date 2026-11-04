@@ -116,3 +116,6 @@ Il client include anche il lettore sperimentale di inventario cloud, con validaz
 
 
 **P2.4B2D (sviluppo):** test di recupero dopo interruzione anche su file SQLite e preferenze simulati su disco, all'interno di una directory temporanea dedicata. Il restore operativo non è disponibile: nessuna scrittura al profilo installato, nessun deploy e nessuna sincronizzazione di backup importati. [Specifica](docs/P2-FULL-BACKUP.md).
+
+
+**P2.4B2E (sviluppo):** nuova azione nel menu account per confrontare un backup `.snb` con i dati del dispositivo e visualizzare differenze senza ripristinarle. Il riepilogo non mostra contenuti privati e non avvia la sincronizzazione. [Specifica](docs/P2-FULL-BACKUP.md).

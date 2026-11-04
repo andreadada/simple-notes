@@ -133,3 +133,8 @@ Aggiunto `GET /sync/inventory` lato Spring Boot: ultimo change per entità e cur
 ## P2.4B2D — Compensazione persistente su directory di test (04/11/2026, PR in sviluppo)
 
 Nuovo `full_backup_disk_recovery_rehearsal.dart`: recovery di SQLite e preferenze su **file temporanei isolati**, checkpoint .snb cifrato letto e autenticato, lock OS consultivo, journal append-only, rollback e verifica post-riavvio. Test di crash dopo SQL, dopo preferenze e durante recovery; fail-closed su password, account, archivio o registro errato. Nessun ripristino o AutoSync su profilo installato. Mancano fsync directory/compatibilità OS e protocollo di ripristino live. CI/merge da verificare.
+
+
+## P2.4B2E — Confronto .snb con dispositivo (04/11/2026, PR in sviluppo)
+
+Nuova azione Forui nel menu account per confrontare localmente backup cifrato e snapshot corrente con sola lettura, senza chiamate cloud. Il report espone solo conteggi di differenze, tombstone, outbox, preferenze, cursor e rischi; non espone note o token e non autorizza mai restore/sync. Test unitari di confronto owner-scoped e casi obsoleti/malformed. CI/merge da verificare. Il restore vero resta disabilitato e non è stato eseguito alcun deploy.

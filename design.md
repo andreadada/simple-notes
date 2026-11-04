@@ -277,3 +277,8 @@ L'inventario cloud per il restore è solo una futura vista informativa dei confl
 ## UX P2.4B2D — nessuna UI di restore live
 
 Una prova di compensazione persistente sui file del sandbox non è un ripristino riuscito dell'app installata. La UI continua a offrire solo creazione e verifica di backup cifrati; nessun pulsante per ripristinare, nessuna cancellazione di marker e nessuna auto-sync al termine dei test. Il flusso futuro richiederà sicurezza verificata per piattaforma, recovery sullo storage installato e dialogo di riconciliazione con il cloud. [Specifica](docs/P2-FULL-BACKUP.md).
+
+
+## UX P2.4B2E — visualizzazione differenze, nessun pulsante distruttivo
+
+Nel menu account autenticato, «Confronta backup con questo dispositivo» utilizza lo stesso flusso password Forui di «Verifica backup». Presenta un dialog scrollabile con differenze aggregate (task/liste/note, cestino, outbox, cursore, preferenze) e unico pulsante «Chiudi». Non mostra contenuti sensibili né pulsanti «Ripristina», «Sostituisci», «Riprova sync» o «Applica»: un confronto locale non garantisce la sicurezza dei dati cloud. [Specifica](docs/P2-FULL-BACKUP.md).

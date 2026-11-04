@@ -202,7 +202,8 @@ class ReconciliationWorksheetBuilder {
           ? '(nome non disponibile)'
           : originalTitle.length > 90
               ? originalTitle.substring(0, 90) : originalTitle;
-      final rawKey = draft.sourceFingerprint + ':' + key;
+      final fingerprint = draft.sourceFingerprint;
+      final rawKey = '$fingerprint:$key';
       final opaqueKey = crypto.sha256.convert(utf8.encode(rawKey)).toString();
       rows.add(DraftConflictItem(
         opaqueKey: opaqueKey,

@@ -26,7 +26,9 @@ void main() {
       await db.upsertNote(LocalNote(
         id: 'note-one', title: 'PRIVATE-NOTE',
         body: 'PRIVATE-NOTE-BODY', createdAt: created));
-      if (deleted) await db.removeNote('note-one');
+      if (deleted) {
+        await db.removeNote('note-one');
+      }
       await db.putSetting('syncCursor', cursor.toString());
       final snapshot = FullBackupSnapshot(
         ownerId: owner, createdAtUtc: created,

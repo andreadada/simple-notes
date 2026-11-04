@@ -194,6 +194,8 @@ Dettagli e matrice: [docs/ui-design-audit.md](docs/ui-design-audit.md). Aggiorna
 
 ## Edit Timespan
 
+- 2026-11-04 | ci(deduplicate-pr-workflows) | Concurrency per PR nei workflow Flutter/backend/Compose/docs; push limitati a main, stop automatico dei soli run obsoleti della stessa PR, nessun test disabilitato. Merge/CI da verificare.
+
 - 2026-11-04 | feat(p2.4b2e) | Confronto .snb autenticato con profilo locale in sola lettura, dialog Forui, conteggi di record/tombstone, outbox, preferenze e cursor; test privacy/same-owner, nessun restore o sync. CI/merge da verificare. [Specifica](docs/P2-FULL-BACKUP.md).
 
 - 2026-11-04 | feat(p2.4b2d) | Rehearsal di recovery persistente su directory OS temporanea (SQLite file + preferenze simulate su JSON), lock consultivo, checkpoint cifrato, fault injection in staging e rollback post-crash; nessun restore live né deploy. CI/merge da verificare. [Specifica](docs/P2-FULL-BACKUP.md).

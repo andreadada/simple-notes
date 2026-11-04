@@ -153,3 +153,6 @@ L'API `/api/v1/sync/inventory` è **solo GET** e deve filtrare ogni query con ow
 ## Vincolo P2.4B2E — confronto .snb sempre sola lettura
 
 `FullBackupCompare.preview` e la voce «Confronta backup con questo dispositivo» **non devono** chiamare `upsert`, `applyRemote`, `bindOwner`, `synchronize`, `/sync/apply`, cancellare marker o sostituire SQLite/SharedPreferences. Confrontare solo snapshot validati e stesso owner dopo decifratura autenticata. Il summary pubblico deve contenere esclusivamente conteggi e indicatori, mai testo note/task, payload outbox, token, password o owner ID. Non interpretare un cursore identico, una outbox vuota o un confronto uguale come consenso al restore o upload. [Specifica](docs/P2-FULL-BACKUP.md).
+
+## Regola CI — non duplicare push e PR
+Le CI Flutter, Backend e Compose devono girare per ogni pull request rilevante e per i push su `main`; non rieseguire lo stesso set di job sul push di un branch con PR. Usare il group `concurrency` per numero PR/ref e cancellare esecuzioni obsolete **solo** sulle PR, mai su `main`. Mantieni obbligatori analyze, widget test, build Windows e Android JDK17/21, integrazione PostgreSQL/Testcontainers, Compose e link Markdown. Prima dei merge verificare sempre l'ultimo HEAD SHA.

@@ -228,3 +228,6 @@ La prova persistente crea una directory nuova sotto `Directory.systemTemp`. Le c
 ## P2.4B2E — Confronto non distruttivo
 
 Su app autenticata, la nuova opzione **«Confronta backup con questo dispositivo»** legge il .snb selezionato e lo confronta con lo stato del profilo corrente. La password non viene persistita; se la verifica fallisce o l'account differisce, non si applica alcuna modifica. Il riepilogo non comprende testo delle note o dati sensibili. Non utilizzare il report come autorizzazione di ripristino: il cloud non è interrogato e la sincronizzazione importata rimane vietata. Nessun intervento su VPS o Coolify. [Specifica](P2-FULL-BACKUP.md).
+
+## Esecuzioni CI senza duplicati
+Le build automatiche sui branch feature sono lanciate tramite `pull_request`; `push` continua a scattare su `main`. Un commit successivo sulla stessa PR interrompe solo la pipeline precedente e avvia quella per il nuovo HEAD. Quando si valuta un merge, controllare lo SHA **corrente** della PR e tutti i job: un vecchio verde non basta. I test non sono stati disabilitati o ridotti. Nessun effetto su Coolify/VPS.

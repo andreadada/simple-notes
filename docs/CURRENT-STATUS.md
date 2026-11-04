@@ -140,3 +140,6 @@ Nuovo `full_backup_disk_recovery_rehearsal.dart`: recovery di SQLite e preferenz
 Nuova azione Forui nel menu account per confrontare localmente backup cifrato e snapshot corrente con sola lettura, senza chiamate cloud. Il report espone solo conteggi di differenze, tombstone, outbox, preferenze, cursor e rischi; non espone note o token e non autorizza mai restore/sync. Test unitari di confronto owner-scoped e casi obsoleti/malformed. CI/merge da verificare. Il restore vero resta disabilitato e non è stato eseguito alcun deploy.
 
 **Checkpoint release:** PR #35 integrata con analisi, widget test, recupero temporaneo Windows e build Android 17/21, Windows verdi. PR #36 aggiunge il confronto locale in sola lettura; ogni nuova modifica è soggetta alla propria CI.
+
+## CI più rapida per PR (04/11/2026, branch indipendente)
+Flutter, backend e Compose continuano a verificare i push su `main`, ma non avviano più una pipeline duplicata per ogni push di un branch già associato a una PR. Tutti e quattro i workflow (anche documentazione) cancellano automaticamente soltanto le esecuzioni obsolete della *stessa PR* quando arrivano commit nuovi. Nessuna riduzione di test, build, controlli di sicurezza o validazione. PR e CI/merge da verificare; nessun deploy.

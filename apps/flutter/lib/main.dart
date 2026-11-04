@@ -624,6 +624,18 @@ class _NotesHomeState extends ConsumerState<NotesHome> {
                 FButton(
                   variant: FButtonVariant.ghost,
                   onPress: cloudBusy ? null : () async {
+                    if (ref.read(cloudAuthProvider).userId != owner ||
+                        !ref.read(cloudAuthProvider).authenticated ||
+                        !ref.read(restoreSyncGateProvider).canSync) {
+                      refresh(() {
+                        worksheet = null;
+                        lastInventory = null;
+                        dryRun = null;
+                        cloudSummary =
+                            'Sessione cambiata: esegui un nuovo confronto.';
+                      });
+                      return;
+                    }
                     if (worksheet != null && dialogContext.mounted) {
                       await _showReconciliationWorksheet(
                         dialogContext,
@@ -802,7 +814,7 @@ class _NotesHomeState extends ConsumerState<NotesHome> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    item.kind + ': ' + item.title,
+                                    '${item.kind}: ${item.title}',
                                     maxLines: 1,
                                     overflow: TextOverflow.ellipsis,
                                   ),

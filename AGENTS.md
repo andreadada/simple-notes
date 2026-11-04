@@ -148,3 +148,8 @@ L'API `/api/v1/sync/inventory` è **solo GET** e deve filtrare ogni query con ow
 ## Vincolo P2.4B2D — file persistenti solo nel temp dei test
 
 `DiskRestoreRehearsal.create()` è una prova distruttiva *solo* su file creati nella propria directory `Directory.systemTemp`. Non aggiungere constructor o path override per puntare a `ApplicationSupport`/SQLite installata, né collegarlo a `main.dart`, CloudSync/AutoSyncHost, SharedPreferences reali, OAuth o UI. Non cancellare automaticamente marker sospetti in un profilo live. Il lock consultivo e il rename dei file non garantiscono da soli durabilità/recupero su Android e Windows; tali gate richiedono prove per piattaforma, lock multiprocesso, fsync della directory e procedure di compensazione cross-store. Nessuna sync di outbox importata senza riconciliazione esplicita. [Specifiche](docs/P2-FULL-BACKUP.md).
+
+
+## Vincolo P2.4B2E — confronto .snb sempre sola lettura
+
+`FullBackupCompare.preview` e la voce «Confronta backup con questo dispositivo» **non devono** chiamare `upsert`, `applyRemote`, `bindOwner`, `synchronize`, `/sync/apply`, cancellare marker o sostituire SQLite/SharedPreferences. Confrontare solo snapshot validati e stesso owner dopo decifratura autenticata. Il summary pubblico deve contenere esclusivamente conteggi e indicatori, mai testo note/task, payload outbox, token, password o owner ID. Non interpretare un cursore identico, una outbox vuota o un confronto uguale come consenso al restore o upload. [Specifica](docs/P2-FULL-BACKUP.md).

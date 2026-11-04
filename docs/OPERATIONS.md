@@ -223,3 +223,8 @@ La PR introduce `GET /api/v1/sync/inventory` senza modifiche DB, dati o nuove mi
 ## P2.4B2D — Recovery su file di test, non procedura utente
 
 La prova persistente crea una directory nuova sotto `Directory.systemTemp`. Le credenziali .snb, le preferenze simulate e SQLite risiedono solo lì; i test eliminano la propria cartella quando terminano. Nessun comando operativo, reset, invocazione Coolify o modifica dati sul PC/dispositivo è richiesto. Non reindirizzare il sandbox al percorso SQLite reale e non usare i suoi metodi per correggere un'installazione in errore; mancano fsync multipiattaforma, backup in caso di crash fisico, rollback SharedPreferences reali e compatibilità installazione. [Contratto](P2-FULL-BACKUP.md).
+
+
+## P2.4B2E — Confronto non distruttivo
+
+Su app autenticata, la nuova opzione **«Confronta backup con questo dispositivo»** legge il .snb selezionato e lo confronta con lo stato del profilo corrente. La password non viene persistita; se la verifica fallisce o l'account differisce, non si applica alcuna modifica. Il riepilogo non comprende testo delle note o dati sensibili. Non utilizzare il report come autorizzazione di ripristino: il cloud non è interrogato e la sincronizzazione importata rimane vietata. Nessun intervento su VPS o Coolify. [Specifica](P2-FULL-BACKUP.md).

@@ -194,6 +194,8 @@ Dettagli e matrice: [docs/ui-design-audit.md](docs/ui-design-audit.md). Aggiorna
 
 ## Edit Timespan
 
+- 2026-11-04 | feat(p2.4b2e) | Confronto .snb autenticato con profilo locale in sola lettura, dialog Forui, conteggi di record/tombstone, outbox, preferenze e cursor; test privacy/same-owner, nessun restore o sync. CI/merge da verificare. [Specifica](docs/P2-FULL-BACKUP.md).
+
 - 2026-11-04 | feat(p2.4b2d) | Rehearsal di recovery persistente su directory OS temporanea (SQLite file + preferenze simulate su JSON), lock consultivo, checkpoint cifrato, fault injection in staging e rollback post-crash; nessun restore live né deploy. CI/merge da verificare. [Specifica](docs/P2-FULL-BACKUP.md).
 
 - 2026-11-04 | feat(p2.4b2c2) | Gate d'avvio nativo pre-DB/OAuth su directory di recovery (fail-closed), interlock AutoSync/CloudSync e scanner cloud solo GET con review anti-replay; test isolati + MockClient e documentazione. Nessun restore live/deploy; CI/merge da verificare. [Specifica](docs/P2-FULL-BACKUP.md).
@@ -477,3 +479,14 @@ Esempio: `2026-10-21 14:20 CEST | commit abc1234 | Aggiunto modulo promemoria e 
 - [x] Verifica da nuovo oggetto/nuovo handle SQLite, including tombstones/outbox, e prove errori fail-closed.
 - [ ] Durabilità fsync directory/crash macchina, coerenza SharedPreferences/SQLite reali, lock multi-engine e pacchetti Windows/MSIX.
 - [ ] Reconciliation remota owner-scoped e consenso esplicito, test E2E sui dispositivi, restore live ancora disabilitato.
+
+
+### P2.4B2E — Anteprima differenze backup locale
+
+- [x] Apertura .snb same-owner e password in dialog Forui, lettura non mutante dello snapshot corrente.
+- [x] Confronto tabelle e tombstone, preferenze, pending mutations e cursor; report senza contenuti personali.
+- [x] Test differenze, backup identico, regressione cursor, account/schemi errati, immutabilità input.
+- [ ] UI di vero restore e sblocco progressivo: **non consentiti** prima di checkpoint durabile, lock esclusivo e riconciliazione col cloud.
+- [ ] E2E fisici Windows/Android e recupero power-loss/ZIP-MSIX ancora rinviati.
+
+- 2026-11-04 | merge(p2.4b2d) | PR #35 integrata su main dopo analisi, test Linux, test recovery su Windows e build Android/Windows; restore utente ancora disabilitato.

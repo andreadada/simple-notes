@@ -94,7 +94,17 @@ class RestoreServerInventoryReader {
           (item['changeId'] as int) > cursor) {
         throw const FormatException('Revisione cloud non valida.');
       }
-      final key = ''; 
+      final entity = item['entityType'] as String;
+      final identifier = item['entityId'] as String;
+      final key = '$entity:$identifier';
+      if (revisions.containsKey(key)) {
+        throw const FormatException('Entità duplicata nell’inventario.');
+      }
+      revisions[key] = RestoreInventoryRevision(
+        version: item['version'] as int,
+        deleted: item['deleted'] as bool,
+        changeId: item['changeId'] as int,
+      );
     }
     return RestoreServerInventory(cursor, Map.unmodifiable(revisions));
   }

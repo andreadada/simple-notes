@@ -206,3 +206,8 @@ La prova cross-store di P2.4B2B2 è una funzione interna che decifra checkpoint 
 ## P2.4B2C1 — Prova cold-start, nessun comando operativo
 
 Il guard crea e rilegge marcatori di fase in una directory temporanea esplicitamente passata dai test. La sola funzione di recovery richiama una simulazione su database SQLite **in memoria**; non tocca il file `simple_notes.sqlite` installato, preferenze dell'utente, credenziali, Coolify o cloud. L'outbox di un backup importato resta sempre in quarantena, inclusi i casi senza modifiche in coda. **Non utilizzare** il prototipo di journal per ripristinare un profilo reale: assenti lock multiprocesso, fsync directory e recovery cross-store persistente. [Specifica](P2-FULL-BACKUP.md).
+
+
+## P2.4B2C3 — API inventory non ancora su VPS
+
+La PR introduce `GET /api/v1/sync/inventory` senza modifiche DB, dati o nuove migrazioni. Nessun comando shell o deploy Coolify richiesto in questa fase; il backend in esecuzione sulla VPS potrebbe restituire 404 finché la release non è stata eseguita. NON usare l'endpoint in un restore reale fino a verifica contratto, autorizzazione deploy e riconciliazione esplicita. [Documentazione](api.md).

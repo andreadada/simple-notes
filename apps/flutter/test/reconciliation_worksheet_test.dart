@@ -24,7 +24,13 @@ void main() {
         id: 'note-one', title: title,
         body: 'PRIVATE-WORKSHEET-BODY', createdAt: stamp,
       ));
-      final rows = await db.fullBackupRows(user);
+      final originalRows = await db.fullBackupRows(user);
+      final rows = <String, List<Map<String, Object?>>>{
+        for (final entry in originalRows.entries)
+          entry.key: [
+            for (final row in entry.value) {...row},
+          ],
+      };
       if (clean) {
         rows['pending_mutations'] = <Map<String, Object?>>[];
         for (final row in rows['note_entries']!) {

@@ -167,7 +167,9 @@ class ReconciliationWorksheetBuilder {
               (backup.row['deleted_at'] != null) != remote.deleted)) {
         review = true;
       }
-      if (!review) continue;
+      if (!review) {
+        continue;
+      }
       final separator = key.indexOf(':');
       final type = key.substring(0, separator);
       final originalTitle =

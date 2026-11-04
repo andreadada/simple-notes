@@ -38,10 +38,9 @@ class FullBackupRestoreRehearsal {
           for (final entry in FullBackupSnapshot.columns.entries) {
             final table = entry.key;
             final names = entry.value;
-            final quoted = names.map((name) => '"' + name + '"').join(', ');
+            final quoted = names.map((name) => '"$name"').join(', ');
             final placeholders = List.filled(names.length, '?').join(', ');
-            final insert = 'INSERT INTO "' + table + '" (' +
-                quoted + ') VALUES (' + placeholders + ')';
+            final insert = 'INSERT INTO "$table" ($quoted) VALUES ($placeholders)';
             for (final row in archive.tables[table]!) {
               await sandbox.customStatement(insert, [
                 for (final column in names) row[column],
@@ -87,7 +86,7 @@ class FullBackupRestoreRehearsal {
     await sandbox.customSelect('SELECT * FROM sync_settings LIMIT 1').get();
     for (final entry in FullBackupSnapshot.columns.entries) {
       final info = await sandbox.customSelect(
-        'PRAGMA table_info("' + entry.key + '")',
+        'PRAGMA table_info("${entry.key}")',
       ).get();
       final names = info.map((row) => row.data['name'] as String).toList();
       if (names.length != entry.value.length ||
@@ -101,7 +100,7 @@ class FullBackupRestoreRehearsal {
   Future<void> _verifyEmptyTables(AppDatabase sandbox) async {
     for (final table in FullBackupSnapshot.columns.keys) {
       final count = await sandbox.customSelect(
-        'SELECT COUNT(*) AS total FROM "' + table + '"',
+        'SELECT COUNT(*) AS total FROM "$table"',
       ).getSingle();
       if (count.read<int>('total') != 0) {
         throw StateError('Rollback del ripristino isolato non riuscito.');

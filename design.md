@@ -260,3 +260,8 @@ Un checkpoint verificato con read-back non abilita da solo un'azione di ripristi
 ## Gate UX P2.4B2B2 — nessun restore live
 
 La compensazione cross-store testata in sandbox non giustifica una voce «Ripristina»: la UI resta in sola creazione/verifica .snb. Il flusso definitivo deve essere disegnato solamente dopo implementazione/test di cold-start, checkpoint persistente recuperabile, rollback reale, isolamento account e protezione anti-replay. [Specifica](docs/P2-FULL-BACKUP.md).
+
+
+## UX P2.4B2C1 — recovery e cloud non autorizzati dalla simulazione
+
+Il journal di prova e il report anti-replay non devono aggiungere nuovi comandi o stati di successo nel client. Il ripristino dell'utente richiederà un blocco reale dell'AutoSync prima di qualsiasi apertura/trasferimento SQLite, una schermata di recovery visibile e possibilità di scegliere come conciliare i dati del backup con quelli più nuovi nel cloud. Fino ad allora nessun tasto «Ripristina» e nessun auto-upload. [Specifica](docs/P2-FULL-BACKUP.md).

@@ -105,9 +105,9 @@ class DiskRestoreRehearsal {
       for (final entry in FullBackupSnapshot.columns.entries) {
         final table = entry.key;
         final names = entry.value;
-        final sql = 'INSERT INTO "$table" (' +
-            names.map((name) => '"$name"').join(', ') +
-            ') VALUES (' + List.filled(names.length, '?').join(', ') + ')';
+        final quoted = names.map((name) => '"$name"').join(', ');
+        final placeholders = List.filled(names.length, '?').join(', ');
+        final sql = 'INSERT INTO "$table" ($quoted) VALUES ($placeholders)';
         for (final row in backup.tables[table]!) {
           await db.customStatement(sql, [
             for (final name in names) row[name],

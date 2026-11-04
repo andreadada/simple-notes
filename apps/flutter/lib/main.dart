@@ -563,14 +563,18 @@ class _NotesHomeState extends ConsumerState<NotesHome> {
         const XTypeGroup(label: 'Simple Notes Backup',
           extensions: ['snb']),
       ]);
-      if (file == null) return;
+      if (file == null) { return; }
       if (await file.length() > FullBackupCodec.maxFileBytes) {
         throw const FormatException('File di backup troppo grande.');
       }
-      if (!mounted || ref.read(cloudAuthProvider).userId != owner) return;
+      if (!mounted || ref.read(cloudAuthProvider).userId != owner) {
+        return;
+      }
       final password = await _backupPassword(create: false);
       if (password == null || !mounted ||
-          ref.read(cloudAuthProvider).userId != owner) return;
+          ref.read(cloudAuthProvider).userId != owner) {
+        return;
+      }
       final backup = await const FullBackupCodec().inspect(
         await file.readAsBytes(),
         password: password,
@@ -581,7 +585,9 @@ class _NotesHomeState extends ConsumerState<NotesHome> {
         preferences: await SharedPreferences.getInstance(),
         ownerId: owner,
       );
-      if (!mounted || ref.read(cloudAuthProvider).userId != owner) return;
+      if (!mounted || ref.read(cloudAuthProvider).userId != owner) {
+        return;
+      }
       final comparison = const FullBackupCompare().preview(
         current: current, backup: backup,
       );

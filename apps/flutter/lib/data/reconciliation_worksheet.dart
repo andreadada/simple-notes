@@ -19,6 +19,7 @@ class DraftConflictItem {
     required this.opaqueKey,
     required this.kind,
     required this.title,
+    required this.warnings,
     required this.onDevice,
     required this.inBackup,
     required this.observedInCloud,
@@ -28,6 +29,7 @@ class DraftConflictItem {
   final String opaqueKey;
   final String kind;
   final String title;
+  final List<String> warnings;
   final bool onDevice;
   final bool inBackup;
   final bool observedInCloud;
@@ -50,6 +52,7 @@ class DraftConflictItem {
   DraftConflictItem withChoice(DraftConflictChoice newValue) =>
       DraftConflictItem(
         opaqueKey: opaqueKey, kind: kind, title: title,
+        warnings: warnings,
         onDevice: onDevice, inBackup: inBackup,
         observedInCloud: observedInCloud, choice: newValue,
       );
@@ -144,8 +147,22 @@ class ReconciliationWorksheetBuilder {
       final device = deviceRows[key];
       final backup = backupRows[key];
       final remote = cloud.revisions[key];
-      var review = device == null || backup == null || remote == null ||
-          localQueue.contains(key) || importedQueue.contains(key);
+      final reasons = <String>[];
+      if (device == null) {
+        reasons.add('Non presente sul dispositivo');
+      }
+      if (backup == null) {
+        reasons.add('Non presente nel backup');
+      }
+      if (remote == null) {
+        reasons.add('Non osservato nel registro cloud');
+      }
+      if (localQueue.contains(key)) {
+        reasons.add('Modifica locale in attesa');
+      }
+      if (importedQueue.contains(key)) {
+        reasons.add('Modifica del backup in attesa');
+      }
       if (device != null && backup != null) {
         final before = jsonEncode([
           for (final col in device.columns) device.row[col],
@@ -154,22 +171,29 @@ class ReconciliationWorksheetBuilder {
           for (final col in backup.columns) backup.row[col],
         ]);
         if (before != after) {
-          review = true;
+          reasons.add('Contenuti dispositivo e backup diversi');
         }
       }
-      if (remote != null && device != null &&
-          (device.row['remote_version'] != remote.version ||
-              (device.row['deleted_at'] != null) != remote.deleted)) {
-        review = true;
+      if (remote != null && device != null) {
+        if (device.row['remote_version'] != remote.version) {
+          reasons.add('Versione cloud e dispositivo differente');
+        }
+        if ((device.row['deleted_at'] != null) != remote.deleted) {
+          reasons.add('Cancellazione dispositivo e cloud discordante');
+        }
       }
-      if (remote != null && backup != null &&
-          (backup.row['remote_version'] != remote.version ||
-              (backup.row['deleted_at'] != null) != remote.deleted)) {
-        review = true;
+      if (remote != null && backup != null) {
+        if (backup.row['remote_version'] != remote.version) {
+          reasons.add('Versione cloud e backup differente');
+        }
+        if ((backup.row['deleted_at'] != null) != remote.deleted) {
+          reasons.add('Cancellazione backup e cloud discordante');
+        }
       }
-      if (!review) {
+      if (reasons.isEmpty) {
         continue;
       }
+
       final separator = key.indexOf(':');
       final type = key.substring(0, separator);
       final originalTitle =
@@ -188,6 +212,7 @@ class ReconciliationWorksheetBuilder {
           _ => 'Lista',
         },
         title: title,
+        warnings: List.unmodifiable(reasons),
         onDevice: device != null,
         inBackup: backup != null,
         observedInCloud: remote != null,

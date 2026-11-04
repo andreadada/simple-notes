@@ -64,3 +64,10 @@ Prima di abilitare un restore bisogna costruire e testare:
 Prossima implementazione: **P2.4B2**. Il backup del PostgreSQL server (dump + restore isolato) è **separato** da questo backup locale; nessun comando VPS/Coolify viene eseguito per P2.4B1.
 
 [Stato](CURRENT-STATUS.md) · [Roadmap](../project.md) · [Handoff](HANDOFF.md) · [Collaudo rinviato](DEVICE-ACCEPTANCE-DEFERRED.md) · [JSON portabile](P2-PORTABLE-ARCHIVE.md).
+
+
+## P2.4B2A — Primo sottostep: rehearsal isolata (branch di sviluppo)
+
+Il primo incremento di P2.4B2 crea un controllo effettivo di ripristinabilità senza toccare l'installazione. FullBackupRestoreRehearsal autentica il file .snb (password e account tramite il codec P2.4B1), ricostruisce tutte le cinque tabelle in un nuovo SQLite in memoria, confronta gli stessi valori grezzi in ordine canonico tramite SHA-256 e verifica anche la decodifica dei modelli Drift. Un'interruzione iniettata tra tabelle verifica il rollback atomico e un retry con un nuovo sandbox. L'outbox e il cursor vengono preservati soltanto nel sandbox, mai riprodotti verso il cloud.
+
+**Restano obbligatori prima del restore operativo:** cold-start senza AutoSyncHost, checkpoint indipendente e verificato dell'installazione, rollback SQLite e SharedPreferences, controllo anti-replay rispetto al server, test di interruzione e di migrazione pacchetto Windows ZIP/MSIX e firma Android. In questa fase nessuna preferenza, SQLite installato, sessione, VPS o dato cloud viene scritto; non esiste un nuovo pulsante per ripristinare. Il report dichiara sempre automaticSyncAuthorized=false. Test fisici rinviati su richiesta dell'utente.

@@ -6,7 +6,7 @@
 
 **Obiettivo:** Windows 11 + Android offline-first, Google OAuth, Flutter/Forui/Drift + Spring Boot/PostgreSQL su Coolify. Regole UX in [design.md](design.md); deploy sicuro in [P1-RELEASE-BATCH.md](docs/P1-RELEASE-BATCH.md). Le checklist sotto includono traguardi storici: `[x]` significa **codice verificato nella CI o prova specifica**, non distribuzione sul VPS.
 
-## Gate corrente (CI P2.4A superata; test fisici differiti)
+## Gate corrente (CI P2.4B1 superata; test fisici differiti)
 
 - [x] P1.7 Android con scheduler inexact, ledger, opt-in e CI verde (PR #6). [ ] Prova fisica Android app chiusa/reboot e controllo permessi; [x] codice packaging MSIX + promemoria Windows integrato (PR #7, CI verde); [ ] test fisici MSIX/identità/dati e firma pubblica.
 - [x] Flyway V10 verificata nella VPS reale il 03/11/2026, 0 migrazioni fallite; [ ] health/capability strict ancora aperti.
@@ -193,6 +193,8 @@ Dettagli e matrice: [docs/ui-design-audit.md](docs/ui-design-audit.md). Aggiorna
 - Tutti i nuovi moduli devono avere error states, migrazioni e test minimi.
 
 ## Edit Timespan
+
+- 2026-11-04 | feat(p2.4b2a) | Rehearsal di ripristino .snb isolata in SQLite memoria con verifica integrale e rollback sotto fault. Nessun restore live o deploy; CI/merge da verificare, test fisici rinviati. [Specifica](docs/P2-FULL-BACKUP.md).
 Formato: `AAAA-MM-GG HH:mm TZ | commit <sha> | commento sintetico` (data/ora del commit locale al progetto; hash verificato).
 Esempio: `2026-10-21 14:20 CEST | commit abc1234 | Aggiunto modulo promemoria e test`
 - 2026-10-21 14:18 CEST | commit 5cadacf | Inizializzazione README; pianificazione P0–P3.
@@ -409,3 +411,10 @@ Esempio: `2026-10-21 14:20 CEST | commit abc1234 | Aggiunto modulo promemoria e 
 - 2026-11-03 | feat(p2.4b1) | Backup locale cifrato e verifica read-only, nessun restore live né deploy/operazioni database esterne. Flutter `0.31.0+33` integrata in main.
 
 - 2026-11-03 | merge(p2.4b1) | PR #28, commit `95741a20`, Flutter `0.31.0+33`; Flutter CI #41636993011: **204 test + Windows/Android verdi**. Markdown #41636993004 verde. Nessun restore o test fisico eseguito; P2.4B2 resta aperta e richiede avvio isolato, snapshot preventivo, anti-replay outbox e rollback.
+
+
+## P2.4B2 — Ripristino protetto (sottostep 04/11/2026)
+
+- [x] P2.4B2A, rehearsal isolata: verifica AES-GCM/owner, ricostruzione delle cinque tabelle in SQLite temporaneo, prova uguaglianza dati/decodifica Drift, fault injection e rollback; senza scritture sul profilo corrente.
+- [ ] P2.4B2B, checkpoint: copia verificata del profilo attuale, staging/compensazione SharedPreferences, rollback cross-store e prove di crash.
+- [ ] P2.4B2C, cold-start/anti-replay: blocco sync/sessione/richieste concorrenti, controllo cloud/outbox/cursor, compatibilità ZIP/MSIX e Android, UI Forui solo dopo gate.

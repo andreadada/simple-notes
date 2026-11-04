@@ -111,3 +111,8 @@ CSV si genera soltanto dal locale `AppDatabase.snapshot()` dopo scelta esplicita
 Il formato .snb deve essere cifrato obbligatoriamente (AES-256-GCM, PBKDF2 e salt/nonce casuali) e includere tutte le tabelle SQLite e preferenze del solo owner. Mai includere JWT/refresh token, file di secure storage, log di password o dati di altri account. Rifiutare schema/tabelle/colonne ignote invece di produrre backup incompleti. In P2.4B1 **solo export + inspect read-only**: nessun pulsante di restore che sovrascriva SQLite, SharedPreferences o sync outbox. P2.4B2 dovrà operare a cold-start, con stop sync, checkpoint verificato e rollback prima di consentire restore. Test fisici rinviati dall'utente, ma CI obbligatoria. [Specifiche](docs/P2-FULL-BACKUP.md).
 
 **Stato ufficiale (03/11/2026):** P2.4B1 PR #28 integrata su `main`, Flutter `0.31.0+33`, CI 204 test e build native PASS. Il ripristino P2.4B2 **non è implementato**: mantenere il blocco fino a cold-start, anti-replay, checkpoint verificato e rollback. [Specifica](docs/P2-FULL-BACKUP.md).
+
+
+## Gate P2.4B2A — solo ripristino isolato
+
+FullBackupRestoreRehearsal decifra e ricostruisce SQLite esclusivamente in un nuovo NativeDatabase.memory(). Mai usare la stessa procedura su AppDatabase persistente né aggiungere una voce «Ripristina» prima di cold-start isolato, checkpoint recuperabile, rollback SQLite+preferenze e strategia anti-replay provati. Un report di rehearsal non autorizza sync, re-invio della outbox o interventi VPS. [Contratto](docs/P2-FULL-BACKUP.md).

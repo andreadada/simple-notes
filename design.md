@@ -245,3 +245,8 @@ Una voce menu **Esporta CSV** apre il dialog Forui con scelta Attività/Note/Lis
 ## UI P2.4B1 — Password Forui, nessun finto ripristino
 
 Il menu account offre Crea backup cifrato e Verifica backup. Dialog Forui con campo password nascosto e conferma password in creazione; file Windows Save As e Android share sheet, nessuna password memorizzata. Preview mostra solo data e conteggi, non contenuto o credenziali, e dichiara «nessun dato ripristinato». Non aggiungere «Ripristina» fino alla fase P2.4B2 e ai gate di sicurezza. [Specifica](docs/P2-FULL-BACKUP.md).
+
+
+## Gate UX P2.4B2A
+
+Nessuna voce di ripristino è aggiunta all'interfaccia per la sola rehearsal in memoria. Il menu conserva «Crea backup cifrato» e «Verifica backup»; la verifica non modifica dati. Per una futura azione «Ripristina» serviranno spiegazione delle conseguenze, checkpoint/rollback, modalità cold-start e divieto di replay automatico dell'outbox, con componenti Forui e conferma esplicita. [Specifica](docs/P2-FULL-BACKUP.md).

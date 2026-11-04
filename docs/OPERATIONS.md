@@ -2,7 +2,7 @@
 
 > **Stato operativo 03/11/2026:** P2.4B1 backup cifrato e verifica read-only integrati su `main` ([PR #28](https://github.com/andreadada/simple-notes/pull/28), [commit `95741a20`](https://github.com/andreadada/simple-notes/commit/95741a2013246296dd3e278ec09ae8e72f14a836), Flutter `0.31.0+33`). [Flutter CI #41636993011](https://github.com/andreadada/simple-notes/actions/runs/41636993011) **success**: 204 test, Windows EXE/MSIX, Android JDK17/21; [Markdown #41636993004](https://github.com/andreadada/simple-notes/actions/runs/41636993004) **success**. VPS PostgreSQL 17/Flyway V10 attestata il 03/11; diagnostica Windows positiva. **Restore scrivente P2.4B2, API strict e test fisici Windows↔Android NON completati**; nessun reset, restore o deploy eseguito dall'assistente. [Stato](CURRENT-STATUS.md) · [Backup](P2-FULL-BACKUP.md) · [Collaudo rinviato](DEVICE-ACCEPTANCE-DEFERRED.md).
 
-**Fonte operativa** per il checkout locale Windows, CI, Coolify, Android e Windows ZIP/MSIX. **Baseline `main` verificata al 31/10/2026:** P2.2 ICS (Flutter `0.25.0+27`) integrata con CI verde. **Incremento P2.3A integrato:** PR #22 su `main`, Flutter `0.26.0+28`, CI verde (166 test, Windows/Android/Markdown); hardware ancora da collaudare. Backend repository Flyway V10 / Drift V8, **ultima VPS confermata Flyway V8**; release e collaudo device non attestati. Leggere sempre [CURRENT-STATUS.md](CURRENT-STATUS.md).
+**Fonte operativa** per il checkout locale Windows, CI, Coolify, Android e Windows ZIP/MSIX. **Baseline `main` verificata al 31/10/2026:** P2.2 ICS (Flutter `0.25.0+27`) integrata con CI verde. **Incremento P2.3A integrato:** PR #22 su `main`, Flutter `0.26.0+28`, CI verde (166 test, Windows/Android/Markdown); hardware ancora da collaudare. Backend repository Flyway V10 / Drift V8, **VPS Flyway V10 verificata il 03/11/2026**; release e collaudo device non attestati. Leggere sempre [CURRENT-STATUS.md](CURRENT-STATUS.md).
 
 ## 0. Regola fondamentale
 
@@ -86,7 +86,7 @@ docker ps --format '{{.ID}} {{.Names}} {{.Image}}' | grep gs0yzfz42hpriybaxcfbtj
 DB_CONTAINER=<ID_DB_REALE> EXPECTED_POSTGRES_DB=simplenotes bash infra/t4-inspect-db.sh
 ```
 
-L'ultimo schema **confermato dal proprietario** è Flyway V8; `main` contiene V9 e V10 ma **questo non è una prova di applicazione reale**. Prima dell'aggiornamento conservare backup e piano di ripristino appropriati; l'ultimo restore isolato attestato è storico e non protegge automaticamente nuovi dati. Solo il proprietario esegue **Redeploy** sulla stessa risorsa esistente. In caso di errore della migration, STOP senza `flyway repair` o cancellazione volumi.
+Lo schema VPS **confermato dal proprietario il 03/11/2026** è Flyway V10. Non è necessario ripetere una migrazione o un deploy solo per adeguare un riferimento storico del runbook. Prima dell'aggiornamento conservare backup e piano di ripristino appropriati; l'ultimo restore isolato attestato è storico e non protegge automaticamente nuovi dati. Solo il proprietario esegue **Redeploy** sulla stessa risorsa esistente. In caso di errore della migration, STOP senza `flyway repair` o cancellazione volumi.
 
 Dopo il redeploy, eseguire le verifiche read-only:
 
@@ -186,3 +186,8 @@ P2.4A: esportazione CSV locale per attività, note, liste; collaudo native save/
 Nel menu account si può creare il .snb con password Forui e verificarlo nello stesso account senza modificare i dati. Questa preview autentica il file ma **non è un restore**. Non provare sostituzioni del file SQLite, import di pending outbox, reset di secure storage o reinstallazione: la fase P2.4B2 richiede checkpoint verificato, cold-start, sync sospesa e rollback. PostgreSQL VPS Flyway V10 è già stato attestato; nessun deploy server è necessario per P2.4B1. Prove save/share su dispositivi reali restano rinviate. [Runbook](P2-FULL-BACKUP.md).
 
 **Stato codice P2.4B1:** PR #28 merged su `main`, Flutter `0.31.0+33`, CI 204 test e build Windows/Android verdi. Nessun backup/restore sui dati reali eseguito in questo incremento; **funzione di restore ancora assente** (P2.4B2). [Specifica](P2-FULL-BACKUP.md).
+
+
+## P2.4B2A — Rehearsal senza impatto operativo
+
+FullBackupRestoreRehearsal ricostruisce SQLite V8 in un database temporaneo in memoria, dopo la verifica .snb. Non apre il SQLite installato, non modifica preferenze, non contatta Coolify o AutoSync e non espone un pulsante di restore. I test automatici coprono rollback e retry dopo fault. Questo risultato **non** autorizza il replay delle operazioni pendenti: il gate cold-start, checkpoint e anti-replay resta aperto. [Specifica](P2-FULL-BACKUP.md).

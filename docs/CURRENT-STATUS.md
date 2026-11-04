@@ -92,3 +92,8 @@ PR #27 merged, Flutter `0.30.0+32`, CSV separati attività/note attive/liste, UT
 ## P2.4B1 — Backup cifrato (main, PR #28, 03/11/2026)
 
 PR #28 merged su `main`, Flutter `0.31.0+33`: archivio .snb cifrato AES-256-GCM/PBKDF2, snapshot logico SQLite V8 completo di tombstone/outbox/sync settings e preferenze locali owner-scoped. Menu account Forui Crea backup/Verifica backup, validazione password/integrità/owner/schema **senza scrivere nulla**. **Non esiste ancora un ripristino effettivo**: P2.4B2 richiederà cold-start, blocco sync, checkpoint e rollback. CI Flutter (204 test e build native) e Markdown verdi; le verifiche fisiche restano differite, VPS Flyway V10 già verificata. [Specifica](P2-FULL-BACKUP.md).
+
+
+## P2.4B2A — Avanzamento 04/11/2026 (branch, non ancora certificato main)
+
+Predisposta una prova di restore **solo in memoria**, separata dall'app installata: preflight .snb password/account, cinque tabelle SQLite V8 scritte in una transazione, confronto integrale dei valori grezzi e verifica decodifica Drift; test di errore iniettato, rollback e retry. Non modifica database installato, SharedPreferences, credenziali o server, e NON abilita la sync. Fino a merge e CI finali lo stato ufficiale main resta P2.4B1. Il vero P2.4B2 richiede ancora checkpoint reale, cold-start e anti-replay. [Specifica](P2-FULL-BACKUP.md).

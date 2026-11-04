@@ -161,3 +161,8 @@ Le CI Flutter, Backend e Compose devono girare per ogni pull request rilevante e
 ## Vincolo P2.4B2F — inventario cloud consultabile solo su azione utente
 
 Il pulsante «Consulta inventario cloud» deve essere **opt-in**, non chiamato da startup, timer, auto-sync o selezione del backup. Usare solo GET `/sync/inventory` e token già valido della stessa sessione owner, rifiutare 404/risposte malformate e non loggare token, note, ID entità o payload. Un risultato rassicurante non è autorizzazione a ripristinare, cancellare o rieseguire l'outbox. La UI mostra soltanto conteggi e mantiene `canRestoreLive`, `canResumeAutoSync` e `canApplyImportedOperations` sempre false. Nessun deploy VPS/Coolify nel workflow di sviluppo. [Specifiche](docs/P2-FULL-BACKUP.md).
+
+
+## Vincolo P2.4B2G — nessuna autorizzazione dal dry-run
+
+`ReconciliationDryRunPlanner` deve essere **puro e read-only**. Tutte le strategie (rimanda / preferisci locale / backup / cloud) sono ipotesi di presentazione, senza operazioni applicabili o salvataggio delle scelte. Il report mostra soltanto numeri e avvisi: vietati ID entità, note, titoli, payload, owner ID e token. Il fingerprint SHA-256 locale non è firma, consenso o precondizione server e non permette restore. Anche quando `entitiesNeedingReview == 0`, `canRestoreLive`, `canWriteToCloud`, `canReplayImportedOutbox`, `canResumeAutoSync` e `isExecutable` devono restare false. L'outbox importata resta sempre in quarantena; nessun deploy o modifica dati reali. [Specifica](docs/P2-FULL-BACKUP.md).

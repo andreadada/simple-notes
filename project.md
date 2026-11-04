@@ -194,6 +194,8 @@ Dettagli e matrice: [docs/ui-design-audit.md](docs/ui-design-audit.md). Aggiorna
 
 ## Edit Timespan
 
+- 2026-11-04 | feat(p2.4b2g) | Matrice dry-run dei rischi locale/backup/cloud (versioni, tombstone, assenze, outbox), quattro preferenze Forui ipotetiche, fingerprint bozza e test privacy/owner/fail-closed. Nessun restore o replay; PR e CI da verificare. [Specifica](docs/P2-FULL-BACKUP.md).
+
 - 2026-11-04 | feat(p2.4b2f) | Confronto backup locale/cloud in sola lettura con azione Forui facoltativa e GET inventory JWT-scoped, riepilogo anonimo dei rischi, test privacy/invalidità; restore/replay sempre disabilitati. PR impilata su CI #37, CI/merge da verificare. [Specifica](docs/P2-FULL-BACKUP.md).
 
 - 2026-11-04 | ci(deduplicate-pr-workflows) | Concurrency per PR nei workflow Flutter/backend/Compose/docs; push limitati a main, stop automatico dei soli run obsoleti della stessa PR, nessun test disabilitato. Merge/CI da verificare.
@@ -503,3 +505,12 @@ Esempio: `2026-10-21 14:20 CEST | commit abc1234 | Aggiunto modulo promemoria e 
 - [x] Test scenari remote-only, tombstone, owner differente, no secrets e snapshot invalidi.
 - [ ] Reconciliation remota transazionale con precondizioni, decisione umana sui conflitti, eventuale restore live *non autorizzato*.
 - [ ] Test fisici e deploy backend/Coolify, da eseguire solo a gate successivi e autorizzazione separata.
+
+
+### P2.4B2G — Matrice di riconciliazione (non eseguibile)
+
+- [x] Classificazione deterministica di assenze, conflitti tombstone/versioni, differenze e code pendenti su tre sorgenti.
+- [x] Quattro preferenze ipotetiche nel dialog Forui e report esclusivamente aggregato, nessun consenso persistito.
+- [x] Fingerprint di invalidazione bozza e test privacy, owner differente, versioni impossibili, outbox, immutabilità.
+- [ ] Reconciliation con precondizioni atomiche lato server, deduplica, selezione dettagliata per conflitto e refresh stato cloud.
+- [ ] Recovery live con lock/durabilità Windows/Android, E2E fisici e successivo deploy backend autorizzato.

@@ -8,6 +8,7 @@ import '../auth/cloud_auth.dart';
 import '../data/local_store.dart';
 import '../ui/reminder_controller.dart';
 import 'cloud_sync.dart';
+import 'restore_sync_gate.dart';
 
 /// Foreground-only auto-sync: offline edits remain in the persistent SQLite
 /// outbox. This widget never claims to sync while Android has closed the app.
@@ -66,7 +67,8 @@ class _AutoSyncHostState extends ConsumerState<AutoSyncHost>
   // the refresh token but initially fails. Recover without requiring the user
   // to press Google Login again after the connection comes back.
   void _retryOfflineSession() {
-    if (!mounted || !_active || _restoringSession) return;
+    if (!mounted || !_active || _restoringSession ||
+        !ref.read(restoreSyncGateProvider).canSync) { return; }
     final session = ref.read(cloudAuthProvider);
     if (session.authenticated ||
         !(session.error?.startsWith('Offline:') == true ||
@@ -80,7 +82,8 @@ class _AutoSyncHostState extends ConsumerState<AutoSyncHost>
   }
 
   void _schedule({Duration delay = _editDebounce}) {
-    if (!mounted || !_active) return;
+    if (!mounted || !_active ||
+        !ref.read(restoreSyncGateProvider).canSync) { return; }
     final auth = ref.read(cloudAuthProvider);
     if (!auth.authenticated || auth.userId == null) return;
     if (ref.read(cloudSyncProvider).conflict ||
@@ -99,7 +102,8 @@ class _AutoSyncHostState extends ConsumerState<AutoSyncHost>
   }
 
   Future<void> _run() async {
-    if (!mounted || !_active) return;
+    if (!mounted || !_active ||
+        !ref.read(restoreSyncGateProvider).canSync) { return; }
     if (_inFlight) {
       _queued = true;
       return;

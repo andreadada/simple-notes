@@ -43,11 +43,32 @@ import 'data/app_database.dart';
 import 'auth/cloud_auth.dart';
 import 'sync/cloud_sync.dart';
 import 'sync/auto_sync.dart';
+import 'sync/restore_sync_gate.dart';
+import 'data/restore_startup_probe_io.dart'
+    if (dart.library.html) 'data/restore_startup_probe_stub.dart'
+    as restore_probe;
 
 Future<void> main(List<String> args) async {
   WidgetsFlutterBinding.ensureInitialized();
   // Detached engines MUST NOT initialize SQLite, OAuth or sync.
   if (await StickyDesktop.launchSubwindowIfNeeded()) return;
+  // Inspect recovery marker BEFORE SQLite migration, OAuth or auto-sync.
+  // If present, show a static offline safety screen without opening any
+  // installed profile or attempting to recover automatically.
+  final restoreGate = await restore_probe.probeRestoreStartup();
+  if (restoreGate.blocked) {
+    runApp(const MaterialApp(
+      home: Scaffold(
+        body: SafeArea(child: Center(child: Padding(
+          padding: EdgeInsets.all(24),
+          child: Text('Ripristino sospeso: il profilo è protetto. '
+              'La sincronizzazione e l’accesso ai dati sono bloccati '
+              'fino a una procedura di recupero verificata.'),
+        ))),
+      ),
+    ));
+    return;
+  }
   // Detached sticky engines return above and never initialize the tray.
   // Native plugin failure leaves the standard close behavior in place.
   await WindowsTray.initialize();
@@ -57,6 +78,7 @@ Future<void> main(List<String> args) async {
   final snapshot = await database.snapshot();
   runApp(ProviderScope(
     overrides: [
+      restoreSyncGateProvider.overrideWithValue(restoreGate),
       databaseProvider.overrideWithValue(database),
       initialDataProvider.overrideWithValue(snapshot),
     ],

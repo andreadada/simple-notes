@@ -265,3 +265,10 @@ La compensazione cross-store testata in sandbox non giustifica una voce «Ripris
 ## UX P2.4B2C1 — recovery e cloud non autorizzati dalla simulazione
 
 Il journal di prova e il report anti-replay non devono aggiungere nuovi comandi o stati di successo nel client. Il ripristino dell'utente richiederà un blocco reale dell'AutoSync prima di qualsiasi apertura/trasferimento SQLite, una schermata di recovery visibile e possibilità di scegliere come conciliare i dati del backup con quelli più nuovi nel cloud. Fino ad allora nessun tasto «Ripristina» e nessun auto-upload. [Specifica](docs/P2-FULL-BACKUP.md).
+
+
+## UX P2.4B2C2 — schermata statica di protezione
+
+Se al cold-start compare una directory di recovery, la UI mostra soltanto un avviso di profilo sospeso e non monta NotesHome, Auth o AutoSync. È una scelta intenzionalmente fail-closed, non ancora una UI di ripristino. L'esito del preflight cloud GET e i conflitti osservati non possono essere presentati come «ripristino riuscito» né abilitare «sincronizza»: prima sono necessari ripristino persistente, sblocco verificabile e decisione dell'utente. [Specifica](docs/P2-FULL-BACKUP.md).
+
+L'inventario cloud per il restore è solo una futura vista informativa dei conflitti, non un'azione automatica. L'utente dovrà confermare ogni politica di riconciliazione quando il ripristino reale sarà disponibile.

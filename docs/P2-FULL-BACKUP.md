@@ -100,6 +100,30 @@ Prima della prova di recupero devono corrispondere SHA-256 dei due file .snb, ac
 **Rimangono gate bloccanti:** non è integrato con startup Flutter, CloudSync/AutoSyncHost, database reali o SharedPreferences; nessun meccanismo di consenso alla riconciliazione. Il registro su filesystem è un *prototipo single-writer*, non un protocollo di produzione: senza lock multiprocesso e fsync della directory non garantisce crash/power-loss safety. Non prova recovery cross-store persistente; test locali su cartelle temporanee (nessun dato utente). Prima di abilitare restore reale servono orchestratore cold-start esclusivo/offline, WAL e file lock, checkpoint con durabilità verificata, recovery del DB e preferenze su disco, snapshot cloud aggiornato e scelta dell'utente per i conflitti. Test E2E fisici rinviati.
 
 
+## P2.4B2C2 — Interlock di avvio e osservazione cloud read-only (04/11/2026)
+
+### Blocco di avvio **reale, conservativo**
+
+`main.dart` ora invoca `probeRestoreStartup()` **prima** di migrazione SQLite, apertura archivio e avvio di Google OAuth/AutoSync. Su Windows/Android il probe legge esclusivamente lo stato filesystem in `<ApplicationSupport>/simple-notes-recovery-v1`, senza modificare file: percorso assente = avvio normale; presenza di directory (anche vuota), file, link simbolico, marker incoerenti o errore I/O = schermata statica di recovery protetto, senza aprire il profilo. Nessun restore reale crea attualmente tale directory: installazioni esistenti non dovrebbero risentirne. Su web, che non supporta il restore SQLite nativo, si usa uno stub esplicito, senza probe filesystem.
+
+Lo stato `RestoreSyncGate` viene iniettato nel `ProviderScope` prima di inizializzare CloudSync. `AutoSyncHost` controlla il gate sia nel pianificatore sia nella routine di invio; `CloudSync.synchronize()` rifiuta le operazioni **prima** di bind account/database e verifica ancora il gate mentre processa la coda. `resolveConflict` rifiuta l'esecuzione quando il gate è bloccato. Per compatibilità con test in-memory, un ProviderContainer fuori dal bootstrap usa il default ready: è **obbligatorio** sovrascrivere il gate nell'unico entrypoint di produzione, come fa main.dart. Il gate non concede mai permesso di restore live o replay importato.
+
+**Limite operativo:** il check è di startup (non un lock multiprocesso), non interrompe richieste già in volo e non costituisce autorizzazione di ripristino. La rimozione/risoluzione dei marker e il recovery di SQLite + preferenze persistenti non sono implementati; con directory di recovery presente l'app deliberatamente resta bloccata per proteggere i dati. Non introdurre un restore writer senza lock esclusivo, durabilità e procedura di sblocco testata.
+
+### Ricognizione cloud senza scritture
+
+`RestoreCloudReadOnlyPreflight.inspect()` può leggere *solo* `GET /api/v1/sync/changes?cursor=...&limit=100` attraverso un client HTTP esplicito e token fornito dal chiamante; rifiuta endpoint HTTP pubblici, status diversi da 200, JSON/scansione non validi, paginazione stagnante, versioni regredite e scansioni oltre 100 pagine / 10.000 eventi. Non invia POST, non lega account locali e non persiste credenziali. `RestoreCloudReview.compare()` valuta la differenza tra versioni osservate, identificativi dell'outbox importata, record cloud non osservati e regressioni del cursore, mantenendo **sempre** `canWriteToCloud=false` e `canReplayOperations=false`.
+
+**Il feed eventi non garantisce uno snapshot completo del cloud** (compattazione e possibili modifiche concorrenti). In questa fase il lettore non viene chiamato né da main né dal guard del ripristino; serviranno un protocollo server-side coerente, scope autenticato, deduplica/decisione conflitti e un rilascio controllato del blocco prima di usarlo per un restore reale.
+
+Test aggiunti per marker mancanti/invalidi, embargo CloudSync prima di qualunque accesso DB/token, client cloud solo GET, paginazione, rifiuto errori e review senza replay. Restano differiti gli E2E fisici Windows/Android e le prove di durabilità dopo crash.
+
+
+### Addendum P2.4B2C2 — Parser inventario coerente con il contratto backend P2.4B2C3
+
+Oltre al lettore del feed eventi, `RestoreServerInventoryReader` acquisisce esplicitamente tramite GET `/api/v1/sync/inventory` l'inventario metadata-only della PR backend #34. Valida risposta completa, cursor, limiti 10k, identità uniche, versione, tombstone e changeId, rifiutando proprietà extra (es. payload), HTTP non-200, endpoint non ancora deployato o origini insicure. `RestoreServerInventoryReview` confronta outbox e versioni remote con backup target e checkpoint, segnalando revisioni sconosciute/conflittuali e cursori regrediti. I risultati **non autorizzano mai** restore o sincronizzazione importata. Il client non invoca questo endpoint durante il normale avvio; la compatibilità backend si testa con MockClient, e la VPS corrente non è stata aggiornata.
+
+
 ## P2.4B2C3 — Inventario cloud coerente solo lettura (04/11/2026, PR backend)
 
 Nuovo endpoint owner-scoped `GET /api/v1/sync/inventory`: lista di versioni/deleted/changeId per ogni entità, più cursore massimo, acquisiti in transazione `REPEATABLE_READ`; **nessun payload** di note/task. Esclude altri account grazie al JWT; HTTP 413 invece di inventario parziale per più di 10.000 entità. Test Testcontainers che verificano autorizzazione, isolamento A/B, assenza di testo riservato e assenza di nuove righe sync per letture.

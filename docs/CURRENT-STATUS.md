@@ -114,6 +114,17 @@ Prova incrementale della compensazione delle cinque tabelle SQLite e delle prefe
 Realizzati guard e journal append-only per **simulare** interruzioni e recovery tra nuovi processi in directory temporanea; blocco su file incompleti, identità non valida o digest cambiati; ricostruzione del checkpoint verificata solo via sandbox B2B2; valutazione outbox e cursore importati sempre in quarantena senza autorizzazione AutoSync. Nessun collegamento allo startup in produzione né a profili installati. **Non equivale a recovery persistente verificato**: fsync directory, lock multiprocesso, rollback cross-store reale e riconciliazione online restano P2C2+. PR #31 è la dipendenza di questo incremento; merge e CI vanno verificati.
 
 
+## P2.4B2C2 — Startup embargo + cloud preflight (04/11/2026, PR)
+
+- `main.dart` verifica **prima di SQLite/OAuth** l'eventuale directory riservata di recovery, e in presenza di marker anche corrotti blocca l'app con schermata offline statica. Il probe è solo lettura; web usa uno stub. Non esistono writer live per il restore.
+- Gate iniettato nel ProviderScope a protezione di AutoSync, sincronizzazione manuale e risoluzione conflitti; nessun permesso per replay importato.
+- Nuovo client esplicito cloud read-only (GET paginati e validati, max 100 pagine/10k eventi) e review versioni/outbox/cursor sempre non autorizzante.
+- Test unitari di bootstrap, gate e ricognizione cloud con server simulato; CI e merge ancora da verificare.
+- **Non pronto il restore reale:** lock multi-processo, recovery persistente SQLite+preferenze, scelta conflitti e E2E fisici restano mancanti.
+
+P2.4B2C2 include anche parser e test GET-only per `/sync/inventory` previsto dalla PR API #34, non ancora attivato/deployato; analisi dei conflitti solo informativa, senza replay.
+
+
 ## P2.4B2C3 — Endpoint backend read-only (04/11/2026, PR separata)
 
 Aggiunto `GET /sync/inventory` lato Spring Boot: ultimo change per entità e cursor in snapshot coerente `REPEATABLE_READ`, filtraggio JWT, tombstone, limite 10k, nessun testo/credenziale. Test integrazione A/B e letture non mutanti. Branch backend indipendente da PR Flutter #33; controlli CI e merge da verificare. **Non deployato**, nessuna modifica al DB reale né migrazione.

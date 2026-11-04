@@ -6,6 +6,7 @@ import 'package:http/http.dart' as http;
 import '../auth/cloud_auth.dart';
 import '../data/app_database.dart';
 import '../data/local_store.dart';
+import 'restore_sync_gate.dart';
 
 class ConflictDetails {
   final String entityType;
@@ -255,6 +256,10 @@ class CloudSync extends StateNotifier<SyncState> {
 
   Future<void> synchronize() async {
     if (state.running) return;
+    if (!ref.read(restoreSyncGateProvider).canSync) {
+      state = const SyncState(message: 'Recupero backup: sincronizzazione bloccata.');
+      return;
+    }
     final cloud = ref.read(cloudAuthProvider);
     if (!cloud.authenticated || cloud.userId == null) {
       state = const SyncState(message: 'Accedi con Google prima di sincronizzare.');
@@ -268,6 +273,9 @@ class CloudSync extends StateNotifier<SyncState> {
       await db.bindOwner(cloud.userId!);
       final mutations = await db.pendingOperations();
       void verifyAccount() {
+        if (!ref.read(restoreSyncGateProvider).canSync) {
+          throw StateError('Recupero backup: sincronizzazione bloccata');
+        }
         if (ref.read(cloudAuthProvider).userId != cloud.userId) {
           throw StateError('Account cambiato durante la sincronizzazione');
         }
@@ -391,7 +399,8 @@ class CloudSync extends StateNotifier<SyncState> {
     final conflict = state.details;
     final cloud = ref.read(cloudAuthProvider);
     if (conflict == null || state.running || cloud.userId == null ||
-        conflict.remoteVersion == null) {
+        conflict.remoteVersion == null ||
+        !ref.read(restoreSyncGateProvider).canSync) {
       return;
     }
     state = SyncState(running: true, conflict: true, details: conflict);

@@ -358,6 +358,19 @@ Branch impilato dopo P2.4B2A e P2.4B2B1: `data/full_backup_rollback_rehearsal.da
 Nuovo `lib/data/full_backup_recovery_guard.dart`: journal append-only di soli digest/fasi scritto nella directory **isolata specificata dal test**, guard che simula il cold-start da un nuovo oggetto, rifiuta marker incompleti/forgiati o file .snb/owner cambiati e usa la prova di rollback B2B2. `RestoreReplayRisk` identifica outbox importata, operationId sovrapposti e regressioni cursor ma **vieta sempre** il replay/auto-sync fino a una riconciliazione remota non ancora implementata. `test/full_backup_recovery_guard_test.dart` copre ripartenze, crash iniettati, casi di dati invalidi, marker corrotti e zero outbox. Nessuna modifica runtime al profilo utente, VPS o API. Prima di integrare: completare CI, merge ordinato, quindi cold-start offline persistente/locked, rollback cross-store reale e policy di risoluzione conflitti contro server. [Specifica](P2-FULL-BACKUP.md).
 
 
+## Handoff 04/11/2026 — P2.4B2C2 (multi-incremento)
+
+Dopo le PR #29/#30/#31/#32 integrate in ordine, questo blocco introduce:
+1. `data/restore_startup_probe_io.dart` e stub web, chiamati da `main()` prima dell'apertura dell'archivio. Se esiste `simple-notes-recovery-v1` in ApplicationSupport, in qualsiasi stato, mostra solo una schermata protetta offline. Un marker invalido non deve MAI essere cancellato automaticamente.
+2. `sync/restore_sync_gate.dart` + gate del ProviderScope, controllato da CloudSync (prima di bind/POST e durante la coda, incluso `resolveConflict`) e AutoSyncHost (scheduling/session/retry).
+3. `data/restore_cloud_preflight.dart`: lettore read-only del feed `/sync/changes` e confronto outbox/versioni/cursore che **non** concede replay. Nessuna chiamata dal normale avvio.
+4. Test `restore_startup_sync_gate_test.dart`, `restore_cloud_preflight_test.dart` con temp-dir e MockClient. Test E2E fisici rinviati.
+
+Obiettivo successivo: orchestratore di cold-start **esclusivo** + checkpoint persistente durabile con fsync e lock, rollback transazionale/compensato di SQLite + preferenze, protocollo remoto versionato e interfaccia per conflitti. Non rimuovere a mano la directory riservata durante il test di un recovery reale: la procedura di sblocco non esiste ancora. [Specifica](P2-FULL-BACKUP.md).
+
+P2.4B2C2 addendum: `restore_cloud_inventory.dart` e `restore_cloud_inventory_test.dart` validano contratto metadata-only di PR #34 (GET, completo, max 10k, owner da JWT backend), collisioni versioni e rifiuto di upload. Nessuna chiamata automatica da runtime e nessun deploy.
+
+
 ## Handoff 04/11/2026 — P2.4B2C3 (API inventory)
 
 In branch backend dedicato, `SyncController.inventory` usa `SyncService.inventory` per ottenere ultime revisioni per entità e cursor owner-scoped in transazione `REPEATABLE_READ`, senza payload e con limite di 10.000 entità. Test aggiunto in `SyncIntegrationTest`: utenti diversi, JWT necessario, nessun contenuto nota visibile e letture senza effetti su sync_change. Questo lavoro è indipendente dal branch Flutter interlock e cloud GET preflight; non richiede Flyway. Dopo CI e merge: definire l'uso dell'inventario per conflitti, verificare supporto capabilities e fare il deploy **solo** con successiva autorizzazione/runbook. Non riattivare outbox importata automaticamente. [API](api.md).

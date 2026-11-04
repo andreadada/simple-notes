@@ -122,3 +122,10 @@ Test aggiunti per marker mancanti/invalidi, embargo CloudSync prima di qualunque
 ### Addendum P2.4B2C2 — Parser inventario coerente con il contratto backend P2.4B2C3
 
 Oltre al lettore del feed eventi, `RestoreServerInventoryReader` acquisisce esplicitamente tramite GET `/api/v1/sync/inventory` l'inventario metadata-only della PR backend #34. Valida risposta completa, cursor, limiti 10k, identità uniche, versione, tombstone e changeId, rifiutando proprietà extra (es. payload), HTTP non-200, endpoint non ancora deployato o origini insicure. `RestoreServerInventoryReview` confronta outbox e versioni remote con backup target e checkpoint, segnalando revisioni sconosciute/conflittuali e cursori regrediti. I risultati **non autorizzano mai** restore o sincronizzazione importata. Il client non invoca questo endpoint durante il normale avvio; la compatibilità backend si testa con MockClient, e la VPS corrente non è stata aggiornata.
+
+
+## P2.4B2C3 — Inventario cloud coerente solo lettura (04/11/2026, PR backend)
+
+Nuovo endpoint owner-scoped `GET /api/v1/sync/inventory`: lista di versioni/deleted/changeId per ogni entità, più cursore massimo, acquisiti in transazione `REPEATABLE_READ`; **nessun payload** di note/task. Esclude altri account grazie al JWT; HTTP 413 invece di inventario parziale per più di 10.000 entità. Test Testcontainers che verificano autorizzazione, isolamento A/B, assenza di testo riservato e assenza di nuove righe sync per letture.
+
+**Non autorizza il ripristino live.** Un inventario è puntuale, non una transazione lunga con lock di tutte le future scritture cloud; il confronto locale ha ancora bisogno di una policy di collisioni e versioni condizionali. L'API non è stata deployata e il client non la usa finché non viene verificato il contratto completo. Nessuna migrazione V11 né alterazione dei dati.

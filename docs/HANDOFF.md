@@ -369,3 +369,8 @@ Dopo le PR #29/#30/#31/#32 integrate in ordine, questo blocco introduce:
 Obiettivo successivo: orchestratore di cold-start **esclusivo** + checkpoint persistente durabile con fsync e lock, rollback transazionale/compensato di SQLite + preferenze, protocollo remoto versionato e interfaccia per conflitti. Non rimuovere a mano la directory riservata durante il test di un recovery reale: la procedura di sblocco non esiste ancora. [Specifica](P2-FULL-BACKUP.md).
 
 P2.4B2C2 addendum: `restore_cloud_inventory.dart` e `restore_cloud_inventory_test.dart` validano contratto metadata-only di PR #34 (GET, completo, max 10k, owner da JWT backend), collisioni versioni e rifiuto di upload. Nessuna chiamata automatica da runtime e nessun deploy.
+
+
+## Handoff 04/11/2026 — P2.4B2C3 (API inventory)
+
+In branch backend dedicato, `SyncController.inventory` usa `SyncService.inventory` per ottenere ultime revisioni per entità e cursor owner-scoped in transazione `REPEATABLE_READ`, senza payload e con limite di 10.000 entità. Test aggiunto in `SyncIntegrationTest`: utenti diversi, JWT necessario, nessun contenuto nota visibile e letture senza effetti su sync_change. Questo lavoro è indipendente dal branch Flutter interlock e cloud GET preflight; non richiede Flyway. Dopo CI e merge: definire l'uso dell'inventario per conflitti, verificare supporto capabilities e fare il deploy **solo** con successiva autorizzazione/runbook. Non riattivare outbox importata automaticamente. [API](api.md).

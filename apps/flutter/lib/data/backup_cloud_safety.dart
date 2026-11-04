@@ -13,6 +13,7 @@ class BackupCloudSafetyReport {
     required this.entitiesInBackup,
     required this.entitiesNotObservedRemotely,
     required this.remoteVersionsNewerThanBackup,
+    required this.remoteVersionsUnverifiable,
     required this.remoteDeletionMismatches,
     required this.remoteOnlyEntities,
     required this.outboxVersionConflicts,
@@ -25,6 +26,7 @@ class BackupCloudSafetyReport {
   final int entitiesInBackup;
   final int entitiesNotObservedRemotely;
   final int remoteVersionsNewerThanBackup;
+  final int remoteVersionsUnverifiable;
   final int remoteDeletionMismatches;
   final int remoteOnlyEntities;
   final int outboxVersionConflicts;
@@ -47,6 +49,8 @@ class BackupCloudSafetyReport {
         '$entitiesNotObservedRemotely.');
     out.writeln('Revisioni cloud successive al backup: '
         '$remoteVersionsNewerThanBackup.');
+    out.writeln('Revisioni non confrontabili nel backup: '
+        '$remoteVersionsUnverifiable.');
     out.writeln('Differenze nelle cancellazioni: '
         '$remoteDeletionMismatches.');
     out.writeln('Elementi del cloud non presenti nel backup: '
@@ -76,6 +80,16 @@ class BackupCloudSafetyReviewer {
     required FullBackupSnapshot backup,
     required RestoreServerInventory remote,
   }) {
+    if (remote.cursor < 0 || remote.revisions.length > 10000) {
+      throw const FormatException('Inventario cloud non valido.');
+    }
+    for (final entry in remote.revisions.entries) {
+      final item = entry.value;
+      if (entry.key.isEmpty || item.version < 0 ||
+          item.changeId <= 0 || item.changeId > remote.cursor) {
+        throw const FormatException('Revisione cloud non valida.');
+      }
+    }
     final local = const FullBackupCompare().preview(
       current: current, backup: backup,
     );
@@ -86,6 +100,7 @@ class BackupCloudSafetyReviewer {
     var total = 0;
     var unobserved = 0;
     var newer = 0;
+    var unverifiable = 0;
     var deletionMismatch = 0;
     final knownBackupKeys = <String>{};
     for (final item in const [
@@ -105,7 +120,9 @@ class BackupCloudSafetyReviewer {
           continue;
         }
         final version = row['remote_version'];
-        if (version is int && seen.version > version) {
+        if (version is! int) {
+          unverifiable++;
+        } else if (seen.version > version) {
           newer++;
         }
         final deleted = row['deleted_at'] != null;
@@ -121,6 +138,7 @@ class BackupCloudSafetyReviewer {
       entitiesInBackup: total,
       entitiesNotObservedRemotely: unobserved,
       remoteVersionsNewerThanBackup: newer,
+      remoteVersionsUnverifiable: unverifiable,
       remoteDeletionMismatches: deletionMismatch,
       remoteOnlyEntities: remote.revisions.keys
           .where((key) => !knownBackupKeys.contains(key)).length,

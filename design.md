@@ -255,3 +255,8 @@ Nessuna voce di ripristino è aggiunta all'interfaccia per la sola rehearsal in 
 ## Vincolo UX P2.4B2B1
 
 Un checkpoint verificato con read-back non abilita da solo un'azione di ripristino. Restano invariati i due comandi visibili «Crea backup cifrato» e «Verifica backup». Il futuro restore richiede preflight del profilo attuale, conferma esplicita, cold-start esclusivo, rollback cross-store e policy anti-replay prima di introdurre una nuova UI Forui. [Contratto](docs/P2-FULL-BACKUP.md).
+
+
+## Gate UX P2.4B2B2 — nessun restore live
+
+La compensazione cross-store testata in sandbox non giustifica una voce «Ripristina»: la UI resta in sola creazione/verifica .snb. Il flusso definitivo deve essere disegnato solamente dopo implementazione/test di cold-start, checkpoint persistente recuperabile, rollback reale, isolamento account e protezione anti-replay. [Specifica](docs/P2-FULL-BACKUP.md).

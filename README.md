@@ -99,3 +99,6 @@ Nel menu profilo **Esporta CSV** consente di scegliere attività, note attive o 
 
 
 **P2.4B2B1 (sviluppo):** checkpoint .snb cifrato su file dedicato, con verifica dopo il salvataggio e prova isolata in SQLite; non ancora collegato all'interfaccia né al restore del profilo attivo. [Specifica](docs/P2-FULL-BACKUP.md).
+
+
+**P2.4B2B2 (sviluppo):** prova interna e non distruttiva del rollback di SQLite e preferenze locali *simulate* in memoria, con errore iniettato anche dopo commit. Il ripristino del profilo reale non è disponibile. [Specifica](docs/P2-FULL-BACKUP.md).

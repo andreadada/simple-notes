@@ -39,6 +39,7 @@ import 'data/local_store.dart';
 import 'data/portable_archive.dart';
 import 'data/portable_csv.dart';
 import 'data/full_backup.dart';
+import 'data/full_backup_compare.dart';
 import 'data/app_database.dart';
 import 'auth/cloud_auth.dart';
 import 'sync/cloud_sync.dart';
@@ -547,6 +548,72 @@ class _NotesHomeState extends ConsumerState<NotesHome> {
     }
   }
 
+
+  /// P2.4B2E: verified local comparison only, never a restoration.
+  Future<void> _compareFullBackup() async {
+    if (_archiveBusy) return;
+    final owner = ref.read(cloudAuthProvider).userId;
+    if (owner == null || !ref.read(cloudAuthProvider).authenticated) {
+      _archiveMessage('Accedi con Google per confrontare un backup.');
+      return;
+    }
+    setState(() => _archiveBusy = true);
+    try {
+      final file = await openFile(acceptedTypeGroups: [
+        const XTypeGroup(label: 'Simple Notes Backup',
+          extensions: ['snb']),
+      ]);
+      if (file == null) return;
+      if (await file.length() > FullBackupCodec.maxFileBytes) {
+        throw const FormatException('File di backup troppo grande.');
+      }
+      if (!mounted || ref.read(cloudAuthProvider).userId != owner) return;
+      final password = await _backupPassword(create: false);
+      if (password == null || !mounted ||
+          ref.read(cloudAuthProvider).userId != owner) return;
+      final backup = await const FullBackupCodec().inspect(
+        await file.readAsBytes(),
+        password: password,
+        expectedOwnerId: owner,
+      );
+      final current = await const FullBackupSource().capture(
+        database: ref.read(databaseProvider),
+        preferences: await SharedPreferences.getInstance(),
+        ownerId: owner,
+      );
+      if (!mounted || ref.read(cloudAuthProvider).userId != owner) return;
+      final comparison = const FullBackupCompare().preview(
+        current: current, backup: backup,
+      );
+      await showFDialog<void>(
+        context: context,
+        builder: (ctx, style, animation) => NotesDialog(
+          style: style, animation: animation,
+          title: const Text('Confronto backup · sola lettura'),
+          body: SizedBox(
+            width: 440,
+            height: 340,
+            child: SingleChildScrollView(
+              child: Text(comparison.summary),
+            ),
+          ),
+          actions: [
+            FButton(
+              onPress: () => Navigator.pop(ctx),
+              child: const Text('Chiudi'),
+            ),
+          ],
+        ),
+      );
+    } on FormatException catch (error) {
+      _archiveMessage(error.message);
+    } catch (_) {
+      _archiveMessage('Confronto non riuscito. Nessun dato modificato.');
+    } finally {
+      if (mounted) setState(() => _archiveBusy = false);
+    }
+  }
+
   Future<void> _importArchive() async {
     if (_archiveBusy) return;
     setState(() => _archiveBusy = true);
@@ -743,6 +810,8 @@ Ctrl+/ · Questo elenco'''),
         await _exportFullBackup();
       } else if (value == 'verify-full-backup') {
         await _inspectFullBackup();
+      } else if (value == 'compare-full-backup') {
+        await _compareFullBackup();
       } else if (value == 'sync') {
         await ref.read(cloudSyncProvider.notifier).synchronize();
       } else if (value == 'diagnostics') {
@@ -867,6 +936,12 @@ Ctrl+/ · Questo elenco'''),
             prefix: const Icon(Icons.verified_user_outlined, size: 18),
             enabled: !_archiveBusy && cloud.authenticated,
             onPress: () => accountAction('verify-full-backup'),
+          ),
+          .item(
+            title: const Text('Confronta backup con questo dispositivo'),
+            prefix: const Icon(Icons.compare_arrows_outlined, size: 18),
+            enabled: !_archiveBusy && cloud.authenticated,
+            onPress: () => accountAction('compare-full-backup'),
           ),
           .item(
             title: const Text('Esporta CSV'),

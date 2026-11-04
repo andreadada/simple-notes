@@ -192,6 +192,16 @@ void main() {
     expect(report.rollbackVerifiedOnDisk, isTrue);
   });
 
+  test('orphan staged preferences file cannot block cold-start compensation',
+      () async {
+    await prepare();
+    await File(path.join(sandbox.directory.path, 'prefs-stage-orphan.tmp'))
+        .writeAsString('incomplete private prefs', flush: true);
+    final report = await recover();
+    expect(report.rollbackVerifiedOnDisk, isTrue);
+    expect(report.automaticSyncAuthorized, isFalse);
+  });
+
   test('recovered snapshot cannot grant replay even when target was applied',
       () async {
     await prepare();

@@ -126,3 +126,8 @@ FullBackupCheckpointPreflight effettua una cattura logica validata dello snapsho
 ## Vincolo P2.4B2B2 — rollback cross-store solo in memoria
 
 `FullBackupRollbackRehearsal` NON è una procedura di restore: il DB è sempre `NativeDatabase.memory()`, le preferenze sono una mappa privata e il rollback è provato prima di chiudere il sandbox. Non sostituire `NativeDatabase.memory()` con `AppDatabase()`, non indirizzare a file del profilo, non riprodurre l'outbox e non aggiungere una UI «Ripristina». Per passare a dati reali restano obbligatori cold-start, checkpoint fsync/recovery, rollback delle preferenze su disco, gestione credenziali, controllo anti-replay e test distruttivi **solo su profili di prova**. [Specifiche](docs/P2-FULL-BACKUP.md).
+
+
+## Vincolo P2.4B2C1 — journal fail-closed ma non operativo
+
+`FullBackupColdStartGuard` e `FileRestoreJournal` sono **solo prototipi per test isolati**: il journal è in directory esplicita temporanea, manca fsync directory e protezione multi-processo, e non va collegato a startup/AutoSyncHost o a un path del profilo installato. Un file temporaneo, una sequenza mancante, un hash non valido o un account diverso devono bloccare il recovery. `RestoreReplayRisk` **non autorizza mai** il replay delle `pending_mutations` o del `syncCursor` importato, nemmeno con cursor uguale/outbox vuota; è necessaria riconciliazione remota esplicita e testata. [Specifica](docs/P2-FULL-BACKUP.md).

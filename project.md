@@ -194,6 +194,8 @@ Dettagli e matrice: [docs/ui-design-audit.md](docs/ui-design-audit.md). Aggiorna
 
 ## Edit Timespan
 
+- 2026-11-04 | feat(p2.4b2c1) | Guardia cold-start isolata con journal append-only in directory di prova, hash account/backup, validazione fasi, retry dopo crash simulato e quarantena obbligatoria outbox/cursor importati. Nessuna modifica runtime/restore live; CI/merge da verificare. [Specifica](docs/P2-FULL-BACKUP.md).
+
 - 2026-11-04 | feat(p2.4b2b2) | Rehearsal SQLite+preferenze su istanza in memoria: doppia autenticazione .snb, transazione, fault injection SQL/preferenze/post-commit e compensazione verificata dello stato originale; nessun restore live o sync autorizzata. CI/merge da verificare, E2E fisici differiti. [Specifica](docs/P2-FULL-BACKUP.md).
 
 - 2026-11-04 | feat(p2.4b2b1) | Checkpoint cifrato `.snb` in file nuovo con read-back/verify (SHA256, AES-GCM, owner, confronto integrale, rehearsal SQLite); test isolati su directory temporanea e fault simulati. Non collegato all'app live e non abilita restore/auto-sync; CI/merge da verificare. [Specifica](docs/P2-FULL-BACKUP.md).
@@ -439,3 +441,12 @@ Esempio: `2026-10-21 14:20 CEST | commit abc1234 | Aggiunto modulo promemoria e 
 - [x] Fault injection in transazione, tra preferenze e dopo commit; ritorno verificato al checkpoint.
 - [ ] Rollback su filesystem persistente/cold-start, recovery dopo crash, mutua esclusione di processi/engine e compensazione SharedPreferences reale.
 - [ ] Preflight anti-replay outbox/cursor, eventuale consenso alla risoluzione conflitti e rilascio controllato di AutoSync; test Android/ZIP→MSIX.
+
+
+### P2.4B2C1 — Cold-start / anti-replay (prototipo isolato)
+
+- [x] Registro append-only di fase/hash e controlli fail-closed su file incompleti/invalidi.
+- [x] Recupero simulato da nuova istanza, crash iniettati e prova rollback B2B2 in memoria.
+- [x] Segnalazione operationId comuni, outbox importata e cursor regredito/ignoto; automatic-sync sempre vietata.
+- [ ] Cold-start **reale** offline con lock multiprocesso, fsync directory, checkpoint persistente, recovery cross-store verificato.
+- [ ] Recupero/risoluzione conflitti remoti e policy consenso prima di qualunque upload importato; E2E fisici.

@@ -102,3 +102,6 @@ Nel menu profilo **Esporta CSV** consente di scegliere attività, note attive o 
 
 
 **P2.4B2B2 (sviluppo):** prova interna e non distruttiva del rollback di SQLite e preferenze locali *simulate* in memoria, con errore iniettato anche dopo commit. Il ripristino del profilo reale non è disponibile. [Specifica](docs/P2-FULL-BACKUP.md).
+
+
+**P2.4B2C1 (sviluppo):** guard di avvio isolato con registro di recupero append-only, simulazioni di crash e blocco anti-replay per outbox/cursore importati. È una prova su directory temporanea e SQLite in memoria: nessun ripristino live o sospensione effettiva di AutoSync. [Dettagli](docs/P2-FULL-BACKUP.md).

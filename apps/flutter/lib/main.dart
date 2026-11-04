@@ -42,6 +42,7 @@ import 'data/portable_csv.dart';
 import 'data/full_backup.dart';
 import 'data/full_backup_compare.dart';
 import 'data/backup_cloud_safety.dart';
+import 'data/reconciliation_dry_run.dart';
 import 'data/restore_cloud_inventory.dart';
 import 'data/app_database.dart';
 import 'auth/cloud_auth.dart';
@@ -595,6 +596,9 @@ class _NotesHomeState extends ConsumerState<NotesHome> {
         current: current, backup: backup,
       );
       String? cloudSummary;
+      ReconciliationDryRun? dryRun;
+      RestoreServerInventory? lastInventory;
+      var hypotheticalStrategy = ReconciliationStrategy.deferAll;
       var cloudBusy = false;
       await showFDialog<void>(
         context: context,
@@ -603,16 +607,37 @@ class _NotesHomeState extends ConsumerState<NotesHome> {
             style: style, animation: animation,
             title: const Text('Confronto backup · sola lettura'),
             body: SizedBox(
-              width: 460,
-              height: 360,
+              width: 510,
+              height: 390,
               child: SingleChildScrollView(
                 child: Text([
                   comparison.summary,
                   if (cloudSummary != null) cloudSummary!,
+                  if (dryRun != null) dryRun!.summary,
                 ].join('\n\n')),
               ),
             ),
             actions: [
+              if (lastInventory != null)
+                FButton(
+                  variant: FButtonVariant.ghost,
+                  onPress: cloudBusy ? null : () {
+                    final strategies = ReconciliationStrategy.values;
+                    final next = strategies[(hypotheticalStrategy.index + 1) %
+                        strategies.length];
+                    final draft = const ReconciliationDryRunPlanner().preview(
+                      current: current,
+                      imported: backup,
+                      cloud: lastInventory!,
+                      strategy: next,
+                    );
+                    refresh(() {
+                      hypotheticalStrategy = next;
+                      dryRun = draft;
+                    });
+                  },
+                  child: const Text('Simula altra strategia'),
+                ),
               FButton(
                 variant: FButtonVariant.ghost,
                 onPress: cloudBusy ? null : () async {
@@ -649,7 +674,17 @@ class _NotesHomeState extends ConsumerState<NotesHome> {
                         backup: backup,
                         remote: remote,
                       );
-                      refresh(() => cloudSummary = report.summary);
+                      final draft = const ReconciliationDryRunPlanner().preview(
+                        current: current,
+                        imported: backup,
+                        cloud: remote,
+                      );
+                      refresh(() {
+                        lastInventory = remote;
+                        hypotheticalStrategy = ReconciliationStrategy.deferAll;
+                        cloudSummary = report.summary;
+                        dryRun = draft;
+                      });
                     } finally {
                       client.close();
                     }

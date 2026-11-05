@@ -449,3 +449,8 @@ Gate deploy: verificare backup PostgreSQL con restore isolato già validato, Fly
 ## Handoff 05/11/2026 — P2.4B2P
 
 `infra/t4-inspect-db.sh` ora accetta V11 e verifica `sync_operation.request_fingerprint` di tipo VARCHAR(64), nullable e valori SHA-256 esadecimali se non nulli; su V10 rifiuta una colonna V11 prematura. `infra/release-v11-readiness.sh` esegue solo inspector esatto V11 e check health/capability autenticata. La Compose CI esercita V11 su un container sintetico, incluso test di forma errata. Il precedente `release-readiness.sh` resta esplicitamente per V10. Nessun JWT, deploy, dump, restore o migration eseguito su dati reali. [Runbook](RELEASE-V11-READINESS.md).
+
+
+## Handoff 05/11/2026 — P2.4B2Q
+
+Backend: `SyncOperationIntentConflict` (eccezione priva di payload), `SyncService.apply` distingue prima owner estraneo (409 generico) da stesso owner con entity/action/payload fingerprint incoerenti (409 tipizzato); `SyncController` risponde `{"code":"SYNC_OPERATION_ID_REUSE"}`. Flutter: `sync_apply_conflict.dart` contiene parser strict bounded, `cloud_sync.dart` intercetta il codice solo per POST /sync/apply e interrompe le mutazioni senza rebase o ACK, `main.dart` mostra il messaggio nel popover account. Test: `SyncIntegrationTest` e `sync_apply_conflict_test.dart`. Nessun restore, migrazione o deploy nella PR. [Specifica](P2-SYNC-INTENT-CONFLICTS.md).

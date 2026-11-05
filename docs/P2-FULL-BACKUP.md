@@ -231,3 +231,8 @@ Questa protezione non autorizza restore/replay: serve solo a non fornire un inve
 Per prevenire falsi ACK, il server lega ciascuna **nuova** mutazione a un'impronta dell'intento (action, expectedVersion, entityId/type, payload JSON in ordine canonico). Uno stesso operation ID con contenuto diverso restituisce 409 anche se owner e ID entità corrispondono; nessuna nuova scrittura. I retry esatti restano idempotenti dopo l'avanzamento del cursore. I dati precedenti non vengono cancellati né reinterpretati: la nuova colonna nullable di Flyway V11 è inizialmente NULL per le operazioni storiche e mantiene la precedente compatibilità.
 
 Test Testcontainers includono payload cambiato, versioni/azioni diverse, campi JSON riordinati inclusi nested objects, cursore cambiato, record storici senza fingerprint e richieste concorrenti sul medesimo operation ID. Questo non autorizza restore live, approvazione dei conflitti o reinvio delle vecchie code: servono ancora consenso e controlli CAS/durabilità. Nessun deploy DB o Coolify eseguito.
+
+
+## P2.4B2Q — Un operation ID già committato non si reinterpreta
+
+La protezione fingerprint V11 dispone ora di un HTTP 409 machine-readable per il riuso con intento differente. Il client blocca il sync e non mostra la risoluzione ordinaria di conflitti, preservando il DB locale e le outbox. Un risultato di preflight positivo **non** autorizza a trattare tale codice come un rebase sicuro né a forzare il restore. [Dettagli](P2-SYNC-INTENT-CONFLICTS.md).

@@ -317,3 +317,8 @@ Le API REST legacy ora inviano gli update tramite il protocollo sincronizzato: u
 ## UX P2.4B2O — errore sul riutilizzo dell'operation ID
 
 Se un client prova a riutilizzare un'operazione già applicata con payload, azione o expectedVersion diversi, l'API risponde 409 e non applica la nuova intenzione. La UI deve considerarlo conflitto e richiedere un nuovo confronto: non riutilizzare lo stesso operation ID con valori alterati per forzare il successo. Nessun cambiamento della UI né abilitazione di restore in questa fase.
+
+
+## UX P2.4B2Q — blocco per collisione immutabile
+
+Nel menu account, un conflitto `SYNC_OPERATION_ID_REUSE` deve presentare esplicitamente il motivo e non offrire «Risolvi conflitto», perché la normale scelta di versione non può cambiare l'intento già registrato. Le modifiche locali rimangono visibili e la sync automatica sospesa. Un normale conflitto 409 mantiene il dialog Forui precedente. Non aggiungere pulsanti «Forza», «Ripristina», cancellazione outbox o reset. [Specifica](docs/P2-SYNC-INTENT-CONFLICTS.md).

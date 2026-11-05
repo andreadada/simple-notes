@@ -283,3 +283,8 @@ Al prossimo rilascio backend, Flyway potrebbe applicare `V11__sync_operation_int
 ## P2.4B2P — Gate di verifica V11, senza deploy
 
 Il runbook [RELEASE-V11-READINESS.md](RELEASE-V11-READINESS.md) separa il vecchio gate V10 dal nuovo `bash infra/release-v11-readiness.sh`, che **non migra** il DB e rifiuta V10, V11 incompleta o fingerprint in formato non valido. `DB_CONTAINER` e JWT di prova devono essere definiti solo dall'amministratore dopo una decisione di rilascio; il token non deve essere riportato in chat né salvato. Il PASS V11 non autorizza restore, writer di riconciliazione, installazione dei dispositivi o presume che il backend runtime sia aggiornato. Nessuna azione su Coolify effettuata.
+
+
+## P2.4B2Q — 409 strutturato non risolvibile col normale rebase
+
+Se il client segnala che l'operation ID è già stato registrato con contenuto differente, fermare la risoluzione ordinaria del conflitto. **Non azzerare SQLite, outbox o account**, non cambiare arbitrariamente l'operation ID e non forzare il replay. Lo stato e tutte le modifiche locali vengono preservati; il problema richiede una diagnosi del retry e delle versioni, eventualmente un recupero guidato con backup verificato. `SYNC_OPERATION_ID_REUSE` viene emesso solo dal backend aggiornato; le versioni vecchie possono non distinguerlo. [Guida](P2-SYNC-INTENT-CONFLICTS.md).

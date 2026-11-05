@@ -208,3 +208,8 @@ Ogni `SyncOperation` **nuova** deve memorizzare fingerprint SHA-256 canonico di 
 ## P2.4B2P — Ispezione V11 solo in lettura
 
 Mantenere `infra/release-readiness.sh` V10 compatibile con lo storico; usare `infra/release-v11-readiness.sh` per la verifica esatta V11 **solo dopo un rollout separatamente autorizzato**. L'inspector PostgreSQL deve rifiutare mismatch Flyway ↔ colonna fingerprint, schema diverso da nullable VARCHAR(64), formati non esadecimali, DB sbagliato o migration fallita, senza stampare password, token, ID o valori. Testare con Compose su schema PostgreSQL **sintetico**. Non introdurre `ALTER TABLE`, `flyway migrate`, `pg_restore`, reset o deploy in script read-only. [Runbook](docs/RELEASE-V11-READINESS.md).
+
+
+## Vincolo P2.4B2Q — non riutilizzare operation ID incompatibili
+
+Il backend deve distinguere un conflitto versionato risolvibile da `SYNC_OPERATION_ID_REUSE` (stesso owner, ID operazione già presente, payload/action/version differente). Per collisioni fra account restituire soltanto 409 generico, senza indizi di proprietà. La risposta tipizzata non deve contenere note, token, ID, fingerprint o dati privati. Nel client il codice tipizzato **non** deve mai attivare `resolveConflict`, rebase, ACK o scarto outbox. Sospendere AutoSync e preservare tutto il contenuto locale; il normale 409 resta compatibile con backend storici. [Runbook](docs/P2-SYNC-INTENT-CONFLICTS.md).

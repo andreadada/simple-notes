@@ -426,3 +426,10 @@ PR #41 del backend è integrata ma non distribuita in produzione. Su VPS non agg
 ## Handoff 05/11/2026 — P2.4B2L
 
 `SyncService.ownerMaterializedHistoryCoherent` svolge due query `EXISTS` per ciascuna delle tre tabelle `note`, `task`, `task_list`, owner-scoped e sotto la medesima transazione repeatable-read della revisione: trova sia righe legacy materializzate senza ultimo evento compatibile, sia eventi attivi privi di riga. `materializedMatchesLedger` accetta ora il tombstone sintetico senza riga che `/sync/apply` genera lecitamente per un delete di entità già assente. `SyncIntegrationTest` verifica nota legacy non inclusa nella richiesta, isolamento account, task legacy non elencato, rimozione materiale di nota sincronizzata e tombstone valido. Nessuna migration/deploy. Il check rimane sola lettura e non serializza endpoint legacy concorrenti.
+
+
+## Handoff 05/11/2026 — P2.4B2M: sincronizzare tutte le mutazioni REST legacy
+
+Sorgenti: `NoteService.java`, `TaskService.java`, `SyncService.java`. Il controller e contratto REST restano invariati. Note: create/PUT/delete delegano a `SyncService.apply` e ritornano la riga persistita. Task: create/PUT/PATCH completion/delete usano la stessa API, con conversione dello stato corrente al payload completo moderno prima della mutazione. Il lock owner-shared deve essere preso **prima** della lettura `owned`; `SyncService.apply` blocca inoltre sempre come prima. Non introdurre saveAndFlush diretti nei due servizi legacy.
+
+Test: `SyncIntegrationTest` aggiorna cinque controlli di corruzione a SQL esplicito e aggiunge REST note/task events, completed su civil due/recurrence, CAS stale e race. `TaskServiceTest` verifica il delegato mock. Nessun deploy su VPS, nessuna migrazione. L'API REST non espone operation ID alla vecchia clientela: retry network del POST create non è deduplicato a livello client, differenza rispetto agli endpoint sync. Prossimo gate prima di restore live: persistente Windows/Android, controllo idempotenza di un futuro writer di riconciliazione, consenso separato e test fisici.

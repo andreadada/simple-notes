@@ -189,3 +189,8 @@ Il preflight revisioni **non può** dichiarare `consistent=true` se la riga mate
 ## Vincolo P2.4B2L — preflight sull'intero account, non solo sugli ID noti
 
 La verifica `/sync/reconciliation/check` non deve considerare sicuro un account quando esistono righe note/task/liste non rappresentate dal ledger, anche se tali righe non figurano nell'inventory e non sono richieste nel batch. Eseguire scan read-only owner-scoped su tutte e tre le tabelle nel medesimo snapshot `REPEATABLE_READ`. Non rifiutare i tombstone sintetici consentiti dal protocollo per entity fisicamente già assenti. Non leggere/mostrare titoli/body. Errore 409 significa blocco del flusso e non può autorizzare restore, cancellazione o replay. [Specifiche](docs/P2-FULL-BACKUP.md).
+
+
+## Vincolo P2.4B2M — ogni write legacy dentro sync/ledger
+
+Tutte le mutazioni dei controller REST storici `/notes` e `/tasks` devono avvenire nello stesso percorso owner-locked `SyncService.apply`; vietato introdurre `saveAndFlush` diretto nei servizi legacy. Prima di leggere una riga per update, PATCH completion o delete, acquisire il lock advisory owner nella **stessa transazione**. Preservare `expectedVersion`, tombstone e 426 per vecchi editor su scadenze civili, non cancellare timeBlocks/recurrence/tags/subtasks durante PATCH completion. REST non fornisce idempotency key client, quindi evitare di promettere retry exactly-once per POST create. Testare che `sync_change` e `sync_operation` accompagnino commit REST; anomalie SQL storiche vanno rilevate, non autoriparate. Restore live e deploy restano fuori scope. [Specifica](docs/P2-FULL-BACKUP.md).

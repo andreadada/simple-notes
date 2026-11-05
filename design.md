@@ -307,3 +307,8 @@ Un controllo di precondizioni superato può diventare obsoleto subito dopo la le
 ## UX P2.4B2J — verifica versioni senza permessi write
 
 «Ricontrolla revisioni» appare soltanto dopo «Consulta inventario cloud». Durante la richiesta indica «Verifica...», poi presenta un messaggio a conteggi senza ID né contenuti personali. Se versioni/cursor sono cambiati, disabilita la scheda vecchia e suggerisce di consultare nuovamente il cloud. In caso di errore o API non distribuita, mostra esito non verificabile e vieta il riuso della bozza. Nessun pulsante `Applica` o `Ripristina`. [Specifica](docs/P2-FULL-BACKUP.md).
+
+
+## UX P2.4B2M — compatibilità REST e conflitti
+
+Le API REST legacy ora inviano gli update tramite il protocollo sincronizzato: una modifica concorrente produce il normale 409 invece di prevalere silenziosamente. Il vecchio editor dei task che non conosce i civil due mantiene 426 per proteggere il dato; il completamento non deve perdere scadenze, ricorrenza o timeBlocks. La UI Flutter resta invariata. Il restore da backup non viene sbloccato da questo refactor.

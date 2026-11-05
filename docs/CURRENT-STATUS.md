@@ -176,3 +176,8 @@ Aggiunto controllo tra righe materializzate e ultimo evento owner-scoped durante
 ## P2.4B2L — Controllo owner-wide dei dati fuori ledger (05/11/2026, PR)
 
 Nel preflight `/sync/reconciliation/check` aggiunto audit read-only dell'intero account per nota/task/lista vs latest sync_change: identifica record legacy non richiesti nel batch, versioni/tombstone non tracciati e record attivi mancanti. Mantiene validi tombstone sintetici senza riga. Test integrazione PostgreSQL e documentazione aggiornati; CI/merge da verificare, **nessun deploy o restore**.
+
+
+## P2.4B2M — Backend: write-path legacy unificato (05/11/2026, PR)
+
+`NoteService` e `TaskService` delegano POST/PUT/PATCH/DELETE a `SyncService.apply` con advisory lock dell'owner prima di letture che precedono mutazioni. I vecchi endpoint non lasciano più eventi sync mancanti; completion/task preserva dati moderni. Test di integrazione + concorrenza REST vs sync, 426 per due civile, 409/lock, vecchi test di corruzione spostati a bypass SQL espliciti. CI/merge da verificare; **nessun deploy Coolify**.

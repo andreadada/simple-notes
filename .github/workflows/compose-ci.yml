@@ -150,7 +150,7 @@ jobs:
               ALTER TABLE sync_operation
                 ADD COLUMN request_fingerprint VARCHAR(64);
               INSERT INTO flyway_schema_history(installed_rank,version,success)
-                VALUES (11, '\''11'\'', TRUE);
+                VALUES (11, 11::text, TRUE);
             '
           DB_CONTAINER="$db_name" EXPECTED_POSTGRES_DB=synthetic \
             REQUIRE_FLYWAY_VERSION=11 bash infra/t4-inspect-db.sh

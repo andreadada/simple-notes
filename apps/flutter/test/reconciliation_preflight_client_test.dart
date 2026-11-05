@@ -170,7 +170,7 @@ void main() {
     addTearDown(client.close);
     final overLimit = RestoreServerInventory(200, {
       for (var i = 0; i < 101; i++)
-        'note:10000000-0000-4000-8000-' + i.toString().padLeft(12, '0'):
+        'note:10000000-0000-4000-8000-${i.toString().padLeft(12, '0')}':
             const RestoreInventoryRevision(
           version: 0, deleted: false, changeId: 1,
         ),

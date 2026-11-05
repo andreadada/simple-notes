@@ -218,12 +218,20 @@ public class SyncService {
             ((Boolean) row[1]) == latest.deleted;
     }
 
-    @Transactional
-    public SyncController.ApplyResponse apply(UUID owner, SyncController.ApplyRequest req) {
-        // Serialize writes per account: sequence allocation and commit order stay aligned
-        // across multiple backend instances using the same PostgreSQL database.
+    /**
+     * Must be called inside an existing write transaction before reading a
+     * legacy row for a later mutation. Same advisory transaction lock as
+     * sync/apply; serializes legacy REST reads with Flutter sync writes.
+     */
+    public void lockAccount(UUID owner) {
         em.createNativeQuery("SELECT pg_advisory_xact_lock(hashtext(:owner))")
             .setParameter("owner", owner.toString()).getSingleResult();
+    }
+
+    @Transactional
+    public SyncController.ApplyResponse apply(UUID owner, SyncController.ApplyRequest req) {
+        // All writes (including legacy REST) lock before reading or mutating.
+        lockAccount(owner);
 
         if (!Set.of("task", "note", "list").contains(req.entityType()) ||
                 !Set.of("upsert", "delete", "restore").contains(req.action()))

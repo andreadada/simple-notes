@@ -47,6 +47,7 @@ public class NoteService {
     @Transactional
     public NoteEntity update(UUID owner, UUID id, long expectedVersion,
             String title, String body) {
+        sync.lockAccount(owner);
         // Preserve legacy 404 semantics for an absent/foreign/trashed note.
         owned(owner, id);
         sync.apply(owner, new SyncController.ApplyRequest(UUID.randomUUID(), id,
@@ -57,6 +58,7 @@ public class NoteService {
 
     @Transactional
     public void delete(UUID owner, UUID id, long expectedVersion) {
+        sync.lockAccount(owner);
         owned(owner, id);
         sync.apply(owner, new SyncController.ApplyRequest(UUID.randomUUID(), id,
             "note", "delete", expectedVersion, null, null));

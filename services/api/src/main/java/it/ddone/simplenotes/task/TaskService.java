@@ -53,6 +53,7 @@ public class TaskService {
     @Transactional
     public TaskEntity update(UUID ownerId, UUID taskId, long expectedVersion,
             String title, String description, Instant dueAt, boolean completed) {
+        sync.lockAccount(ownerId);
         TaskEntity stored = owned(ownerId, taskId);
         // The legacy editor cannot express civil date or zoned time semantics.
         if ("date".equals(stored.dueKind) || "datetime".equals(stored.dueKind)) {
@@ -68,6 +69,7 @@ public class TaskService {
     @Transactional
     public TaskEntity setCompleted(UUID ownerId, UUID taskId,
             boolean completed) {
+        sync.lockAccount(ownerId);
         TaskEntity stored = owned(ownerId, taskId);
         // Completion must preserve modern due, blocks, recurrence, priority,
         // tags, subtasks and list association. An OCC conflict is safer than
@@ -81,6 +83,7 @@ public class TaskService {
 
     @Transactional
     public void delete(UUID ownerId, UUID taskId) {
+        sync.lockAccount(ownerId);
         TaskEntity stored = owned(ownerId, taskId);
         sync.apply(ownerId, new SyncController.ApplyRequest(UUID.randomUUID(),
             taskId, "task", "delete", stored.version, null, null));

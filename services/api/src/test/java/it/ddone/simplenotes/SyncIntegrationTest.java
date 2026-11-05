@@ -699,4 +699,127 @@ class SyncIntegrationTest {
             .andExpect(jsonPath("$.changes.length()").value(2));
     }
 
+
+    @Test
+    void preflightRejectsLegacyRowsMissingFromSyncLedgerWithoutLeakingData()
+            throws Exception {
+        var owner = users.save(new AppUser("legacy-ledger-owner-" + UUID.randomUUID(),
+            "legacy-ledger-owner@example.com", "Legacy A"));
+        var other = users.save(new AppUser("legacy-ledger-other-" + UUID.randomUUID(),
+            "legacy-ledger-other@example.com", "Legacy B"));
+        String bearer = "Bearer " + jwt(owner.id);
+        String otherBearer = "Bearer " + jwt(other.id);
+        String noteResponse = mvc.perform(post("/api/v1/notes")
+                .header("Authorization", bearer)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("""
+                    {"title":"Private legacy title","body":"Private legacy body"}
+                    """))
+            .andExpect(status().isCreated())
+            .andReturn().getResponse().getContentAsString();
+        String noteId = mapper.readTree(noteResponse).path("id").asText();
+        String expectedAbsent = """
+            {"expectedCursor":0,"items":[
+              {"entityType":"note","entityId":"%s",
+               "changeId":null,"version":null,"deleted":null}
+            ]}
+            """.formatted(noteId);
+        // Without the cross-store check the absent ledger would falsely
+        // report a clean preflight despite an existing legacy note.
+        mvc.perform(post("/api/v1/sync/reconciliation/check")
+                .header("Authorization", bearer)
+                .contentType(MediaType.APPLICATION_JSON).content(expectedAbsent))
+            .andExpect(status().isConflict());
+        // The other owner cannot see this row, even through the preflight.
+        mvc.perform(post("/api/v1/sync/reconciliation/check")
+                .header("Authorization", otherBearer)
+                .contentType(MediaType.APPLICATION_JSON).content(expectedAbsent))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.consistent").value(true))
+            .andExpect(jsonPath("$.items[0].changeId").doesNotExist());
+        mvc.perform(get("/api/v1/sync/changes")
+                .header("Authorization", bearer))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.changes.length()").value(0));
+    }
+
+    @Test
+    void preflightRejectsLegacyEditsAfterSyncedNotesEvenWhenCursorUnchanged()
+            throws Exception {
+        var user = users.save(new AppUser("legacy-edit-owner-" + UUID.randomUUID(),
+            "legacy-edit-owner@example.com", "Legacy edits"));
+        String bearer = "Bearer " + jwt(user.id);
+        String noteId = UUID.randomUUID().toString();
+        String create = """
+            {"operationId":"%s","entityId":"%s","entityType":"note",
+             "action":"upsert","payload":{"title":"Synced","body":"Original"}}
+            """.formatted(UUID.randomUUID(), noteId);
+        long cursor = mapper.readTree(mvc.perform(post("/api/v1/sync/apply")
+                .header("Authorization", bearer)
+                .contentType(MediaType.APPLICATION_JSON).content(create))
+            .andExpect(status().isOk()).andReturn()
+            .getResponse().getContentAsString()).path("changeId").asLong();
+        String expected = """
+            {"expectedCursor":%d,"items":[
+              {"entityType":"note","entityId":"%s",
+               "changeId":%d,"version":0,"deleted":false}
+            ]}
+            """.formatted(cursor, noteId, cursor);
+        mvc.perform(post("/api/v1/sync/reconciliation/check")
+                .header("Authorization", bearer)
+                .contentType(MediaType.APPLICATION_JSON).content(expected))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.consistent").value(true));
+
+        // Direct legacy PUT changes the stored version without a sync event.
+        mvc.perform(put("/api/v1/notes/" + noteId)
+                .header("Authorization", bearer)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("""
+                    {"version":0,"title":"Legacy edited","body":"Sensitive new body"}
+                    """))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.version").value(1));
+        mvc.perform(post("/api/v1/sync/reconciliation/check")
+                .header("Authorization", bearer)
+                .contentType(MediaType.APPLICATION_JSON).content(expected))
+            .andExpect(status().isConflict());
+        mvc.perform(get("/api/v1/sync/changes")
+                .header("Authorization", bearer))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.changes.length()").value(1))
+            .andExpect(jsonPath("$.changes[0].version").value(0));
+    }
+
+    @Test
+    void preflightRejectsLegacyTombstoneWithoutItsOwnSyncEvent()
+            throws Exception {
+        var user = users.save(new AppUser("legacy-delete-owner-" + UUID.randomUUID(),
+            "legacy-delete-owner@example.com", "Legacy deletion"));
+        String bearer = "Bearer " + jwt(user.id);
+        String entity = UUID.randomUUID().toString();
+        String create = """
+            {"operationId":"%s","entityId":"%s","entityType":"note",
+             "action":"upsert","payload":{"title":"Synced","body":"Protected"}}
+            """.formatted(UUID.randomUUID(), entity);
+        long cursor = mapper.readTree(mvc.perform(post("/api/v1/sync/apply")
+                .header("Authorization", bearer)
+                .contentType(MediaType.APPLICATION_JSON).content(create))
+            .andExpect(status().isOk()).andReturn()
+            .getResponse().getContentAsString()).path("changeId").asLong();
+        mvc.perform(delete("/api/v1/notes/" + entity)
+                .header("Authorization", bearer).param("version", "0"))
+            .andExpect(status().isNoContent());
+        String check = """
+            {"expectedCursor":%d,"items":[
+              {"entityType":"note","entityId":"%s",
+               "changeId":%d,"version":0,"deleted":false}
+            ]}
+            """.formatted(cursor, entity, cursor);
+        mvc.perform(post("/api/v1/sync/reconciliation/check")
+                .header("Authorization", bearer)
+                .contentType(MediaType.APPLICATION_JSON).content(check))
+            .andExpect(status().isConflict());
+    }
+
 }

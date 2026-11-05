@@ -200,3 +200,7 @@ Inspector PostgreSQL esteso a V11 con controllo del fingerprint nullable VARCHAR
 ## P2.4B2Q — Errore strutturato su operationId non riutilizzabile (05/11/2026, PR)
 
 Il backend distingue un 409 da `SYNC_OPERATION_ID_REUSE` da un normale 409 di versione senza includere dati privati. Flutter ferma l'upload, conserva l'intera outbox e non offre la risoluzione keep-local/remote quando l'ID è legato a un intento già committato. Parser limitato e test API/Flutter aggiunti; CI/merge da verificare, nessun deploy. [Runbook](P2-SYNC-INTENT-CONFLICTS.md).
+
+## P2.4B2R — Capability runtime richiesta dal gate V11 (05/11/2026, PR)
+
+`/api/v1/capabilities` annuncia `syncOperationFingerprintSchema=1`; il wrapper V11 lo richiede esplicitamente e il validatore rifiuta tipi errati o capability mancante. Test Python offline per V10 backward compatibility/V11 strict e backend Testcontainers. Nessun cambiamento ai dati utenti, CI/merge da verificare, nessun deploy. [Runbook](RELEASE-V11-READINESS.md).

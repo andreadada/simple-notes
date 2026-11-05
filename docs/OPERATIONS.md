@@ -288,3 +288,7 @@ Il runbook [RELEASE-V11-READINESS.md](RELEASE-V11-READINESS.md) separa il vecchi
 ## P2.4B2Q — 409 strutturato non risolvibile col normale rebase
 
 Se il client segnala che l'operation ID è già stato registrato con contenuto differente, fermare la risoluzione ordinaria del conflitto. **Non azzerare SQLite, outbox o account**, non cambiare arbitrariamente l'operation ID e non forzare il replay. Lo stato e tutte le modifiche locali vengono preservati; il problema richiede una diagnosi del retry e delle versioni, eventualmente un recupero guidato con backup verificato. `SYNC_OPERATION_ID_REUSE` viene emesso solo dal backend aggiornato; le versioni vecchie possono non distinguerlo. [Guida](P2-SYNC-INTENT-CONFLICTS.md).
+
+## P2.4B2R — Doppia evidenza V11 senza modifiche
+
+Per il rilascio V11, il controllo read-only richiede **sia** la colonna Flyway `request_fingerprint VARCHAR(64) NULL` **sia** la capability API autenticata `syncOperationFingerprintSchema:1`. Se una sola manca, il gate si interrompe prima di qualsiasi fase sul client. Non correggere la discrepanza manualmente sul DB: serve una decisione separata di rollout e backup verificato. Le vecchie verifiche V10 restano utilizzabili senza richiedere V11. [Runbook](RELEASE-V11-READINESS.md).

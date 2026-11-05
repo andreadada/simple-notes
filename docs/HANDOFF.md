@@ -454,3 +454,7 @@ Gate deploy: verificare backup PostgreSQL con restore isolato già validato, Fly
 ## Handoff 05/11/2026 — P2.4B2Q
 
 Backend: `SyncOperationIntentConflict` (eccezione priva di payload), `SyncService.apply` distingue prima owner estraneo (409 generico) da stesso owner con entity/action/payload fingerprint incoerenti (409 tipizzato); `SyncController` risponde `{"code":"SYNC_OPERATION_ID_REUSE"}`. Flutter: `sync_apply_conflict.dart` contiene parser strict bounded, `cloud_sync.dart` intercetta il codice solo per POST /sync/apply e interrompe le mutazioni senza rebase o ACK, `main.dart` mostra il messaggio nel popover account. Test: `SyncIntegrationTest` e `sync_apply_conflict_test.dart`. Nessun restore, migrazione o deploy nella PR. [Specifica](P2-SYNC-INTENT-CONFLICTS.md).
+
+## Handoff 05/11/2026 — P2.4B2R
+
+`CapabilitiesController.java` ora espone il numero schema fingerprint V11; `t4-check-api.sh` passa `REQUIRE_SYNC_OPERATION_FINGERPRINT_SCHEMA` al validatore Python; `release-v11-readiness.sh` forza il nuovo gate, mentre V10 non lo richiede. `test_release_capabilities.py` verifica flag V11, mancanza, boolean/string, V10 compatibile e nessun leak in output; `SyncIntegrationTest.java` verifica capability JWT e metadata-only. L'upgrade DB, la nuova app backend e i client reali restano verifiche distinte: un flag esposto non prova il commit di un'operazione di prova. [Runbook](RELEASE-V11-READINESS.md).

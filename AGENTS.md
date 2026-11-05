@@ -175,3 +175,7 @@ Il pulsante «Consulta inventario cloud» deve essere **opt-in**, non chiamato d
 ## Vincolo P2.4B2I — write con cursore owner-scoped solo sotto lock
 
 Non spostare il check `expectedAccountCursor` fuori dalla transazione `SyncService.apply` né prima del lock transazionale per account. Il confronto deve usare `MAX(sync_change.id)` filtrato per owner, non MAX globale. Un 409 non può creare eventi, operazioni o mutare note/task/liste. Il preflight `/sync/reconciliation/check` è solo read-only, same-owner, max 100, chiavi uniche e validazione fail-closed; non esportare body o payload. Un risultato `consistent=true` non è consenso al restore. Legacy client senza cursore invariati, restore live e replay disabilitati. [Specifiche](docs/P2-FULL-BACKUP.md).
+
+## Vincolo P2.4B2J — ricontrollo remoto mai mutante
+
+`ReconciliationPreflightClient` deve essere invocato solo da azione esplicita in UI, dopo GET inventory. La POST a `/sync/reconciliation/check` è **sola lettura**: consentito solo body ID/versioni/tombstone/cursor, vietati note/body, payload sync, password, dati personali e token nei log. Non invocare `/sync/apply`, refresh auth, AutoSync o restore da questo flusso. Rifiutare se >100 item (mai batch parziale), owner cambiato, token scaduto, HTTP errore o flag incoerenti. Un check `consistent=true` non è consenso e non sblocca `canRestoreLive`, `canApplyDecisions`, `canWriteCloud`, `canReplayImportedOutbox` o `canResumeAutoSync`. [Specifica](docs/P2-FULL-BACKUP.md).

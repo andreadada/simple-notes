@@ -162,3 +162,7 @@ Scheda temporanea `ReconciliationWorksheet`, scelte per singolo item con token o
 ## P2.4B2I — Server-side CAS/preflight (05/11/2026, PR)
 
 Implementati controllo batch read-only (`/sync/reconciliation/check`) su owner/cursor/revisioni e campo opzionale `expectedAccountCursor` per `/sync/apply`, verificato atomicamente sotto advisory lock. Client legacy invariati. Test Testcontainers: isolamento JWT, assenza payload nel check, richieste invalide, cursore obsoleto, retry idempotente e concorrenza. CI e merge da verificare. **Nessun deploy** e restore live sempre vietato.
+
+## P2.4B2J — Check remoto read-only nel confronto (05/11/2026, PR Flutter)
+
+Nuovo `reconciliation_preflight_client.dart` e test MockClient, con pulsante Forui opt-in «Ricontrolla revisioni». POST è **sola lettura lato server**, senza richieste di sincronizzazione. Risposta accuratamente validata e bozza invalidata quando il cursore o le revisioni cambiano, il server manca o la verifica fallisce. Inventario oltre 100 item non viene controllato parzialmente. Tutti i permessi restore/replay/AutoSync restano false. PR backend #41 già integrata su main ma non deployata; Flutter CI/merge da verificare.

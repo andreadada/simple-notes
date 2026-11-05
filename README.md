@@ -130,3 +130,5 @@ Il client include anche il lettore sperimentale di inventario cloud, con validaz
 **P2.4B2H (sviluppo):** dopo il confronto con il cloud, l'opzione «Esamina conflitti» permette di rivedere singole note, attività e liste e simulare una preferenza per ciascuna. È una bozza in memoria: non modifica dati, non sincronizza e non abilita il ripristino. [Specifica](docs/P2-FULL-BACKUP.md).
 
 **P2.4B2I (backend in sviluppo):** nuovo controllo read-only delle revisioni cloud e possibilità di CAS per account sulle mutazioni future, senza abilitare il ripristino operativo. Nessun deploy eseguito. [Specifiche](docs/P2-FULL-BACKUP.md).
+
+**P2.4B2J (sviluppo):** nel dialog di confronto backup, il pulsante facoltativo «Ricontrolla revisioni» consulta il nuovo endpoint server di sola lettura per rilevare conflitti recenti. Non modifica dati né sblocca ripristini. [Specifiche](docs/P2-FULL-BACKUP.md).

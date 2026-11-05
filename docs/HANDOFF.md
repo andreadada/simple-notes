@@ -438,3 +438,10 @@ Test: `SyncIntegrationTest` aggiorna cinque controlli di corruzione a SQL esplic
 ## Handoff 05/11/2026 — P2.4B2N
 
 Il metodo già esistente `ownerMaterializedHistoryCoherent(owner)` viene ora richiamato anche da `SyncService.inventory` dentro `@Transactional(readOnly=true, isolation=REPEATABLE_READ)`, immediatamente prima di leggere il cursore/ledger. HTTP 409 su record materializzati non rappresentati dal log o latest sync attivi privi di riga; nessun rollback/write/invalidation del DB. `SyncIntegrationTest` aggiunge test di inventory GET con owner diverso, modifica SQL senza change, riga eliminata, REST legacy con evento e synthetic tombstone. Un 409 indica verifica impossibile, non assenza di dati. La nuova API legacy bridge B2M è già sul main; backend non deployato.
+
+
+## Handoff 05/11/2026 — P2.4B2O, operation intent fingerprint
+
+Files: `V11__sync_operation_intent_fingerprint.sql` (ADD COLUMN nullable), `SyncOperation.java` (mapping e costruttore compatibile), `SyncService.java` (canonicalJson ricorsivo, SHA-256, compare sotto lock prima del ritorno idempotente, persistenza fingerprint nuovi). `SyncIntegrationTest` aggiunge test riuso operation ID diverso, action/version mismatch, ordine nested JSON, cursore CAS diverso dopo commit, concorrenza e legacy NULL retry. Per le righe storiche senza fingerprint il backend **non inventa** un hash e usa la compatibilità precedente. La colonna non è un HMAC/autorizzazione e non va esposta.
+
+Gate deploy: verificare backup PostgreSQL con restore isolato già validato, Flyway schema allineato, CI verde e runbook release; questa PR non tocca DB reale. Mai rigiocare op importate solo perché la loro fingerprint è valida. Il prossimo step di release deve aggiornare i controlli infrastruttura per Flyway V11 senza forzare dati: server deploy e test dispositivi restano a cura dell'utente in una fase successiva.

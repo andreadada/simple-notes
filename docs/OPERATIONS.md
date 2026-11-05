@@ -274,3 +274,8 @@ Le chiamate ai vecchi endpoint note/task generano eventi `sync_change` nell'acco
 ## P2.4B2N — Inventory 409 non implica reset
 
 Un errore 409 da `GET /sync/inventory` può segnalare incoerenze fra righe reali e cronologia sync anche quando nessun elemento atteso appare errato. Il client deve considerare l'inventario **non verificabile**, senza memorizzare un esito `complete=true`, ricalcolare cursor o rigiocare mutazioni importate. La diagnosi SQL o il recupero di dati storici richiedono un processo separato, con backup verificato e autorizzazione esplicita: non farlo automaticamente durante deploy. Nessun aggiornamento Coolify eseguito.
+
+
+## P2.4B2O — Migrazione additiva V11, non applicata
+
+Al prossimo rilascio backend, Flyway potrebbe applicare `V11__sync_operation_intent_fingerprint.sql` per aggiungere `request_fingerprint VARCHAR(64) NULL` su `sync_operation`. Lo schema attuale della produzione non va modificato anticipatamente: **nessun comando DB, rollback, reset o deploy eseguito in questa sessione**. Nessuna riga storica è alterata. Le operazioni nuove salvano una impronta e rifiutano riuso con intento diverso tramite 409; verificare staging con backup ripristinato, Flyway success/failed_migrations=0 e assenza di regressioni sync prima di qualsiasi rollout. Non usare il fingerprint come prova di recupero dei vecchi operation ID o sblocco della sincronizzazione importata.

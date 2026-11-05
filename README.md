@@ -144,3 +144,6 @@ Il client include anche il lettore sperimentale di inventario cloud, con validaz
 
 
 **P2.4B2N (backend in verifica):** l'inventario cloud controlla anche la coerenza dell'intero account prima di dichiararsi completo; eventuali dati legacy non tracciati producono un errore non distruttivo. [Specifica](docs/P2-FULL-BACKUP.md).
+
+
+**P2.4B2O (backend, in verifica):** i nuovi operation ID sono vincolati al payload e all'azione da un fingerprint canonico per impedire ACK idempotenti su mutazioni diverse; Flyway V11 è soltanto additiva e non deployata. [Specifica](docs/P2-FULL-BACKUP.md).

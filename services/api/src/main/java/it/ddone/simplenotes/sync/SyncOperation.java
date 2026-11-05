@@ -13,10 +13,19 @@ public class SyncOperation {
     @Column(name = "entity_id", nullable = false) public UUID entityId;
     @Column(name = "resulting_version", nullable = false) public long resultingVersion;
     @Column(name = "change_id", nullable = false) public long changeId;
+    @Column(name = "request_fingerprint", length = 64)
+    public String requestFingerprint;
     @Column(name = "created_at", nullable = false) public Instant createdAt = Instant.now();
 
     protected SyncOperation() {}
-    public SyncOperation(UUID id, UUID owner, String type, UUID entityId, long version, long changeId) {
+    public SyncOperation(UUID id, UUID owner, String type, UUID entityId,
+            long version, long changeId) {
+        this(id, owner, type, entityId, version, changeId, null);
+    }
+
+    public SyncOperation(UUID id, UUID owner, String type, UUID entityId,
+            long version, long changeId, String requestFingerprint) {
+        this.requestFingerprint = requestFingerprint;
         this.id = id;
         this.ownerId = owner;
         this.entityType = type;

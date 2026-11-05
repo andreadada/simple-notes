@@ -194,6 +194,8 @@ Dettagli e matrice: [docs/ui-design-audit.md](docs/ui-design-audit.md). Aggiorna
 
 ## Edit Timespan
 
+- 2026-11-05 | feat(p2.4b2o) | Flyway V11 nullable fingerprint canonical SHA256 per nuovi sync_operation, stop stesso opID con intento diverso, retry post-CAS compatibile, test concorrenza/storico, nessun deploy. CI/merge da verificare. [Specifica](docs/P2-FULL-BACKUP.md).
+
 - 2026-11-05 | feat(p2.4b2n) | GET inventory ora usa audit owner-wide coerente con preflight prima di complete=true; test isolamenti owner, legacy SQL, versioni, tombstone e dati attivi mancanti. No deploy/restore; CI/merge da verificare. [Specifica](docs/P2-FULL-BACKUP.md).
 
 - 2026-11-05 | feat(p2.4b2m) | Le API note/task legacy mutano tramite SyncService owner-locked e ledger condiviso; test REST/concorrenza/preservazione scadenze, vecchi test legacy SQL bypass mantenuti, docs. CI/merge da verificare; nessun deploy. [Specifica](docs/P2-FULL-BACKUP.md).
@@ -560,3 +562,11 @@ Esempio: `2026-10-21 14:20 CEST | commit abc1234 | Aggiunto modulo promemoria e 
 - [x] Conversione task completa e protezione civil due / timeBlocks / recurrence / tags / subtasks.
 - [x] Test race REST↔sync, eventi, tombstone, CAS, proprietà moderne e regressione SQL bypass.
 - [ ] Test dispositivi reali Windows/Android, deploy Coolify e percorso di restore operativo, ancora non autorizzati.
+
+### P2.4B2O — Operation ID vincolato all'intento
+
+- [x] Flyway V11 ADD COLUMN nullable; nessun dato precedente manipolato.
+- [x] SHA-256 canonico action + entity + expectedVersion + payload, senza cursore transitorio.
+- [x] Retry idempotente identico; conflitto 409 su stesso ID con contenuto/versione/azione alterati.
+- [x] Test PostgreSQL su concorrenza, ordine JSON nested, casi storici NULL e zero eventi extra.
+- [ ] Backup/restore isolato, gate release Flyway e deploy volontario prima dell'attivazione server live.

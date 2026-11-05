@@ -153,3 +153,10 @@ I retry REST non hanno un operation ID fornito dal client e ne generano uno nuov
 ## P2.4B2N — Contratto `complete=true` dell'inventory
 
 La risposta `complete=true` indica un inventario completo **solo se** il database owner-scoped è coerente con il registro sync per presenza, versione e tombstone di note/task/liste; altrimenti HTTP 409, nessuna vista parziale. Il controllo avviene in sola lettura nello stesso snapshot repeatable-read e usa il metodo già testato dal preflight. Non copre eventuali SQL esterni senza aumento di versione o race dopo la risposta. Il client continua a richiedere consenso e guard CAS in ogni futuro write; nessuna sync/import automatico è autorizzato da `complete=true`.
+
+
+## P2.4B2O — Retry sicuro e Operation ID legato al payload
+
+Per nuovi eventi, `sync_operation.request_fingerprint` protegge dal riutilizzo accidentale dello stesso operationId con azione, versione attesa o payload diversi. Il server costruisce SHA-256 di un JSON canonico con entity ID/type, action, expectedVersion e contenuto, ignorando il cursore CAS momentaneo per conservare l'idempotenza dopo il commit. Confronto **sotto l'advisory lock** prima di ogni write. Intento diverso = 409, stessa richiesta semantica con proprietà JSON riordinate = stesso changeId/versione già applicati. L'array order resta significativo.
+
+Per compatibilità, record `sync_operation` storici `request_fingerprint=NULL` restano deduplicati con il comportamento precedente; non esiste una prova affidabile dell'intento originario. La migrazione V11 è solo ADD COLUMN nullable: nessun backfill o cleanup. Nuovi operation ID emessi dagli endpoint REST legacy ricevono anch'essi il fingerprint lato server, ma senza chiave idempotente fornita dal client un retry HTTP di un POST create può ancora generare una nuova entità. La protezione non abilita restore/replay delle outbox importate.

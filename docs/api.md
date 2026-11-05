@@ -165,3 +165,12 @@ Per update/delete/completion, il service **acquisisce il lock advisory per owner
 Anche `GET /api/v1/sync/inventory` esegue ora la verifica già prevista da `/sync/reconciliation/check` di **tutte** le note, attività e liste materializzate contro il più recente evento per proprietario, dentro lo stesso snapshot PostgreSQL `REPEATABLE_READ`. Non può più inviare `complete=true` quando il ledger omette dati legacy, quando una riga è stata aggiornata fuori protocollo o quando il latest event segnala un'entità attiva fisicamente assente. Per una discrepanza risponde HTTP 409 senza dati riservati. Un tombstone sintetico senza riga resta valido. Nessun endpoint, schema, migration o response JSON modificato.
 
 I client Flutter che interrogano inventario gestiscono già gli errori 409 come non verificabile e **non** proseguono con il restore. Il controllo non garantisce assenza di future modifiche, contenuti identici a parità di versione, né corregge i dati storici. Non è un'operazione di backfill e non richiede reset.
+
+
+## P2.4B2O — Legame idempotente all'intento della mutazione (05/11/2026)
+
+Le nuove operazioni registrate da `POST /api/v1/sync/apply` memorizzano una colonna `sync_operation.request_fingerprint` SHA-256 esadecimale (64 caratteri). Il digest vincola `entityType`, `entityId`, `action`, `expectedVersion` e **payload JSON canonico** (chiavi degli oggetti ordinate ricorsivamente; ordine degli array conservato). Il cursore transitorio `expectedAccountCursor` è volutamente escluso: un retry della stessa mutazione, già applicata con successo, deve rimanere idempotente anche se il cursore è avanzato.
+
+Quando l'operation ID esiste già, dopo lock owner il server confronta proprietario, tipo, ID entità e — per operazioni con fingerprint — **impronta dell'intento**. Payload, azione o expectedVersion differenti => **409 Conflict** senza nuove righe, acknowledgement falso o upload. Retry identici, anche con ordine delle proprietà JSON diverso, ritornano il risultato originale.
+
+Migrazione Flyway **V11__sync_operation_intent_fingerprint.sql**: una colonna nullable, nessun indice, nessuna cancellazione o modifica delle righe preesistenti. Le operazioni storiche con fingerprint `NULL` conservano il vecchio comportamento di deduplica per owner/type/entity, perché l'intento originale non è ricostruibile con certezza. Il digest non è un token di autorizzazione e non è esposto nelle risposte HTTP. **Nessun deploy/migrazione eseguiti** sulla produzione.

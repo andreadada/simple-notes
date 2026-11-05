@@ -3,6 +3,12 @@ package it.ddone.simplenotes.sync;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.fasterxml.jackson.databind.node.NullNode;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import it.ddone.simplenotes.note.*;
 import it.ddone.simplenotes.task.*;
 import jakarta.persistence.EntityManager;
@@ -247,13 +253,25 @@ public class SyncService {
         if ("restore".equals(req.action()) && !"note".equals(req.entityType()))
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
                 "Only notes can be restored");
+        // An operation ID names one immutable user intent. Ignore the
+        // transient cursor CAS in the digest: a byte-for-byte semantic retry
+        // after a successful commit must remain idempotent despite cursor
+        // advancement. Recursively sort JSON objects for order independence.
+        String fingerprint = requestFingerprint(req);
         Optional<SyncOperation> previous = operations.findById(req.operationId());
         if (previous.isPresent()) {
             SyncOperation old = previous.get();
             if (!old.ownerId.equals(owner) || !old.entityType.equals(req.entityType()) ||
-                    !old.entityId.equals(req.entityId()))
-                throw new ResponseStatusException(HttpStatus.CONFLICT, "Operation ID reused");
-            return new SyncController.ApplyResponse(req.operationId(), old.resultingVersion, old.changeId);
+                    !old.entityId.equals(req.entityId()) ||
+                    (old.requestFingerprint != null &&
+                     !old.requestFingerprint.equals(fingerprint))) {
+                throw new ResponseStatusException(HttpStatus.CONFLICT,
+                    "Operation ID reused for a different mutation");
+            }
+            // Pre-V11 historical rows have no fingerprint. Preserve their
+            // legacy retry behavior; do not rewrite or backfill them.
+            return new SyncController.ApplyResponse(req.operationId(),
+                old.resultingVersion, old.changeId);
         }
         if ("upsert".equals(req.action()) && (req.payload() == null || !req.payload().isObject()))
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Missing payload");
@@ -279,8 +297,53 @@ public class SyncService {
         SyncChange change = changes.saveAndFlush(new SyncChange(owner, req.entityType(),
             req.entityId(), applied.payload(), applied.deleted(), applied.version()));
         operations.saveAndFlush(new SyncOperation(req.operationId(), owner, req.entityType(),
-            req.entityId(), applied.version(), change.id));
+            req.entityId(), applied.version(), change.id, fingerprint));
         return new SyncController.ApplyResponse(req.operationId(), applied.version(), change.id);
+    }
+
+    /**
+     * SHA-256 of immutable mutation intent, NOT a cloud restore permit.
+     * Includes entity identity, action, expected record version and canonical
+     * payload; excludes expectedAccountCursor because it is a transient CAS
+     * guard, not part of the actual operation. Never expose the digest in API.
+     */
+    private String requestFingerprint(SyncController.ApplyRequest req) {
+        ObjectNode data = json.createObjectNode();
+        data.put("schema", 1);
+        data.put("entityType", req.entityType());
+        data.put("entityId", req.entityId().toString());
+        data.put("action", req.action());
+        if (req.expectedVersion() == null) {
+            data.putNull("expectedVersion");
+        } else {
+            data.put("expectedVersion", req.expectedVersion());
+        }
+        data.set("payload", canonicalPayload(req.payload()));
+        try {
+            return HexFormat.of().formatHex(MessageDigest.getInstance("SHA-256")
+                .digest(data.toString().getBytes(StandardCharsets.UTF_8)));
+        } catch (NoSuchAlgorithmException ex) {
+            throw new IllegalStateException("Required SHA-256 unavailable", ex);
+        }
+    }
+
+    private JsonNode canonicalPayload(JsonNode input) {
+        if (input == null || input.isNull()) return NullNode.getInstance();
+        if (input.isObject()) {
+            ObjectNode ordered = json.createObjectNode();
+            List<String> names = new ArrayList<>();
+            input.fieldNames().forEachRemaining(names::add);
+            Collections.sort(names);
+            for (String key : names) ordered.set(key,
+                canonicalPayload(input.get(key)));
+            return ordered;
+        }
+        if (input.isArray()) {
+            ArrayNode values = json.createArrayNode();
+            input.forEach(item -> values.add(canonicalPayload(item)));
+            return values;
+        }
+        return input;
     }
 
     private record Mutation(long version, boolean deleted, String payload) {}

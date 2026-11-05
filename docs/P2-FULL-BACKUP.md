@@ -224,3 +224,10 @@ Test di integrazione PostgreSQL coprono note create/modificate/cancellate via RE
 Per evitare che Flutter mostri una situazione rassicurante derivata da un registro di sincronizzazione incompleto, l'endpoint inventory GET **rifiuta l'intero account** con 409 quando note/task/liste reali divergono dal latest ledger. L'audit è owner-scoped, read-only, nel medesimo snapshot PostgreSQL, ed è riutilizzato dal preflight versione. Test PostgreSQL coprono nota legacy fuori inventario, differenze di versione, riga attiva mancante, account altrui isolato, REST legacy ora tracciato e tombstone sintetico. Non c'è auto-correzione né modifica dei dati.
 
 Questa protezione non autorizza restore/replay: serve solo a non fornire un inventario falso. Non distribuita su Coolify in questa sessione.
+
+
+## P2.4B2O — Sicurezza contro operation ID riutilizzati (05/11/2026)
+
+Per prevenire falsi ACK, il server lega ciascuna **nuova** mutazione a un'impronta dell'intento (action, expectedVersion, entityId/type, payload JSON in ordine canonico). Uno stesso operation ID con contenuto diverso restituisce 409 anche se owner e ID entità corrispondono; nessuna nuova scrittura. I retry esatti restano idempotenti dopo l'avanzamento del cursore. I dati precedenti non vengono cancellati né reinterpretati: la nuova colonna nullable di Flyway V11 è inizialmente NULL per le operazioni storiche e mantiene la precedente compatibilità.
+
+Test Testcontainers includono payload cambiato, versioni/azioni diverse, campi JSON riordinati inclusi nested objects, cursore cambiato, record storici senza fingerprint e richieste concorrenti sul medesimo operation ID. Questo non autorizza restore live, approvazione dei conflitti o reinvio delle vecchie code: servono ancora consenso e controlli CAS/durabilità. Nessun deploy DB o Coolify eseguito.

@@ -312,3 +312,8 @@ Un controllo di precondizioni superato può diventare obsoleto subito dopo la le
 ## UX P2.4B2M — compatibilità REST e conflitti
 
 Le API REST legacy ora inviano gli update tramite il protocollo sincronizzato: una modifica concorrente produce il normale 409 invece di prevalere silenziosamente. Il vecchio editor dei task che non conosce i civil due mantiene 426 per proteggere il dato; il completamento non deve perdere scadenze, ricorrenza o timeBlocks. La UI Flutter resta invariata. Il restore da backup non viene sbloccato da questo refactor.
+
+
+## UX P2.4B2O — errore sul riutilizzo dell'operation ID
+
+Se un client prova a riutilizzare un'operazione già applicata con payload, azione o expectedVersion diversi, l'API risponde 409 e non applica la nuova intenzione. La UI deve considerarlo conflitto e richiedere un nuovo confronto: non riutilizzare lo stesso operation ID con valori alterati per forzare il successo. Nessun cambiamento della UI né abilitazione di restore in questa fase.

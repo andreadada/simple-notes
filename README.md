@@ -138,3 +138,6 @@ Il client include anche il lettore sperimentale di inventario cloud, con validaz
 
 
 **P2.4B2L (backend in verifica):** la verifica preflight include tutte le note, task e liste dell'account, anche record legacy invisibili nel registro sync, senza cambiare dati o attivare restore. [Specifiche](docs/P2-FULL-BACKUP.md).
+
+
+**P2.4B2M (backend, in verifica):** le API REST storiche note/task condividono il percorso di sincronizzazione, lo stesso lock per account e gli eventi necessari al cloud. Il restore vero rimane disabilitato; nessun deploy eseguito. [Specifiche](docs/P2-FULL-BACKUP.md).

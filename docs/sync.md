@@ -141,3 +141,10 @@ Il preflight di riconciliazione deve fallire chiuso con 409 se una riga `note`, 
 ## P2.4B2L — Copertura owner-wide della verifica sync
 
 Il preflight non si limita più alla lista degli ID richiesta dal client: controlla per l'intero proprietario la compatibilità tra righe reali (note/task/liste) e ultima versione/tombstone registrata nel ledger. Un record legacy mai sincronizzato, anche fuori dall'inventory, rende il controllo **409 fail-closed**. Un evento latest attivo privo della riga corrispondente è un'incoerenza. Un tombstone sintetico per entità già assente rimane rappresentabile e non blocca erroneamente l'account. Non viene inviata alcuna mutazione. Il controllo restando uno snapshot, non equivale a serializzazione dei writer legacy o a consenso per restore.
+
+
+## P2.4B2M — Il lock e il ledger includono anche REST legacy
+
+Il write-path è unificato: note e task dei vecchi endpoint passano per `SyncService.apply`, con lock advisory PostgreSQL transazionale per account, version check e evento `sync_change` scritto nella stessa transazione. Per evitare ORM stale-read, il lock viene ottenuto **prima** di caricare una nota/task da aggiornare o cancellare. Anche PATCH completion pubblica l'intero payload moderno preservando scheduled due, blocks e recurrence. Il vecchio editor completo non può sostituire una scadenza civile e conserva 426.
+
+I retry REST non hanno un operation ID fornito dal client e ne generano uno nuovo, perciò non hanno deduplica end-to-end dopo retry di rete; resta invece l'optimistic lock sui PUT e la serializzazione per owner. I client sync continuano a usare i propri operation ID idempotenti. I record legacy storicamente non tracciati rimangono rilevabili dal controllo owner-wide e sono volutamente **non riparati automaticamente**.

@@ -194,6 +194,8 @@ Dettagli e matrice: [docs/ui-design-audit.md](docs/ui-design-audit.md). Aggiorna
 
 ## Edit Timespan
 
+- 2026-11-05 | feat(p2.4b2m) | Le API note/task legacy mutano tramite SyncService owner-locked e ledger condiviso; test REST/concorrenza/preservazione scadenze, vecchi test legacy SQL bypass mantenuti, docs. CI/merge da verificare; nessun deploy. [Specifica](docs/P2-FULL-BACKUP.md).
+
 - 2026-11-05 | feat(p2.4b2l) | Audit read-only di tutto l'account note/task/liste vs ultimo evento sync, detect legacy non elencati, assenza riga attiva e tombstone sintetici; test PostgreSQL, nessun deploy/restore. CI/merge da verificare. [Specifica](docs/P2-FULL-BACKUP.md).
 
 - 2026-11-05 | feat(p2.4b2k) | Preflight verifica versione/tombstone di note/task/liste materializzate vs ledger stesso owner, 409 fail-closed per creazioni/update/delete legacy non loggati; test PostgreSQL, nessun deploy né restore. CI/merge da verificare. [Specifica](docs/P2-FULL-BACKUP.md).
@@ -548,3 +550,11 @@ Esempio: `2026-10-21 14:20 CEST | commit abc1234 | Aggiunto modulo promemoria e 
 - [x] Pulsante Forui dopo inventory GET, invalidazione bozza su cursor o revisioni diverse e su errori.
 - [x] MockClient per 200 coerente/stale, malformed, ID diversi, 404/401, token/URL e limiti.
 - [ ] Approvazione esplicita e scritture CAS, durabilità cross-store e recovery live, E2E fisici.
+
+### P2.4B2M — Unificazione dei writer REST legacy
+
+- [x] Note create/update/delete e task create/update/completion/delete delegano a SyncService.apply.
+- [x] Lock owner prima del read per tutte le mutazioni di record esistenti, CAS e version check conservati.
+- [x] Conversione task completa e protezione civil due / timeBlocks / recurrence / tags / subtasks.
+- [x] Test race REST↔sync, eventi, tombstone, CAS, proprietà moderne e regressione SQL bypass.
+- [ ] Test dispositivi reali Windows/Android, deploy Coolify e percorso di restore operativo, ancora non autorizzati.

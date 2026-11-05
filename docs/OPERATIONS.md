@@ -264,3 +264,8 @@ Se `/sync/reconciliation/check` restituisce 409 anche con revisioni apparentemen
 ## P2.4B2L — Errore 409 nel preflight completo
 
 Il check owner-wide può segnalare 409 anche se tutti gli elementi elencati nell'inventario sembrano allineati, perché una nota o attività legacy **fuori inventario** può essere discordante. È intenzionale: non azzerare dati, non forzare replay/cursore e non interpretare il risultato come perdita dati. Recuperare un nuovo inventario e valutare la riconciliazione solo quando esistono garanzie più forti; il restore reale resta disabilitato. Nessuna procedura manuale DB o aggiornamento Coolify eseguito.
+
+
+## P2.4B2M — Mutazioni legacy ora visibili nella sync
+
+Le chiamate ai vecchi endpoint note/task generano eventi `sync_change` nell'account senza richiedere interventi DB. Un client con cursore vecchio vede correttamente 409 quando usa `expectedAccountCursor`. In caso di HTTP 409/426, non forzare replay di backup: aggiornare l'app o effettuare nuova consultazione. I record storicamente non tracciati devono essere valutati separatamente e restano bloccati dal preflight owner-wide. Nessuna migrazione, backfill automatico, cleanup, deploy o operazione distruttiva.

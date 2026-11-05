@@ -208,3 +208,12 @@ Il controllo read-only delle revisioni sul backend ora verifica in uno stesso sn
 Per evitare falsi “coerente” quando una vecchia API crea/aggiorna una nota o task non presente nel ledger, il server controlla ora **tutte** le righe note/task/liste dello stesso owner, anche quelle non selezionate per la revisione. Rifiuta una riga non tracciata, una versione o tombstone differente e un latest event attivo senza riga. Il delete sintetico già previsto dal protocollo non viene classificato come errore. Il client B2J già tratta HTTP 409 come ricontrollo non riuscito e scarta la scheda di revisione.
 
 **Non è un controllo transazionale futuro:** il check non è un lease e le API legacy possono ancora cambiare il database dopo la risposta. Nessuna lettura dei body e nessun ripristino live, CAS aggiuntivo, schema DB o deploy è stato introdotto. Test Testcontainers owner isolati, note e task non elencati, riga materializzata mancante e tombstone sintetico.
+
+
+## P2.4B2M — Eliminato il bypass dei nuovi write legacy (05/11/2026)
+
+Le API REST storiche di note/task non possono più modificare direttamente righe senza emettere un evento sync: chiamano il percorso canonico `SyncService.apply` nella stessa transazione owner-locked. Il lock viene ottenuto prima di leggere versioni per update/delete/completion; il CAS del cursore vede anche gli update legacy, i conflitti di versione risultano 409 e i tombstone sono tracciati. Il completamento legacy di task con scadenze avanzate preserva tutte le proprietà moderne; l'editor vecchio continua a rifiutare modifiche unsafe su scadenze civili (426).
+
+Test di integrazione PostgreSQL coprono note create/modificate/cancellate via REST, task CRUD/complete, campi `due`/recurrence preservati, CAS obsoleto e race fra vecchio PUT e sync/apply. I test fail-closed già esistenti simulano ora bypass diretti SQL per mantenere coperti anche i dati storici incoerenti.
+
+**Non è restore live**: non ripara automaticamente dati legacy già presenti, non cancella outbox e non sblocca importazione. Nessun deploy, reset o migrazione.

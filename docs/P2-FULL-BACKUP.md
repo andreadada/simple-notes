@@ -232,6 +232,7 @@ Per prevenire falsi ACK, il server lega ciascuna **nuova** mutazione a un'impron
 
 Test Testcontainers includono payload cambiato, versioni/azioni diverse, campi JSON riordinati inclusi nested objects, cursore cambiato, record storici senza fingerprint e richieste concorrenti sul medesimo operation ID. Questo non autorizza restore live, approvazione dei conflitti o reinvio delle vecchie code: servono ancora consenso e controlli CAS/durabilità. Nessun deploy DB o Coolify eseguito.
 
-## P2.4B2R — No release PASS con backend V10 e DB V11
 
-Oltre a verificare la colonna V11, la release readiness richiede che l'API autenticata annunci `syncOperationFingerprintSchema=1`. La capability è sola lettura: né la sua presenza né il PASS del gate autorizzano il restore live o il replay di una outbox importata. La versione backend distribuita dovrà comunque essere provata separatamente e la UI non si abilita da questo flag. [Runbook](RELEASE-V11-READINESS.md).
+## P2.4B2Q — Un operation ID già committato non si reinterpreta
+
+La protezione fingerprint V11 dispone ora di un HTTP 409 machine-readable per il riuso con intento differente. Il client blocca il sync e non mostra la risoluzione ordinaria di conflitti, preservando il DB locale e le outbox. Un risultato di preflight positivo **non** autorizza a trattare tale codice come un rebase sicuro né a forzare il restore. [Dettagli](P2-SYNC-INTENT-CONFLICTS.md).

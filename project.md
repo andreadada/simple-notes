@@ -193,7 +193,7 @@ Dettagli e matrice: [docs/ui-design-audit.md](docs/ui-design-audit.md). Aggiorna
 - Tutti i nuovi moduli devono avere error states, migrazioni e test minimi.
 
 ## Edit Timespan
-- 2026-11-05 | feat(p2.4b2r) | Capability backend syncOperationFingerprintSchema=1 e gate read-only V11 strict, validatore Python/test compatibilità V10, documentazione. Nessun deploy. [Runbook](docs/RELEASE-V11-READINESS.md).
+- 2026-11-05 | feat(p2.4b2q) | 409 tipizzato per operationId diverso + blocco non-ribasabile Flutter con outbox conservata, test backend/Flutter e doc. CI/merge da verificare; nessun deploy. [Specifica](docs/P2-SYNC-INTENT-CONFLICTS.md).
 - 2026-11-05 | feat(p2.4b2p) | Read-only V11 post-release gate, inspector nullable fingerprint e CI PostgreSQL sintetica; nessun deploy/migrazione sulla VPS, docs e runbook aggiornati. CI/merge da verificare. [Runbook](docs/RELEASE-V11-READINESS.md).
 
 - 2026-11-05 | feat(p2.4b2o) | Flyway V11 nullable fingerprint canonical SHA256 per nuovi sync_operation, stop stesso opID con intento diverso, retry post-CAS compatibile, test concorrenza/storico, nessun deploy. CI/merge da verificare. [Specifica](docs/P2-FULL-BACKUP.md).

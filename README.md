@@ -150,4 +150,5 @@ Il client include anche il lettore sperimentale di inventario cloud, con validaz
 
 **P2.4B2P (rilascio in preparazione):** gate V11 **read-only** con controllo Flyway e della colonna fingerprint, prova automatica PostgreSQL sintetica e runbook separato; V10 storico preservato. [Verifica V11](docs/RELEASE-V11-READINESS.md).
 
-**P2.4B2R (in sviluppo):** il gate V11 verifica anche la capability autenticata del backend, impedendo un PASS solo perché le colonne DB sono aggiornate. Nessun deploy o test su dati reali. [Runbook V11](docs/RELEASE-V11-READINESS.md).
+
+**P2.4B2Q (in sviluppo):** i conflitti di riuso dell'operation ID hanno un codice distinto; Flutter interrompe la sincronizzazione e conserva outbox/SQLite anziché proporre un rebase errato. [Dettagli](docs/P2-SYNC-INTENT-CONFLICTS.md).

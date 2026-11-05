@@ -7,6 +7,7 @@ import '../auth/cloud_auth.dart';
 import '../data/app_database.dart';
 import '../data/local_store.dart';
 import 'restore_sync_gate.dart';
+import 'sync_apply_conflict.dart';
 
 class ConflictDetails {
   final String entityType;
@@ -122,6 +123,11 @@ class CloudSync extends StateNotifier<SyncState> {
       throw const SyncUpgradeRequired();
     }
     if (response.statusCode == 409) {
+      if (path == '/sync/apply' && response.bodyBytes.length <= 2048 &&
+          classifySyncApplyConflict(response.body) ==
+              SyncApplyConflictKind.operationIdReuse) {
+        throw const SyncOperationIdReuse();
+      }
       throw const SyncConflict();
     }
     if (response.statusCode < 200 || response.statusCode >= 300) {
@@ -362,6 +368,18 @@ class CloudSync extends StateNotifier<SyncState> {
       state = const SyncState(upgradeRequired: true, message:
         'Il server o un client precedente non supporta questa operazione o scadenza. '
         'Aggiorna il backend e i dispositivi; modifiche offline conservate.');
+    } on SyncOperationIdReuse {
+      // Do not expose the normal keep-local / keep-remote dialog. Rebase and
+      // operation ID reuse are distinct; rebasing cannot fix this violation.
+      // Preserve the entire pending outbox and the local SQLite contents.
+      state = const SyncState(
+        conflict: true,
+        message: 'Operazione già registrata con contenuto diverso. '
+            'Sincronizzazione interrotta: note, attività e modifiche '
+            'in attesa sono conservate sul dispositivo. '
+            'Non ripetere la risoluzione automatica; verificare il conflitto '
+            'prima di riprendere.',
+      );
     } on SyncConflict {
       final op = conflicting;
       ConflictDetails? details;
@@ -456,4 +474,8 @@ class SyncUpgradeRequired implements Exception {
 
 class SyncConflict implements Exception {
   const SyncConflict();
+}
+
+class SyncOperationIdReuse implements Exception {
+  const SyncOperationIdReuse();
 }

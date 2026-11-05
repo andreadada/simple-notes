@@ -175,6 +175,7 @@ Quando l'operation ID esiste già, dopo lock owner il server confronta proprieta
 
 Migrazione Flyway **V11__sync_operation_intent_fingerprint.sql**: una colonna nullable, nessun indice, nessuna cancellazione o modifica delle righe preesistenti. Le operazioni storiche con fingerprint `NULL` conservano il vecchio comportamento di deduplica per owner/type/entity, perché l'intento originale non è ricostruibile con certezza. Il digest non è un token di autorizzazione e non è esposto nelle risposte HTTP. **Nessun deploy/migrazione eseguiti** sulla produzione.
 
-## P2.4B2R — Capability del backend per fingerprint V11
 
-L'endpoint autenticato `GET /api/v1/capabilities` aggiunge il campo numerico `syncOperationFingerprintSchema:1`. Non restituisce fingerprint, operation ID, payload, JWT o dati dei proprietari. Il gate di rilascio V11 lo richiede insieme agli schemi di scadenza/time blocking/ricorrenza; il validatore interpreta solo l'intero 1 come supportato, mai stringhe o boolean. Gli endpoint precedenti restano invariati. [Runbook V11](RELEASE-V11-READINESS.md).
+## P2.4B2Q — Risposta 409 con codice per riuso incompatibile
+
+Quando un `operationId` appartiene allo stesso owner ma viene riutilizzato su un'altra entità o con richiesta incompatibile con il fingerprint V11 (payload, action o expectedVersion diversi), `POST /api/v1/sync/apply` restituisce `409` JSON `{"code":"SYNC_OPERATION_ID_REUSE"}`. I 409 normali per version conflict e le collisioni fra owner conservano la risposta precedente, senza codice specifico. La risposta non contiene valori privati. Il codice non autorizza un nuovo write né permette di sbloccare la coda automaticamente. [Dettagli](P2-SYNC-INTENT-CONFLICTS.md).

@@ -161,6 +161,7 @@ Per nuovi eventi, `sync_operation.request_fingerprint` protegge dal riutilizzo a
 
 Per compatibilità, record `sync_operation` storici `request_fingerprint=NULL` restano deduplicati con il comportamento precedente; non esiste una prova affidabile dell'intento originario. La migrazione V11 è solo ADD COLUMN nullable: nessun backfill o cleanup. Nuovi operation ID emessi dagli endpoint REST legacy ricevono anch'essi il fingerprint lato server, ma senza chiave idempotente fornita dal client un retry HTTP di un POST create può ancora generare una nuova entità. La protezione non abilita restore/replay delle outbox importate.
 
-## P2.4B2R — Capability operativa V11 e client precedenti
 
-Il campo `syncOperationFingerprintSchema=1` segnala che l'istanza API pubblica il supporto per il fingerprint idempotente. I client preesistenti ignorano il nuovo campo senza cambi di protocollo; il gate V11 deve controllarlo per evitare un falso PASS quando DB e binario sono di versioni differenti. È un'annuncio, non una prova transazionale di un singolo retry o un'autorizzazione al restore. [Runbook](RELEASE-V11-READINESS.md).
+## P2.4B2Q — Gestione separata per 409 d'intento immutabile
+
+Client Flutter: soltanto il codice esplicito `SYNC_OPERATION_ID_REUSE` su `/sync/apply` viene interpretato come errore strutturale. Blocca la sincronizzazione, lascia intatti pending mutations/SQLite, non presenta la decisione conservare locale/remoto e non chiama `rebaseLocalConflict`. Gli altri 409 restano version conflicts tradizionali. Un errore d'intento non è risolvibile modificando la versione attesa e ritentando con il medesimo operation ID. [Specifica](P2-SYNC-INTENT-CONFLICTS.md).

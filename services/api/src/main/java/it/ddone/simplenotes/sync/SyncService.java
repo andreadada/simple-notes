@@ -261,12 +261,16 @@ public class SyncService {
         Optional<SyncOperation> previous = operations.findById(req.operationId());
         if (previous.isPresent()) {
             SyncOperation old = previous.get();
-            if (!old.ownerId.equals(owner) || !old.entityType.equals(req.entityType()) ||
+            if (!old.ownerId.equals(owner)) {
+                // Never reveal details of another account's operation.
+                throw new ResponseStatusException(HttpStatus.CONFLICT,
+                    "Operation ID reused");
+            }
+            if (!old.entityType.equals(req.entityType()) ||
                     !old.entityId.equals(req.entityId()) ||
                     (old.requestFingerprint != null &&
                      !old.requestFingerprint.equals(fingerprint))) {
-                throw new ResponseStatusException(HttpStatus.CONFLICT,
-                    "Operation ID reused for a different mutation");
+                throw new SyncOperationIntentConflict();
             }
             // Pre-V11 historical rows have no fingerprint. Preserve their
             // legacy retry behavior; do not rewrite or backfill them.

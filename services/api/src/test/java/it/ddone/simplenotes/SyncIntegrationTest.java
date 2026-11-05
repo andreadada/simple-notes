@@ -703,7 +703,7 @@ class SyncIntegrationTest {
 
 
     @Test
-    void preflightRejectsLegacyRowsMissingFromSyncLedgerWithoutLeakingData()
+    void preflightRejectsUntrackedRowsMissingFromSyncLedgerWithoutLeakingData()
             throws Exception {
         var owner = users.save(new AppUser("legacy-ledger-owner-" + UUID.randomUUID(),
             "legacy-ledger-owner@example.com", "Legacy A"));
@@ -711,15 +711,12 @@ class SyncIntegrationTest {
             "legacy-ledger-other@example.com", "Legacy B"));
         String bearer = "Bearer " + jwt(owner.id);
         String otherBearer = "Bearer " + jwt(other.id);
-        String noteResponse = mvc.perform(post("/api/v1/notes")
-                .header("Authorization", bearer)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content("""
-                    {"title":"Private legacy title","body":"Private legacy body"}
-                    """))
-            .andExpect(status().isCreated())
-            .andReturn().getResponse().getContentAsString();
-        String noteId = mapper.readTree(noteResponse).path("id").asText();
+        // Simulate a data writer bypassing the synchronized REST services.
+        // Normal /notes mutations now append events atomically.
+        UUID rawId = UUID.randomUUID();
+        jdbc.update("INSERT INTO note (id,owner_id,title,body) VALUES (?,?,?,?)",
+            rawId, owner.id, "Untracked sensitive title", "Untracked body");
+        String noteId = rawId.toString();
         String expectedAbsent = """
             {"expectedCursor":0,"items":[
               {"entityType":"note","entityId":"%s",
@@ -746,7 +743,7 @@ class SyncIntegrationTest {
     }
 
     @Test
-    void preflightRejectsLegacyEditsAfterSyncedNotesEvenWhenCursorUnchanged()
+    void preflightRejectsUntrackedSqlEditsAfterSyncedNotes()
             throws Exception {
         var user = users.save(new AppUser("legacy-edit-owner-" + UUID.randomUUID(),
             "legacy-edit-owner@example.com", "Legacy edits"));
@@ -773,15 +770,11 @@ class SyncIntegrationTest {
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.consistent").value(true));
 
-        // Direct legacy PUT changes the stored version without a sync event.
-        mvc.perform(put("/api/v1/notes/" + noteId)
-                .header("Authorization", bearer)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content("""
-                    {"version":0,"title":"Legacy edited","body":"Sensitive new body"}
-                    """))
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("$.version").value(1));
+        // Direct SQL bypass (NOT the normal REST API) changes the row without
+        // creating a ledger event. The preflight must reject this corruption.
+        jdbc.update("UPDATE note SET title=?, body=?, version=version+1 " +
+            "WHERE id=? AND owner_id=?", "Untracked edit", "Sensitive new body",
+            UUID.fromString(noteId), user.id);
         mvc.perform(post("/api/v1/sync/reconciliation/check")
                 .header("Authorization", bearer)
                 .contentType(MediaType.APPLICATION_JSON).content(expected))
@@ -794,7 +787,7 @@ class SyncIntegrationTest {
     }
 
     @Test
-    void preflightRejectsLegacyTombstoneWithoutItsOwnSyncEvent()
+    void preflightRejectsUntrackedSqlTombstoneWithoutSyncEvent()
             throws Exception {
         var user = users.save(new AppUser("legacy-delete-owner-" + UUID.randomUUID(),
             "legacy-delete-owner@example.com", "Legacy deletion"));
@@ -809,9 +802,8 @@ class SyncIntegrationTest {
                 .contentType(MediaType.APPLICATION_JSON).content(create))
             .andExpect(status().isOk()).andReturn()
             .getResponse().getContentAsString()).path("changeId").asLong();
-        mvc.perform(delete("/api/v1/notes/" + entity)
-                .header("Authorization", bearer).param("version", "0"))
-            .andExpect(status().isNoContent());
+        jdbc.update("UPDATE note SET deleted_at=now(), version=version+1 " +
+            "WHERE id=? AND owner_id=?", UUID.fromString(entity), user.id);
         String check = """
             {"expectedCursor":%d,"items":[
               {"entityType":"note","entityId":"%s",
@@ -854,22 +846,18 @@ class SyncIntegrationTest {
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.consistent").value(true));
 
-        // Foreign untracked data must NOT affect this account.
-        mvc.perform(post("/api/v1/notes").header("Authorization", foreignBearer)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"title\":\"Foreign private\",\"body\":\"Hidden\"}"))
-            .andExpect(status().isCreated());
+        // A foreign owner's untracked SQL row must not affect this owner.
+        jdbc.update("INSERT INTO note (id,owner_id,title,body) VALUES (?,?,?,?)",
+            UUID.randomUUID(), foreign.id, "Foreign private", "Hidden");
         mvc.perform(post("/api/v1/sync/reconciliation/check")
                 .header("Authorization", bearer)
                 .contentType(MediaType.APPLICATION_JSON).content(check))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.consistent").value(true));
 
-        // A second, unlisted legacy note is absent from the inventory.
-        mvc.perform(post("/api/v1/notes").header("Authorization", bearer)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"title\":\"Unlisted private\",\"body\":\"Hidden\"}"))
-            .andExpect(status().isCreated());
+        // A directly inserted, unlisted note is invisible in the ledger.
+        jdbc.update("INSERT INTO note (id,owner_id,title,body) VALUES (?,?,?,?)",
+            UUID.randomUUID(), owner.id, "Untracked private", "Hidden");
         mvc.perform(post("/api/v1/sync/reconciliation/check")
                 .header("Authorization", bearer)
                 .contentType(MediaType.APPLICATION_JSON).content(check))
@@ -901,14 +889,10 @@ class SyncIntegrationTest {
               "entityId":"%s","changeId":%d,"version":0,"deleted":false}]}
             """.formatted(cursor, entity, cursor);
 
-        // A legacy task is not referenced in the requested note list.
-        String taskResult = mvc.perform(post("/api/v1/tasks")
-                .header("Authorization", bearer)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"title\":\"Legacy task\"}"))
-            .andExpect(status().isCreated())
-            .andReturn().getResponse().getContentAsString();
-        UUID taskId = UUID.fromString(mapper.readTree(taskResult).path("id").asText());
+        // A direct SQL task bypass is not referenced in the requested notes.
+        UUID taskId = UUID.randomUUID();
+        jdbc.update("INSERT INTO task (id,owner_id,title) VALUES (?,?,?)",
+            taskId, owner.id, "Untracked task");
         mvc.perform(post("/api/v1/sync/reconciliation/check")
                 .header("Authorization", bearer)
                 .contentType(MediaType.APPLICATION_JSON).content(check))

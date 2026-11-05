@@ -1254,4 +1254,180 @@ class SyncIntegrationTest {
             .andExpect(status().isConflict());
     }
 
+
+    @Test
+    void reusedOperationIdCannotSilentlyAcknowledgeDifferentIntent()
+            throws Exception {
+        var user = users.save(new AppUser("intent-bind-" + UUID.randomUUID(),
+            "intent-bind@example.com", "Intent"));
+        String bearer = "Bearer " + jwt(user.id);
+        UUID op = UUID.randomUUID();
+        UUID note = UUID.randomUUID();
+        String original = """
+            {"operationId":"%s","entityId":"%s","entityType":"note",
+             "action":"upsert",
+             "payload":{"title":"Original secret","body":"Confidential note"}}
+            """.formatted(op, note);
+        mvc.perform(post("/api/v1/sync/apply").header("Authorization", bearer)
+                .contentType(MediaType.APPLICATION_JSON).content(original))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.version").value(0));
+
+        String modifiedBody = """
+            {"operationId":"%s","entityId":"%s","entityType":"note",
+             "action":"upsert",
+             "payload":{"title":"Original secret","body":"DIFFERENT CONTENT"}}
+            """.formatted(op, note);
+        mvc.perform(post("/api/v1/sync/apply").header("Authorization", bearer)
+                .contentType(MediaType.APPLICATION_JSON).content(modifiedBody))
+            .andExpect(status().isConflict());
+        String modifiedVersion = """
+            {"operationId":"%s","entityId":"%s","entityType":"note",
+             "action":"upsert","expectedVersion":0,
+             "payload":{"title":"Original secret","body":"Confidential note"}}
+            """.formatted(op, note);
+        mvc.perform(post("/api/v1/sync/apply").header("Authorization", bearer)
+                .contentType(MediaType.APPLICATION_JSON).content(modifiedVersion))
+            .andExpect(status().isConflict());
+        String changedAction = """
+            {"operationId":"%s","entityId":"%s","entityType":"note",
+             "action":"delete","expectedVersion":0}
+            """.formatted(op, note);
+        mvc.perform(post("/api/v1/sync/apply").header("Authorization", bearer)
+                .contentType(MediaType.APPLICATION_JSON).content(changedAction))
+            .andExpect(status().isConflict());
+
+        mvc.perform(get("/api/v1/sync/changes").header("Authorization", bearer))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.changes.length()").value(1))
+            .andExpect(jsonPath("$.changes[0].payload.body").value("Confidential note"));
+        String fingerprint = jdbc.queryForObject(
+            "SELECT request_fingerprint FROM sync_operation WHERE id=?",
+            String.class, op);
+        org.junit.jupiter.api.Assertions.assertNotNull(fingerprint);
+        org.junit.jupiter.api.Assertions.assertTrue(
+            fingerprint.matches("[0-9a-f]{64}"));
+        org.junit.jupiter.api.Assertions.assertFalse(
+            fingerprint.contains("Confidential"));
+    }
+
+    @Test
+    void canonicalJsonAndChangedCursorStillPermitExactIdempotentRetry()
+            throws Exception {
+        var user = users.save(new AppUser("intent-retry-" + UUID.randomUUID(),
+            "intent-retry@example.com", "Retry"));
+        String bearer = "Bearer " + jwt(user.id);
+        UUID op = UUID.randomUUID();
+        UUID entity = UUID.randomUUID();
+        String original = """
+            {"operationId":"%s","entityId":"%s","entityType":"task",
+             "action":"upsert","expectedAccountCursor":0,
+             "payload":{"title":"Task","completed":false,
+                 "due":{"kind":"none"},"timeBlocks":[],
+                 "recurrence":{"kind":"none"},"priority":2,"tags":["Work"]}}
+            """.formatted(op, entity);
+        String first = mvc.perform(post("/api/v1/sync/apply")
+                .header("Authorization", bearer)
+                .contentType(MediaType.APPLICATION_JSON).content(original))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.version").value(0))
+            .andReturn().getResponse().getContentAsString();
+        // Same semantic JSON object, reordered recursively; transient CAS
+        // cursor changed because the first request already committed.
+        String retry = """
+            {"entityType":"task","entityId":"%s","operationId":"%s",
+             "expectedAccountCursor":9999,"action":"upsert",
+             "payload":{"tags":["Work"],"priority":2,
+                 "recurrence":{"kind":"none"},"timeBlocks":[],
+                 "due":{"kind":"none"},"completed":false,"title":"Task"}}
+            """.formatted(entity, op);
+        String again = mvc.perform(post("/api/v1/sync/apply")
+                .header("Authorization", bearer)
+                .contentType(MediaType.APPLICATION_JSON).content(retry))
+            .andExpect(status().isOk())
+            .andReturn().getResponse().getContentAsString();
+        org.junit.jupiter.api.Assertions.assertEquals(
+            mapper.readTree(first).path("changeId").asLong(),
+            mapper.readTree(again).path("changeId").asLong());
+        mvc.perform(get("/api/v1/sync/changes").header("Authorization", bearer))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.changes.length()").value(1));
+    }
+
+    @Test
+    void historicalOperationsWithoutFingerprintRemainIdempotent()
+            throws Exception {
+        var user = users.save(new AppUser("intent-historical-" + UUID.randomUUID(),
+            "intent-historical@example.com", "History"));
+        String bearer = "Bearer " + jwt(user.id);
+        UUID op = UUID.randomUUID();
+        UUID note = UUID.randomUUID();
+        String oldRequest = """
+            {"operationId":"%s","entityId":"%s","entityType":"note",
+             "action":"upsert","payload":{"title":"From old release","body":"Same"}}
+            """.formatted(op, note);
+        String initial = mvc.perform(post("/api/v1/sync/apply")
+                .header("Authorization", bearer)
+                .contentType(MediaType.APPLICATION_JSON).content(oldRequest))
+            .andExpect(status().isOk())
+            .andReturn().getResponse().getContentAsString();
+        jdbc.update("UPDATE sync_operation SET request_fingerprint=NULL WHERE id=?",
+            op);
+        String replay = mvc.perform(post("/api/v1/sync/apply")
+                .header("Authorization", bearer)
+                .contentType(MediaType.APPLICATION_JSON).content(oldRequest))
+            .andExpect(status().isOk())
+            .andReturn().getResponse().getContentAsString();
+        org.junit.jupiter.api.Assertions.assertEquals(
+            mapper.readTree(initial).path("changeId").asLong(),
+            mapper.readTree(replay).path("changeId").asLong());
+        mvc.perform(get("/api/v1/sync/changes").header("Authorization", bearer))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.changes.length()").value(1));
+    }
+
+    @Test
+    void concurrentReuseOfSameOperationIdWithDifferentBodyOnlyCommitsOnce()
+            throws Exception {
+        var user = users.save(new AppUser("intent-concurrent-" + UUID.randomUUID(),
+            "intent-concurrent@example.com", "Race"));
+        String bearer = "Bearer " + jwt(user.id);
+        UUID op = UUID.randomUUID(), note = UUID.randomUUID();
+        String a = """
+            {"operationId":"%s","entityId":"%s","entityType":"note",
+             "action":"upsert","payload":{"title":"A","body":"Alpha"}}
+            """.formatted(op, note);
+        String b = """
+            {"operationId":"%s","entityId":"%s","entityType":"note",
+             "action":"upsert","payload":{"title":"B","body":"Beta"}}
+            """.formatted(op, note);
+        var pool = Executors.newFixedThreadPool(2);
+        try {
+            CountDownLatch ready = new CountDownLatch(1);
+            Future<Integer> first = pool.submit(() -> {
+                ready.await();
+                return mvc.perform(post("/api/v1/sync/apply")
+                    .header("Authorization", bearer)
+                    .contentType(MediaType.APPLICATION_JSON).content(a))
+                    .andReturn().getResponse().getStatus();
+            });
+            Future<Integer> second = pool.submit(() -> {
+                ready.await();
+                return mvc.perform(post("/api/v1/sync/apply")
+                    .header("Authorization", bearer)
+                    .contentType(MediaType.APPLICATION_JSON).content(b))
+                    .andReturn().getResponse().getStatus();
+            });
+            ready.countDown();
+            org.junit.jupiter.api.Assertions.assertEquals(List.of(200, 409),
+                java.util.stream.Stream.of(first.get(30, TimeUnit.SECONDS),
+                    second.get(30, TimeUnit.SECONDS)).sorted().toList());
+        } finally {
+            pool.shutdownNow();
+        }
+        mvc.perform(get("/api/v1/sync/changes").header("Authorization", bearer))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.changes.length()").value(1));
+    }
+
 }

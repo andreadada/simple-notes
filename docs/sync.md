@@ -136,3 +136,8 @@ Il client richiede esclusivamente su click utente una singola POST a `/sync/reco
 ## P2.4B2K — Incoerenza legacy e letture del ledger
 
 Il preflight di riconciliazione deve fallire chiuso con 409 se una riga `note`, `task` o `task_list` dell'owner non è rappresentata da un evento coerente nel ledger. Controlla `version` e `deleted_at` sotto `REPEATABLE_READ` con query owner-scoped. Questo intercetta creazioni/aggiornamenti/cancellazioni da API legacy che non appendono `sync_change`; non cambia il comportamento di `/sync/apply` né quello dei client esistenti. Un inventory incompleto o un record mai sincronizzato non diventa automaticamente sicuro. Senza un vero protocollo di commit unico su tutte le API, resta possibile che una scrittura legacy avvenga dopo il preflight: non attivare mai un restore sulla sola base di questo check.
+
+
+## P2.4B2L — Copertura owner-wide della verifica sync
+
+Il preflight non si limita più alla lista degli ID richiesta dal client: controlla per l'intero proprietario la compatibilità tra righe reali (note/task/liste) e ultima versione/tombstone registrata nel ledger. Un record legacy mai sincronizzato, anche fuori dall'inventory, rende il controllo **409 fail-closed**. Un evento latest attivo privo della riga corrispondente è un'incoerenza. Un tombstone sintetico per entità già assente rimane rappresentabile e non blocca erroneamente l'account. Non viene inviata alcuna mutazione. Il controllo restando uno snapshot, non equivale a serializzazione dei writer legacy o a consenso per restore.

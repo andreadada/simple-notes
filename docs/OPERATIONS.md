@@ -259,3 +259,8 @@ Il nuovo preflight usa POST ma è **sola lettura** e JWT-scoped. Non include con
 ## P2.4B2K — Protezione preflight e 409
 
 Se `/sync/reconciliation/check` restituisce 409 anche con revisioni apparentemente corrette, un possibile motivo sono modifiche effettuate dalle API legacy senza eventi `sync_change`. Non ripetere automaticamente importazioni, non abbassare il cursore e non azzerare dati. Il controllo non scrive nulla: l'interfaccia segnala che l'inventario non è verificabile e richiede un nuovo confronto. Nessuna migrazione, operazione manuale DB o deploy eseguiti.
+
+
+## P2.4B2L — Errore 409 nel preflight completo
+
+Il check owner-wide può segnalare 409 anche se tutti gli elementi elencati nell'inventario sembrano allineati, perché una nota o attività legacy **fuori inventario** può essere discordante. È intenzionale: non azzerare dati, non forzare replay/cursore e non interpretare il risultato come perdita dati. Recuperare un nuovo inventario e valutare la riconciliazione solo quando esistono garanzie più forti; il restore reale resta disabilitato. Nessuna procedura manuale DB o aggiornamento Coolify eseguito.

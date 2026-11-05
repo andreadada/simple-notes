@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.oauth2.jose.jws.MacAlgorithm;
 import org.springframework.security.oauth2.jwt.*;
 import org.springframework.test.context.DynamicPropertyRegistry;
@@ -42,6 +43,7 @@ class SyncIntegrationTest {
     @Autowired AppUserRepository users;
     @Autowired JwtEncoder encoder;
     @Autowired ObjectMapper mapper;
+    @Autowired JdbcTemplate jdbc;
 
     String jwt(UUID id) {
         Instant now = Instant.now();
@@ -820,6 +822,140 @@ class SyncIntegrationTest {
                 .header("Authorization", bearer)
                 .contentType(MediaType.APPLICATION_JSON).content(check))
             .andExpect(status().isConflict());
+    }
+
+
+    @Test
+    void ownerWidePreflightRejectsUnlistedLegacyRowEvenWhenQueriedItemMatches()
+            throws Exception {
+        var owner = users.save(new AppUser("account-scan-" + UUID.randomUUID(),
+            "account-scan@example.com", "Owner"));
+        var foreign = users.save(new AppUser("account-scan-other-" + UUID.randomUUID(),
+            "account-scan-other@example.com", "Other"));
+        String bearer = "Bearer " + jwt(owner.id);
+        String foreignBearer = "Bearer " + jwt(foreign.id);
+        String entity = UUID.randomUUID().toString();
+        String create = """
+            {"operationId":"%s","entityId":"%s","entityType":"note",
+             "action":"upsert","payload":{"title":"Synced","body":"One"}}
+            """.formatted(UUID.randomUUID(), entity);
+        long cursor = mapper.readTree(mvc.perform(post("/api/v1/sync/apply")
+                .header("Authorization", bearer)
+                .contentType(MediaType.APPLICATION_JSON).content(create))
+            .andExpect(status().isOk()).andReturn()
+            .getResponse().getContentAsString()).path("changeId").asLong();
+        String check = """
+            {"expectedCursor":%d,"items":[{"entityType":"note",
+              "entityId":"%s","changeId":%d,"version":0,"deleted":false}]}
+            """.formatted(cursor, entity, cursor);
+        mvc.perform(post("/api/v1/sync/reconciliation/check")
+                .header("Authorization", bearer)
+                .contentType(MediaType.APPLICATION_JSON).content(check))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.consistent").value(true));
+
+        // Foreign untracked data must NOT affect this account.
+        mvc.perform(post("/api/v1/notes").header("Authorization", foreignBearer)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"title\":\"Foreign private\",\"body\":\"Hidden\"}"))
+            .andExpect(status().isCreated());
+        mvc.perform(post("/api/v1/sync/reconciliation/check")
+                .header("Authorization", bearer)
+                .contentType(MediaType.APPLICATION_JSON).content(check))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.consistent").value(true));
+
+        // A second, unlisted legacy note is absent from the inventory.
+        mvc.perform(post("/api/v1/notes").header("Authorization", bearer)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"title\":\"Unlisted private\",\"body\":\"Hidden\"}"))
+            .andExpect(status().isCreated());
+        mvc.perform(post("/api/v1/sync/reconciliation/check")
+                .header("Authorization", bearer)
+                .contentType(MediaType.APPLICATION_JSON).content(check))
+            .andExpect(status().isConflict());
+        mvc.perform(get("/api/v1/sync/changes")
+                .header("Authorization", bearer))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.changes.length()").value(1));
+    }
+
+    @Test
+    void ownerWidePreflightRejectsUnlistedLegacyTaskAndMissingActiveNote()
+            throws Exception {
+        var owner = users.save(new AppUser("scan-task-" + UUID.randomUUID(),
+            "scan-task@example.com", "Task check"));
+        String bearer = "Bearer " + jwt(owner.id);
+        String entity = UUID.randomUUID().toString();
+        String create = """
+            {"operationId":"%s","entityId":"%s","entityType":"note",
+             "action":"upsert","payload":{"title":"Tracked","body":"Contents"}}
+            """.formatted(UUID.randomUUID(), entity);
+        long cursor = mapper.readTree(mvc.perform(post("/api/v1/sync/apply")
+                .header("Authorization", bearer)
+                .contentType(MediaType.APPLICATION_JSON).content(create))
+            .andExpect(status().isOk()).andReturn()
+            .getResponse().getContentAsString()).path("changeId").asLong();
+        String check = """
+            {"expectedCursor":%d,"items":[{"entityType":"note",
+              "entityId":"%s","changeId":%d,"version":0,"deleted":false}]}
+            """.formatted(cursor, entity, cursor);
+
+        // A legacy task is not referenced in the requested note list.
+        String taskResult = mvc.perform(post("/api/v1/tasks")
+                .header("Authorization", bearer)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"title\":\"Legacy task\"}"))
+            .andExpect(status().isCreated())
+            .andReturn().getResponse().getContentAsString();
+        UUID taskId = UUID.fromString(mapper.readTree(taskResult).path("id").asText());
+        mvc.perform(post("/api/v1/sync/reconciliation/check")
+                .header("Authorization", bearer)
+                .contentType(MediaType.APPLICATION_JSON).content(check))
+            .andExpect(status().isConflict());
+        jdbc.update("DELETE FROM task WHERE id = ? AND owner_id = ?", taskId, owner.id);
+        mvc.perform(post("/api/v1/sync/reconciliation/check")
+                .header("Authorization", bearer)
+                .contentType(MediaType.APPLICATION_JSON).content(check))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.consistent").value(true));
+
+        // An active sync record without a physical note is also unsafe.
+        jdbc.update("DELETE FROM note WHERE id = ? AND owner_id = ?",
+            UUID.fromString(entity), owner.id);
+        mvc.perform(post("/api/v1/sync/reconciliation/check")
+                .header("Authorization", bearer)
+                .contentType(MediaType.APPLICATION_JSON).content(check))
+            .andExpect(status().isConflict());
+    }
+
+    @Test
+    void syntheticTombstoneWithoutPhysicalEntityRemainsRepresentable()
+            throws Exception {
+        var owner = users.save(new AppUser("scan-tombstone-" + UUID.randomUUID(),
+            "scan-tombstone@example.com", "Tombstone check"));
+        String bearer = "Bearer " + jwt(owner.id);
+        String entity = UUID.randomUUID().toString();
+        String remove = """
+            {"operationId":"%s","entityId":"%s",
+             "entityType":"note","action":"delete","expectedVersion":null}
+            """.formatted(UUID.randomUUID(), entity);
+        long cursor = mapper.readTree(mvc.perform(post("/api/v1/sync/apply")
+                .header("Authorization", bearer)
+                .contentType(MediaType.APPLICATION_JSON).content(remove))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.version").value(0))
+            .andReturn().getResponse().getContentAsString())
+            .path("changeId").asLong();
+        String check = """
+            {"expectedCursor":%d,"items":[{"entityType":"note",
+              "entityId":"%s","changeId":%d,"version":0,"deleted":true}]}
+            """.formatted(cursor, entity, cursor);
+        mvc.perform(post("/api/v1/sync/reconciliation/check")
+                .header("Authorization", bearer)
+                .contentType(MediaType.APPLICATION_JSON).content(check))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.consistent").value(true));
     }
 
 }

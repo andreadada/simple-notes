@@ -1212,7 +1212,7 @@ Ctrl+/ · Questo elenco'''),
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(sync.running ? 'Sincronizzazione in corso...'
-                    : sync.conflict ? 'Conflitto: modifica non inviata'
+                    : sync.conflict ? sync.message ?? 'Conflitto: modifica non inviata'
                     : sync.message ?? 'Sincronizzazione automatica attiva',
                     style: const TextStyle(fontSize: 12)),
                   const SizedBox(height: 4),

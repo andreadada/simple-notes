@@ -195,3 +195,8 @@ Aggiunta migrazione Flyway V11 **additiva e nullable** e digest canonical SHA-25
 ## P2.4B2P — Gate read-only di rilascio Flyway V11 (05/11/2026, PR)
 
 Inspector PostgreSQL esteso a V11 con controllo del fingerprint nullable VARCHAR(64), verifica della versione esatta e formati non nulli. Nuovo wrapper esplicito `infra/release-v11-readiness.sh`, senza modificare la verifica V10 storica; Compose CI prova su PostgreSQL **sintetico** V10→V11 e rifiuta colonna sbagliata. Nessuna verifica né deploy sulla VPS: lo stato reale confermato resta Flyway V10 (03/11). [Runbook](RELEASE-V11-READINESS.md).
+
+
+## P2.4B2Q — Errore strutturato su operationId non riutilizzabile (05/11/2026, PR)
+
+Il backend distingue un 409 da `SYNC_OPERATION_ID_REUSE` da un normale 409 di versione senza includere dati privati. Flutter ferma l'upload, conserva l'intera outbox e non offre la risoluzione keep-local/remote quando l'ID è legato a un intento già committato. Parser limitato e test API/Flutter aggiunti; CI/merge da verificare, nessun deploy. [Runbook](P2-SYNC-INTENT-CONFLICTS.md).

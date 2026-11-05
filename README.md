@@ -149,3 +149,6 @@ Il client include anche il lettore sperimentale di inventario cloud, con validaz
 **P2.4B2O (backend, in verifica):** i nuovi operation ID sono vincolati al payload e all'azione da un fingerprint canonico per impedire ACK idempotenti su mutazioni diverse; Flyway V11 è soltanto additiva e non deployata. [Specifica](docs/P2-FULL-BACKUP.md).
 
 **P2.4B2P (rilascio in preparazione):** gate V11 **read-only** con controllo Flyway e della colonna fingerprint, prova automatica PostgreSQL sintetica e runbook separato; V10 storico preservato. [Verifica V11](docs/RELEASE-V11-READINESS.md).
+
+
+**P2.4B2Q (in sviluppo):** i conflitti di riuso dell'operation ID hanno un codice distinto; Flutter interrompe la sincronizzazione e conserva outbox/SQLite anziché proporre un rebase errato. [Dettagli](docs/P2-SYNC-INTENT-CONFLICTS.md).

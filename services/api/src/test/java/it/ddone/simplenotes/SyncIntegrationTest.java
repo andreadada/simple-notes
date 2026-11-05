@@ -76,7 +76,8 @@ class SyncIntegrationTest {
             .andExpect(status().isOk()).andExpect(jsonPath("$.changes.length()").value(0));
         mvc.perform(post(path).header("Authorization", "Bearer " + jwt(b.id))
             .contentType(MediaType.APPLICATION_JSON).content(request))
-            .andExpect(status().isConflict());
+            .andExpect(status().isConflict())
+            .andExpect(jsonPath("$.code").doesNotExist());
     }
     @Test
     void noteCreatedOnDeviceAIsVisibleToDeviceBAndCanBeEdited() throws Exception {
@@ -1280,7 +1281,11 @@ class SyncIntegrationTest {
             """.formatted(op, note);
         mvc.perform(post("/api/v1/sync/apply").header("Authorization", bearer)
                 .contentType(MediaType.APPLICATION_JSON).content(modifiedBody))
-            .andExpect(status().isConflict());
+            .andExpect(status().isConflict())
+            .andExpect(jsonPath("$.code").value("SYNC_OPERATION_ID_REUSE"))
+            .andExpect(org.springframework.test.web.servlet.result.MockMvcResultMatchers
+                .content().string(org.hamcrest.Matchers.not(
+                    org.hamcrest.Matchers.containsString("Confidential note"))));
         String modifiedVersion = """
             {"operationId":"%s","entityId":"%s","entityType":"note",
              "action":"upsert","expectedVersion":0,
@@ -1288,14 +1293,22 @@ class SyncIntegrationTest {
             """.formatted(op, note);
         mvc.perform(post("/api/v1/sync/apply").header("Authorization", bearer)
                 .contentType(MediaType.APPLICATION_JSON).content(modifiedVersion))
-            .andExpect(status().isConflict());
+            .andExpect(status().isConflict())
+            .andExpect(jsonPath("$.code").value("SYNC_OPERATION_ID_REUSE"))
+            .andExpect(org.springframework.test.web.servlet.result.MockMvcResultMatchers
+                .content().string(org.hamcrest.Matchers.not(
+                    org.hamcrest.Matchers.containsString("Confidential note"))));
         String changedAction = """
             {"operationId":"%s","entityId":"%s","entityType":"note",
              "action":"delete","expectedVersion":0}
             """.formatted(op, note);
         mvc.perform(post("/api/v1/sync/apply").header("Authorization", bearer)
                 .contentType(MediaType.APPLICATION_JSON).content(changedAction))
-            .andExpect(status().isConflict());
+            .andExpect(status().isConflict())
+            .andExpect(jsonPath("$.code").value("SYNC_OPERATION_ID_REUSE"))
+            .andExpect(org.springframework.test.web.servlet.result.MockMvcResultMatchers
+                .content().string(org.hamcrest.Matchers.not(
+                    org.hamcrest.Matchers.containsString("Confidential note"))));
 
         mvc.perform(get("/api/v1/sync/changes").header("Authorization", bearer))
             .andExpect(status().isOk())
@@ -1428,6 +1441,39 @@ class SyncIntegrationTest {
         mvc.perform(get("/api/v1/sync/changes").header("Authorization", bearer))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.changes.length()").value(1));
+    }
+
+
+    @Test
+    void optimisticVersionConflictIsNotClassifiedAsImmutableIdCollision()
+            throws Exception {
+        var user = users.save(new AppUser("typed-version-409-" + UUID.randomUUID(),
+            "typed-version-409@example.com", "409"));
+        String bearer = "Bearer " + jwt(user.id);
+        UUID id = UUID.randomUUID();
+        String original = """
+            {"operationId":"%s","entityId":"%s","entityType":"note",
+             "action":"upsert","payload":{"title":"One","body":"Private"}}
+            """.formatted(UUID.randomUUID(), id);
+        mvc.perform(post("/api/v1/sync/apply")
+                .header("Authorization", bearer)
+                .contentType(MediaType.APPLICATION_JSON).content(original))
+            .andExpect(status().isOk());
+        String conflicting = """
+            {"operationId":"%s","entityId":"%s","entityType":"note",
+             "action":"upsert","expectedVersion":90,
+             "payload":{"title":"Wrong version","body":"No overwrite"}}
+            """.formatted(UUID.randomUUID(), id);
+        mvc.perform(post("/api/v1/sync/apply")
+                .header("Authorization", bearer)
+                .contentType(MediaType.APPLICATION_JSON).content(conflicting))
+            .andExpect(status().isConflict())
+            .andExpect(jsonPath("$.code").doesNotExist());
+        mvc.perform(get("/api/v1/sync/changes")
+                .header("Authorization", bearer))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.changes.length()").value(1))
+            .andExpect(jsonPath("$.changes[0].payload.title").value("One"));
     }
 
 }

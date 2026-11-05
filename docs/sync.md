@@ -160,3 +160,8 @@ La risposta `complete=true` indica un inventario completo **solo se** il databas
 Per nuovi eventi, `sync_operation.request_fingerprint` protegge dal riutilizzo accidentale dello stesso operationId con azione, versione attesa o payload diversi. Il server costruisce SHA-256 di un JSON canonico con entity ID/type, action, expectedVersion e contenuto, ignorando il cursore CAS momentaneo per conservare l'idempotenza dopo il commit. Confronto **sotto l'advisory lock** prima di ogni write. Intento diverso = 409, stessa richiesta semantica con proprietà JSON riordinate = stesso changeId/versione già applicati. L'array order resta significativo.
 
 Per compatibilità, record `sync_operation` storici `request_fingerprint=NULL` restano deduplicati con il comportamento precedente; non esiste una prova affidabile dell'intento originario. La migrazione V11 è solo ADD COLUMN nullable: nessun backfill o cleanup. Nuovi operation ID emessi dagli endpoint REST legacy ricevono anch'essi il fingerprint lato server, ma senza chiave idempotente fornita dal client un retry HTTP di un POST create può ancora generare una nuova entità. La protezione non abilita restore/replay delle outbox importate.
+
+
+## P2.4B2Q — Gestione separata per 409 d'intento immutabile
+
+Client Flutter: soltanto il codice esplicito `SYNC_OPERATION_ID_REUSE` su `/sync/apply` viene interpretato come errore strutturale. Blocca la sincronizzazione, lascia intatti pending mutations/SQLite, non presenta la decisione conservare locale/remoto e non chiama `rebaseLocalConflict`. Gli altri 409 restano version conflicts tradizionali. Un errore d'intento non è risolvibile modificando la versione attesa e ritentando con il medesimo operation ID. [Specifica](P2-SYNC-INTENT-CONFLICTS.md).

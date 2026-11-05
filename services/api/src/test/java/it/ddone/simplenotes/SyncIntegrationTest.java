@@ -1153,4 +1153,105 @@ class SyncIntegrationTest {
             .andExpect(jsonPath("$.changes[1].version").value(1));
     }
 
+
+    @Test
+    void inventoryFailsClosedForUnlistedOwnerDataButIsolatesOtherAccounts()
+            throws Exception {
+        var owner = users.save(new AppUser("inventory-a-" + UUID.randomUUID(),
+            "inventory-a@example.com", "Owner"));
+        var other = users.save(new AppUser("inventory-b-" + UUID.randomUUID(),
+            "inventory-b@example.com", "Other"));
+        String a = "Bearer " + jwt(owner.id);
+        String b = "Bearer " + jwt(other.id);
+        String id = UUID.randomUUID().toString();
+        String write = """
+            {"operationId":"%s","entityId":"%s","entityType":"note",
+             "action":"upsert","payload":{"title":"Tracked","body":"Hidden"}}
+            """.formatted(UUID.randomUUID(), id);
+        mvc.perform(post("/api/v1/sync/apply").header("Authorization", a)
+                .contentType(MediaType.APPLICATION_JSON).content(write))
+            .andExpect(status().isOk());
+        mvc.perform(get("/api/v1/sync/inventory").header("Authorization", a))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.complete").value(true))
+            .andExpect(jsonPath("$.items.length()").value(1))
+            .andExpect(jsonPath("$.items[0].entityId").value(id))
+            .andExpect(jsonPath("$.items[0].payload").doesNotExist());
+
+        jdbc.update("INSERT INTO note (id,owner_id,title,body) VALUES (?,?,?,?)",
+            UUID.randomUUID(), owner.id, "Unlisted secret", "Unlisted private body");
+        mvc.perform(get("/api/v1/sync/inventory").header("Authorization", a))
+            .andExpect(status().isConflict())
+            .andExpect(org.springframework.test.web.servlet.result.MockMvcResultMatchers
+                .content().string(org.hamcrest.Matchers.not(
+                    org.hamcrest.Matchers.containsString("Unlisted private body"))));
+        mvc.perform(get("/api/v1/sync/inventory").header("Authorization", b))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.complete").value(true))
+            .andExpect(jsonPath("$.items.length()").value(0));
+        mvc.perform(get("/api/v1/sync/changes").header("Authorization", a))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.changes.length()").value(1));
+    }
+
+    @Test
+    void inventoryTreatsLegacyRestWritesAndSyntheticTombstonesAsTracked()
+            throws Exception {
+        var user = users.save(new AppUser("inventory-bridge-" + UUID.randomUUID(),
+            "inventory-bridge@example.com", "Ledger"));
+        String bearer = "Bearer " + jwt(user.id);
+        String note = mvc.perform(post("/api/v1/notes")
+                .header("Authorization", bearer)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"title\":\"Synced legacy\",\"body\":\"Private text\"}"))
+            .andExpect(status().isCreated())
+            .andReturn().getResponse().getContentAsString();
+        String noteId = mapper.readTree(note).path("id").asText();
+        mvc.perform(get("/api/v1/sync/inventory").header("Authorization", bearer))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.items.length()").value(1))
+            .andExpect(jsonPath("$.items[0].entityId").value(noteId));
+        String missing = UUID.randomUUID().toString();
+        String tombstone = """
+            {"operationId":"%s","entityId":"%s",
+             "entityType":"note","action":"delete","expectedVersion":null}
+            """.formatted(UUID.randomUUID(), missing);
+        mvc.perform(post("/api/v1/sync/apply").header("Authorization", bearer)
+                .contentType(MediaType.APPLICATION_JSON).content(tombstone))
+            .andExpect(status().isOk());
+        mvc.perform(get("/api/v1/sync/inventory").header("Authorization", bearer))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.complete").value(true))
+            .andExpect(jsonPath("$.items.length()").value(2));
+    }
+
+    @Test
+    void inventoryDetectsMaterializedVersionChangesAndMissingActiveRows()
+            throws Exception {
+        var user = users.save(new AppUser("inventory-row-check-" + UUID.randomUUID(),
+            "inventory-row-check@example.com", "Rows"));
+        String bearer = "Bearer " + jwt(user.id);
+        String id = UUID.randomUUID().toString();
+        String write = """
+            {"operationId":"%s","entityId":"%s","entityType":"note",
+             "action":"upsert","payload":{"title":"Original","body":"Content"}}
+            """.formatted(UUID.randomUUID(), id);
+        mvc.perform(post("/api/v1/sync/apply").header("Authorization", bearer)
+                .contentType(MediaType.APPLICATION_JSON).content(write))
+            .andExpect(status().isOk());
+        jdbc.update("UPDATE note SET version=version+1, body=? " +
+            "WHERE id=? AND owner_id=?", "Private external edit",
+            UUID.fromString(id), user.id);
+        mvc.perform(get("/api/v1/sync/inventory").header("Authorization", bearer))
+            .andExpect(status().isConflict());
+        jdbc.update("UPDATE note SET version=0 WHERE id=? AND owner_id=?",
+            UUID.fromString(id), user.id);
+        mvc.perform(get("/api/v1/sync/inventory").header("Authorization", bearer))
+            .andExpect(status().isOk());
+        jdbc.update("DELETE FROM note WHERE id=? AND owner_id=?",
+            UUID.fromString(id), user.id);
+        mvc.perform(get("/api/v1/sync/inventory").header("Authorization", bearer))
+            .andExpect(status().isConflict());
+    }
+
 }

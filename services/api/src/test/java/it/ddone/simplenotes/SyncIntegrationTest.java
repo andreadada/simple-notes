@@ -1323,7 +1323,7 @@ class SyncIntegrationTest {
             {"operationId":"%s","entityId":"%s","entityType":"task",
              "action":"upsert","expectedAccountCursor":0,
              "payload":{"title":"Task","completed":false,
-                 "due":{"kind":"none"},"timeBlocks":[],
+                 "due":{"kind":"date","date":"2026-11-20"},"timeBlocks":[],
                  "recurrence":{"kind":"none"},"priority":2,"tags":["Work"]}}
             """.formatted(op, entity);
         String first = mvc.perform(post("/api/v1/sync/apply")
@@ -1339,7 +1339,7 @@ class SyncIntegrationTest {
              "expectedAccountCursor":9999,"action":"upsert",
              "payload":{"tags":["Work"],"priority":2,
                  "recurrence":{"kind":"none"},"timeBlocks":[],
-                 "due":{"kind":"none"},"completed":false,"title":"Task"}}
+                 "due":{"date":"2026-11-20","kind":"date"},"completed":false,"title":"Task"}}
             """.formatted(entity, op);
         String again = mvc.perform(post("/api/v1/sync/apply")
                 .header("Authorization", bearer)

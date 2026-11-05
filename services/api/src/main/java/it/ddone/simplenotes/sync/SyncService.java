@@ -102,6 +102,13 @@ public class SyncService {
                     "Incomplete expected revision");
             }
         }
+        // Check the entire owner account, not just the entities submitted
+        // by the client. An inventory derived solely from sync_change could
+        // otherwise omit unrelated legacy-created records entirely.
+        if (!ownerMaterializedHistoryCoherent(owner)) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT,
+                "Account data and sync history differ");
+        }
         long cursor = ((Number) em.createNativeQuery(
                 "SELECT COALESCE(MAX(id),0) FROM sync_change WHERE owner_id = :owner")
             .setParameter("owner", owner).getSingleResult()).longValue();
@@ -136,6 +143,51 @@ public class SyncService {
             List.copyOf(observed));
     }
 
+    /// Complete account read-only consistency scan for the preflight.
+    /// Both halves are necessary:
+    /// 1) materialized rows missing/mismatched in sync history;
+    /// 2) latest active sync events whose materialized entity is missing.
+    /// A synthetic tombstone for an already-absent entity is valid, however.
+    /// Table names are a compile-time allowlist, never user-controlled.
+    private boolean ownerMaterializedHistoryCoherent(UUID owner) {
+        for (var entry : Map.of(
+                "note", "note",
+                "task", "task",
+                "list", "task_list").entrySet()) {
+            String type = entry.getKey();
+            String table = entry.getValue();
+            Object unmatchedRows = em.createNativeQuery(
+                    "SELECT EXISTS (SELECT 1 FROM " + table + " materialized " +
+                    "LEFT JOIN LATERAL (" +
+                    "SELECT c.version, c.deleted FROM sync_change c " +
+                    "WHERE c.owner_id = :owner AND c.entity_type = :type " +
+                    "AND c.entity_id = materialized.id " +
+                    "ORDER BY c.id DESC LIMIT 1) ledger ON TRUE " +
+                    "WHERE materialized.owner_id = :owner AND " +
+                    "(ledger.version IS NULL OR " +
+                    "ledger.version <> materialized.version OR " +
+                    "ledger.deleted <> (materialized.deleted_at IS NOT NULL)))")
+                .setParameter("owner", owner)
+                .setParameter("type", type).getSingleResult();
+            if (Boolean.TRUE.equals(unmatchedRows)) return false;
+
+            Object missingActiveRows = em.createNativeQuery(
+                    "SELECT EXISTS (SELECT 1 FROM (" +
+                    "SELECT DISTINCT ON (entity_id) entity_id, deleted " +
+                    "FROM sync_change WHERE owner_id = :owner " +
+                    "AND entity_type = :type " +
+                    "ORDER BY entity_id, id DESC) ledger " +
+                    "LEFT JOIN " + table + " materialized " +
+                    "ON materialized.id = ledger.entity_id " +
+                    "AND materialized.owner_id = :owner " +
+                    "WHERE materialized.id IS NULL AND NOT ledger.deleted)")
+                .setParameter("owner", owner)
+                .setParameter("type", type).getSingleResult();
+            if (Boolean.TRUE.equals(missingActiveRows)) return false;
+        }
+        return true;
+    }
+
     /// Fail closed if an entity was created/changed by a legacy endpoint
     /// without updating the sync ledger. Only approved table identifiers
     /// are interpolated. Parameters always scope owner and entity ID.
@@ -156,7 +208,9 @@ public class SyncService {
             .setParameter("entity", entityId)
             .getResultList();
         if (rows.size() != 1) {
-            return rows.isEmpty() && latest == null;
+            // /sync/apply delete of a nonexistent record deliberately
+            // generates a tombstone even though there is no physical row.
+            return rows.isEmpty() && (latest == null || latest.deleted);
         }
         if (latest == null) return false;
         Object[] row = rows.get(0);

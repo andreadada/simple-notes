@@ -231,3 +231,7 @@ Questa protezione non autorizza restore/replay: serve solo a non fornire un inve
 Per prevenire falsi ACK, il server lega ciascuna **nuova** mutazione a un'impronta dell'intento (action, expectedVersion, entityId/type, payload JSON in ordine canonico). Uno stesso operation ID con contenuto diverso restituisce 409 anche se owner e ID entità corrispondono; nessuna nuova scrittura. I retry esatti restano idempotenti dopo l'avanzamento del cursore. I dati precedenti non vengono cancellati né reinterpretati: la nuova colonna nullable di Flyway V11 è inizialmente NULL per le operazioni storiche e mantiene la precedente compatibilità.
 
 Test Testcontainers includono payload cambiato, versioni/azioni diverse, campi JSON riordinati inclusi nested objects, cursore cambiato, record storici senza fingerprint e richieste concorrenti sul medesimo operation ID. Questo non autorizza restore live, approvazione dei conflitti o reinvio delle vecchie code: servono ancora consenso e controlli CAS/durabilità. Nessun deploy DB o Coolify eseguito.
+
+## P2.4B2R — No release PASS con backend V10 e DB V11
+
+Oltre a verificare la colonna V11, la release readiness richiede che l'API autenticata annunci `syncOperationFingerprintSchema=1`. La capability è sola lettura: né la sua presenza né il PASS del gate autorizzano il restore live o il replay di una outbox importata. La versione backend distribuita dovrà comunque essere provata separatamente e la UI non si abilita da questo flag. [Runbook](RELEASE-V11-READINESS.md).

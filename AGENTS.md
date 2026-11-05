@@ -208,3 +208,7 @@ Ogni `SyncOperation` **nuova** deve memorizzare fingerprint SHA-256 canonico di 
 ## P2.4B2P — Ispezione V11 solo in lettura
 
 Mantenere `infra/release-readiness.sh` V10 compatibile con lo storico; usare `infra/release-v11-readiness.sh` per la verifica esatta V11 **solo dopo un rollout separatamente autorizzato**. L'inspector PostgreSQL deve rifiutare mismatch Flyway ↔ colonna fingerprint, schema diverso da nullable VARCHAR(64), formati non esadecimali, DB sbagliato o migration fallita, senza stampare password, token, ID o valori. Testare con Compose su schema PostgreSQL **sintetico**. Non introdurre `ALTER TABLE`, `flyway migrate`, `pg_restore`, reset o deploy in script read-only. [Runbook](docs/RELEASE-V11-READINESS.md).
+
+## Vincolo P2.4B2R — V11 richiede anche capability runtime
+
+Non interpretare `FLYWAY_LATEST=11` come prova che il binario API sia aggiornato: `release-v11-readiness.sh` deve verificare il campo JWT `syncOperationFingerprintSchema=1` con tipo **intero**, rifiutando campo assente/stringa/bool. Il gate storico V10 rimane compatibile senza flag obbligatorio. La capability non deve esporre fingerprint, ID, body, email, JWT o payload; non deve attivare ripristino/scritture. Testare il validatore Python offline e l'API con Testcontainers. [Runbook](docs/RELEASE-V11-READINESS.md).

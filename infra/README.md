@@ -190,3 +190,7 @@ L'utente ha verificato dal container PostgreSQL Simple Notes: V10, FAILED_MIGRAT
 ## Gate V11 solo lettura — P2.4B2P
 
 `infra/release-v11-readiness.sh` verifica dopo un **eventuale** rollout autorizzato la versione Flyway esatta V11 e la colonna nullable VARCHAR(64) per impronte idempotenti, oltre a HTTPS health/capability con JWT di prova. Nessuna migration, installazione o modifica dei dati. Il vecchio `release-readiness.sh` rimane per V10. [Runbook V11](../docs/RELEASE-V11-READINESS.md).
+
+## P2.4B2R — Capability runtime V11
+
+`release-v11-readiness.sh` ora richiede `syncOperationFingerprintSchema:1` dal servizio autenticato, non solo Flyway 11; il flag è verificato in read-only. `release-readiness.sh` V10 continua a usare il contratto precedente. Verificare separatamente release approvata, runtime e sync dispositivo su account di prova. [Runbook](../docs/RELEASE-V11-READINESS.md).

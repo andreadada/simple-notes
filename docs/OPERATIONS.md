@@ -283,3 +283,7 @@ Al prossimo rilascio backend, Flyway potrebbe applicare `V11__sync_operation_int
 ## P2.4B2P — Gate di verifica V11, senza deploy
 
 Il runbook [RELEASE-V11-READINESS.md](RELEASE-V11-READINESS.md) separa il vecchio gate V10 dal nuovo `bash infra/release-v11-readiness.sh`, che **non migra** il DB e rifiuta V10, V11 incompleta o fingerprint in formato non valido. `DB_CONTAINER` e JWT di prova devono essere definiti solo dall'amministratore dopo una decisione di rilascio; il token non deve essere riportato in chat né salvato. Il PASS V11 non autorizza restore, writer di riconciliazione, installazione dei dispositivi o presume che il backend runtime sia aggiornato. Nessuna azione su Coolify effettuata.
+
+## P2.4B2R — Doppia evidenza V11 senza modifiche
+
+Per il rilascio V11, il controllo read-only richiede **sia** la colonna Flyway `request_fingerprint VARCHAR(64) NULL` **sia** la capability API autenticata `syncOperationFingerprintSchema:1`. Se una sola manca, il gate si interrompe prima di qualsiasi fase sul client. Non correggere la discrepanza manualmente sul DB: serve una decisione separata di rollout e backup verificato. Le vecchie verifiche V10 restano utilizzabili senza richiedere V11. [Runbook](RELEASE-V11-READINESS.md).

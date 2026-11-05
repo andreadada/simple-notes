@@ -149,3 +149,5 @@ Il client include anche il lettore sperimentale di inventario cloud, con validaz
 **P2.4B2O (backend, in verifica):** i nuovi operation ID sono vincolati al payload e all'azione da un fingerprint canonico per impedire ACK idempotenti su mutazioni diverse; Flyway V11 è soltanto additiva e non deployata. [Specifica](docs/P2-FULL-BACKUP.md).
 
 **P2.4B2P (rilascio in preparazione):** gate V11 **read-only** con controllo Flyway e della colonna fingerprint, prova automatica PostgreSQL sintetica e runbook separato; V10 storico preservato. [Verifica V11](docs/RELEASE-V11-READINESS.md).
+
+**P2.4B2R (in sviluppo):** il gate V11 verifica anche la capability autenticata del backend, impedendo un PASS solo perché le colonne DB sono aggiornate. Nessun deploy o test su dati reali. [Runbook V11](docs/RELEASE-V11-READINESS.md).

@@ -449,3 +449,7 @@ Gate deploy: verificare backup PostgreSQL con restore isolato già validato, Fly
 ## Handoff 05/11/2026 — P2.4B2P
 
 `infra/t4-inspect-db.sh` ora accetta V11 e verifica `sync_operation.request_fingerprint` di tipo VARCHAR(64), nullable e valori SHA-256 esadecimali se non nulli; su V10 rifiuta una colonna V11 prematura. `infra/release-v11-readiness.sh` esegue solo inspector esatto V11 e check health/capability autenticata. La Compose CI esercita V11 su un container sintetico, incluso test di forma errata. Il precedente `release-readiness.sh` resta esplicitamente per V10. Nessun JWT, deploy, dump, restore o migration eseguito su dati reali. [Runbook](RELEASE-V11-READINESS.md).
+
+## Handoff 05/11/2026 — P2.4B2R
+
+`CapabilitiesController.java` ora espone il numero schema fingerprint V11; `t4-check-api.sh` passa `REQUIRE_SYNC_OPERATION_FINGERPRINT_SCHEMA` al validatore Python; `release-v11-readiness.sh` forza il nuovo gate, mentre V10 non lo richiede. `test_release_capabilities.py` verifica flag V11, mancanza, boolean/string, V10 compatibile e nessun leak in output; `SyncIntegrationTest.java` verifica capability JWT e metadata-only. L'upgrade DB, la nuova app backend e i client reali restano verifiche distinte: un flag esposto non prova il commit di un'operazione di prova. [Runbook](RELEASE-V11-READINESS.md).

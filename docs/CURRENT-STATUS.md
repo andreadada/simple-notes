@@ -195,3 +195,7 @@ Aggiunta migrazione Flyway V11 **additiva e nullable** e digest canonical SHA-25
 ## P2.4B2P — Gate read-only di rilascio Flyway V11 (05/11/2026, PR)
 
 Inspector PostgreSQL esteso a V11 con controllo del fingerprint nullable VARCHAR(64), verifica della versione esatta e formati non nulli. Nuovo wrapper esplicito `infra/release-v11-readiness.sh`, senza modificare la verifica V10 storica; Compose CI prova su PostgreSQL **sintetico** V10→V11 e rifiuta colonna sbagliata. Nessuna verifica né deploy sulla VPS: lo stato reale confermato resta Flyway V10 (03/11). [Runbook](RELEASE-V11-READINESS.md).
+
+## P2.4B2R — Capability runtime richiesta dal gate V11 (05/11/2026, PR)
+
+`/api/v1/capabilities` annuncia `syncOperationFingerprintSchema=1`; il wrapper V11 lo richiede esplicitamente e il validatore rifiuta tipi errati o capability mancante. Test Python offline per V10 backward compatibility/V11 strict e backend Testcontainers. Nessun cambiamento ai dati utenti, CI/merge da verificare, nessun deploy. [Runbook](RELEASE-V11-READINESS.md).

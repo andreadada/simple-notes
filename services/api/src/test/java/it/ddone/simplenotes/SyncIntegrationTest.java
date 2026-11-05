@@ -1430,4 +1430,19 @@ class SyncIntegrationTest {
             .andExpect(jsonPath("$.changes.length()").value(1));
     }
 
+    @Test
+    void authenticatedCapabilitiesAdvertiseRuntimeFingerprintSupport()
+            throws Exception {
+        var user = users.save(new AppUser("v11-capability-" + UUID.randomUUID(),
+            "v11-capability@example.com", "Capability"));
+        mvc.perform(get("/api/v1/capabilities")
+                .header("Authorization", "Bearer " + jwt(user.id)))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.taskDueSchema").value(1))
+            .andExpect(jsonPath("$.recurrenceSchema").value(1))
+            .andExpect(jsonPath("$.syncOperationFingerprintSchema").value(1))
+            .andExpect(jsonPath("$.operationId").doesNotExist())
+            .andExpect(jsonPath("$.fingerprint").doesNotExist());
+    }
+
 }

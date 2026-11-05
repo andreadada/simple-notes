@@ -178,3 +178,11 @@ L'utente apre «Esamina conflitti» dal confronto Forui ed esamina **in locale**
 Test coprono bozza vuota, scelte per elemento, sorgenti non disponibili, token falsificati, cambiamento fingerprint, owner differente, limite 500, immutabilità e assenza PII nel summary. I test fisici e il reale workflow di consenso/applicazione rimangono differiti.
 
 **Raffinamento UX:** `DraftConflictItem.warnings` mantiene motivi descrittivi per ogni record (assenza, cambiamento di contenuto, versione cloud non allineata, tombstone discordante o mutazione pendente). Sono stringhe fisse senza testo delle note/ID; la lista Forui mostra i motivi sotto il titolo solo nel dialog aperto dall'utente. Le scelte restano esclusivamente ipotetiche.
+
+## P2.4B2I — Gate API per la riconciliazione (05/11/2026)
+
+Backend: `POST /api/v1/sync/reconciliation/check` confronta una versione attesa del cursore e fino a 100 revisioni per entità con uno snapshot coerente e **soltanto in lettura**, protetto dallo scope JWT. Segnala match/versioni/tombstone senza esporre contenuto privato. La compatibilità e le forme incomplete/malformate vengono rifiutate.
+
+Per qualunque nuova scrittura del normale `/sync/apply` è ora possibile fornire `expectedAccountCursor`: il controllo avviene sotto lock dell'account, prima di nuove mutazioni; stato cambiato = 409 e **nessun effetto**. Anche le singole `expectedVersion` rimangono rilevanti. Test integrati per owner distinti, revisioni assenti, idempotenza e due scritture concorrenti con una sola ammessa.
+
+**Non è restore live:** il check non prenota il cloud, non equivale al consenso, non fa il backup SQLite, non consente di applicare un worksheet, non rigioca code importate. Restano obbligatori lock/durabilità del profilo installato, riconciliazione item-specific e consenso formale. Nessuna migrazione PostgreSQL o deploy Coolify.

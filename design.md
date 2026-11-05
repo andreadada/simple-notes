@@ -299,3 +299,7 @@ Dopo la consultazione esplicita dell'inventario cloud, lo stesso dialog Forui mo
 Il dialog di confronto aggregato mostra «Esamina conflitti» solo se esiste una scheda dettagliata completa. Nel dialog secondario Forui, la lista scrollabile presenta tipo e titolo (max una riga), disponibilità dispositivo/backup/cloud e lo stato di preferenza. Il pulsante inline «Cambia» alterna soltanto le sorgenti disponibili; il riepilogo indica quante bozze sono ancora da decidere. «Chiudi» scarta ogni scelta. Il pulsante secondario «Simula strategia generale» continua a variare la sola presentazione aggregata. Nessuna conferma «Applica», nessun upload e nessuna persistenza; i report privi di titoli rimangono separati dalla scheda autenticata. [Specifica](docs/P2-FULL-BACKUP.md).
 
 Nella scheda per elemento appaiono anche motivazioni non sensibili (sorgente mancante, versione differente, cancellazione discordante, modifica in coda), troncate a due righe per evitare overflow. Il riepilogo aggregato continua a non mostrare titoli né ID.
+
+## UX P2.4B2I — errore di versione non aggirabile
+
+Un controllo di precondizioni superato può diventare obsoleto subito dopo la lettura; una futura UI di restore dovrà chiedere un nuovo confronto dopo 409 e ripresentare le scelte, senza auto-retry. Nessun nuovo bottone `Applica`, `Ripristina` o `Sincronizza` introdotto in questa fase. [API](docs/api.md).

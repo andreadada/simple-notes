@@ -404,3 +404,9 @@ Nuovo `lib/data/reconciliation_dry_run.dart` con `ReconciliationDryRunPlanner.pr
 ## Handoff 04/11/2026 — P2.4B2H
 
 Nuovi `data/reconciliation_worksheet.dart` e `test/reconciliation_worksheet_test.dart`: vista read-only per elementi discordanti fra checkpoint locale, backup `.snb` e inventario, con `opaqueKey` legato al fingerprint della bozza; quattro ipotesi per elemento, limitate alle sorgenti effettivamente presenti. Scelte immutabili in memoria, non serializzabili nel formato backup e mai passate a API/DB. `main.dart` apre il dialog Forui «Esamina conflitti» dopo GET cloud; lista locale con tipo, titolo, disponibilità delle tre sorgenti e pulsante «Cambia», oltre a simulazione generale. All'uscita il worksheet è scartato; nuova consultazione richiede nuova analisi. Guard same-owner prima dell'apertura. Non è consenso persistente né un restore: release gate successivi per CAS server, lock e durabilità installazione, controllo race e azioni utente distinte. PR impilata sulla #39, nessun deploy.
+
+## Handoff 05/11/2026 — P2.4B2I
+
+`SyncController`: nuovi DTO del preflight read-only e `POST /sync/reconciliation/check`; `ApplyRequest` aggiunge `expectedAccountCursor` facoltativo. `SyncService`: batch compare nel medesimo snapshot PostgreSQL `REPEATABLE_READ`, e CAS per-account dopo lock e prima delle scritture `/apply`. `SyncIntegrationTest` testa owner-scoping, no leak, fail-closed, stale 409 senza DML, idempotenza, isolamento da cambiamenti di altro owner e race con due writer.
+
+Non collegato a Flutter, alla UI dei worksheet o a ripristino vero. Il check non prenota revisioni future; serve un writer con precondizioni CAS + versioni e consenso esplicito. Backend non distribuito su VPS; nessun reset/migrazione.

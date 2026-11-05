@@ -121,3 +121,11 @@ La risposta offre inventario coerente al momento della lettura, **non** una pren
 ## Consumo GET inventory dall'app (P2.4B2F)
 
 `RestoreServerInventoryReader` viene ora richiamato soltanto dopo pressione esplicita di «Consulta inventario cloud» nel dialog confronto backup. Il client usa access token **non scaduto**, controlla il medesimo account prima e dopo, accetta solo risposta completa con schema previsto e non esegue refresh/POST o altre scritture. Un backend senza l'endpoint (404) lascia il confronto soltanto locale. Inventario letto = osservazione puntuale, non autorizzazione di restore o replay; restano necessarie precondizioni lato server.
+
+## P2.4B2I — Controllo remoto e CAS atomico (05/11/2026)
+
+Nuovo endpoint **POST /api/v1/sync/reconciliation/check**: POST è richiesto soltanto per trasmettere l'elenco JSON e **non esegue scritture**. Contratto: `{"expectedCursor": 91, "items": [{"entityType":"note", "entityId":"UUID", "changeId":80, "version":3, "deleted":false}]}`. Fino a 100 revisioni (note, task, list), stesso owner dal JWT. Per entità non osservate nel ledger usare `changeId`, `version` e `deleted` tutti null. Risposta con `cursor`, `cursorMatches`, `consistent` e lista di revisioni osservate con `matches`; nessun titolo, body, payload o operation ID. Isolamento dell'account e snapshot PostgreSQL `REPEATABLE_READ`, lettura senza mutazioni.
+
+`POST /api/v1/sync/apply` accetta il nuovo campo facoltativo `expectedAccountCursor` (intero >= 0). Dopo `pg_advisory_xact_lock` per owner, e dopo la gestione del retry idempotente già applicato, verifica che `MAX(sync_change.id)` dello stesso account corrisponda al cursore atteso. In caso negativo **409 Conflict prima di ogni nuova scrittura**. Rimane il controllo `expectedVersion` sul record. I client esistenti che non inviano il campo funzionano come prima. Interleaving di cambiamenti su altri account non invalida il cursore locale.
+
+Il check read-only **non riserva** lo stato remoto: dopo la sua risposta altre richieste possono mutare i dati. Ogni futuro writer di riconciliazione dovrà portare precondizioni CAS/versione nello stesso commit e richiedere consenso. Nessuna migrazione o deploy in questa fase.

@@ -194,6 +194,8 @@ Dettagli e matrice: [docs/ui-design-audit.md](docs/ui-design-audit.md). Aggiorna
 
 ## Edit Timespan
 
+- 2026-11-05 | feat(p2.4b2n) | GET inventory ora usa audit owner-wide coerente con preflight prima di complete=true; test isolamenti owner, legacy SQL, versioni, tombstone e dati attivi mancanti. No deploy/restore; CI/merge da verificare. [Specifica](docs/P2-FULL-BACKUP.md).
+
 - 2026-11-05 | feat(p2.4b2m) | Le API note/task legacy mutano tramite SyncService owner-locked e ledger condiviso; test REST/concorrenza/preservazione scadenze, vecchi test legacy SQL bypass mantenuti, docs. CI/merge da verificare; nessun deploy. [Specifica](docs/P2-FULL-BACKUP.md).
 
 - 2026-11-05 | feat(p2.4b2l) | Audit read-only di tutto l'account note/task/liste vs ultimo evento sync, detect legacy non elencati, assenza riga attiva e tombstone sintetici; test PostgreSQL, nessun deploy/restore. CI/merge da verificare. [Specifica](docs/P2-FULL-BACKUP.md).

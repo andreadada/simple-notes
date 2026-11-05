@@ -141,3 +141,6 @@ Il client include anche il lettore sperimentale di inventario cloud, con validaz
 
 
 **P2.4B2M (backend, in verifica):** le API REST storiche note/task condividono il percorso di sincronizzazione, lo stesso lock per account e gli eventi necessari al cloud. Il restore vero rimane disabilitato; nessun deploy eseguito. [Specifiche](docs/P2-FULL-BACKUP.md).
+
+
+**P2.4B2N (backend in verifica):** l'inventario cloud controlla anche la coerenza dell'intero account prima di dichiararsi completo; eventuali dati legacy non tracciati producono un errore non distruttivo. [Specifica](docs/P2-FULL-BACKUP.md).

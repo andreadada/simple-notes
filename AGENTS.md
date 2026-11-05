@@ -194,3 +194,8 @@ La verifica `/sync/reconciliation/check` non deve considerare sicuro un account 
 ## Vincolo P2.4B2M — ogni write legacy dentro sync/ledger
 
 Tutte le mutazioni dei controller REST storici `/notes` e `/tasks` devono avvenire nello stesso percorso owner-locked `SyncService.apply`; vietato introdurre `saveAndFlush` diretto nei servizi legacy. Prima di leggere una riga per update, PATCH completion o delete, acquisire il lock advisory owner nella **stessa transazione**. Preservare `expectedVersion`, tombstone e 426 per vecchi editor su scadenze civili, non cancellare timeBlocks/recurrence/tags/subtasks durante PATCH completion. REST non fornisce idempotency key client, quindi evitare di promettere retry exactly-once per POST create. Testare che `sync_change` e `sync_operation` accompagnino commit REST; anomalie SQL storiche vanno rilevate, non autoriparate. Restore live e deploy restano fuori scope. [Specifica](docs/P2-FULL-BACKUP.md).
+
+
+## Vincolo P2.4B2N — inventory non può essere completo su un account incoerente
+
+Il GET `/sync/inventory` deve restare read-only, JWT owner-scoped, e invocare la stessa guardia di coerenza account-wide del preflight prima di dichiarare `complete=true`. Se l'ultimo evento sync non rappresenta una riga materializzata, o un latest attivo manca nella tabella, rispondere 409 senza payload di note o account. I synthetic tombstones rimangono validi. **Non** tentare backfill, reset, replay o restore come risposta automatica. Un inventory coerente non è un lease per future mutazioni. [Specifica](docs/P2-FULL-BACKUP.md).

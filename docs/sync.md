@@ -148,3 +148,8 @@ Il preflight non si limita più alla lista degli ID richiesta dal client: contro
 Il write-path è unificato: note e task dei vecchi endpoint passano per `SyncService.apply`, con lock advisory PostgreSQL transazionale per account, version check e evento `sync_change` scritto nella stessa transazione. Per evitare ORM stale-read, il lock viene ottenuto **prima** di caricare una nota/task da aggiornare o cancellare. Anche PATCH completion pubblica l'intero payload moderno preservando scheduled due, blocks e recurrence. Il vecchio editor completo non può sostituire una scadenza civile e conserva 426.
 
 I retry REST non hanno un operation ID fornito dal client e ne generano uno nuovo, perciò non hanno deduplica end-to-end dopo retry di rete; resta invece l'optimistic lock sui PUT e la serializzazione per owner. I client sync continuano a usare i propri operation ID idempotenti. I record legacy storicamente non tracciati rimangono rilevabili dal controllo owner-wide e sono volutamente **non riparati automaticamente**.
+
+
+## P2.4B2N — Contratto `complete=true` dell'inventory
+
+La risposta `complete=true` indica un inventario completo **solo se** il database owner-scoped è coerente con il registro sync per presenza, versione e tombstone di note/task/liste; altrimenti HTTP 409, nessuna vista parziale. Il controllo avviene in sola lettura nello stesso snapshot repeatable-read e usa il metodo già testato dal preflight. Non copre eventuali SQL esterni senza aumento di versione o race dopo la risposta. Il client continua a richiedere consenso e guard CAS in ogni futuro write; nessuna sync/import automatico è autorizzato da `complete=true`.

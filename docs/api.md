@@ -158,3 +158,10 @@ I vecchi endpoint `/api/v1/notes` (POST, PUT, DELETE) e `/api/v1/tasks` (POST, P
 Per update/delete/completion, il service **acquisisce il lock advisory per owner prima di leggere il record**, quindi applica il confronto di versione sotto lo stesso lock. Un conflitto concorrente provoca 409 invece di un overwrite silenzioso. Le note cancellate non vengono risuscitate da un PUT. Gli update REST di task continuano a rifiutare civil due `date`/`datetime` (426). Il PATCH completion, invece, invia un payload canonico che preserva due, timeBlocks, recurrence, lista, priority, tags e subtasks. Qualsiasi mutazione legacy è quindi visibile in `GET /sync/changes` e invalida correttamente il cursore opzionale `expectedAccountCursor`.
 
 **Attenzione:** dati già scritti in passato fuori dal registro non vengono migrati o cancellati. Il fail-closed owner-wide del preflight rimane necessario contro righe storiche discordanti o scritture SQL esterne. Nessuna migrazione DB richiesta, nessun deploy eseguito.
+
+
+## P2.4B2N — Inventory GET fail-closed sull'integrità dell'account (05/11/2026)
+
+Anche `GET /api/v1/sync/inventory` esegue ora la verifica già prevista da `/sync/reconciliation/check` di **tutte** le note, attività e liste materializzate contro il più recente evento per proprietario, dentro lo stesso snapshot PostgreSQL `REPEATABLE_READ`. Non può più inviare `complete=true` quando il ledger omette dati legacy, quando una riga è stata aggiornata fuori protocollo o quando il latest event segnala un'entità attiva fisicamente assente. Per una discrepanza risponde HTTP 409 senza dati riservati. Un tombstone sintetico senza riga resta valido. Nessun endpoint, schema, migration o response JSON modificato.
+
+I client Flutter che interrogano inventario gestiscono già gli errori 409 come non verificabile e **non** proseguono con il restore. Il controllo non garantisce assenza di future modifiche, contenuti identici a parità di versione, né corregge i dati storici. Non è un'operazione di backfill e non richiede reset.

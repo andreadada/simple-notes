@@ -186,3 +186,11 @@ Backend: `POST /api/v1/sync/reconciliation/check` confronta una versione attesa 
 Per qualunque nuova scrittura del normale `/sync/apply` è ora possibile fornire `expectedAccountCursor`: il controllo avviene sotto lock dell'account, prima di nuove mutazioni; stato cambiato = 409 e **nessun effetto**. Anche le singole `expectedVersion` rimangono rilevanti. Test integrati per owner distinti, revisioni assenti, idempotenza e due scritture concorrenti con una sola ammessa.
 
 **Non è restore live:** il check non prenota il cloud, non equivale al consenso, non fa il backup SQLite, non consente di applicare un worksheet, non rigioca code importate. Restano obbligatori lock/durabilità del profilo installato, riconciliazione item-specific e consenso formale. Nessuna migrazione PostgreSQL o deploy Coolify.
+
+## P2.4B2J — Ricontrollo remoto facoltativo dal dialog backup (05/11/2026, PR)
+
+Nel dialog Forui di confronto .snb, dopo «Consulta inventario cloud», compare «Ricontrolla revisioni». Solo su click e con owner invariato, access token non scaduto e recovery gate libero, il client invia una **POST read-only** con revisioni e cursore attesi a `/api/v1/sync/reconciliation/check`. Non invia nota/body/payload/password, non esegue refresh delle credenziali e non chiama `/sync/apply`. La risposta viene verificata integralmente (metadata-only, shape e corrispondenza ID/versione/tombstone/cursor); riepilogo soltanto numerico.
+
+Se il server rileva revisione/cursore differente, il client invalida inventario, worksheet e piano di riconciliazione precedente: serve nuova consultazione cloud. Se HTTP 404/401/409, token scaduto, formato errato oppure inventario >100 entità, **fallisce chiuso** e non effettua alcuna modifica. Anche quando `consistent=true`, la verifica non blocca scritture concorrenti future e **non** sblocca restore, applicazione delle scelte, replay dell'outbox o AutoSync.
+
+Test MockClient: una POST metadata-only, risposta coerente, variazioni di versione/cursor, payload extra non previsti, ID diversi, 404, HTTPS, limiti 100 e token assente. Nessun deploy Coolify e nessun restore reale.

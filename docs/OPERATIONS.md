@@ -250,3 +250,7 @@ Da «Confronta backup» → «Consulta inventario cloud» → «Esamina conflitt
 ## P2.4B2I — Contratto backend non ancora deployato
 
 Il nuovo preflight usa POST ma è **sola lettura** e JWT-scoped. Non include contenuti delle note, non muta `sync_change` o `sync_operation` e rifiuta più di 100 revisioni o ID ripetuti. Il `expectedAccountCursor` facoltativo evita overwrite con cursore stale quando il chiamante lo fornisce; 409 richiede nuovo confronto, non replay automatico. Non attivare restore o invio di outbox importate, non eseguire deploy o migrazioni in questa fase.
+
+## P2.4B2J — Pulsante ricontrolla revisioni
+
+«Confronta backup» → «Consulta inventario cloud» → «Ricontrolla revisioni» richiede una singola POST **senza effetti** all'endpoint backend. Non utilizzare questo percorso per importare dati o forzare una sincronizzazione. Se il server non è stato deployato e risponde 404, la vecchia bozza deve essere rifiutata, non considerata coerente. Un esito positivo non è una autorizzazione di restore. Nessun comando deploy VPS/Coolify o modifica database svolti in questo milestone.

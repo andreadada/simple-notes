@@ -303,3 +303,7 @@ Nella scheda per elemento appaiono anche motivazioni non sensibili (sorgente man
 ## UX P2.4B2I — errore di versione non aggirabile
 
 Un controllo di precondizioni superato può diventare obsoleto subito dopo la lettura; una futura UI di restore dovrà chiedere un nuovo confronto dopo 409 e ripresentare le scelte, senza auto-retry. Nessun nuovo bottone `Applica`, `Ripristina` o `Sincronizza` introdotto in questa fase. [API](docs/api.md).
+
+## UX P2.4B2J — verifica versioni senza permessi write
+
+«Ricontrolla revisioni» appare soltanto dopo «Consulta inventario cloud». Durante la richiesta indica «Verifica...», poi presenta un messaggio a conteggi senza ID né contenuti personali. Se versioni/cursor sono cambiati, disabilita la scheda vecchia e suggerisce di consultare nuovamente il cloud. In caso di errore o API non distribuita, mostra esito non verificabile e vieta il riuso della bozza. Nessun pulsante `Applica` o `Ripristina`. [Specifica](docs/P2-FULL-BACKUP.md).

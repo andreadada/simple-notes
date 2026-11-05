@@ -129,3 +129,9 @@ Nuovo endpoint **POST /api/v1/sync/reconciliation/check**: POST è richiesto sol
 `POST /api/v1/sync/apply` accetta il nuovo campo facoltativo `expectedAccountCursor` (intero >= 0). Dopo `pg_advisory_xact_lock` per owner, e dopo la gestione del retry idempotente già applicato, verifica che `MAX(sync_change.id)` dello stesso account corrisponda al cursore atteso. In caso negativo **409 Conflict prima di ogni nuova scrittura**. Rimane il controllo `expectedVersion` sul record. I client esistenti che non inviano il campo funzionano come prima. Interleaving di cambiamenti su altri account non invalida il cursore locale.
 
 Il check read-only **non riserva** lo stato remoto: dopo la sua risposta altre richieste possono mutare i dati. Ogni futuro writer di riconciliazione dovrà portare precondizioni CAS/versione nello stesso commit e richiedere consenso. Nessuna migrazione o deploy in questa fase.
+
+## P2.4B2J — Client opt-in per check read-only (05/11/2026)
+
+Flutter usa il contratto `POST /api/v1/sync/reconciliation/check` solo quando l'utente preme «Ricontrolla revisioni» dopo aver consultato l'inventario cloud. **POST non significa scrittura** in questa specifica API: invia solo un JSON limitato di ID/versioni/cancellazioni e cursore, senza titoli, body, payload, preferenze o contenuti del backup. Il client valida rigorosamente HTTPS, token esistente, fino a 100 elementi completi, UUID, revisioni e risposta server esatta con ordine, ID, flag `matches` e `consistent` coerenti. Un 404 (backend non ancora deployato) o una risposta malformata non autorizzano alcuna operazione.
+
+La risposta è soltanto un controllo istantaneo delle revisioni: server e client non creano una prenotazione né un consenso, e la UI non usa il risultato per costruire chiamate `/sync/apply`. [Specifiche](P2-FULL-BACKUP.md).

@@ -127,3 +127,7 @@ Il confronto a tre vie usa l'unione degli ID e le outbox dei due snapshot, inclu
 Il nuovo `expectedAccountCursor` è opzionale in `/sync/apply`; se fornito il confronto col massimo change ID owner-scoped è atomico rispetto alla mutazione grazie all'advisory lock già esistente. Quando due dispositivi inviano modifiche con lo stesso cursore atteso, dopo il primo commit il secondo riceve 409 senza nuove righe sync. Un retry di operation ID già applicato resta idempotente; un client legacy non è costretto a inviare il campo.
 
 `POST /sync/reconciliation/check` consulta senza scritture un batch di massimo 100 revisioni/versioni/tombstone e il cursore owner-scoped in una transazione `REPEATABLE_READ`. Non è un lease, non garantisce l'assenza di modifiche successive e non sblocca replay di outbox importate. L'inventory GET e il preflight sono due letture distinte; le decisioni reali richiedono CAS ricontrollato al write.
+
+## P2.4B2J — Preflight client senza sincronizzazione
+
+Il client richiede esclusivamente su click utente una singola POST a `/sync/reconciliation/check` (operazione server read-only), con snapshot inventory precedente. Fino a 100 revisioni; se inventario è vuoto o supera 100, rifiuta la verifica completa senza inviare un batch parziale. La risposta incoerente, con owner cambiato o server non disponibile invalida la vecchia bozza del confronto. I getter `canWriteCloud`, `canResumeAutoSync` e `canReplayImportedOutbox` rimangono false anche con `consistent=true`. Nessuna operazione va inviata a `/sync/apply` da questa schermata.

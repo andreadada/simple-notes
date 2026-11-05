@@ -410,3 +410,9 @@ Nuovi `data/reconciliation_worksheet.dart` e `test/reconciliation_worksheet_test
 `SyncController`: nuovi DTO del preflight read-only e `POST /sync/reconciliation/check`; `ApplyRequest` aggiunge `expectedAccountCursor` facoltativo. `SyncService`: batch compare nel medesimo snapshot PostgreSQL `REPEATABLE_READ`, e CAS per-account dopo lock e prima delle scritture `/apply`. `SyncIntegrationTest` testa owner-scoping, no leak, fail-closed, stale 409 senza DML, idempotenza, isolamento da cambiamenti di altro owner e race con due writer.
 
 Non collegato a Flutter, alla UI dei worksheet o a ripristino vero. Il check non prenota revisioni future; serve un writer con precondizioni CAS + versioni e consenso esplicito. Backend non distribuito su VPS; nessun reset/migrazione.
+
+## Handoff 05/11/2026 — P2.4B2J
+
+`apps/flutter/lib/data/reconciliation_preflight_client.dart` costruisce una richiesta metadata-only a `/api/v1/sync/reconciliation/check` (POST read-only) da inventory owner-scoped, con cap 100, validazione UUID/versioni, controllo risposta/ordine/flag e timeout. `apps/flutter/lib/main.dart` aggiunge «Ricontrolla revisioni» nel dialog confronto, visibile soltanto dopo un inventory GET; mantiene verifica stessa sessione, token ancora valido e sync gate libero. Risposta stale/errori rendono inutilizzabile il worksheet precedente; niente upload, refresh token o scrittura. Test `reconciliation_preflight_client_test.dart` eseguono MockClient e verifiche fail-closed.
+
+PR #41 del backend è integrata ma non distribuita in produzione. Su VPS non aggiornato, 404 significa «non disponibile» e non autorizza restore. Resta necessaria la futura implementazione di consenso/scrittura atomica, lock e durabilità del profilo installato e prove fisiche.

@@ -194,6 +194,8 @@ Dettagli e matrice: [docs/ui-design-audit.md](docs/ui-design-audit.md). Aggiorna
 
 ## Edit Timespan
 
+- 2026-11-05 | feat(p2.4b2j) | Flutter: check revisioni cloud su azione utente (POST read-only, cap100), fail-closed su cursore/owner/errori e test MockClient. Nessun restore/sync né deploy; CI/merge da verificare. [Specifica](docs/P2-FULL-BACKUP.md).
+
 - 2026-11-05 | feat(p2.4b2i) | Preflight remoto read-only 100 revisioni e CAS owner-scoped in sync/apply, test di concorrenza/owner/isolation, docs. Restore e deploy non abilitati; CI/merge da verificare. [API](docs/api.md).
 
 - 2026-11-04 | feat(p2.4b2h) | Scheda di revisione conflitti per item con token opachi/fingerprint, simulazioni locali e dialog Forui, controlli owner, test limiti/privacy/fail-closed. Zero scritture, CI/merge da verificare. [Specifica](docs/P2-FULL-BACKUP.md).
@@ -535,3 +537,10 @@ Esempio: `2026-10-21 14:20 CEST | commit abc1234 | Aggiunto modulo promemoria e 
 - [x] Test di due writer concorrenti, stale HTTP 409 senza scritture, owner separati, retry e input malformati.
 - [ ] Client di preflight opt-in e write formalmente autorizzato, con consenso per item.
 - [ ] Durabilità, lock e recovery installato Windows/Android, E2E fisici e deploy separato.
+
+### P2.4B2J — Verifica opt-in della bozza remota
+
+- [x] Preflight client metadata-only limitato a 100 entità, parser e risposta rigidamente validati.
+- [x] Pulsante Forui dopo inventory GET, invalidazione bozza su cursor o revisioni diverse e su errori.
+- [x] MockClient per 200 coerente/stale, malformed, ID diversi, 404/401, token/URL e limiti.
+- [ ] Approvazione esplicita e scritture CAS, durabilità cross-store e recovery live, E2E fisici.

@@ -123,7 +123,7 @@ class CloudSync extends StateNotifier<SyncState> {
       throw const SyncUpgradeRequired();
     }
     if (response.statusCode == 409) {
-      if (path == '/sync/apply' &&
+      if (path == '/sync/apply' && response.bodyBytes.length <= 2048 &&
           classifySyncApplyConflict(response.body) ==
               SyncApplyConflictKind.operationIdReuse) {
         throw const SyncOperationIdReuse();

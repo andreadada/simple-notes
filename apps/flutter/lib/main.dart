@@ -675,6 +675,8 @@ class _NotesHomeState extends ConsumerState<NotesHome> {
                         refresh(() {
                           revisionCheckSummary = 'Ricontrollo revisioni '
                               'non disponibile. Nessuna modifica eseguita.';
+                          cloudSummary = 'L’inventario precedente non è più '
+                              'utilizzabile. Ripeti la consultazione cloud.';
                           // Fail closed: the former preview cannot be
                           // considered fresh after a failed check.
                           lastInventory = null;
@@ -817,10 +819,16 @@ class _NotesHomeState extends ConsumerState<NotesHome> {
                     }
                   } catch (_) {
                     if (dialogContext.mounted) {
-                      refresh(() => cloudSummary =
-                          'Inventario cloud non disponibile o incompatibile. '
-                          'I dati locali e remoti non sono stati modificati. '
-                          'Il ripristino resta disabilitato.');
+                      refresh(() {
+                        cloudSummary =
+                            'Inventario cloud non disponibile o incompatibile. '
+                            'I dati locali e remoti non sono stati modificati. '
+                            'Il ripristino resta disabilitato.';
+                        revisionCheckSummary = null;
+                        worksheet = null;
+                        lastInventory = null;
+                        dryRun = null;
+                      });
                     }
                   } finally {
                     if (dialogContext.mounted) {

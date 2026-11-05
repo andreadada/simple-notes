@@ -942,4 +942,215 @@ class SyncIntegrationTest {
             .andExpect(jsonPath("$.consistent").value(true));
     }
 
+
+    @Test
+    void legacyNoteCreateUpdateDeleteUsesSameOwnerLockedSyncLedger()
+            throws Exception {
+        var user = users.save(new AppUser("legacy-note-bridge-" + UUID.randomUUID(),
+            "legacy-note-bridge@example.com", "Bridge"));
+        String bearer = "Bearer " + jwt(user.id);
+        String created = mvc.perform(post("/api/v1/notes")
+                .header("Authorization", bearer)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"title\":\"Created by REST\",\"body\":\"Private body\"}"))
+            .andExpect(status().isCreated())
+            .andExpect(jsonPath("$.version").value(0))
+            .andReturn().getResponse().getContentAsString();
+        String id = mapper.readTree(created).path("id").asText();
+        long firstCursor = mapper.readTree(mvc.perform(get("/api/v1/sync/changes")
+                .header("Authorization", bearer))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.changes.length()").value(1))
+            .andExpect(jsonPath("$.changes[0].entityType").value("note"))
+            .andExpect(jsonPath("$.changes[0].entityId").value(id))
+            .andExpect(jsonPath("$.changes[0].payload.body").value("Private body"))
+            .andReturn().getResponse().getContentAsString())
+            .path("nextCursor").asLong();
+
+        mvc.perform(put("/api/v1/notes/" + id)
+                .header("Authorization", bearer)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"version\":0,\"title\":\"Renamed\",\"body\":\"Updated\"}"))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.version").value(1));
+        mvc.perform(get("/api/v1/sync/changes")
+                .header("Authorization", bearer))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.changes.length()").value(2))
+            .andExpect(jsonPath("$.changes[1].version").value(1))
+            .andExpect(jsonPath("$.changes[1].payload.title").value("Renamed"));
+
+        // Both REST and sync/apply participate in the same account cursor.
+        String stale = """
+            {"operationId":"%s","entityId":"%s","entityType":"note",
+             "action":"upsert","expectedVersion":1,"expectedAccountCursor":%d,
+             "payload":{"title":"Stale","body":"Must not overwrite"}}
+            """.formatted(UUID.randomUUID(), id, firstCursor);
+        mvc.perform(post("/api/v1/sync/apply").header("Authorization", bearer)
+                .contentType(MediaType.APPLICATION_JSON).content(stale))
+            .andExpect(status().isConflict());
+        mvc.perform(delete("/api/v1/notes/" + id)
+                .header("Authorization", bearer).param("version", "1"))
+            .andExpect(status().isNoContent());
+        mvc.perform(get("/api/v1/sync/changes")
+                .header("Authorization", bearer))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.changes.length()").value(3))
+            .andExpect(jsonPath("$.changes[2].deleted").value(true))
+            .andExpect(jsonPath("$.changes[2].version").value(2));
+        mvc.perform(get("/api/v1/notes").header("Authorization", bearer))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.length()").value(0));
+        mvc.perform(put("/api/v1/notes/" + id)
+                .header("Authorization", bearer)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"version\":2,\"title\":\"Resurrect\",\"body\":\"No\"}"))
+            .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void legacyTaskCrudAndCompletionPublishCanonicalEvents()
+            throws Exception {
+        var user = users.save(new AppUser("legacy-task-bridge-" + UUID.randomUUID(),
+            "legacy-task-bridge@example.com", "Task bridge"));
+        String bearer = "Bearer " + jwt(user.id);
+        String created = mvc.perform(post("/api/v1/tasks")
+                .header("Authorization", bearer)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"title\":\"Legacy task\",\"description\":\"Details\"}"))
+            .andExpect(status().isCreated())
+            .andExpect(jsonPath("$.version").value(0))
+            .andReturn().getResponse().getContentAsString();
+        String id = mapper.readTree(created).path("id").asText();
+        mvc.perform(get("/api/v1/sync/changes").header("Authorization", bearer))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.changes.length()").value(1))
+            .andExpect(jsonPath("$.changes[0].payload.due.kind").value("none"))
+            .andExpect(jsonPath("$.changes[0].payload.timeBlocks.length()").value(0));
+
+        mvc.perform(put("/api/v1/tasks/" + id)
+                .header("Authorization", bearer)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"version\":0,\"title\":\"Updated\",\"description\":\"Details 2\",\"completed\":false}"))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.version").value(1));
+        mvc.perform(patch("/api/v1/tasks/" + id + "/completion")
+                .header("Authorization", bearer)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"completed\":true}"))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.version").value(2));
+        mvc.perform(get("/api/v1/sync/changes").header("Authorization", bearer))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.changes.length()").value(3))
+            .andExpect(jsonPath("$.changes[2].payload.title").value("Updated"))
+            .andExpect(jsonPath("$.changes[2].payload.completed").value(true))
+            .andExpect(jsonPath("$.changes[2].payload.recurrence.kind").value("none"));
+
+        mvc.perform(delete("/api/v1/tasks/" + id)
+                .header("Authorization", bearer))
+            .andExpect(status().isNoContent());
+        mvc.perform(get("/api/v1/sync/changes").header("Authorization", bearer))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.changes.length()").value(4))
+            .andExpect(jsonPath("$.changes[3].deleted").value(true));
+        mvc.perform(get("/api/v1/tasks").header("Authorization", bearer))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.length()").value(0));
+    }
+
+    @Test
+    void legacyCompletionPreservesModernCivilDueAndRecurrence()
+            throws Exception {
+        var user = users.save(new AppUser("modern-task-completion-" + UUID.randomUUID(),
+            "modern-task-completion@example.com", "Modern"));
+        String bearer = "Bearer " + jwt(user.id);
+        String id = UUID.randomUUID().toString();
+        String create = """
+            {"operationId":"%s","entityId":"%s","entityType":"task",
+             "action":"upsert","payload":{
+               "title":"Modern","description":"Preserve all",
+               "due":{"kind":"date","date":"2026-11-20"},
+               "completed":false,"timeBlocks":[],
+               "recurrence":{"kind":"weekly","interval":2},
+               "tags":["Focus"],"priority":2,"subtasks":[]
+             }}
+            """.formatted(UUID.randomUUID(), id);
+        mvc.perform(post("/api/v1/sync/apply").header("Authorization", bearer)
+                .contentType(MediaType.APPLICATION_JSON).content(create))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.version").value(0));
+        mvc.perform(patch("/api/v1/tasks/" + id + "/completion")
+                .header("Authorization", bearer)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"completed\":true}"))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.version").value(1));
+        mvc.perform(get("/api/v1/sync/changes").header("Authorization", bearer))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.changes.length()").value(2))
+            .andExpect(jsonPath("$.changes[1].payload.due.kind").value("date"))
+            .andExpect(jsonPath("$.changes[1].payload.due.date").value("2026-11-20"))
+            .andExpect(jsonPath("$.changes[1].payload.completed").value(true))
+            .andExpect(jsonPath("$.changes[1].payload.recurrence.kind").value("weekly"))
+            .andExpect(jsonPath("$.changes[1].payload.recurrence.interval").value(2))
+            .andExpect(jsonPath("$.changes[1].payload.priority").value(2))
+            .andExpect(jsonPath("$.changes[1].payload.tags[0]").value("Focus"));
+        // Old full-task editor cannot safely rewrite a modern civil due.
+        mvc.perform(put("/api/v1/tasks/" + id)
+                .header("Authorization", bearer)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"version\":1,\"title\":\"Old client\",\"completed\":false}"))
+            .andExpect(status().isUpgradeRequired());
+    }
+
+    @Test
+    void concurrentLegacyRestAndSyncWritesCannotBothOverwriteOneNote()
+            throws Exception {
+        var user = users.save(new AppUser("race-legacy-sync-" + UUID.randomUUID(),
+            "race-legacy-sync@example.com", "Race"));
+        String bearer = "Bearer " + jwt(user.id);
+        String created = mvc.perform(post("/api/v1/notes")
+                .header("Authorization", bearer)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"title\":\"Original\",\"body\":\"B\"}"))
+            .andExpect(status().isCreated())
+            .andReturn().getResponse().getContentAsString();
+        String id = mapper.readTree(created).path("id").asText();
+        String sync = """
+            {"operationId":"%s","entityId":"%s","entityType":"note",
+             "action":"upsert","expectedVersion":0,
+             "payload":{"title":"Sync winner","body":"S"}}
+            """.formatted(UUID.randomUUID(), id);
+        var pool = Executors.newFixedThreadPool(2);
+        try {
+            CountDownLatch gate = new CountDownLatch(1);
+            Future<Integer> oldRest = pool.submit(() -> {
+                gate.await();
+                return mvc.perform(put("/api/v1/notes/" + id)
+                    .header("Authorization", bearer)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content("{\"version\":0,\"title\":\"REST winner\",\"body\":\"R\"}"))
+                    .andReturn().getResponse().getStatus();
+            });
+            Future<Integer> syncApply = pool.submit(() -> {
+                gate.await();
+                return mvc.perform(post("/api/v1/sync/apply")
+                    .header("Authorization", bearer)
+                    .contentType(MediaType.APPLICATION_JSON).content(sync))
+                    .andReturn().getResponse().getStatus();
+            });
+            gate.countDown();
+            org.junit.jupiter.api.Assertions.assertEquals(List.of(200, 409),
+                java.util.stream.Stream.of(oldRest.get(30, TimeUnit.SECONDS),
+                    syncApply.get(30, TimeUnit.SECONDS)).sorted().toList());
+        } finally {
+            pool.shutdownNow();
+        }
+        mvc.perform(get("/api/v1/sync/changes").header("Authorization", bearer))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.changes.length()").value(2))
+            .andExpect(jsonPath("$.changes[1].version").value(1));
+    }
+
 }

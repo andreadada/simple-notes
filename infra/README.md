@@ -186,3 +186,7 @@ L'utente ha verificato dal container PostgreSQL Simple Notes: V10, FAILED_MIGRAT
 ## P2.4B1 — Backup client diverso dal dump PostgreSQL
 
 `simple-notes-backup-YYYY-MM-DD.snb` è un archivio locale client SQLite/SharedPreferences cifrato, non un dump server PostgreSQL. Non richiede modifica di SQL/Flyway, container, Coolify, OAuth o storage volumi. La policy di backup VPS/offsite e la prova restore server isolata rimangono procedure separate. **Il ripristino client .snb non è ancora abilitato**. [Specifica](../docs/P2-FULL-BACKUP.md).
+
+## Gate V11 solo lettura — P2.4B2P
+
+`infra/release-v11-readiness.sh` verifica dopo un **eventuale** rollout autorizzato la versione Flyway esatta V11 e la colonna nullable VARCHAR(64) per impronte idempotenti, oltre a HTTPS health/capability con JWT di prova. Nessuna migration, installazione o modifica dei dati. Il vecchio `release-readiness.sh` rimane per V10. [Runbook V11](../docs/RELEASE-V11-READINESS.md).

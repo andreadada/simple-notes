@@ -5,12 +5,12 @@ set -euo pipefail
 # Run ON the VPS using the explicitly inspected Simple Notes container.
 : "${DB_CONTAINER:?Set DB_CONTAINER to the Simple Notes PostgreSQL container}"
 EXPECTED_POSTGRES_DB="${EXPECTED_POSTGRES_DB:-simplenotes}"
-# Optional exact-version gate for the cumulative V10 client release.
+# Optional exact-version gate for cumulative V10/V11 releases.
 # Empty keeps historical T4 inspections backward-compatible/read-only.
 REQUIRE_FLYWAY_VERSION="${REQUIRE_FLYWAY_VERSION:-}"
 if [[ -n "$REQUIRE_FLYWAY_VERSION" &&
-      ! "$REQUIRE_FLYWAY_VERSION" =~ ^([1-9]|10)$ ]]; then
-  echo "REFUSED: REQUIRE_FLYWAY_VERSION must be an integer from 1 to 10" >&2
+      ! "$REQUIRE_FLYWAY_VERSION" =~ ^([1-9]|10|11)$ ]]; then
+  echo "REFUSED: REQUIRE_FLYWAY_VERSION must be an integer from 1 to 11" >&2
   exit 2
 fi
 command -v docker >/dev/null || { echo "docker is required" >&2; exit 2; }
@@ -39,7 +39,7 @@ names="$(query "SELECT COUNT(*) FROM pg_catalog.pg_class c JOIN pg_catalog.pg_na
 failed="$(query "SELECT COUNT(*) FROM public.flyway_schema_history WHERE NOT success")"
 [[ "$failed" == "0" ]] || { echo "REFUSED: Flyway history has failed migrations" >&2; exit 2; }
 latest="$(query "SELECT COALESCE((SELECT version FROM public.flyway_schema_history WHERE success AND version IS NOT NULL ORDER BY installed_rank DESC LIMIT 1),'unknown')")"
-[[ "$latest" =~ ^[0-9]+$ && "$latest" -ge 1 && "$latest" -le 10 ]] || {
+[[ "$latest" =~ ^[0-9]+$ && "$latest" -ge 1 && "$latest" -le 11 ]] || {
   echo "REFUSED: unknown, unsupported or unexpected Flyway version" >&2; exit 2
 }
 due_columns="$(query "SELECT COUNT(*) FROM information_schema.columns WHERE table_schema='public' AND table_name='task' AND column_name IN ('due_kind','due_date','due_time','due_timezone','due_offset_seconds')")"
@@ -76,6 +76,27 @@ fi
 if [[ "$latest" -lt 10 && "$recurrence_columns" != "0" ]]; then
   echo "REFUSED: V10 column present before successful migration" >&2; exit 2
 fi
+# Flyway V11 is an additive nullable fingerprint on sync_operation.
+# Validate presence, shape and stored format only; never return actual values.
+fingerprint_columns="$(query "SELECT COUNT(*) FROM information_schema.columns WHERE table_schema='public' AND table_name='sync_operation' AND column_name='request_fingerprint'")"
+if [[ "$latest" -ge 11 ]]; then
+  [[ "$fingerprint_columns" == "1" ]] || {
+    echo "REFUSED: V11 history has no fingerprint column" >&2; exit 2
+  }
+  fingerprint_schema="$(query "SELECT CASE WHEN data_type='character varying' AND character_maximum_length=64 AND is_nullable='YES' THEN 'PASS' ELSE 'INVALID' END FROM information_schema.columns WHERE table_schema='public' AND table_name='sync_operation' AND column_name='request_fingerprint'")"
+  [[ "$fingerprint_schema" == "PASS" ]] || {
+    echo "REFUSED: incompatible V11 fingerprint column shape" >&2; exit 2
+  }
+  invalid_fingerprints="$(query "SELECT COUNT(*) FROM public.sync_operation WHERE request_fingerprint IS NOT NULL AND request_fingerprint !~ '^[0-9a-f]{64}$'")"
+  [[ "$invalid_fingerprints" == "0" ]] || {
+    echo "REFUSED: unexpected stored fingerprint format" >&2; exit 2
+  }
+else
+  [[ "$fingerprint_columns" == "0" ]] || {
+    echo "REFUSED: V11 column exists without successful Flyway V11 history" >&2; exit 2
+  }
+fi
+
 if [[ -n "$REQUIRE_FLYWAY_VERSION" &&
       "$latest" != "$REQUIRE_FLYWAY_VERSION" ]]; then
   echo "REFUSED: expected Flyway V$REQUIRE_FLYWAY_VERSION, found V$latest" >&2
@@ -86,6 +107,7 @@ printf 'T4_SOURCE_INSPECTION=PASS\n'
 printf 'DB_NAME=%s\nPOSTGRES_MAJOR=%s\nFLYWAY_LATEST=%s\n' \
   "$actual_db" "$major" "$latest"
 printf 'DUE_COLUMNS=%s\nBLOCK_COLUMNS=%s\nBLOCKS_JSON_COLUMNS=%s\nRECURRENCE_COLUMNS=%s\nFAILED_MIGRATIONS=0\n' "$due_columns" "$block_columns" "$blocks_json_columns" "$recurrence_columns"
+printf 'FINGERPRINT_COLUMNS=%s\n' "$fingerprint_columns"
 if [[ -n "$REQUIRE_FLYWAY_VERSION" ]]; then
   printf 'FLYWAY_REQUIREMENT=PASS (V%s)\n' "$REQUIRE_FLYWAY_VERSION"
 fi

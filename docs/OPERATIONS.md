@@ -279,3 +279,7 @@ Un errore 409 da `GET /sync/inventory` può segnalare incoerenze fra righe reali
 ## P2.4B2O — Migrazione additiva V11, non applicata
 
 Al prossimo rilascio backend, Flyway potrebbe applicare `V11__sync_operation_intent_fingerprint.sql` per aggiungere `request_fingerprint VARCHAR(64) NULL` su `sync_operation`. Lo schema attuale della produzione non va modificato anticipatamente: **nessun comando DB, rollback, reset o deploy eseguito in questa sessione**. Nessuna riga storica è alterata. Le operazioni nuove salvano una impronta e rifiutano riuso con intento diverso tramite 409; verificare staging con backup ripristinato, Flyway success/failed_migrations=0 e assenza di regressioni sync prima di qualsiasi rollout. Non usare il fingerprint come prova di recupero dei vecchi operation ID o sblocco della sincronizzazione importata.
+
+## P2.4B2P — Gate di verifica V11, senza deploy
+
+Il runbook [RELEASE-V11-READINESS.md](RELEASE-V11-READINESS.md) separa il vecchio gate V10 dal nuovo `bash infra/release-v11-readiness.sh`, che **non migra** il DB e rifiuta V10, V11 incompleta o fingerprint in formato non valido. `DB_CONTAINER` e JWT di prova devono essere definiti solo dall'amministratore dopo una decisione di rilascio; il token non deve essere riportato in chat né salvato. Il PASS V11 non autorizza restore, writer di riconciliazione, installazione dei dispositivi o presume che il backend runtime sia aggiornato. Nessuna azione su Coolify effettuata.

@@ -12,6 +12,7 @@ on:
       - infra/validate-release-capabilities.py
       - infra/test_release_capabilities.py
       - infra/release-readiness.sh
+      - infra/release-v11-readiness.sh
       - .github/workflows/compose-ci.yml
   pull_request:
     paths:
@@ -25,6 +26,7 @@ on:
       - infra/validate-release-capabilities.py
       - infra/test_release_capabilities.py
       - infra/release-readiness.sh
+      - infra/release-v11-readiness.sh
   workflow_dispatch:
 
 concurrency:
@@ -39,7 +41,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Validate backup script syntax (no Docker operations)
-        run: bash -n infra/backup-postgres.sh infra/verify-restore.sh infra/t4-preflight.sh infra/t4-check-api.sh infra/t4-inspect-db.sh infra/release-readiness.sh
+        run: bash -n infra/backup-postgres.sh infra/verify-restore.sh infra/t4-preflight.sh infra/t4-check-api.sh infra/t4-inspect-db.sh infra/release-readiness.sh infra/release-v11-readiness.sh
       - name: Unit-test strict release capability contract offline
         run: python3 -m unittest discover -s infra -p 'test_release_capabilities.py' -v
       - name: Validate build Compose without runtime secrets
@@ -141,6 +143,40 @@ jobs:
               'ALTER TABLE task ADD COLUMN recurrence_json TEXT NOT NULL DEFAULT '"'"'{"kind":"none"}'"'"';'
           DB_CONTAINER="$db_name" EXPECTED_POSTGRES_DB=synthetic \
             REQUIRE_FLYWAY_VERSION=10 bash infra/t4-inspect-db.sh
+          # Synthetic V11 rehearsal: exact version + nullable VARCHAR(64)
+          # and historical operations unmodified. NO real VPS is contacted.
+          docker exec "$db_name" psql -U ciuser -d synthetic \
+            -v ON_ERROR_STOP=1 -c '
+              ALTER TABLE sync_operation
+                ADD COLUMN request_fingerprint VARCHAR(64);
+              INSERT INTO flyway_schema_history(installed_rank,version,success)
+                VALUES (11, 11::text, TRUE);
+            '
+          DB_CONTAINER="$db_name" EXPECTED_POSTGRES_DB=synthetic \
+            REQUIRE_FLYWAY_VERSION=11 bash infra/t4-inspect-db.sh
+          if DB_CONTAINER="$db_name" EXPECTED_POSTGRES_DB=synthetic \
+              REQUIRE_FLYWAY_VERSION=10 bash infra/t4-inspect-db.sh; then
+            echo "ERROR: V11 was accepted by the exact V10 gate" >&2
+            exit 1
+          fi
+          # Wrong column size must fail closed even with Flyway 11 history.
+          docker exec "$db_name" psql -U ciuser -d synthetic \
+            -v ON_ERROR_STOP=1 -c '
+              ALTER TABLE sync_operation
+                ALTER COLUMN request_fingerprint TYPE VARCHAR(63);
+            '
+          if DB_CONTAINER="$db_name" EXPECTED_POSTGRES_DB=synthetic \
+              REQUIRE_FLYWAY_VERSION=11 bash infra/t4-inspect-db.sh; then
+            echo "ERROR: invalid V11 fingerprint width accepted" >&2
+            exit 1
+          fi
+          docker exec "$db_name" psql -U ciuser -d synthetic \
+            -v ON_ERROR_STOP=1 -c '
+              ALTER TABLE sync_operation
+                ALTER COLUMN request_fingerprint TYPE VARCHAR(64);
+            '
+          DB_CONTAINER="$db_name" EXPECTED_POSTGRES_DB=synthetic \
+            REQUIRE_FLYWAY_VERSION=11 bash infra/t4-inspect-db.sh
           if DB_CONTAINER="$db_name" EXPECTED_POSTGRES_DB=wrong_database \
               bash infra/t4-inspect-db.sh; then
             echo "ERROR: wrong DB identity was accepted" >&2

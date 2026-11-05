@@ -16,13 +16,15 @@ FULL = {
     "timeBlockSchema": 1,
     "timeBlocksSchema": 1,
     "recurrenceSchema": 1,
+    "syncOperationFingerprintSchema": 1,
 }
 
 
-def run(value, *, strict=False, blocks=False):
+def run(value, *, strict=False, blocks=False, intent=False):
     env = os.environ.copy()
     env["REQUIRE_FULL_SCHEMA"] = "1" if strict else "0"
     env["REQUIRE_TIME_BLOCK_SCHEMA"] = "1" if blocks else "0"
+    env["REQUIRE_SYNC_OPERATION_FINGERPRINT_SCHEMA"] = "1" if intent else "0"
     return subprocess.run(
         [sys.executable, str(SCRIPT)],
         input=json.dumps(value), text=True, capture_output=True, env=env,
@@ -35,6 +37,24 @@ class ReleaseCapabilityContract(unittest.TestCase):
         result = run(FULL, strict=True, blocks=True)
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertIn("PASS:", result.stdout)
+
+    def test_v11_fingerprint_contract_is_strictly_opt_in(self):
+        self.assertEqual(run(FULL, strict=True, intent=True).returncode, 0)
+        older = FULL.copy()
+        older.pop("syncOperationFingerprintSchema")
+        # Old V10 clients/gates still accept the old schema.
+        self.assertEqual(run(older, strict=True).returncode, 0)
+        self.assertNotEqual(run(older, strict=True, intent=True).returncode, 0)
+        for invalid in (0, "1", True, None, 2, [], {}):
+            with self.subTest(value=invalid):
+                changed = {**FULL, "syncOperationFingerprintSchema": invalid}
+                self.assertNotEqual(
+                    run(changed, strict=True, intent=True).returncode, 0
+                )
+        noisy = {**FULL, "syncOperationFingerprintSchema": "PRIVATE-BODY"}
+        result = run(noisy, strict=True, intent=True)
+        self.assertNotEqual(result.returncode, 0)
+        self.assertNotIn("PRIVATE-BODY", result.stdout + result.stderr)
 
     def test_incompatible_version_or_missing_feature_is_refused(self):
         for key in ("taskDueSchema", "timeBlockSchema", "timeBlocksSchema",

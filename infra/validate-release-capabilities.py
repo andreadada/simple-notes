@@ -32,6 +32,11 @@ def run() -> None:
             refuse()
         if obj.get("requiresExplicitDueForModernTasks") is not True:
             refuse()
+        intent = os.environ.get("REQUIRE_SYNC_OPERATION_FINGERPRINT_SCHEMA", "0")
+        if intent not in ("0", "1"):
+            refuse()
+        if intent == "1" and not has_version_one("syncOperationFingerprintSchema"):
+            refuse()
         strict = os.environ.get("REQUIRE_FULL_SCHEMA", "0")
         time_block = os.environ.get("REQUIRE_TIME_BLOCK_SCHEMA", "0")
         if strict not in ("0", "1") or time_block not in ("0", "1"):

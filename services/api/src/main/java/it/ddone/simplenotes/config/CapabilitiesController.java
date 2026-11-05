@@ -15,6 +15,7 @@ public class CapabilitiesController {
             "noteRestoreSchema", 1,
             "timeBlockSchema", 1,
             "timeBlocksSchema", 1,
-            "recurrenceSchema", 1);
+            "recurrenceSchema", 1,
+            "syncOperationFingerprintSchema", 1);
     }
 }

@@ -254,3 +254,8 @@ Il nuovo preflight usa POST ma è **sola lettura** e JWT-scoped. Non include con
 ## P2.4B2J — Pulsante ricontrolla revisioni
 
 «Confronta backup» → «Consulta inventario cloud» → «Ricontrolla revisioni» richiede una singola POST **senza effetti** all'endpoint backend. Non utilizzare questo percorso per importare dati o forzare una sincronizzazione. Se il server non è stato deployato e risponde 404, la vecchia bozza deve essere rifiutata, non considerata coerente. Un esito positivo non è una autorizzazione di restore. Nessun comando deploy VPS/Coolify o modifica database svolti in questo milestone.
+
+
+## P2.4B2K — Protezione preflight e 409
+
+Se `/sync/reconciliation/check` restituisce 409 anche con revisioni apparentemente corrette, un possibile motivo sono modifiche effettuate dalle API legacy senza eventi `sync_change`. Non ripetere automaticamente importazioni, non abbassare il cursore e non azzerare dati. Il controllo non scrive nulla: l'interfaccia segnala che l'inventario non è verificabile e richiede un nuovo confronto. Nessuna migrazione, operazione manuale DB o deploy eseguiti.

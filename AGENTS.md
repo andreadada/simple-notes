@@ -179,3 +179,8 @@ Non spostare il check `expectedAccountCursor` fuori dalla transazione `SyncServi
 ## Vincolo P2.4B2J — ricontrollo remoto mai mutante
 
 `ReconciliationPreflightClient` deve essere invocato solo da azione esplicita in UI, dopo GET inventory. La POST a `/sync/reconciliation/check` è **sola lettura**: consentito solo body ID/versioni/tombstone/cursor, vietati note/body, payload sync, password, dati personali e token nei log. Non invocare `/sync/apply`, refresh auth, AutoSync o restore da questo flusso. Rifiutare se >100 item (mai batch parziale), owner cambiato, token scaduto, HTTP errore o flag incoerenti. Un check `consistent=true` non è consenso e non sblocca `canRestoreLive`, `canApplyDecisions`, `canWriteCloud`, `canReplayImportedOutbox` o `canResumeAutoSync`. [Specifica](docs/P2-FULL-BACKUP.md).
+
+
+## Vincolo P2.4B2K — nessun falso `consistent` dal ledger
+
+Il preflight revisioni **non può** dichiarare `consistent=true` se la riga materializzata dell'owner ha `version` o `deleted_at` discordanti dall'evento latest, oppure solo uno dei due esiste. Usare sempre query parametrizzate per owner/ID e allowlist hardcoded di tabella, senza lettura di contenuti nota. Un disallineamento deve fallire chiuso (409); nessun reset, replay, cancellazione o auto-restore. Il check non protegge l'intero account da futuri write legacy: mantenere disabilitato il restore. [Specifica](docs/P2-FULL-BACKUP.md).

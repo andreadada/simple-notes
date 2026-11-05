@@ -194,6 +194,8 @@ Dettagli e matrice: [docs/ui-design-audit.md](docs/ui-design-audit.md). Aggiorna
 
 ## Edit Timespan
 
+- 2026-11-05 | feat(p2.4b2k) | Preflight verifica versione/tombstone di note/task/liste materializzate vs ledger stesso owner, 409 fail-closed per creazioni/update/delete legacy non loggati; test PostgreSQL, nessun deploy né restore. CI/merge da verificare. [Specifica](docs/P2-FULL-BACKUP.md).
+
 - 2026-11-05 | feat(p2.4b2j) | Flutter: check revisioni cloud su azione utente (POST read-only, cap100), fail-closed su cursore/owner/errori e test MockClient. Nessun restore/sync né deploy; CI/merge da verificare. [Specifica](docs/P2-FULL-BACKUP.md).
 
 - 2026-11-05 | feat(p2.4b2i) | Preflight remoto read-only 100 revisioni e CAS owner-scoped in sync/apply, test di concorrenza/owner/isolation, docs. Restore e deploy non abilitati; CI/merge da verificare. [API](docs/api.md).

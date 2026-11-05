@@ -166,3 +166,8 @@ Implementati controllo batch read-only (`/sync/reconciliation/check`) su owner/c
 ## P2.4B2J — Check remoto read-only nel confronto (05/11/2026, PR Flutter)
 
 Nuovo `reconciliation_preflight_client.dart` e test MockClient, con pulsante Forui opt-in «Ricontrolla revisioni». POST è **sola lettura lato server**, senza richieste di sincronizzazione. Risposta accuratamente validata e bozza invalidata quando il cursore o le revisioni cambiano, il server manca o la verifica fallisce. Inventario oltre 100 item non viene controllato parzialmente. Tutti i permessi restore/replay/AutoSync restano false. PR backend #41 già integrata su main ma non deployata; Flutter CI/merge da verificare.
+
+
+## P2.4B2K — Guard fail-closed contro divergenze API legacy (05/11/2026, PR)
+
+Aggiunto controllo tra righe materializzate e ultimo evento owner-scoped durante `/sync/reconciliation/check`. Se una creazione, modifica o tombstone legacy non è registrata nel ledger, risponde 409 senza esportare contenuti. Test PostgreSQL di creazione non tracciata, update e cancellazione di nota tracciata e isolamento account. CI/merge da verificare; nessun deploy, nessun restore operativo.

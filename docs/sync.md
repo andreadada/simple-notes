@@ -131,3 +131,8 @@ Il nuovo `expectedAccountCursor` è opzionale in `/sync/apply`; se fornito il co
 ## P2.4B2J — Preflight client senza sincronizzazione
 
 Il client richiede esclusivamente su click utente una singola POST a `/sync/reconciliation/check` (operazione server read-only), con snapshot inventory precedente. Fino a 100 revisioni; se inventario è vuoto o supera 100, rifiuta la verifica completa senza inviare un batch parziale. La risposta incoerente, con owner cambiato o server non disponibile invalida la vecchia bozza del confronto. I getter `canWriteCloud`, `canResumeAutoSync` e `canReplayImportedOutbox` rimangono false anche con `consistent=true`. Nessuna operazione va inviata a `/sync/apply` da questa schermata.
+
+
+## P2.4B2K — Incoerenza legacy e letture del ledger
+
+Il preflight di riconciliazione deve fallire chiuso con 409 se una riga `note`, `task` o `task_list` dell'owner non è rappresentata da un evento coerente nel ledger. Controlla `version` e `deleted_at` sotto `REPEATABLE_READ` con query owner-scoped. Questo intercetta creazioni/aggiornamenti/cancellazioni da API legacy che non appendono `sync_change`; non cambia il comportamento di `/sync/apply` né quello dei client esistenti. Un inventory incompleto o un record mai sincronizzato non diventa automaticamente sicuro. Senza un vero protocollo di commit unico su tutte le API, resta possibile che una scrittura legacy avvenga dopo il preflight: non attivare mai un restore sulla sola base di questo check.

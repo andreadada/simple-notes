@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 public class SyncController {
     public record ApplyRequest(@NotNull UUID operationId, @NotNull UUID entityId,
         @NotBlank String entityType, @NotBlank String action, Long expectedVersion,
-        JsonNode payload) {}
+        JsonNode payload, @Min(0) Long expectedAccountCursor) {}
     public record ApplyResponse(UUID operationId, long version, long changeId) {}
     public record Change(long changeId, String entityType, UUID entityId,
         JsonNode payload, boolean deleted, long version) {}
@@ -26,6 +26,20 @@ public class SyncController {
         long version, boolean deleted, long changeId) {}
     public record Inventory(long cursor, List<InventoryItem> items,
         boolean complete) {}
+
+    /// P2.4B2I: a read-only, owner-scoped snapshot comparison. The check
+    /// cannot grant a future write lease or authorize a profile restore.
+    public record ExpectedRevision(@NotBlank String entityType,
+        @NotNull UUID entityId, Long changeId, Long version, Boolean deleted) {}
+    public record ReconciliationCheckRequest(
+        @NotNull @Min(0) Long expectedCursor,
+        @NotNull @Size(min = 1, max = 100)
+        List<@Valid ExpectedRevision> items) {}
+    public record ObservedRevision(String entityType, UUID entityId,
+        Long changeId, Long version, Boolean deleted, boolean matches) {}
+    public record ReconciliationCheckResponse(long cursor,
+        boolean cursorMatches, boolean consistent,
+        List<ObservedRevision> items) {}
 
     private final SyncService service;
     public SyncController(SyncService service) { this.service = service; }
@@ -44,6 +58,12 @@ public class SyncController {
     @GetMapping("/inventory")
     public Inventory inventory(@AuthenticationPrincipal Jwt jwt) {
         return service.inventory(owner(jwt));
+    }
+
+    @PostMapping("/reconciliation/check")
+    public ReconciliationCheckResponse check(@AuthenticationPrincipal Jwt jwt,
+            @Valid @RequestBody ReconciliationCheckRequest request) {
+        return service.reconciliationCheck(owner(jwt), request);
     }
 
     @GetMapping("/changes")

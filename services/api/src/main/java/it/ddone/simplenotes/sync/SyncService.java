@@ -71,6 +71,62 @@ public class SyncService {
         return new SyncController.Inventory(cursor, List.copyOf(latest), true);
     }
 
+    /// One repeatable-read snapshot for the expected account cursor and
+    /// up to 100 latest entity ledger revisions. Never writes any table,
+    /// acknowledges any operation, or grants a subsequent commit permit.
+    @Transactional(readOnly = true, isolation = Isolation.REPEATABLE_READ)
+    public SyncController.ReconciliationCheckResponse reconciliationCheck(
+            UUID owner, SyncController.ReconciliationCheckRequest req) {
+        if (req.expectedCursor() == null || req.expectedCursor() < 0 ||
+                req.items() == null || req.items().isEmpty() ||
+                req.items().size() > 100) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                "Invalid reconciliation request");
+        }
+        var seen = new HashSet<String>();
+        for (var row : req.items()) {
+            if (row == null || row.entityId() == null ||
+                    !Set.of("task", "note", "list").contains(row.entityType()) ||
+                    !seen.add(row.entityType() + ":" + row.entityId())) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "Duplicate or invalid revision key");
+            }
+            if (row.changeId() == null) {
+                if (row.version() != null || row.deleted() != null) {
+                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                        "Absent revision must have no version or tombstone");
+                }
+            } else if (row.changeId() <= 0 || row.version() == null ||
+                    row.version() < 0 || row.deleted() == null) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "Incomplete expected revision");
+            }
+        }
+        long cursor = ((Number) em.createNativeQuery(
+                "SELECT COALESCE(MAX(id),0) FROM sync_change WHERE owner_id = :owner")
+            .setParameter("owner", owner).getSingleResult()).longValue();
+        var observed = new ArrayList<SyncController.ObservedRevision>();
+        boolean everyRevisionMatches = true;
+        for (var expected : req.items()) {
+            SyncChange latest = changes.latest(owner, expected.entityType(),
+                expected.entityId()).orElse(null);
+            Long changeId = latest == null ? null : latest.id;
+            Long version = latest == null ? null : latest.version;
+            Boolean deleted = latest == null ? null : latest.deleted;
+            boolean matches = Objects.equals(changeId, expected.changeId()) &&
+                Objects.equals(version, expected.version()) &&
+                Objects.equals(deleted, expected.deleted());
+            everyRevisionMatches &= matches;
+            observed.add(new SyncController.ObservedRevision(
+                expected.entityType(), expected.entityId(), changeId,
+                version, deleted, matches));
+        }
+        boolean cursorMatches = cursor == req.expectedCursor();
+        return new SyncController.ReconciliationCheckResponse(cursor,
+            cursorMatches, cursorMatches && everyRevisionMatches,
+            List.copyOf(observed));
+    }
+
     @Transactional
     public SyncController.ApplyResponse apply(UUID owner, SyncController.ApplyRequest req) {
         // Serialize writes per account: sequence allocation and commit order stay aligned
@@ -95,6 +151,19 @@ public class SyncService {
         }
         if ("upsert".equals(req.action()) && (req.payload() == null || !req.payload().isObject()))
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Missing payload");
+
+        // Optional CAS precondition, checked AFTER the account advisory lock
+        // and AFTER idempotent replay lookup but BEFORE any write. Legacy sync
+        // clients omit this field; a future recovery client must supply it.
+        if (req.expectedAccountCursor() != null) {
+            long observedCursor = ((Number) em.createNativeQuery(
+                    "SELECT COALESCE(MAX(id),0) FROM sync_change WHERE owner_id = :owner")
+                .setParameter("owner", owner).getSingleResult()).longValue();
+            if (req.expectedAccountCursor() != observedCursor) {
+                throw new ResponseStatusException(HttpStatus.CONFLICT,
+                    "Account cursor changed; refresh inventory before retry");
+            }
+        }
 
         Mutation applied = switch (req.entityType()) {
             case "task" -> applyTask(owner, req);

@@ -191,3 +191,7 @@ Nel preflight `/sync/reconciliation/check` aggiunto audit read-only dell'intero 
 ## P2.4B2O — Fingerprint idempotenza (05/11/2026, PR)
 
 Aggiunta migrazione Flyway V11 **additiva e nullable** e digest canonical SHA-256 dell'intento per i nuovi `sync_operation`. Retry con payload/action/versione differenti e stesso operation ID => 409; JSON semanticamente identico con chiavi riordinate e cursore mutato resta idempotente. Righe storiche NULL mantengono la compatibilità. Test PostgreSQL owner/race/byte payload e documentazione aggiornati; CI/merge da verificare. Nessuna migrazione o deploy effettuati su produzione.
+
+## P2.4B2P — Gate read-only di rilascio Flyway V11 (05/11/2026, PR)
+
+Inspector PostgreSQL esteso a V11 con controllo del fingerprint nullable VARCHAR(64), verifica della versione esatta e formati non nulli. Nuovo wrapper esplicito `infra/release-v11-readiness.sh`, senza modificare la verifica V10 storica; Compose CI prova su PostgreSQL **sintetico** V10→V11 e rifiuta colonna sbagliata. Nessuna verifica né deploy sulla VPS: lo stato reale confermato resta Flyway V10 (03/11). [Runbook](RELEASE-V11-READINESS.md).

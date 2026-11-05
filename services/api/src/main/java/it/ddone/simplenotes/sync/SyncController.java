@@ -4,6 +4,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
 import java.util.*;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
@@ -48,6 +50,14 @@ public class SyncController {
     @PostMapping("/apply")
     public ApplyResponse apply(@AuthenticationPrincipal Jwt jwt, @Valid @RequestBody ApplyRequest body) {
         return service.apply(owner(jwt), body);
+    }
+
+    // Explicit machine-readable conflict for one immutable operation intent.
+    // No ID, note body, owner, fingerprint or mutation payload is returned.
+    @ExceptionHandler(SyncOperationIntentConflict.class)
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public Map<String, String> operationIdReuse() {
+        return Map.of("code", "SYNC_OPERATION_ID_REUSE");
     }
     @GetMapping("/latest")
     public LatestChange latest(@AuthenticationPrincipal Jwt jwt,

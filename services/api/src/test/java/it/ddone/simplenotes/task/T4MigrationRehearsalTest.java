@@ -104,7 +104,7 @@ class T4MigrationRehearsalTest {
                 postgres.getPassword()).load();
             migrated.migrate();
             migrated.validate();
-            assertEquals("10", migrated.info().current().getVersion().toString());
+            assertEquals("11", migrated.info().current().getVersion().toString());
 
             try (Connection db = DriverManager.getConnection(
                     postgres.getJdbcUrl(), postgres.getUsername(),
@@ -146,12 +146,16 @@ class T4MigrationRehearsalTest {
                     }
                 }
                 try (PreparedStatement ps = db.prepareStatement(
-                    "SELECT resulting_version,change_id FROM sync_operation WHERE id=?")) {
+                    "SELECT resulting_version,change_id,request_fingerprint " +
+                    "FROM sync_operation WHERE id=?")) {
                     ps.setObject(1, operation);
                     try (ResultSet rs = ps.executeQuery()) {
                         assertTrue(rs.next());
                         assertEquals(4, rs.getLong(1));
                         assertEquals(change, rs.getLong(2));
+                        // V11 must NOT manufacture or rewrite fingerprints of
+                        // operations that already existed on V6.
+                        assertNull(rs.getString(3));
                     }
                 }
                 // V7 constraints forbid a date-only marker with a legacy instant.

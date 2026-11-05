@@ -199,3 +199,8 @@ Tutte le mutazioni dei controller REST storici `/notes` e `/tasks` devono avveni
 ## Vincolo P2.4B2N — inventory non può essere completo su un account incoerente
 
 Il GET `/sync/inventory` deve restare read-only, JWT owner-scoped, e invocare la stessa guardia di coerenza account-wide del preflight prima di dichiarare `complete=true`. Se l'ultimo evento sync non rappresenta una riga materializzata, o un latest attivo manca nella tabella, rispondere 409 senza payload di note o account. I synthetic tombstones rimangono validi. **Non** tentare backfill, reset, replay o restore come risposta automatica. Un inventory coerente non è un lease per future mutazioni. [Specifica](docs/P2-FULL-BACKUP.md).
+
+
+## Vincolo P2.4B2O — operationId identifica un intento immutabile
+
+Ogni `SyncOperation` **nuova** deve memorizzare fingerprint SHA-256 canonico di entityType/entityId, action, expectedVersion e payload; mai includere token/password o loggare il contenuto. Confrontare sotto lock owner **prima** di rispondere a un retry; stesso ID ma diversa azione/body/versione = 409 senza scritture. Escludere `expectedAccountCursor` perché è guard CAS transitorio e può avanzare dopo un primo commit valido. Ordinare ricorsivamente le proprietà JSON, conservare l'ordine degli array. Per righe pre-V11 con fingerprint NULL mantenere compatibilità storica, senza inventare backfill o cancellare righe. La migrazione V11 è additiva e non va eseguita in produzione senza runbook, backup e autorizzazione. Nessun fingerprint concede restore/auto-sync. [Specifica](docs/P2-FULL-BACKUP.md).

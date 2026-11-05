@@ -186,3 +186,8 @@ Nel preflight `/sync/reconciliation/check` aggiunto audit read-only dell'intero 
 ## P2.4B2N — Integrità owner-wide anche su GET inventory (05/11/2026, PR)
 
 `SyncService.inventory` verifica ora l'intera coerenza materiale vs ledger prima di restituire `complete=true`. Anomalie storiche SQL/legacy non loggate generano HTTP 409 senza risposta parziale. Test Testcontainers per isolamento owner, versione errata, riga attiva mancante, delete sintetico e REST tracciato. CI/merge da verificare; nessun deploy.
+
+
+## P2.4B2O — Fingerprint idempotenza (05/11/2026, PR)
+
+Aggiunta migrazione Flyway V11 **additiva e nullable** e digest canonical SHA-256 dell'intento per i nuovi `sync_operation`. Retry con payload/action/versione differenti e stesso operation ID => 409; JSON semanticamente identico con chiavi riordinate e cursore mutato resta idempotente. Righe storiche NULL mantengono la compatibilità. Test PostgreSQL owner/race/byte payload e documentazione aggiornati; CI/merge da verificare. Nessuna migrazione o deploy effettuati su produzione.

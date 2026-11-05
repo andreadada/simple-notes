@@ -5,6 +5,8 @@ import it.ddone.simplenotes.user.AppUserRepository;
 import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.*;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -39,6 +41,7 @@ class SyncIntegrationTest {
     @Autowired MockMvc mvc;
     @Autowired AppUserRepository users;
     @Autowired JwtEncoder encoder;
+    @Autowired ObjectMapper mapper;
 
     String jwt(UUID id) {
         Instant now = Instant.now();
@@ -446,6 +449,254 @@ class SyncIntegrationTest {
         mvc.perform(get("/api/v1/sync/changes").header("Authorization", authA))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.changes.length()").value(1));
+    }
+
+
+    @Test
+    void reconciliationCheckIsReadOnlySameOwnerAndDetectsStaleVersions() throws Exception {
+        var owner = users.save(new AppUser("reconciliation-owner-" + UUID.randomUUID(),
+            "preflight-owner@example.com", "Owner"));
+        var foreign = users.save(new AppUser("reconciliation-foreign-" + UUID.randomUUID(),
+            "preflight-foreign@example.com", "Foreign"));
+        String bearer = "Bearer " + jwt(owner.id);
+        String otherBearer = "Bearer " + jwt(foreign.id);
+        String entity = UUID.randomUUID().toString();
+        String create = """
+            {"operationId":"%s","entityId":"%s","entityType":"note",
+             "action":"upsert","payload":{"title":"PRIVATE-OWNER-TITLE",
+             "body":"PRIVATE-OWNER-BODY"}}
+            """.formatted(UUID.randomUUID(), entity);
+        String apply = "/api/v1/sync/apply";
+        long first = mapper.readTree(mvc.perform(post(apply)
+                .header("Authorization", bearer)
+                .contentType(MediaType.APPLICATION_JSON).content(create))
+            .andExpect(status().isOk()).andReturn()
+            .getResponse().getContentAsString()).path("changeId").asLong();
+
+        String endpoint = "/api/v1/sync/reconciliation/check";
+        String expected = """
+            {"expectedCursor":%d,"items":[
+              {"entityType":"note","entityId":"%s",
+               "changeId":%d,"version":0,"deleted":false}
+            ]}
+            """.formatted(first, entity, first);
+        mvc.perform(post(endpoint))
+            .andExpect(status().isUnauthorized());
+        mvc.perform(post(endpoint).header("Authorization", bearer)
+                .contentType(MediaType.APPLICATION_JSON).content(expected))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.cursor").value(first))
+            .andExpect(jsonPath("$.cursorMatches").value(true))
+            .andExpect(jsonPath("$.consistent").value(true))
+            .andExpect(jsonPath("$.items.length()").value(1))
+            .andExpect(jsonPath("$.items[0].matches").value(true))
+            .andExpect(jsonPath("$.items[0].version").value(0))
+            .andExpect(jsonPath("$.items[0].payload").doesNotExist())
+            .andExpect(org.springframework.test.web.servlet.result.MockMvcResultMatchers
+                .content().string(org.hamcrest.Matchers.not(
+                    org.hamcrest.Matchers.containsString("PRIVATE-OWNER-BODY"))));
+
+        // A second account must not learn the first account's revisions.
+        mvc.perform(post(endpoint).header("Authorization", otherBearer)
+                .contentType(MediaType.APPLICATION_JSON).content(expected))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.cursor").value(0))
+            .andExpect(jsonPath("$.cursorMatches").value(false))
+            .andExpect(jsonPath("$.consistent").value(false))
+            .andExpect(jsonPath("$.items[0].matches").value(false))
+            .andExpect(jsonPath("$.items[0].changeId").doesNotExist());
+
+        String update = """
+            {"operationId":"%s","entityId":"%s","entityType":"note",
+             "action":"upsert","expectedVersion":0,
+             "expectedAccountCursor":%d,
+             "payload":{"title":"Edited","body":"Changed"}}
+            """.formatted(UUID.randomUUID(), entity, first);
+        mvc.perform(post(apply).header("Authorization", bearer)
+                .contentType(MediaType.APPLICATION_JSON).content(update))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.version").value(1));
+
+        // No preflight snapshot is a lease: old revisions now mismatch.
+        mvc.perform(post(endpoint).header("Authorization", bearer)
+                .contentType(MediaType.APPLICATION_JSON).content(expected))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.consistent").value(false))
+            .andExpect(jsonPath("$.cursorMatches").value(false))
+            .andExpect(jsonPath("$.items[0].matches").value(false));
+
+        mvc.perform(get("/api/v1/sync/changes").header("Authorization", bearer))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.changes.length()").value(2));
+    }
+
+    @Test
+    void cursorCasPreventsStaleWritesWithoutBreakingLegacyClientsOrIdempotency()
+            throws Exception {
+        var a = users.save(new AppUser("guarded-a-" + UUID.randomUUID(),
+            "guarded-a@example.com", "Guarded A"));
+        var b = users.save(new AppUser("guarded-b-" + UUID.randomUUID(),
+            "guarded-b@example.com", "Guarded B"));
+        String bearer = "Bearer " + jwt(a.id);
+        String bBearer = "Bearer " + jwt(b.id);
+        String entity = UUID.randomUUID().toString();
+        String apply = "/api/v1/sync/apply";
+
+        // Existing devices continue to work without expectedAccountCursor.
+        String create = """
+            {"operationId":"%s","entityId":"%s","entityType":"note",
+             "action":"upsert","payload":{"title":"Initial","body":"Original"}}
+            """.formatted(UUID.randomUUID(), entity);
+        long cursor = mapper.readTree(mvc.perform(post(apply)
+                .header("Authorization", bearer)
+                .contentType(MediaType.APPLICATION_JSON).content(create))
+            .andExpect(status().isOk()).andReturn()
+            .getResponse().getContentAsString()).path("changeId").asLong();
+
+        // Interleaved global change IDs from a foreign owner must not
+        // invalidate A's own owner-scoped cursor precondition.
+        String foreign = """
+            {"operationId":"%s","entityId":"%s","entityType":"note",
+             "action":"upsert","payload":{"title":"Foreign","body":"Hidden"}}
+            """.formatted(UUID.randomUUID(), UUID.randomUUID());
+        mvc.perform(post(apply).header("Authorization", bBearer)
+                .contentType(MediaType.APPLICATION_JSON).content(foreign))
+            .andExpect(status().isOk());
+
+        String guardedOperation = UUID.randomUUID().toString();
+        String guarded = """
+            {"operationId":"%s","entityId":"%s","entityType":"note",
+             "action":"upsert","expectedVersion":0,"expectedAccountCursor":%d,
+             "payload":{"title":"Guarded","body":"Preserved"}}
+            """.formatted(guardedOperation, entity, cursor);
+        long advanced = mapper.readTree(mvc.perform(post(apply)
+                .header("Authorization", bearer)
+                .contentType(MediaType.APPLICATION_JSON).content(guarded))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.version").value(1)).andReturn()
+            .getResponse().getContentAsString()).path("changeId").asLong();
+        // Correct idempotent resend must still succeed even after cursor advanced.
+        mvc.perform(post(apply).header("Authorization", bearer)
+                .contentType(MediaType.APPLICATION_JSON).content(guarded))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.changeId").value(advanced));
+
+        String stale = """
+            {"operationId":"%s","entityId":"%s","entityType":"note",
+             "action":"upsert","expectedVersion":1,"expectedAccountCursor":%d,
+             "payload":{"title":"Do not overwrite","body":"Too old"}}
+            """.formatted(UUID.randomUUID(), entity, cursor);
+        mvc.perform(post(apply).header("Authorization", bearer)
+                .contentType(MediaType.APPLICATION_JSON).content(stale))
+            .andExpect(status().isConflict());
+        mvc.perform(get("/api/v1/sync/changes").header("Authorization", bearer))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.changes.length()").value(2))
+            .andExpect(jsonPath("$.changes[1].payload.title").value("Guarded"));
+
+        String negative = """
+            {"operationId":"%s","entityId":"%s","entityType":"note",
+             "action":"delete","expectedVersion":1,"expectedAccountCursor":-1}
+            """.formatted(UUID.randomUUID(), entity);
+        mvc.perform(post(apply).header("Authorization", bearer)
+                .contentType(MediaType.APPLICATION_JSON).content(negative))
+            .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void preflightRejectsInvalidAndDuplicateRecordsAndChecksMissingEntities()
+            throws Exception {
+        var user = users.save(new AppUser("reconciliation-invalid-" + UUID.randomUUID(),
+            "reconciliation-invalid@example.com", "Check validation"));
+        String bearer = "Bearer " + jwt(user.id);
+        String endpoint = "/api/v1/sync/reconciliation/check";
+        String unknown = UUID.randomUUID().toString();
+        String absent = """
+            {"expectedCursor":0,"items":[{"entityType":"note",
+             "entityId":"%s","changeId":null,
+             "version":null,"deleted":null}]}
+            """.formatted(unknown);
+        mvc.perform(post(endpoint).header("Authorization", bearer)
+                .contentType(MediaType.APPLICATION_JSON).content(absent))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.consistent").value(true))
+            .andExpect(jsonPath("$.cursor").value(0))
+            .andExpect(jsonPath("$.items[0].matches").value(true));
+        for (String bad : List.of(
+            "{\"expectedCursor\":-1,\"items\":[{\"entityType\":\"note\"," +
+                "\"entityId\":\"" + unknown + "\"}]}",
+            "{\"expectedCursor\":0,\"items\":[]}",
+            "{\"expectedCursor\":0,\"items\":[{\"entityType\":\"other\"," +
+                "\"entityId\":\"" + unknown + "\"}]}",
+            "{\"expectedCursor\":0,\"items\":[{\"entityType\":\"note\"," +
+                "\"entityId\":\"" + unknown + "\",\"changeId\":4}]}",
+            "{\"expectedCursor\":0,\"items\":[{\"entityType\":\"note\"," +
+                "\"entityId\":\"" + unknown + "\",\"version\":0}]}",
+            "{\"expectedCursor\":0,\"items\":[" +
+                "{\"entityType\":\"note\",\"entityId\":\"" + unknown + "\"}," +
+                "{\"entityType\":\"note\",\"entityId\":\"" + unknown + "\"}]}"
+        )) {
+            mvc.perform(post(endpoint).header("Authorization", bearer)
+                    .contentType(MediaType.APPLICATION_JSON).content(bad))
+                .andExpect(status().isBadRequest());
+        }
+    }
+
+    @Test
+    void racingAccountCursorCasAllowsOnlyOneOfTwoConflictingWrites()
+            throws Exception {
+        var user = users.save(new AppUser("cursor-race-" + UUID.randomUUID(),
+            "cursor-race@example.com", "CAS race"));
+        String bearer = "Bearer " + jwt(user.id);
+        String entity = UUID.randomUUID().toString();
+        String apply = "/api/v1/sync/apply";
+        String create = """
+            {"operationId":"%s","entityId":"%s","entityType":"note",
+             "action":"upsert","payload":{"title":"Initial","body":"B"}}
+            """.formatted(UUID.randomUUID(), entity);
+        long cursor = mapper.readTree(mvc.perform(post(apply)
+                .header("Authorization", bearer)
+                .contentType(MediaType.APPLICATION_JSON).content(create))
+            .andExpect(status().isOk()).andReturn()
+            .getResponse().getContentAsString()).path("changeId").asLong();
+        String first = """
+            {"operationId":"%s","entityId":"%s","entityType":"note",
+             "action":"upsert","expectedVersion":0,"expectedAccountCursor":%d,
+             "payload":{"title":"Concurrent A","body":"A"}}
+            """.formatted(UUID.randomUUID(), entity, cursor);
+        String second = """
+            {"operationId":"%s","entityId":"%s","entityType":"note",
+             "action":"upsert","expectedVersion":0,"expectedAccountCursor":%d,
+             "payload":{"title":"Concurrent B","body":"B"}}
+            """.formatted(UUID.randomUUID(), entity, cursor);
+        var pool = Executors.newFixedThreadPool(2);
+        try {
+            CountDownLatch begin = new CountDownLatch(1);
+            Future<Integer> one = pool.submit(() -> {
+                begin.await();
+                return mvc.perform(post(apply).header("Authorization", bearer)
+                    .contentType(MediaType.APPLICATION_JSON).content(first))
+                    .andReturn().getResponse().getStatus();
+            });
+            Future<Integer> two = pool.submit(() -> {
+                begin.await();
+                return mvc.perform(post(apply).header("Authorization", bearer)
+                    .contentType(MediaType.APPLICATION_JSON).content(second))
+                    .andReturn().getResponse().getStatus();
+            });
+            begin.countDown();
+            int aStatus = one.get(30, TimeUnit.SECONDS);
+            int bStatus = two.get(30, TimeUnit.SECONDS);
+            org.junit.jupiter.api.Assertions.assertEquals(
+                List.of(200, 409), java.util.stream.Stream.of(aStatus, bStatus)
+                    .sorted().toList());
+        } finally {
+            pool.shutdownNow();
+        }
+        mvc.perform(get("/api/v1/sync/changes")
+                .header("Authorization", bearer))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.changes.length()").value(2));
     }
 
 }

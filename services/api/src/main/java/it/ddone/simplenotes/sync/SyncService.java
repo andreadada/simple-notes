@@ -42,6 +42,13 @@ public class SyncService {
     /// Large accounts fail closed rather than returning a partial inventory.
     @Transactional(readOnly = true, isolation = Isolation.REPEATABLE_READ)
     public SyncController.Inventory inventory(UUID owner) {
+        // The sync-only ledger might omit legacy-created rows. "complete"
+        // MUST NOT be returned if actual account rows diverge from history.
+        // The preflight and inventory share the same read-only owner audit.
+        if (!ownerMaterializedHistoryCoherent(owner)) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT,
+                "Account data and sync history differ");
+        }
         long cursor = ((Number) em.createNativeQuery(
                 "SELECT COALESCE(MAX(id),0) FROM sync_change WHERE owner_id = :owner")
             .setParameter("owner", owner).getSingleResult()).longValue();

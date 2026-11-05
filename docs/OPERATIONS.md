@@ -269,3 +269,8 @@ Il check owner-wide può segnalare 409 anche se tutti gli elementi elencati nell
 ## P2.4B2M — Mutazioni legacy ora visibili nella sync
 
 Le chiamate ai vecchi endpoint note/task generano eventi `sync_change` nell'account senza richiedere interventi DB. Un client con cursore vecchio vede correttamente 409 quando usa `expectedAccountCursor`. In caso di HTTP 409/426, non forzare replay di backup: aggiornare l'app o effettuare nuova consultazione. I record storicamente non tracciati devono essere valutati separatamente e restano bloccati dal preflight owner-wide. Nessuna migrazione, backfill automatico, cleanup, deploy o operazione distruttiva.
+
+
+## P2.4B2N — Inventory 409 non implica reset
+
+Un errore 409 da `GET /sync/inventory` può segnalare incoerenze fra righe reali e cronologia sync anche quando nessun elemento atteso appare errato. Il client deve considerare l'inventario **non verificabile**, senza memorizzare un esito `complete=true`, ricalcolare cursor o rigiocare mutazioni importate. La diagnosi SQL o il recupero di dati storici richiedono un processo separato, con backup verificato e autorizzazione esplicita: non farlo automaticamente durante deploy. Nessun aggiornamento Coolify eseguito.

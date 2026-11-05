@@ -217,3 +217,10 @@ Le API REST storiche di note/task non possono più modificare direttamente righe
 Test di integrazione PostgreSQL coprono note create/modificate/cancellate via REST, task CRUD/complete, campi `due`/recurrence preservati, CAS obsoleto e race fra vecchio PUT e sync/apply. I test fail-closed già esistenti simulano ora bypass diretti SQL per mantenere coperti anche i dati storici incoerenti.
 
 **Non è restore live**: non ripara automaticamente dati legacy già presenti, non cancella outbox e non sblocca importazione. Nessun deploy, reset o migrazione.
+
+
+## P2.4B2N — Inventario cloud rigoroso (05/11/2026)
+
+Per evitare che Flutter mostri una situazione rassicurante derivata da un registro di sincronizzazione incompleto, l'endpoint inventory GET **rifiuta l'intero account** con 409 quando note/task/liste reali divergono dal latest ledger. L'audit è owner-scoped, read-only, nel medesimo snapshot PostgreSQL, ed è riutilizzato dal preflight versione. Test PostgreSQL coprono nota legacy fuori inventario, differenze di versione, riga attiva mancante, account altrui isolato, REST legacy ora tracciato e tombstone sintetico. Non c'è auto-correzione né modifica dei dati.
+
+Questa protezione non autorizza restore/replay: serve solo a non fornire un inventario falso. Non distribuita su Coolify in questa sessione.

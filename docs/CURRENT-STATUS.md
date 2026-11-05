@@ -181,3 +181,8 @@ Nel preflight `/sync/reconciliation/check` aggiunto audit read-only dell'intero 
 ## P2.4B2M — Backend: write-path legacy unificato (05/11/2026, PR)
 
 `NoteService` e `TaskService` delegano POST/PUT/PATCH/DELETE a `SyncService.apply` con advisory lock dell'owner prima di letture che precedono mutazioni. I vecchi endpoint non lasciano più eventi sync mancanti; completion/task preserva dati moderni. Test di integrazione + concorrenza REST vs sync, 426 per due civile, 409/lock, vecchi test di corruzione spostati a bypass SQL espliciti. CI/merge da verificare; **nessun deploy Coolify**.
+
+
+## P2.4B2N — Integrità owner-wide anche su GET inventory (05/11/2026, PR)
+
+`SyncService.inventory` verifica ora l'intera coerenza materiale vs ledger prima di restituire `complete=true`. Anomalie storiche SQL/legacy non loggate generano HTTP 409 senza risposta parziale. Test Testcontainers per isolamento owner, versione errata, riga attiva mancante, delete sintetico e REST tracciato. CI/merge da verificare; nessun deploy.

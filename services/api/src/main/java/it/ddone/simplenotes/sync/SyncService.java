@@ -110,6 +110,15 @@ public class SyncService {
         for (var expected : req.items()) {
             SyncChange latest = changes.latest(owner, expected.entityType(),
                 expected.entityId()).orElse(null);
+            // A legacy REST endpoint can change the materialized row without
+            // appending sync_change. In that case the ledger-only preflight
+            // would be misleading even if the expected cursor still matches.
+            // Reject the entire batch instead of reporting false consistency.
+            if (!materializedMatchesLedger(owner, expected.entityType(),
+                    expected.entityId(), latest)) {
+                throw new ResponseStatusException(HttpStatus.CONFLICT,
+                    "Materialized state differs from sync history");
+            }
             Long changeId = latest == null ? null : latest.id;
             Long version = latest == null ? null : latest.version;
             Boolean deleted = latest == null ? null : latest.deleted;
@@ -125,6 +134,34 @@ public class SyncService {
         return new SyncController.ReconciliationCheckResponse(cursor,
             cursorMatches, cursorMatches && everyRevisionMatches,
             List.copyOf(observed));
+    }
+
+    /// Fail closed if an entity was created/changed by a legacy endpoint
+    /// without updating the sync ledger. Only approved table identifiers
+    /// are interpolated. Parameters always scope owner and entity ID.
+    private boolean materializedMatchesLedger(UUID owner, String entityType,
+            UUID entityId, SyncChange latest) {
+        String table = switch (entityType) {
+            case "note" -> "note";
+            case "task" -> "task";
+            case "list" -> "task_list";
+            default -> throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                "Unsupported entity type");
+        };
+        @SuppressWarnings("unchecked")
+        List<Object[]> rows = em.createNativeQuery(
+                "SELECT version, (deleted_at IS NOT NULL) FROM " + table +
+                " WHERE owner_id = :owner AND id = :entity")
+            .setParameter("owner", owner)
+            .setParameter("entity", entityId)
+            .getResultList();
+        if (rows.size() != 1) {
+            return rows.isEmpty() && latest == null;
+        }
+        if (latest == null) return false;
+        Object[] row = rows.get(0);
+        return ((Number) row[0]).longValue() == latest.version &&
+            ((Boolean) row[1]) == latest.deleted;
     }
 
     @Transactional

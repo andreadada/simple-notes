@@ -194,3 +194,10 @@ Nel dialog Forui di confronto .snb, dopo «Consulta inventario cloud», compare 
 Se il server rileva revisione/cursore differente, il client invalida inventario, worksheet e piano di riconciliazione precedente: serve nuova consultazione cloud. Se HTTP 404/401/409, token scaduto, formato errato oppure inventario >100 entità, **fallisce chiuso** e non effettua alcuna modifica. Anche quando `consistent=true`, la verifica non blocca scritture concorrenti future e **non** sblocca restore, applicazione delle scelte, replay dell'outbox o AutoSync.
 
 Test MockClient: una POST metadata-only, risposta coerente, variazioni di versione/cursor, payload extra non previsti, ID diversi, 404, HTTPS, limiti 100 e token assente. Nessun deploy Coolify e nessun restore reale.
+
+
+## P2.4B2K — Guardia di coerenza materiale (05/11/2026, PR)
+
+Il controllo read-only delle revisioni sul backend ora verifica in uno stesso snapshot PostgreSQL anche che la **riga corrente** sia coerente col latest event del ledger. Se le API legacy hanno creato una nota non presente nel log, cambiato il numero di versione oppure cancellato un'entità senza appendere un evento, la consultazione restituisce 409 invece di un falso esito di sicurezza. Dati di un altro account sono filtrati dal JWT e non devono emergere nel confronto. Test Testcontainers sulle tre condizioni, più isolamento owner.
+
+**Limite fondamentale:** versione/tombstone coerenti non provano uguaglianza dei payload, né assenza di dati legacy non richiesti o di una race successiva. Il risultato continua a non autorizzare un restore, un upload o il replay di operazioni importate. Non sono state introdotte nuove scritture, migrazioni o azioni su produzione.

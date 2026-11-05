@@ -132,3 +132,6 @@ Il client include anche il lettore sperimentale di inventario cloud, con validaz
 **P2.4B2I (backend in sviluppo):** nuovo controllo read-only delle revisioni cloud e possibilità di CAS per account sulle mutazioni future, senza abilitare il ripristino operativo. Nessun deploy eseguito. [Specifiche](docs/P2-FULL-BACKUP.md).
 
 **P2.4B2J (sviluppo):** nel dialog di confronto backup, il pulsante facoltativo «Ricontrolla revisioni» consulta il nuovo endpoint server di sola lettura per rilevare conflitti recenti. Non modifica dati né sblocca ripristini. [Specifiche](docs/P2-FULL-BACKUP.md).
+
+
+**P2.4B2K (backend in verifica):** il controllo cloud rifiuta anche divergenze tra registro sync e righe realmente salvate (possibili con endpoint legacy), anziché considerarle sicure. Nessun restore reale abilitato. [Specifiche](docs/P2-FULL-BACKUP.md).

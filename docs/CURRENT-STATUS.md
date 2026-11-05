@@ -158,3 +158,7 @@ Matrice deterministica di rischi (local/backup/cloud) e quattro strategie *solo 
 ## P2.4B2H — Revisione interattiva senza applicazione (04/11/2026, sviluppo)
 
 Scheda temporanea `ReconciliationWorksheet`, scelte per singolo item con token opachi e controllo fingerprint, UI Forui «Esamina conflitti» con titoli visibili solo al proprietario autenticato. Il report aggregato non contiene PII e le scelte non vengono salvate. Errori/sorgenti assenti o oltre 500 entità restano fail-closed; nessun permesso di ripristino/sync. Test unitari aggiunti, PR e CI da verificare. Nessun deploy.
+
+## P2.4B2I — Server-side CAS/preflight (05/11/2026, PR)
+
+Implementati controllo batch read-only (`/sync/reconciliation/check`) su owner/cursor/revisioni e campo opzionale `expectedAccountCursor` per `/sync/apply`, verificato atomicamente sotto advisory lock. Client legacy invariati. Test Testcontainers: isolamento JWT, assenza payload nel check, richieste invalide, cursore obsoleto, retry idempotente e concorrenza. CI e merge da verificare. **Nessun deploy** e restore live sempre vietato.

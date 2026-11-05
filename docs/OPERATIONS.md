@@ -246,3 +246,7 @@ Dal confronto `.snb`, la consultazione cloud è esplicita e GET-only. Una volta 
 ## P2.4B2H — Scelte per conflitto solo temporanee
 
 Da «Confronta backup» → «Consulta inventario cloud» → «Esamina conflitti», l'utente vede gli elementi e può alternare una scelta *ipotetica* per ciascuno. La revisione richiede la stessa sessione proprietaria e non effettua altre richieste HTTP, né scrive su SQLite/SharedPreferences. L'opzione cloud non corrisponde a un download o all'autorizzazione di replay. Chiudendo il dialog nessuna scelta resta memorizzata; una nuova versione dell'inventario invalida la vecchia scheda. Oltre 500 entità la scheda dettagliata rifiuta di mostrarsi invece di simulare una revisione incompleta. Non usarla come procedura per sbloccare un restore reale.
+
+## P2.4B2I — Contratto backend non ancora deployato
+
+Il nuovo preflight usa POST ma è **sola lettura** e JWT-scoped. Non include contenuti delle note, non muta `sync_change` o `sync_operation` e rifiuta più di 100 revisioni o ID ripetuti. Il `expectedAccountCursor` facoltativo evita overwrite con cursore stale quando il chiamante lo fornisce; 409 richiede nuovo confronto, non replay automatico. Non attivare restore o invio di outbox importate, non eseguire deploy o migrazioni in questa fase.

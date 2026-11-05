@@ -121,3 +121,9 @@ Il client può richiedere volontariamente `/api/v1/sync/inventory` dall'UI di co
 ## P2.4B2G — Bozza read-only e outbox in quarantena
 
 Il confronto a tre vie usa l'unione degli ID e le outbox dei due snapshot, inclusi record assenti dal cloud ledger. Versioni e cancellazioni incompatibili restano conflitti non risolti; quattro strategie possono essere simulate soltanto come *etichette*, non come comandi. Una parità di versioni non rimuove il gate `canResumeAutoSync=false`. Una futura riconciliazione richiede precondizioni di versione remote, deduplica e approvazione esplicita da parte dell'utente prima di qualsiasi invio. Il GET inventory non è una prenotazione di versione.
+
+## P2.4B2I — Precondizioni di concorrenza
+
+Il nuovo `expectedAccountCursor` è opzionale in `/sync/apply`; se fornito il confronto col massimo change ID owner-scoped è atomico rispetto alla mutazione grazie all'advisory lock già esistente. Quando due dispositivi inviano modifiche con lo stesso cursore atteso, dopo il primo commit il secondo riceve 409 senza nuove righe sync. Un retry di operation ID già applicato resta idempotente; un client legacy non è costretto a inviare il campo.
+
+`POST /sync/reconciliation/check` consulta senza scritture un batch di massimo 100 revisioni/versioni/tombstone e il cursore owner-scoped in una transazione `REPEATABLE_READ`. Non è un lease, non garantisce l'assenza di modifiche successive e non sblocca replay di outbox importate. L'inventory GET e il preflight sono due letture distinte; le decisioni reali richiedono CAS ricontrollato al write.

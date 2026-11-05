@@ -171,3 +171,7 @@ Il pulsante «Consulta inventario cloud» deve essere **opt-in**, non chiamato d
 ## Vincolo P2.4B2H — per-item draft solo in RAM
 
 `ReconciliationWorksheet` e i suoi `DraftConflictChoice` devono essere **puramente locali e non eseguibili**. Nessuna chiamata HTTP, modifica SQLite o SharedPreferences, backup importato, journal rimosso o ripristino deve derivare da una scelta. La UI può mostrare titolo e tipo del record solo nel dialog esplicitamente aperto dall'owner autenticato; report/summary/log/token opachi **non** devono includere ID, titoli, body, owner, password o payload. Token falsificati, preferenze per sorgenti assenti e fingerprint/owner cambiati vanno rifiutati. Oltre 500 record fail-closed, senza paginazione/troncamento silenzioso. Tutti i getter di autorizzazione restano false anche con 0 conflitti. [Specifica](docs/P2-FULL-BACKUP.md).
+
+## Vincolo P2.4B2I — write con cursore owner-scoped solo sotto lock
+
+Non spostare il check `expectedAccountCursor` fuori dalla transazione `SyncService.apply` né prima del lock transazionale per account. Il confronto deve usare `MAX(sync_change.id)` filtrato per owner, non MAX globale. Un 409 non può creare eventi, operazioni o mutare note/task/liste. Il preflight `/sync/reconciliation/check` è solo read-only, same-owner, max 100, chiavi uniche e validazione fail-closed; non esportare body o payload. Un risultato `consistent=true` non è consenso al restore. Legacy client senza cursore invariati, restore live e replay disabilitati. [Specifiche](docs/P2-FULL-BACKUP.md).

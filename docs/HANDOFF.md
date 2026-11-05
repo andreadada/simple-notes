@@ -421,3 +421,8 @@ PR #41 del backend è integrata ma non distribuita in produzione. Su VPS non agg
 ## Handoff 05/11/2026 — P2.4B2K
 
 `SyncService.reconciliationCheck` chiama `materializedMatchesLedger(owner,type,id,latest)`: SQL read-only parametrizzato e filtrato per owner, con allowlist statica per le tre tabelle; controlla presenza riga, versione e tombstone. Un disallineamento restituisce HTTP 409 dentro la transazione `REPEATABLE_READ`, prima del report. `SyncIntegrationTest`: creazione legacy senza evento, aggiornamento REST dopo upsert sync, delete legacy senza tombstone sync e isolamento dell'altro owner. Non modifica `/sync/apply`, DB schema, API payload o Flutter. Un 409 viene già trattato dal client B2J come fallimento non distruttivo che invalida la vecchia bozza. Resta aperto il problema di serializzare gli endpoint legacy sotto lo stesso lock di sync quando si realizzerà un write di restore; non affermare che questo check crei un lease.
+
+
+## Handoff 05/11/2026 — P2.4B2L
+
+`SyncService.ownerMaterializedHistoryCoherent` svolge due query `EXISTS` per ciascuna delle tre tabelle `note`, `task`, `task_list`, owner-scoped e sotto la medesima transazione repeatable-read della revisione: trova sia righe legacy materializzate senza ultimo evento compatibile, sia eventi attivi privi di riga. `materializedMatchesLedger` accetta ora il tombstone sintetico senza riga che `/sync/apply` genera lecitamente per un delete di entità già assente. `SyncIntegrationTest` verifica nota legacy non inclusa nella richiesta, isolamento account, task legacy non elencato, rimozione materiale di nota sincronizzata e tombstone valido. Nessuna migration/deploy. Il check rimane sola lettura e non serializza endpoint legacy concorrenti.

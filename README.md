@@ -135,3 +135,6 @@ Il client include anche il lettore sperimentale di inventario cloud, con validaz
 
 
 **P2.4B2K (backend in verifica):** il controllo cloud rifiuta anche divergenze tra registro sync e righe realmente salvate (possibili con endpoint legacy), anziché considerarle sicure. Nessun restore reale abilitato. [Specifiche](docs/P2-FULL-BACKUP.md).
+
+
+**P2.4B2L (backend in verifica):** la verifica preflight include tutte le note, task e liste dell'account, anche record legacy invisibili nel registro sync, senza cambiare dati o attivare restore. [Specifiche](docs/P2-FULL-BACKUP.md).

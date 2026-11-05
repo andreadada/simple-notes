@@ -171,3 +171,8 @@ Nuovo `reconciliation_preflight_client.dart` e test MockClient, con pulsante For
 ## P2.4B2K — Guard fail-closed contro divergenze API legacy (05/11/2026, PR)
 
 Aggiunto controllo tra righe materializzate e ultimo evento owner-scoped durante `/sync/reconciliation/check`. Se una creazione, modifica o tombstone legacy non è registrata nel ledger, risponde 409 senza esportare contenuti. Test PostgreSQL di creazione non tracciata, update e cancellazione di nota tracciata e isolamento account. CI/merge da verificare; nessun deploy, nessun restore operativo.
+
+
+## P2.4B2L — Controllo owner-wide dei dati fuori ledger (05/11/2026, PR)
+
+Nel preflight `/sync/reconciliation/check` aggiunto audit read-only dell'intero account per nota/task/lista vs latest sync_change: identifica record legacy non richiesti nel batch, versioni/tombstone non tracciati e record attivi mancanti. Mantiene validi tombstone sintetici senza riga. Test integrazione PostgreSQL e documentazione aggiornati; CI/merge da verificare, **nessun deploy o restore**.

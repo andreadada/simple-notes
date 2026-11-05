@@ -201,3 +201,10 @@ Test MockClient: una POST metadata-only, risposta coerente, variazioni di versio
 Il controllo read-only delle revisioni sul backend ora verifica in uno stesso snapshot PostgreSQL anche che la **riga corrente** sia coerente col latest event del ledger. Se le API legacy hanno creato una nota non presente nel log, cambiato il numero di versione oppure cancellato un'entità senza appendere un evento, la consultazione restituisce 409 invece di un falso esito di sicurezza. Dati di un altro account sono filtrati dal JWT e non devono emergere nel confronto. Test Testcontainers sulle tre condizioni, più isolamento owner.
 
 **Limite fondamentale:** versione/tombstone coerenti non provano uguaglianza dei payload, né assenza di dati legacy non richiesti o di una race successiva. Il risultato continua a non autorizzare un restore, un upload o il replay di operazioni importate. Non sono state introdotte nuove scritture, migrazioni o azioni su produzione.
+
+
+## P2.4B2L — Preflight completo dell'account prima delle scelte (05/11/2026)
+
+Per evitare falsi “coerente” quando una vecchia API crea/aggiorna una nota o task non presente nel ledger, il server controlla ora **tutte** le righe note/task/liste dello stesso owner, anche quelle non selezionate per la revisione. Rifiuta una riga non tracciata, una versione o tombstone differente e un latest event attivo senza riga. Il delete sintetico già previsto dal protocollo non viene classificato come errore. Il client B2J già tratta HTTP 409 come ricontrollo non riuscito e scarta la scheda di revisione.
+
+**Non è un controllo transazionale futuro:** il check non è un lease e le API legacy possono ancora cambiare il database dopo la risposta. Nessuna lettura dei body e nessun ripristino live, CAS aggiuntivo, schema DB o deploy è stato introdotto. Test Testcontainers owner isolati, note e task non elencati, riga materializzata mancante e tombstone sintetico.

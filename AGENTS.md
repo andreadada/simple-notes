@@ -184,3 +184,8 @@ Non spostare il check `expectedAccountCursor` fuori dalla transazione `SyncServi
 ## Vincolo P2.4B2K — nessun falso `consistent` dal ledger
 
 Il preflight revisioni **non può** dichiarare `consistent=true` se la riga materializzata dell'owner ha `version` o `deleted_at` discordanti dall'evento latest, oppure solo uno dei due esiste. Usare sempre query parametrizzate per owner/ID e allowlist hardcoded di tabella, senza lettura di contenuti nota. Un disallineamento deve fallire chiuso (409); nessun reset, replay, cancellazione o auto-restore. Il check non protegge l'intero account da futuri write legacy: mantenere disabilitato il restore. [Specifica](docs/P2-FULL-BACKUP.md).
+
+
+## Vincolo P2.4B2L — preflight sull'intero account, non solo sugli ID noti
+
+La verifica `/sync/reconciliation/check` non deve considerare sicuro un account quando esistono righe note/task/liste non rappresentate dal ledger, anche se tali righe non figurano nell'inventory e non sono richieste nel batch. Eseguire scan read-only owner-scoped su tutte e tre le tabelle nel medesimo snapshot `REPEATABLE_READ`. Non rifiutare i tombstone sintetici consentiti dal protocollo per entity fisicamente già assenti. Non leggere/mostrare titoli/body. Errore 409 significa blocco del flusso e non può autorizzare restore, cancellazione o replay. [Specifiche](docs/P2-FULL-BACKUP.md).

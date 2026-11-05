@@ -213,3 +213,7 @@ Mantenere `infra/release-readiness.sh` V10 compatibile con lo storico; usare `in
 ## Vincolo P2.4B2Q — non riutilizzare operation ID incompatibili
 
 Il backend deve distinguere un conflitto versionato risolvibile da `SYNC_OPERATION_ID_REUSE` (stesso owner, ID operazione già presente, payload/action/version differente). Per collisioni fra account restituire soltanto 409 generico, senza indizi di proprietà. La risposta tipizzata non deve contenere note, token, ID, fingerprint o dati privati. Nel client il codice tipizzato **non** deve mai attivare `resolveConflict`, rebase, ACK o scarto outbox. Sospendere AutoSync e preservare tutto il contenuto locale; il normale 409 resta compatibile con backend storici. [Runbook](docs/P2-SYNC-INTENT-CONFLICTS.md).
+
+## Vincolo P2.4B2R — V11 richiede anche capability runtime
+
+Non interpretare `FLYWAY_LATEST=11` come prova che il binario API sia aggiornato: `release-v11-readiness.sh` deve verificare il campo JWT `syncOperationFingerprintSchema=1` con tipo **intero**, rifiutando campo assente/stringa/bool. Il gate storico V10 rimane compatibile senza flag obbligatorio. La capability non deve esporre fingerprint, ID, body, email, JWT o payload; non deve attivare ripristino/scritture. Testare il validatore Python offline e l'API con Testcontainers. [Runbook](docs/RELEASE-V11-READINESS.md).

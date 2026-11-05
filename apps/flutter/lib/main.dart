@@ -44,6 +44,7 @@ import 'data/full_backup_compare.dart';
 import 'data/backup_cloud_safety.dart';
 import 'data/reconciliation_dry_run.dart';
 import 'data/reconciliation_worksheet.dart';
+import 'data/reconciliation_preflight_client.dart';
 import 'data/restore_cloud_inventory.dart';
 import 'data/app_database.dart';
 import 'auth/cloud_auth.dart';
@@ -597,6 +598,7 @@ class _NotesHomeState extends ConsumerState<NotesHome> {
         current: current, backup: backup,
       );
       String? cloudSummary;
+      String? revisionCheckSummary;
       ReconciliationDryRun? dryRun;
       RestoreServerInventory? lastInventory;
       ReconciliationWorksheet? worksheet;
@@ -615,11 +617,81 @@ class _NotesHomeState extends ConsumerState<NotesHome> {
                 child: Text([
                   comparison.summary,
                   if (cloudSummary != null) cloudSummary!,
+                  if (revisionCheckSummary != null) revisionCheckSummary!,
                   if (dryRun != null) dryRun!.summary,
                 ].join('\n\n')),
               ),
             ),
             actions: [
+              if (lastInventory != null)
+                FButton(
+                  variant: FButtonVariant.ghost,
+                  onPress: cloudBusy ? null : () async {
+                    final remote = lastInventory!;
+                    refresh(() => cloudBusy = true);
+                    try {
+                      final session = ref.read(cloudAuthProvider);
+                      final token = session.accessToken;
+                      final expires = session.accessExpiresAt;
+                      if (!CloudConfig.enabled ||
+                          !ref.read(restoreSyncGateProvider).canSync ||
+                          !session.authenticated || session.userId != owner ||
+                          token == null || expires == null ||
+                          !expires.isAfter(DateTime.now()
+                              .add(const Duration(seconds: 30)))) {
+                        throw const FormatException(
+                            'Sessione cloud non disponibile.');
+                      }
+                      final client = http.Client();
+                      try {
+                        final check = await const ReconciliationPreflightClient()
+                            .inspect(
+                          client: client,
+                          apiBase: Uri.parse(CloudConfig.apiBaseUrl),
+                          accessToken: () async => token,
+                          inventory: remote,
+                        );
+                        if (!mounted || !dialogContext.mounted ||
+                            ref.read(cloudAuthProvider).userId != owner) {
+                          return;
+                        }
+                        refresh(() {
+                          revisionCheckSummary = check.summary;
+                          if (!check.consistent) {
+                            // The earlier worksheet and inventory cannot be
+                            // used as current conflict review any longer.
+                            lastInventory = null;
+                            worksheet = null;
+                            dryRun = null;
+                            cloudSummary = 'Inventario non più aggiornato. '
+                                'Ripeti la consultazione cloud.';
+                          }
+                        });
+                      } finally {
+                        client.close();
+                      }
+                    } catch (_) {
+                      if (dialogContext.mounted) {
+                        refresh(() {
+                          revisionCheckSummary = 'Ricontrollo revisioni '
+                              'non disponibile. Nessuna modifica eseguita.';
+                          // Fail closed: the former preview cannot be
+                          // considered fresh after a failed check.
+                          lastInventory = null;
+                          worksheet = null;
+                          dryRun = null;
+                        });
+                      }
+                    } finally {
+                      if (dialogContext.mounted) {
+                        refresh(() => cloudBusy = false);
+                      }
+                    }
+                  },
+                  child: Text(cloudBusy
+                      ? 'Verifica...'
+                      : 'Ricontrolla revisioni'),
+                ),
               if (lastInventory != null)
                 FButton(
                   variant: FButtonVariant.ghost,
@@ -733,6 +805,7 @@ class _NotesHomeState extends ConsumerState<NotesHome> {
                         // large; never expose a silently truncated worksheet.
                       }
                       refresh(() {
+                        revisionCheckSummary = null;
                         worksheet = newSheet;
                         lastInventory = remote;
                         hypotheticalStrategy = ReconciliationStrategy.deferAll;

@@ -153,3 +153,8 @@ Aggiunti `backup_cloud_safety.dart` e test, e pulsante Forui «Consulta inventar
 ## P2.4B2G — Planner dry-run dei conflitti (04/11/2026, PR in sviluppo)
 
 Matrice deterministica di rischi (local/backup/cloud) e quattro strategie *solo ipotetiche*, collegata al dialog Forui dopo il GET dell'inventario. Aggrega assenze, versioni, tombstone, differenze di contenuti e code pendenti senza riportare dati privati; fingerprint SHA-256 lega la bozza a snapshot e inventario. Nessun nuovo endpoint, import, update, sync o autorizzazione live: piano sempre non eseguibile. Test unitari aggiunti, CI/merge non ancora verificati. Branch dipende dalla PR #38; nessun deploy.
+
+
+## P2.4B2H — Revisione interattiva senza applicazione (04/11/2026, sviluppo)
+
+Scheda temporanea `ReconciliationWorksheet`, scelte per singolo item con token opachi e controllo fingerprint, UI Forui «Esamina conflitti» con titoli visibili solo al proprietario autenticato. Il report aggregato non contiene PII e le scelte non vengono salvate. Errori/sorgenti assenti o oltre 500 entità restano fail-closed; nessun permesso di ripristino/sync. Test unitari aggiunti, PR e CI da verificare. Nessun deploy.

@@ -241,3 +241,8 @@ La voce «Confronta backup con questo dispositivo» continua a funzionare senza 
 ## P2.4B2G — Pianificazione dei conflitti (visualizzazione)
 
 Dal confronto `.snb`, la consultazione cloud è esplicita e GET-only. Una volta caricati metadati remoti, il report mostra una matrice aggregata e il pulsante «Simula altra strategia». Le preferenze sono **unicamente scenari esplicativi**; nessuna selezione viene persistita e nessuna richiesta cloud successiva viene inviata dalla simulazione. Un report senza rischi non garantisce correttezza di un restore: server e dispositivo possono cambiare. Non usare fingerprint della bozza o preferenza ipotetica per sbloccare il profilo, rimuovere marker, importare file o riattivare AutoSync. Nessuna modifica reale a VPS/Coolify/DB.
+
+
+## P2.4B2H — Scelte per conflitto solo temporanee
+
+Da «Confronta backup» → «Consulta inventario cloud» → «Esamina conflitti», l'utente vede gli elementi e può alternare una scelta *ipotetica* per ciascuno. La revisione richiede la stessa sessione proprietaria e non effettua altre richieste HTTP, né scrive su SQLite/SharedPreferences. L'opzione cloud non corrisponde a un download o all'autorizzazione di replay. Chiudendo il dialog nessuna scelta resta memorizzata; una nuova versione dell'inventario invalida la vecchia scheda. Oltre 500 entità la scheda dettagliata rifiuta di mostrarsi invece di simulare una revisione incompleta. Non usarla come procedura per sbloccare un restore reale.

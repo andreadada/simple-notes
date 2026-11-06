@@ -72,7 +72,7 @@ class SandboxRestoreConsent {
       throw const FormatException(
           'Conferma già utilizzata o archivi/account cambiati.');
     }
-    // Burn BEFORE any filesystem operation, including a failing preflight.
+    // Burn BEFORE any sandbox checkpoint, SQLite or journal write, even when\n    // subsequent authenticated preflight fails.
     _consumed = true;
   }
 
@@ -85,7 +85,7 @@ class SandboxRestoreConsent {
 /// A content-free receipt from the verified sandbox rollback. The target
 /// snapshot and its pending mutations are NEVER promoted to an installed app.
 class SandboxRestoreOutcome {
-  const SandboxRestoreOutcome(this.rowCounts);
+  const SandboxRestoreOutcome._(this.rowCounts);
 
   final Map<String, int> rowCounts;
 
@@ -189,7 +189,7 @@ class SandboxRestoreOrchestrator {
         !receipt.importedOutboxQuarantined) {
       throw StateError('Rollback sandbox non verificato.');
     }
-    return SandboxRestoreOutcome(Map.unmodifiable(receipt.rows));
+    return SandboxRestoreOutcome._(Map.unmodifiable(receipt.rows));
   }
 
   Future<void> disposeForTest() => _sandbox.disposeForTest();

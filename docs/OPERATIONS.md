@@ -296,3 +296,7 @@ Per il rilascio V11, il controllo read-only richiede **sia** la colonna Flyway `
 ## P2.4B2S — Confronto backup invalidato da modifiche locali
 
 Se durante «Confronta backup con questo dispositivo» cambiano note, task, liste, outbox, cursor, impostazioni locali o account, le revisioni cloud e le scelte visualizzate non possono essere considerate attuali. Il client ricattura il profilo in sola lettura attorno a ciascuna consultazione cloud e prima della revisione manuale; in caso di differenza scarta la bozza e richiede di chiudere e ricominciare. Questo non comporta reset, modifica del backup o replay: la sincronizzazione ordinaria continua secondo le policy esistenti e il restore live resta disabilitato. Non usare un esito positivo per avviare migrazioni/deploy o per considerare atomico il confronto SQLite/SharedPreferences.
+
+## P2.4B2T — Riepilogo di revisione NON eseguibile
+
+Dopo «Consulta inventario cloud», «Ricontrolla revisioni» ed eventuali scelte «Esamina conflitti», il client mostra una ricevuta **informativa**: quante decisioni sono state esaminate e se il controllo remoto è riferito all'inventario corrente. Se il preflight non copre l'intero inventario, le versioni cambiano, manca la sessione o sono rimaste scelte, il riepilogo segnala che la revisione non è completata. Anche quando indica `Revisione informativa completata`, è vietato dedurre che sia autorizzato il restore: nessun pulsante ripristino, nessun resume AutoSync e nessun replay del backup. La ricevuta non viene salvata e non contiene dati dell'utente.

@@ -580,3 +580,11 @@ Esempio: `2026-10-21 14:20 CEST | commit abc1234 | Aggiunto modulo promemoria e 
 - [x] Ricattura read-only e rifiuto del confronto stantio prima/dopo GET inventario e POST preflight, e prima della simulazione delle scelte.
 - [x] Test dei cambiamenti contenuto, cursor, outbox, tema, owner, ordine righe e schema malformato.
 - [ ] Writer restore live e consenso persistente, lock/atomicità cross-store, rilascio VPS e prove real-device (non autorizzati da questo sottostep).
+
+### P2.4B2T — Ricevuta read-only della riconciliazione
+
+- [x] Report informativo che lega owner, worksheet, snapshot e preflight completo sull'inventario (fino a 100 entità).
+- [x] Scelte temporanee mantenute solo durante il dialog; indicatori espliciti per fonti obsolete e revisioni cloud non confermate.
+- [x] Invalidazione della receipt su cambio sorgenti/account; riepilogo privo di titolo, body, token, operation ID o owner.
+- [x] Test di scelta incompleta, preflight parziale, drift cloud/local, owner errato, privacy e nessuna autorizzazione.
+- [ ] Consenso persistente, restore live con recovery durabile e lock, replay sicuro e test fisici restano esclusi.

@@ -705,10 +705,14 @@ class _NotesHomeState extends ConsumerState<NotesHome> {
                         client.close();
                       }
                     } catch (_) {
+                      final stillCurrent = await reviewStillCurrent();
                       if (dialogContext.mounted) {
                         refresh(() {
-                          revisionCheckSummary = 'Ricontrollo revisioni '
-                              'non disponibile. Nessuna modifica eseguita.';
+                          revisionCheckSummary = stillCurrent
+                              ? 'Ricontrollo revisioni non disponibile. '
+                                  'Nessuna modifica eseguita.'
+                              : 'Dati del dispositivo cambiati: '
+                                  'chiudi e ripeti il confronto.';
                           cloudSummary = 'L’inventario precedente non è più '
                               'utilizzabile. Ripeti la consultazione cloud.';
                           // Fail closed: the former preview cannot be
@@ -873,12 +877,16 @@ class _NotesHomeState extends ConsumerState<NotesHome> {
                       client.close();
                     }
                   } catch (_) {
+                    final stillCurrent = await reviewStillCurrent();
                     if (dialogContext.mounted) {
                       refresh(() {
-                        cloudSummary =
-                            'Inventario cloud non disponibile o incompatibile. '
-                            'I dati locali e remoti non sono stati modificati. '
-                            'Il ripristino resta disabilitato.';
+                        cloudSummary = stillCurrent
+                            ? 'Inventario cloud non disponibile o '
+                                'incompatibile. Nessuna modifica eseguita; '
+                                'ripristino disabilitato.'
+                            : 'Dati del dispositivo cambiati: '
+                                'chiudi e ripeti il confronto. '
+                                'Nessun ripristino eseguito.';
                         revisionCheckSummary = null;
                         worksheet = null;
                         lastInventory = null;

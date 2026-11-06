@@ -41,6 +41,7 @@ import 'data/portable_archive.dart';
 import 'data/portable_csv.dart';
 import 'data/full_backup.dart';
 import 'data/full_backup_compare.dart';
+import 'data/backup_review_snapshot_guard.dart';
 import 'data/backup_cloud_safety.dart';
 import 'data/reconciliation_dry_run.dart';
 import 'data/reconciliation_worksheet.dart';
@@ -594,6 +595,30 @@ class _NotesHomeState extends ConsumerState<NotesHome> {
       if (!mounted || ref.read(cloudAuthProvider).userId != owner) {
         return;
       }
+      // A review may outlive its original SQLite/preferences snapshot.
+      // Any local change invalidates the cloud evidence and draft choices.
+      // This is a read-only check, NOT a lock over SQLite + preferences.
+      Future<bool> reviewStillCurrent() async {
+        final session = ref.read(cloudAuthProvider);
+        if (!mounted || !session.authenticated || session.userId != owner) {
+          return false;
+        }
+        try {
+          final latest = await const FullBackupSource().capture(
+            database: ref.read(databaseProvider),
+            preferences: await SharedPreferences.getInstance(),
+            ownerId: owner,
+          );
+          return mounted &&
+              ref.read(cloudAuthProvider).userId == owner &&
+              const BackupReviewSnapshotGuard().isUnchanged(
+                baseline: current, latest: latest,
+              );
+        } catch (_) {
+          return false;
+        }
+      }
+
       final comparison = const FullBackupCompare().preview(
         current: current, backup: backup,
       );
@@ -642,6 +667,10 @@ class _NotesHomeState extends ConsumerState<NotesHome> {
                         throw const FormatException(
                             'Sessione cloud non disponibile.');
                       }
+                      if (!await reviewStillCurrent()) {
+                        throw const FormatException(
+                            'Dati locali cambiati: ripeti il confronto.');
+                      }
                       final client = http.Client();
                       try {
                         final check = await const ReconciliationPreflightClient()
@@ -651,6 +680,10 @@ class _NotesHomeState extends ConsumerState<NotesHome> {
                           accessToken: () async => token,
                           inventory: remote,
                         );
+                        if (!await reviewStillCurrent()) {
+                          throw const FormatException(
+                              'Dati locali cambiati durante il controllo.');
+                        }
                         if (!mounted || !dialogContext.mounted ||
                             ref.read(cloudAuthProvider).userId != owner) {
                           return;
@@ -708,6 +741,19 @@ class _NotesHomeState extends ConsumerState<NotesHome> {
                         cloudSummary =
                             'Sessione cambiata: esegui un nuovo confronto.';
                       });
+                      return;
+                    }
+                    if (!await reviewStillCurrent()) {
+                      if (dialogContext.mounted) {
+                        refresh(() {
+                          worksheet = null;
+                          lastInventory = null;
+                          dryRun = null;
+                          revisionCheckSummary = null;
+                          cloudSummary = 'I dati locali sono cambiati. '
+                              'Chiudi e ripeti il confronto backup.';
+                        });
+                      }
                       return;
                     }
                     if (worksheet != null && worksheet!.items.isNotEmpty &&
@@ -772,6 +818,10 @@ class _NotesHomeState extends ConsumerState<NotesHome> {
                       throw const FormatException(
                           'Sessione cloud non disponibile.');
                     }
+                    if (!await reviewStillCurrent()) {
+                      throw const FormatException(
+                          'Dati locali cambiati: ripeti il confronto.');
+                    }
                     final client = http.Client();
                     try {
                       final remote = await const RestoreServerInventoryReader()
@@ -780,6 +830,10 @@ class _NotesHomeState extends ConsumerState<NotesHome> {
                         apiBase: Uri.parse(CloudConfig.apiBaseUrl),
                         accessToken: () async => token,
                       );
+                      if (!await reviewStillCurrent()) {
+                        throw const FormatException(
+                            'Dati locali cambiati durante la consultazione.');
+                      }
                       if (!mounted || !dialogContext.mounted ||
                           ref.read(cloudAuthProvider).userId != owner) {
                         return;

@@ -573,3 +573,10 @@ Esempio: `2026-10-21 14:20 CEST | commit abc1234 | Aggiunto modulo promemoria e 
 - [x] Retry idempotente identico; conflitto 409 su stesso ID con contenuto/versione/azione alterati.
 - [x] Test PostgreSQL su concorrenza, ordine JSON nested, casi storici NULL e zero eventi extra.
 - [ ] Backup/restore isolato, gate release Flyway e deploy volontario prima dell'attivazione server live.
+
+### P2.4B2S — Invalidazione delle bozze in caso di modifiche locali
+
+- [x] Digest canonico owner-scoped delle tabelle SQLite V8 e preferenze locali, inclusa outbox e cursor, senza conservare dati privati nel report.
+- [x] Ricattura read-only e rifiuto del confronto stantio prima/dopo GET inventario e POST preflight, e prima della simulazione delle scelte.
+- [x] Test dei cambiamenti contenuto, cursor, outbox, tema, owner, ordine righe e schema malformato.
+- [ ] Writer restore live e consenso persistente, lock/atomicità cross-store, rilascio VPS e prove real-device (non autorizzati da questo sottostep).

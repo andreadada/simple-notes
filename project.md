@@ -588,3 +588,10 @@ Esempio: `2026-10-21 14:20 CEST | commit abc1234 | Aggiunto modulo promemoria e 
 - [x] Invalidazione della receipt su cambio sorgenti/account; riepilogo privo di titolo, body, token, operation ID o owner.
 - [x] Test di scelta incompleta, preflight parziale, drift cloud/local, owner errato, privacy e nessuna autorizzazione.
 - [ ] Consenso persistente, restore live con recovery durabile e lock, replay sicuro e test fisici restano esclusi.
+
+### P2.4B2U — Orchestrazione test-only del recovery
+
+- [x] Consenso sandbox esplicito, monouso, associato a owner/checkpoint/target e due acknowledgement.
+- [x] Simulazione su SQLite + preferenze solo OS temp con stage e rollback dopo cold-start.
+- [x] Test per consenso assente, riuso, file/owner diversi, password errata, crash multipli e divieto permanente di replay/sync.
+- [ ] Restore live, fsync directory, lock multi-processo, atomicità cross-store, quarantena reale delle mutation e prove Windows/Android fisiche: **non implementati**.

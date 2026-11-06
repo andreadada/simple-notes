@@ -214,3 +214,7 @@ Flutter `0.29.0+31`: `ui/ics_source_details.dart` descrive tipo, conteggi e ulti
 ## P2.4B1 — Backup locale cifrato (0.31.0+33, main, PR #28)
 
 `lib/data/full_backup.dart` cifra JSON completo dell'archivio SQLite V8 e delle preferenze locali owner-scoped in AES-256-GCM/PBKDF2 (file .snb). `AppDatabase.fullBackupRows` acquisisce in una transazione tutte le righe incluse le tombstone e la coda sync. `main.dart` espone creazione e verifica di un backup, **non il ripristino**. OAuth/secure storage e stato OS non esportati. Nessun server o migrazione. [Specifiche](../../docs/P2-FULL-BACKUP.md).
+
+## P2.4B2U — Consenso e rollback su sandbox temporanea
+
+`lib/data/full_backup_sandbox_orchestrator.dart` è disponibile esclusivamente per la suite test: richiede una conferma monouso, autentica due archivi cifrati dello stesso account e prova lo staging e il rollback su SQLite e preferenze in OS temp. Il test `test/full_backup_sandbox_orchestrator_test.dart` include guasti dopo scrittura, cold-start e rifiuto replay. Il client installato **non** espone ripristino reale e non importa l'orchestratore in `main.dart`.

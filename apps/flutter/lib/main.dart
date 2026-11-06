@@ -763,7 +763,7 @@ class _NotesHomeState extends ConsumerState<NotesHome> {
                     }
                     if (worksheet != null && worksheet!.items.isNotEmpty &&
                         dialogContext.mounted) {
-                      await _showReconciliationWorksheet(
+                      final invalidated = await _showReconciliationWorksheet(
                         dialogContext,
                         worksheet!,
                         () {
@@ -783,7 +783,18 @@ class _NotesHomeState extends ConsumerState<NotesHome> {
                             dryRun = newDraft;
                           });
                         },
+                        reviewStillCurrent,
                       );
+                      if (invalidated && dialogContext.mounted) {
+                        refresh(() {
+                          worksheet = null;
+                          lastInventory = null;
+                          dryRun = null;
+                          revisionCheckSummary = null;
+                          cloudSummary = 'Dati locali cambiati: '
+                              'chiudi e ripeti il confronto.';
+                        });
+                      }
                       return;
                     }
                     final strategies = ReconciliationStrategy.values;
@@ -922,12 +933,14 @@ class _NotesHomeState extends ConsumerState<NotesHome> {
 
   /// Non-persistent per-item worksheet. The app never passes these choices
   /// to the DB, SharedPreferences, restore codec, or CloudSync.
-  Future<void> _showReconciliationWorksheet(
+  Future<bool> _showReconciliationWorksheet(
     BuildContext parent,
     ReconciliationWorksheet initial,
     VoidCallback simulateOverallStrategy,
+    Future<bool> Function() isLocalSnapshotCurrent,
   ) async {
     var sheet = initial;
+    var invalidated = false;
     await showFDialog<void>(
       context: parent,
       builder: (ctx, style, animation) => StatefulBuilder(
@@ -980,7 +993,15 @@ class _NotesHomeState extends ConsumerState<NotesHome> {
                             FButton(
                               variant: FButtonVariant.ghost,
                               onPress: item.availableChoices.length < 2
-                                  ? null : () {
+                                  ? null : () async {
+                                if (!await isLocalSnapshotCurrent()) {
+                                  invalidated = true;
+                                  if (innerContext.mounted) {
+                                    Navigator.pop(ctx);
+                                  }
+                                  return;
+                                }
+                                if (!innerContext.mounted) return;
                                 final options = item.availableChoices;
                                 final next = options[
                                     (options.indexOf(item.choice) + 1) %
@@ -1008,7 +1029,13 @@ class _NotesHomeState extends ConsumerState<NotesHome> {
           actions: [
             FButton(
               variant: FButtonVariant.ghost,
-              onPress: () {
+              onPress: () async {
+                if (!await isLocalSnapshotCurrent()) {
+                  invalidated = true;
+                  if (innerContext.mounted) Navigator.pop(ctx);
+                  return;
+                }
+                if (!innerContext.mounted) return;
                 simulateOverallStrategy();
                 updateSheet(() {});
               },
@@ -1022,6 +1049,8 @@ class _NotesHomeState extends ConsumerState<NotesHome> {
         ),
       ),
     );
+    // A snapshot may change while the nested dialog is simply being viewed.
+    return invalidated || !await isLocalSnapshotCurrent();
   }
 
   Future<void> _importArchive() async {

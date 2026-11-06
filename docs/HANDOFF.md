@@ -458,3 +458,7 @@ Backend: `SyncOperationIntentConflict` (eccezione priva di payload), `SyncServic
 ## Handoff 05/11/2026 — P2.4B2R
 
 `CapabilitiesController.java` ora espone il numero schema fingerprint V11; `t4-check-api.sh` passa `REQUIRE_SYNC_OPERATION_FINGERPRINT_SCHEMA` al validatore Python; `release-v11-readiness.sh` forza il nuovo gate, mentre V10 non lo richiede. `test_release_capabilities.py` verifica flag V11, mancanza, boolean/string, V10 compatibile e nessun leak in output; `SyncIntegrationTest.java` verifica capability JWT e metadata-only. L'upgrade DB, la nuova app backend e i client reali restano verifiche distinte: un flag esposto non prova il commit di un'operazione di prova. [Runbook](RELEASE-V11-READINESS.md).
+
+## Handoff 06/11/2026 — P2.4B2S
+
+Implementato `BackupReviewSnapshotGuard` nel client per evitare che il dialog di confronto riutilizzi lo snapshot locale catturato prima di una chiamata remota lenta. `main.dart` ora ripete `FullBackupSource.capture` (read-only) prima e dopo il GET inventory e il POST preflight, nonché prima della scheda delle scelte: se owner, dati SQLite, outbox, sync cursor o preferenze non coincidono, scarta inventory/worksheet/dry-run e richiede un nuovo confronto. Il checksum canonico ignora soltanto `createdAtUtc` e l'ordine delle righe, non contenuti o stato sync. Include test `backup_review_snapshot_guard_test.dart`. Nessun restore live, schema, deploy o intervento VPS; la finestra temporale fra snapshot rimane una race non risolta per future scritture.

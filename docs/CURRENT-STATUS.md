@@ -215,3 +215,7 @@ Il backend distingue un 409 da `SYNC_OPERATION_ID_REUSE` da un normale 409 di ve
 ## P2.4B2S — Snapshot locale invariato durante la revisione (06/11/2026)
 
 Il client controlla in sola lettura che i dati locali non siano cambiati mentre è aperto un confronto `.snb`: un digest canonico delle cinque tabelle e delle preferenze (inclusi cursor e outbox) viene ricalcolato prima/dopo le richieste cloud e prima di esaminare le scelte. Se lo stato è diverso, la bozza è invalidata e occorre ripetere il confronto. Nessuna scrittura, restore live, replay outbox o deploy attivato. La verifica **non** è un lock o un lease e non rende atomico SQLite + SharedPreferences; i test di integrazione nativi/real-device restano rinviati.
+
+## P2.4B2T — Ricevuta informativa di revisione (06/11/2026, sviluppo)
+
+Nuovo controllo a livello client che riassume le scelte simulate solo se il worksheet è ancora legato agli snapshot di dispositivo/backup/inventario cloud e il preflight copre tutte le revisioni ammesse (max 100). Un account diverso, dati o cursor mutati, check assente/stantio o scelte rimaste invalida il completamento. Il dialog mostra solo conteggi e stato; scelte e report sono **volatili** e non costituiscono permessi per scritture, restore o replay dell'outbox. Nessun deploy V11 o collaudo fisico incluso.

@@ -4,7 +4,7 @@
 
 | Area | Stato verificato | Gate ancora aperti |
 |---|---|---|
-| `main` | **P0–P2.4B2R integrate**, Flutter **`0.31.0+33`**, [PR #50](https://github.com/andreadada/simple-notes/pull/50) merged (`0d31133b`); CI backend/Compose/docs verdi | **Ripristino live non abilitato**; API strict, deploy V11 e collaudi reali differiti |
+| `main` | **P0–P2.4B2T integrate**, Flutter **`0.31.0+33`**, [PR #51](https://github.com/andreadada/simple-notes/pull/51) + [PR #52](https://github.com/andreadada/simple-notes/pull/52) merged (`16869c8f`); [Flutter CI](https://github.com/andreadada/simple-notes/actions/runs/42233052499) e [Markdown](https://github.com/andreadada/simple-notes/actions/runs/42233052437) verdi | **Restore live disabilitato**; VPS Flyway V10, V11/strict API non attestate, E2E reali rinviati |
 | P1.18 integrata (storico) | [PR #19](https://github.com/andreadada/simple-notes/pull/19) merged, Flutter **`0.23.0+25`**, temi chiaro/scuro/sistema, preferenza locale e Sticky | CI verde; test visivi e su dispositivi fisici ancora aperti |
 | CI P2.4B1 | [Flutter #41636993011](https://github.com/andreadada/simple-notes/actions/runs/41636993011) **success**: 204 test, Windows EXE/MSIX, Android JDK17/21; [Markdown #41636993004](https://github.com/andreadada/simple-notes/actions/runs/41636993004) **success** | Nessun restore live, prova picker/share o Windows↔Android su dispositivi reali |
 | CI P2.4A | [Flutter #41562133925](https://github.com/andreadada/simple-notes/actions/runs/41562133925) **success**: 198 test, Windows EXE/MSIX, Android JDK17/21; [Markdown #41561797719](https://github.com/andreadada/simple-notes/actions/runs/41561797719) **success** | Collaudo CSV nativo e Windows↔Android rinviati |
@@ -19,6 +19,13 @@
 | Gate R1 (codice) | [PR #26](https://github.com/andreadada/simple-notes/pull/26) merged; [Compose CI #41523319857](https://github.com/andreadada/simple-notes/actions/runs/41523319857) success (V6 rifiutata, V10 incompleta rifiutata, V10 sintetica accettata), [Markdown #41523319860](https://github.com/andreadada/simple-notes/actions/runs/41523319860) success | **Non certifica Flyway V10 reale, health e API autenticata in VPS** |
 | Backend nel repository | Spring Boot/PostgreSQL 17, Flyway **V11**; client Drift/SQLite **V8** | VPS attestata solo a Flyway **V10 (03/11/2026)**; backend V11/capability non verificati sulla VPS |
 | Test reali | VPS V10 verificata il 03/11; Google Windows connesso e pending 0 nel report disponibile | Android E2E, API strict, V11 e restore live ancora aperti |
+
+## Snapshot corrente dopo la PR #52 (06/11/2026)
+
+- `main` ora include [PR #51](https://github.com/andreadada/simple-notes/pull/51) (guard di validità dello snapshot locale) e [PR #52](https://github.com/andreadada/simple-notes/pull/52) (ricevuta informativa delle scelte e del preflight); merge `16869c8f`.
+- [Flutter CI #42233052499](https://github.com/andreadada/simple-notes/actions/runs/42233052499) **success**: analisi statica, widget test, APK Android Java 17/21, Windows EXE/MSIX e rehearsal recovery su sandbox. [Markdown CI #42233052437](https://github.com/andreadada/simple-notes/actions/runs/42233052437) **success**. Backend/Compose restano attestati dai run precedenti della PR #50; non confonderli con un deploy.
+- I due sottostep sono **informativi e non scriventi**: nessun restore `.snb` live, nessun replay outbox importata, nessuna modifica alla VPS e nessuna autorizzazione implicita da `reviewComplete`. Il prossimo lavoro richiede consenso, lock/recovery durabile, atomicità cross-store e collaudi differiti.
+- Il riepilogo storico della PR #50 sotto questa sezione resta valido per l'epoca, ma non rappresenta più la punta corrente di `main`.
 
 ## Snapshot verificato dopo la PR #50 (06/11/2026)
 

@@ -466,3 +466,7 @@ Implementato `BackupReviewSnapshotGuard` nel client per evitare che il dialog di
 ## Handoff 06/11/2026 — P2.4B2T
 
 Aggiunti `data/reconciliation_review_receipt.dart` e `test/reconciliation_review_receipt_test.dart`: receipt priva di contenuti, legata a owner, sorgenti, worksheet e preflight remoto. Rifiuta inventario senza verifica completa, preflight non allineato e scelte incomplete. `main.dart` mantiene la ricevuta informativa nel dialog e la invalida insieme a worksheet/inventory in caso di modifica o cambio account; al ritorno dal sottodialog conserva soltanto le scelte temporanee della sessione. Test delle precondizioni e delle proprietà che restano sempre false (`canRestoreLive`, `canWriteCloud`, `canApplyDecisions`, `canReplayImportedOutbox`, `canResumeAutoSync`). Questo non è un writer di riconciliazione e non è stato deployato; E2E rimandati.
+
+## Handoff P2.4B2U — Test-only sandbox orchestrator (06/11/2026)
+
+Nuove classi `SandboxRestoreConsent` e `SandboxRestoreOrchestrator` in `apps/flutter/lib/data/full_backup_sandbox_orchestrator.dart`; test in `apps/flutter/test/full_backup_sandbox_orchestrator_test.dart`. Simulazione con consenso esplicito monouso, owner/checkpoint/target bloccati a digest, preflight cifrato, sequenza stage e rollback cross-store sulla sola directory temp. Crash injection, cold-start e retry sono testati; nessuna connessione a profilo installato, login, API o AutoSync. L'incremento non rende sicuro il restore reale: fsync directory, multi-process lock, integrazione nativa e consenso operativo restano aperti.

@@ -226,3 +226,7 @@ Il client controlla in sola lettura che i dati locali non siano cambiati mentre 
 ## P2.4B2T — Ricevuta informativa di revisione (06/11/2026, sviluppo)
 
 Nuovo controllo a livello client che riassume le scelte simulate solo se il worksheet è ancora legato agli snapshot di dispositivo/backup/inventario cloud e il preflight copre tutte le revisioni ammesse (max 100). Un account diverso, dati o cursor mutati, check assente/stantio o scelte rimaste invalida il completamento. Il dialog mostra solo conteggi e stato; scelte e report sono **volatili** e non costituiscono permessi per scritture, restore o replay dell'outbox. Nessun deploy V11 o collaudo fisico incluso.
+
+## P2.4B2U — Sandbox consent + recovery (06/11/2026, sviluppo PR)
+
+Incremento preparato in branch separata: consenso monouso per l'esecuzione **solo in sandbox temporanea**, validazione AES-GCM same-owner e compensazione SQLite/preferenze dopo crash simulati. Nessuna modifica a startup, OAuth, cloud o profili installati; i getter di autorizzazione live/sync/replay restano sempre false. Le garanzie native cross-process/fsync e i test fisici sono ancora aperti. Finché la PR non è unita, la tabella di stato `main` all'inizio rappresenta la versione integrata.

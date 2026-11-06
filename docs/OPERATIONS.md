@@ -292,3 +292,7 @@ Se il client segnala che l'operation ID è già stato registrato con contenuto d
 ## P2.4B2R — Doppia evidenza V11 senza modifiche
 
 Per il rilascio V11, il controllo read-only richiede **sia** la colonna Flyway `request_fingerprint VARCHAR(64) NULL` **sia** la capability API autenticata `syncOperationFingerprintSchema:1`. Se una sola manca, il gate si interrompe prima di qualsiasi fase sul client. Non correggere la discrepanza manualmente sul DB: serve una decisione separata di rollout e backup verificato. Le vecchie verifiche V10 restano utilizzabili senza richiedere V11. [Runbook](RELEASE-V11-READINESS.md).
+
+## P2.4B2S — Confronto backup invalidato da modifiche locali
+
+Se durante «Confronta backup con questo dispositivo» cambiano note, task, liste, outbox, cursor, impostazioni locali o account, le revisioni cloud e le scelte visualizzate non possono essere considerate attuali. Il client ricattura il profilo in sola lettura attorno a ciascuna consultazione cloud e prima della revisione manuale; in caso di differenza scarta la bozza e richiede di chiudere e ricominciare. Questo non comporta reset, modifica del backup o replay: la sincronizzazione ordinaria continua secondo le policy esistenti e il restore live resta disabilitato. Non usare un esito positivo per avviare migrazioni/deploy o per considerare atomico il confronto SQLite/SharedPreferences.

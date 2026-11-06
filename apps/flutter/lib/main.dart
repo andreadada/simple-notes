@@ -599,8 +599,9 @@ class _NotesHomeState extends ConsumerState<NotesHome> {
       // Any local change invalidates the cloud evidence and draft choices.
       // This is a read-only check, NOT a lock over SQLite + preferences.
       Future<bool> reviewStillCurrent() async {
+        if (!mounted) return false;
         final session = ref.read(cloudAuthProvider);
-        if (!mounted || !session.authenticated || session.userId != owner) {
+        if (!session.authenticated || session.userId != owner) {
           return false;
         }
         try {

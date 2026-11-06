@@ -1,10 +1,10 @@
 # Stato corrente — Simple Notes
 
-**Aggiornato 3 novembre 2026.** Questo documento prevale sulla cronologia. **Codice/CI, deploy Coolify, installazione e collaudo fisico sono stati distinti.**
+**Aggiornato 6 novembre 2026.** Questo documento prevale sulla cronologia. **Codice/CI, deploy Coolify, installazione e collaudo fisico sono stati distinti.**
 
 | Area | Stato verificato | Gate ancora aperti |
 |---|---|---|
-| `main` | **P0–P2.4B1 e R1 integrate**, Flutter **`0.31.0+33`**, [PR #28](https://github.com/andreadada/simple-notes/pull/28) merged, commit [`95741a20`](https://github.com/andreadada/simple-notes/commit/95741a2013246296dd3e278ec09ae8e72f14a836) | **P2.4B2 restore non implementato**; API strict e prove reali differite |
+| `main` | **P0–P2.4B2R integrate**, Flutter **`0.31.0+33`**, [PR #50](https://github.com/andreadada/simple-notes/pull/50) merged (`0d31133b`); CI backend/Compose/docs verdi | **Ripristino live non abilitato**; API strict, deploy V11 e collaudi reali differiti |
 | P1.18 integrata (storico) | [PR #19](https://github.com/andreadada/simple-notes/pull/19) merged, Flutter **`0.23.0+25`**, temi chiaro/scuro/sistema, preferenza locale e Sticky | CI verde; test visivi e su dispositivi fisici ancora aperti |
 | CI P2.4B1 | [Flutter #41636993011](https://github.com/andreadada/simple-notes/actions/runs/41636993011) **success**: 204 test, Windows EXE/MSIX, Android JDK17/21; [Markdown #41636993004](https://github.com/andreadada/simple-notes/actions/runs/41636993004) **success** | Nessun restore live, prova picker/share o Windows↔Android su dispositivi reali |
 | CI P2.4A | [Flutter #41562133925](https://github.com/andreadada/simple-notes/actions/runs/41562133925) **success**: 198 test, Windows EXE/MSIX, Android JDK17/21; [Markdown #41561797719](https://github.com/andreadada/simple-notes/actions/runs/41561797719) **success** | Collaudo CSV nativo e Windows↔Android rinviati |
@@ -17,8 +17,15 @@
 | CI P1.18 | [Flutter CI #41067872668](https://github.com/andreadada/simple-notes/actions/runs/41067872668): **success** (148 test, Windows EXE/MSIX, Android JDK17/21). [Markdown #41067872675](https://github.com/andreadada/simple-notes/actions/runs/41067872675): **success** | Non dimostra test fisico, OAuth né upgrade ZIP→MSIX |
 | CI P1.17 | [Flutter CI #40797207231](https://github.com/andreadada/simple-notes/actions/runs/40797207231): **success** per analyze/test, Windows release + MSIX di sviluppo, Android JDK17 e JDK21. [Markdown #40797207130](https://github.com/andreadada/simple-notes/actions/runs/40797207130): **success** | La CI non certifica interazioni fisiche, Google login o notifiche |
 | Gate R1 (codice) | [PR #26](https://github.com/andreadada/simple-notes/pull/26) merged; [Compose CI #41523319857](https://github.com/andreadada/simple-notes/actions/runs/41523319857) success (V6 rifiutata, V10 incompleta rifiutata, V10 sintetica accettata), [Markdown #41523319860](https://github.com/andreadada/simple-notes/actions/runs/41523319860) success | **Non certifica Flyway V10 reale, health e API autenticata in VPS** |
-| Backend nel repository | Spring Boot/PostgreSQL 17, Flyway **V10**; client Drift/SQLite **V8** | VPS reale Flyway **V10 verificata il 03/11/2026**; API strict e health non attestate |
-| Test reali | VPS V10 verificata; Windows Google connesso e pending 0, sync recente | Android E2E, API strict e firma/persistenza ancora aperti e rimandati |
+| Backend nel repository | Spring Boot/PostgreSQL 17, Flyway **V11**; client Drift/SQLite **V8** | VPS attestata solo a Flyway **V10 (03/11/2026)**; backend V11/capability non verificati sulla VPS |
+| Test reali | VPS V10 verificata il 03/11; Google Windows connesso e pending 0 nel report disponibile | Android E2E, API strict, V11 e restore live ancora aperti |
+
+## Snapshot verificato dopo la PR #50 (06/11/2026)
+
+- `main` baseline `0d31133b`: [PR #50](https://github.com/andreadada/simple-notes/pull/50) (capability runtime V11) e [PR #49](https://github.com/andreadada/simple-notes/pull/49) (409 tipizzato `SYNC_OPERATION_ID_REUSE` e stop sicuro della sync Flutter) integrate; nessuna PR aperta alla verifica.
+- CI sul merge #50: [Backend](https://github.com/andreadada/simple-notes/actions/runs/42227814409), [Compose](https://github.com/andreadada/simple-notes/actions/runs/42227814144) e [Markdown](https://github.com/andreadada/simple-notes/actions/runs/42227814257) `success`. Ultima [Flutter CI](https://github.com/andreadada/simple-notes/actions/runs/42103008443) `success` sul merge #49, non sul merge #50.
+- **Prossimo gate di sviluppo:** implementare solo con garanzie verificabili il percorso di restore live, senza sbloccare replay automatici: embargo AutoSync, lock e recovery durabili, consenso per entità e test. Deploy Coolify V11 ed E2E fisici rimangono separati e rinviati dall'utente.
+- Gli addendum seguenti con diciture storiche «branch/PR/in verifica» sono snapshot della loro redazione: i sottostep fino a P2.4B2R risultano oggi integrati in `main`, non necessariamente presenti nel runtime VPS.
 
 ## Funzioni integrate nel codice
 

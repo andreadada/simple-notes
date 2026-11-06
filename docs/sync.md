@@ -1,7 +1,7 @@
 # Delta Sync v1 — protocollo e storia degli incrementi
 
 <!-- CURRENT-STATUS-REF -->
-> **Stato operativo 02/11/2026:** P2.3D gestione fonti ICS integrata su `main` ([PR #25](https://github.com/andreadada/simple-notes/pull/25), Flutter `0.29.0+31`; [CI Flutter](https://github.com/andreadada/simple-notes/actions/runs/41471546808) success: **191 test**, Windows EXE/MSIX, Android JDK17/21; [Markdown](https://github.com/andreadada/simple-notes/actions/runs/41471546568) success). Nessun deploy, reset, installazione o test hardware. Backend Flyway V10 in repo, VPS ultima attestazione V8. [Stato](CURRENT-STATUS.md) · [Gestione ICS](P2-ICS-SOURCE-MANAGEMENT.md).
+> **Stato operativo 06/11/2026:** `main` integra fino a **P2.4B2R** ([PR #50](https://github.com/andreadada/simple-notes/pull/50), baseline `0d31133b`); Flutter `0.31.0+33`, backend Flyway **V11 nel codice**. CI [backend](https://github.com/andreadada/simple-notes/actions/runs/42227814409), [Compose](https://github.com/andreadada/simple-notes/actions/runs/42227814144), [docs](https://github.com/andreadada/simple-notes/actions/runs/42227814257) verdi sull'ultimo merge; [Flutter](https://github.com/andreadada/simple-notes/actions/runs/42103008443) verde sul commit precedente. **VPS documentata solo V10 (03/11); V11, API strict e prove fisiche non attestati.** Ripristino live, replay outbox importata e deploy restano fuori scope. [Stato ](CURRENT-STATUS.md) · [Gate V11 ](RELEASE-V11-READINESS.md) · [Test rinviati ](DEVICE-ACCEPTANCE-DEFERRED.md).
 
 
 ## Ultima versione di un elemento / risoluzione conflitto (P0)

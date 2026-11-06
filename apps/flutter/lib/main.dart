@@ -46,6 +46,7 @@ import 'data/backup_cloud_safety.dart';
 import 'data/reconciliation_dry_run.dart';
 import 'data/reconciliation_worksheet.dart';
 import 'data/reconciliation_preflight_client.dart';
+import 'data/reconciliation_review_receipt.dart';
 import 'data/restore_cloud_inventory.dart';
 import 'data/app_database.dart';
 import 'auth/cloud_auth.dart';
@@ -625,9 +626,32 @@ class _NotesHomeState extends ConsumerState<NotesHome> {
       );
       String? cloudSummary;
       String? revisionCheckSummary;
+      String? receiptSummary;
+      ReconciliationPreflightResult? preflightReceipt;
       ReconciliationDryRun? dryRun;
       RestoreServerInventory? lastInventory;
       ReconciliationWorksheet? worksheet;
+
+      // Content-free, non-executable receipt. A completed review is never a
+      // cloud lease or permission to replay/restore any imported operation.
+      String? reviewReceiptSummary(
+          ReconciliationWorksheet? decisions,
+          RestoreServerInventory? remote,
+          ReconciliationPreflightResult? check) {
+        if (decisions == null || remote == null) return null;
+        try {
+          return const ReconciliationReviewReceiptBuilder().inspect(
+            expectedOwnerId: owner,
+            current: current,
+            imported: backup,
+            cloud: remote,
+            worksheet: decisions,
+            preflight: check,
+          ).summary;
+        } catch (_) {
+          return 'Revisione non verificabile. Nessun ripristino autorizzato.';
+        }
+      }
       var hypotheticalStrategy = ReconciliationStrategy.deferAll;
       var cloudBusy = false;
       await showFDialog<void>(
@@ -644,6 +668,7 @@ class _NotesHomeState extends ConsumerState<NotesHome> {
                   comparison.summary,
                   if (cloudSummary != null) cloudSummary!,
                   if (revisionCheckSummary != null) revisionCheckSummary!,
+                  if (receiptSummary != null) receiptSummary!,
                   if (dryRun != null) dryRun!.summary,
                 ].join('\n\n')),
               ),
@@ -691,12 +716,18 @@ class _NotesHomeState extends ConsumerState<NotesHome> {
                         }
                         refresh(() {
                           revisionCheckSummary = check.summary;
+                          preflightReceipt = check.consistent ? check : null;
+                          receiptSummary = reviewReceiptSummary(
+                            worksheet, lastInventory, preflightReceipt,
+                          );
                           if (!check.consistent) {
                             // The earlier worksheet and inventory cannot be
                             // used as current conflict review any longer.
                             lastInventory = null;
                             worksheet = null;
                             dryRun = null;
+                            preflightReceipt = null;
+                            receiptSummary = null;
                             cloudSummary = 'Inventario non più aggiornato. '
                                 'Ripeti la consultazione cloud.';
                           }
@@ -720,6 +751,8 @@ class _NotesHomeState extends ConsumerState<NotesHome> {
                           lastInventory = null;
                           worksheet = null;
                           dryRun = null;
+                          preflightReceipt = null;
+                          receiptSummary = null;
                         });
                       }
                     } finally {
@@ -763,7 +796,7 @@ class _NotesHomeState extends ConsumerState<NotesHome> {
                     }
                     if (worksheet != null && worksheet!.items.isNotEmpty &&
                         dialogContext.mounted) {
-                      final invalidated = await _showReconciliationWorksheet(
+                      final result = await _showReconciliationWorksheet(
                         dialogContext,
                         worksheet!,
                         () {
@@ -785,14 +818,23 @@ class _NotesHomeState extends ConsumerState<NotesHome> {
                         },
                         reviewStillCurrent,
                       );
-                      if (invalidated && dialogContext.mounted) {
+                      if (dialogContext.mounted) {
                         refresh(() {
-                          worksheet = null;
-                          lastInventory = null;
-                          dryRun = null;
-                          revisionCheckSummary = null;
-                          cloudSummary = 'Dati locali cambiati: '
-                              'chiudi e ripeti il confronto.';
+                          if (result.$1) {
+                            worksheet = null;
+                            lastInventory = null;
+                            dryRun = null;
+                            revisionCheckSummary = null;
+                            preflightReceipt = null;
+                            receiptSummary = null;
+                            cloudSummary = 'Dati locali cambiati: '
+                                'chiudi e ripeti il confronto.';
+                          } else {
+                            worksheet = result.$2;
+                            receiptSummary = reviewReceiptSummary(
+                              worksheet, lastInventory, preflightReceipt,
+                            );
+                          }
                         });
                       }
                       return;
@@ -878,8 +920,12 @@ class _NotesHomeState extends ConsumerState<NotesHome> {
                       }
                       refresh(() {
                         revisionCheckSummary = null;
+                        preflightReceipt = null;
                         worksheet = newSheet;
                         lastInventory = remote;
+                        receiptSummary = reviewReceiptSummary(
+                          newSheet, remote, null,
+                        );
                         hypotheticalStrategy = ReconciliationStrategy.deferAll;
                         cloudSummary = report.summary;
                         dryRun = draft;
@@ -933,7 +979,7 @@ class _NotesHomeState extends ConsumerState<NotesHome> {
 
   /// Non-persistent per-item worksheet. The app never passes these choices
   /// to the DB, SharedPreferences, restore codec, or CloudSync.
-  Future<bool> _showReconciliationWorksheet(
+  Future<(bool, ReconciliationWorksheet)> _showReconciliationWorksheet(
     BuildContext parent,
     ReconciliationWorksheet initial,
     VoidCallback simulateOverallStrategy,
@@ -1050,7 +1096,7 @@ class _NotesHomeState extends ConsumerState<NotesHome> {
       ),
     );
     // A snapshot may change while the nested dialog is simply being viewed.
-    return invalidated || !await isLocalSnapshotCurrent();
+    return (invalidated || !await isLocalSnapshotCurrent(), sheet);
   }
 
   Future<void> _importArchive() async {

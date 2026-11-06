@@ -25,12 +25,12 @@ void main() {
       'remote_version': 4,
     };
     final notes = [note('note-one', title), note('note-two', 'Second')];
-    if (reversed) notes.reverse();
+    if (reversed) notes.setAll(0, notes.reversed.toList());
     final settings = <Map<String, Object?>>[
       {'key': 'boundOwnerId', 'value': account},
       {'key': 'syncCursor', 'value': cursor},
     ];
-    if (reversed) settings.reverse();
+    if (reversed) settings.setAll(0, settings.reversed.toList());
     final tables = <String, List<Map<String, Object?>>>{
       for (final key in FullBackupSnapshot.columns.keys)
         key: <Map<String, Object?>>[],

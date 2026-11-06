@@ -130,20 +130,27 @@ class SandboxRestoreOrchestrator {
     required SandboxRestoreConsent? consent,
     Future<void> Function(String stage)? injectCrash,
   }) async {
-    if (consent == null) {
-      throw const FormatException('Conferma esplicita sandbox obbligatoria.');
+    if (consent == null ||
+        !SandboxRestoreConsent._validBytes(checkpointBytes) ||
+        !SandboxRestoreConsent._validBytes(targetBytes)) {
+      throw const FormatException('Conferma o archivi sandbox non validi.');
     }
+    // Capture immutable copies synchronously, BEFORE the first await: a
+    // caller-owned List<int> must not mutate the approved ciphertext while
+    // AES-GCM verification or disk preflight is in progress.
+    final checkpointCopy = List<int>.unmodifiable(checkpointBytes);
+    final targetCopy = List<int>.unmodifiable(targetBytes);
     consent._consume(
       expectedOwnerId: expectedOwnerId,
-      checkpointBytes: checkpointBytes,
-      targetBytes: targetBytes,
+      checkpointBytes: checkpointCopy,
+      targetBytes: targetCopy,
     );
     // Both AES-GCM archives must authenticate as the same owner BEFORE any
     // SQLite or preferences writes. All subsequent stores are disposable.
     await _sandbox.prepare(
-      checkpointBytes: checkpointBytes,
+      checkpointBytes: checkpointCopy,
       checkpointPassword: checkpointPassword,
-      targetBytes: targetBytes,
+      targetBytes: targetCopy,
       targetPassword: targetPassword,
       expectedOwnerId: expectedOwnerId,
     );

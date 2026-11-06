@@ -1,7 +1,7 @@
 # Simple Notes API v1
 
 <!-- CURRENT-STATUS-REF -->
-> **Stato operativo 02/11/2026:** R1 gate server-first integrato su `main` ([PR #26](https://github.com/andreadada/simple-notes/pull/26), commit [`f19ee8b0`](https://github.com/andreadada/simple-notes/commit/f19ee8b0a5bea2cb2c2231d85b3e8ad10a5233a7); [Compose CI](https://github.com/andreadada/simple-notes/actions/runs/41523319857) **success** con PostgreSQL 17 sintetico, [Markdown](https://github.com/andreadada/simple-notes/actions/runs/41523319860) **success**). Flutter resta `0.29.0+31` e 191 test già attestati. **VPS reale V10, health/capability live, backup recente e collaudo hardware non verificati**; ultimo stato VPS attestato V8. Nessun deploy o intervento su dati. [Stato](CURRENT-STATUS.md) · [R1]( RELEASE-V10-READINESS.md).
+> **Stato operativo 06/11/2026:** `main` integra fino a **P2.4B2R** ([PR #50](https://github.com/andreadada/simple-notes/pull/50), baseline `0d31133b`); Flutter `0.31.0+33`, backend Flyway **V11 nel codice**. CI [backend](https://github.com/andreadada/simple-notes/actions/runs/42227814409), [Compose](https://github.com/andreadada/simple-notes/actions/runs/42227814144), [docs](https://github.com/andreadada/simple-notes/actions/runs/42227814257) verdi sull'ultimo merge; [Flutter](https://github.com/andreadada/simple-notes/actions/runs/42103008443) verde sul commit precedente. **VPS documentata solo V10 (03/11); V11, API strict e prove fisiche non attestati.** Ripristino live, replay outbox importata e deploy restano fuori scope. [Stato ](CURRENT-STATUS.md) · [Gate V11 ](RELEASE-V11-READINESS.md) · [Test rinviati ](DEVICE-ACCEPTANCE-DEFERRED.md).
 
 
 ## Auth

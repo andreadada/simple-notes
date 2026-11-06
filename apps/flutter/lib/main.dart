@@ -776,6 +776,9 @@ class _NotesHomeState extends ConsumerState<NotesHome> {
                         worksheet = null;
                         lastInventory = null;
                         dryRun = null;
+                        revisionCheckSummary = null;
+                        preflightReceipt = null;
+                        receiptSummary = null;
                         cloudSummary =
                             'Sessione cambiata: esegui un nuovo confronto.';
                       });
@@ -788,6 +791,8 @@ class _NotesHomeState extends ConsumerState<NotesHome> {
                           lastInventory = null;
                           dryRun = null;
                           revisionCheckSummary = null;
+                          preflightReceipt = null;
+                          receiptSummary = null;
                           cloudSummary = 'I dati locali sono cambiati. '
                               'Chiudi e ripeti il confronto backup.';
                         });
@@ -948,6 +953,8 @@ class _NotesHomeState extends ConsumerState<NotesHome> {
                         worksheet = null;
                         lastInventory = null;
                         dryRun = null;
+                        preflightReceipt = null;
+                        receiptSummary = null;
                       });
                     }
                   } finally {

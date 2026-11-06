@@ -172,6 +172,28 @@ void main() {
     expect(await journal.list().length, greaterThanOrEqualTo(4));
   });
 
+  test('caller-owned ciphertext buffers cannot change an in-flight run',
+      () async {
+    final borrowedCurrent = [...checkpointBytes];
+    final borrowedTarget = [...targetBytes];
+    final approval = consent(
+      current: borrowedCurrent, imported: borrowedTarget,
+    );
+    final pending = run(
+      approval: approval,
+      current: borrowedCurrent,
+      imported: borrowedTarget,
+    );
+    // This happens after run begins but before its asynchronous preflight
+    // completes. The private, approved copies must remain intact.
+    borrowedCurrent[borrowedCurrent.length - 1] ^= 1;
+    borrowedTarget[borrowedTarget.length - 1] ^= 1;
+    final report = await pending;
+    expect(report.sandboxRollbackVerified, isTrue);
+    expect(report.canResumeAutoSync, isFalse);
+    await expectCheckpointStillInstalled();
+  });
+
   test('consent is one-shot and cannot be replayed', () async {
     final approval = consent();
     await run(approval: approval);

@@ -4,7 +4,7 @@
 
 | Area | Stato verificato | Gate ancora aperti |
 |---|---|---|
-| `main` | **P0–P2.4B2T integrate**, Flutter **`0.31.0+33`**, [PR #51](https://github.com/andreadada/simple-notes/pull/51) + [PR #52](https://github.com/andreadada/simple-notes/pull/52) merged (`16869c8f`); [Flutter CI](https://github.com/andreadada/simple-notes/actions/runs/42233052499) e [Markdown](https://github.com/andreadada/simple-notes/actions/runs/42233052437) verdi | **Restore live disabilitato**; VPS Flyway V10, V11/strict API non attestate, E2E reali rinviati |
+| `main` | **P0–P2.4B2U integrate**, Flutter **`0.31.0+33`**, [PR #53](https://github.com/andreadada/simple-notes/pull/53) merged (`afa835d6`); [Flutter CI](https://github.com/andreadada/simple-notes/actions/runs/42239264547) e [Markdown CI](https://github.com/andreadada/simple-notes/actions/runs/42239264424) **success** | Restore live/outbox replay **disabilitati**; VPS attestata V10, backend V11 solo nel codice, real-device E2E rinviati |
 | P1.18 integrata (storico) | [PR #19](https://github.com/andreadada/simple-notes/pull/19) merged, Flutter **`0.23.0+25`**, temi chiaro/scuro/sistema, preferenza locale e Sticky | CI verde; test visivi e su dispositivi fisici ancora aperti |
 | CI P2.4B1 | [Flutter #41636993011](https://github.com/andreadada/simple-notes/actions/runs/41636993011) **success**: 204 test, Windows EXE/MSIX, Android JDK17/21; [Markdown #41636993004](https://github.com/andreadada/simple-notes/actions/runs/41636993004) **success** | Nessun restore live, prova picker/share o Windows↔Android su dispositivi reali |
 | CI P2.4A | [Flutter #41562133925](https://github.com/andreadada/simple-notes/actions/runs/41562133925) **success**: 198 test, Windows EXE/MSIX, Android JDK17/21; [Markdown #41561797719](https://github.com/andreadada/simple-notes/actions/runs/41561797719) **success** | Collaudo CSV nativo e Windows↔Android rinviati |
@@ -19,6 +19,13 @@
 | Gate R1 (codice) | [PR #26](https://github.com/andreadada/simple-notes/pull/26) merged; [Compose CI #41523319857](https://github.com/andreadada/simple-notes/actions/runs/41523319857) success (V6 rifiutata, V10 incompleta rifiutata, V10 sintetica accettata), [Markdown #41523319860](https://github.com/andreadada/simple-notes/actions/runs/41523319860) success | **Non certifica Flyway V10 reale, health e API autenticata in VPS** |
 | Backend nel repository | Spring Boot/PostgreSQL 17, Flyway **V11**; client Drift/SQLite **V8** | VPS attestata solo a Flyway **V10 (03/11/2026)**; backend V11/capability non verificati sulla VPS |
 | Test reali | VPS V10 verificata il 03/11; Google Windows connesso e pending 0 nel report disponibile | Android E2E, API strict, V11 e restore live ancora aperti |
+
+## Snapshot corrente dopo la PR #53 (06/11/2026)
+
+- `main` include **P2.4B2U** ([PR #53](https://github.com/andreadada/simple-notes/pull/53), merge `afa835d6`) oltre a tutte le fasi precedenti.
+- [Flutter CI #42239264547](https://github.com/andreadada/simple-notes/actions/runs/42239264547) **success**: 322 test Flutter, analyze, APK Java 17/21, test recovery su sandbox Windows, Windows EXE/MSIX; [Markdown #42239264424](https://github.com/andreadada/simple-notes/actions/runs/42239264424) **success**. La guardia CI impedisce importazione dell'orchestratore solo-test dal client produttivo.
+- Consenso monouso e rollback dopo crash sono verificati **soltanto su filesystem temporaneo**. Non sono implementati il restore sul profilo installato, il replay dell'outbox importata o il consenso live. Restano aperti fsync directory/lock cross-process/atomicità SQLite+preferenze.
+- La VPS rimane attestata a Flyway **V10 (03/11/2026)**; V11 è presente nel codice ma non è attestato il deploy, né API strict, né test fisici Windows↔Android. Nessun dato di produzione modificato.
 
 ## Snapshot corrente dopo la PR #52 (06/11/2026)
 
@@ -227,6 +234,6 @@ Il client controlla in sola lettura che i dati locali non siano cambiati mentre 
 
 Nuovo controllo a livello client che riassume le scelte simulate solo se il worksheet è ancora legato agli snapshot di dispositivo/backup/inventario cloud e il preflight copre tutte le revisioni ammesse (max 100). Un account diverso, dati o cursor mutati, check assente/stantio o scelte rimaste invalida il completamento. Il dialog mostra solo conteggi e stato; scelte e report sono **volatili** e non costituiscono permessi per scritture, restore o replay dell'outbox. Nessun deploy V11 o collaudo fisico incluso.
 
-## P2.4B2U — Sandbox consent + recovery (06/11/2026, sviluppo PR)
+## P2.4B2U — Sandbox consent + recovery (06/11/2026, integrato PR #53)
 
-Incremento preparato in branch separata: consenso monouso per l'esecuzione **solo in sandbox temporanea**, validazione AES-GCM same-owner e compensazione SQLite/preferenze dopo crash simulati. Nessuna modifica a startup, OAuth, cloud o profili installati; i getter di autorizzazione live/sync/replay restano sempre false. Le garanzie native cross-process/fsync e i test fisici sono ancora aperti. Finché la PR non è unita, la tabella di stato `main` all'inizio rappresenta la versione integrata.
+Incremento integrato in `main` con PR #53: consenso monouso per l'esecuzione **solo in sandbox temporanea**, validazione AES-GCM same-owner e compensazione SQLite/preferenze dopo crash simulati. Nessuna modifica a startup, OAuth, cloud o profili installati; i getter di autorizzazione live/sync/replay restano sempre false. Le garanzie native cross-process/fsync e i test fisici sono ancora aperti. La tabella iniziale descrive lo stato integrato; questo non costituisce rilascio o deploy.

@@ -211,3 +211,7 @@ Il backend distingue un 409 da `SYNC_OPERATION_ID_REUSE` da un normale 409 di ve
 ## P2.4B2R — Capability runtime richiesta dal gate V11 (05/11/2026, PR)
 
 `/api/v1/capabilities` annuncia `syncOperationFingerprintSchema=1`; il wrapper V11 lo richiede esplicitamente e il validatore rifiuta tipi errati o capability mancante. Test Python offline per V10 backward compatibility/V11 strict e backend Testcontainers. Nessun cambiamento ai dati utenti, CI/merge da verificare, nessun deploy. [Runbook](RELEASE-V11-READINESS.md).
+
+## P2.4B2S — Snapshot locale invariato durante la revisione (06/11/2026)
+
+Il client controlla in sola lettura che i dati locali non siano cambiati mentre è aperto un confronto `.snb`: un digest canonico delle cinque tabelle e delle preferenze (inclusi cursor e outbox) viene ricalcolato prima/dopo le richieste cloud e prima di esaminare le scelte. Se lo stato è diverso, la bozza è invalidata e occorre ripetere il confronto. Nessuna scrittura, restore live, replay outbox o deploy attivato. La verifica **non** è un lock o un lease e non rende atomico SQLite + SharedPreferences; i test di integrazione nativi/real-device restano rinviati.

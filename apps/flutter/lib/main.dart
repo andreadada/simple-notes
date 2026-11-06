@@ -41,6 +41,7 @@ import 'data/portable_archive.dart';
 import 'data/portable_csv.dart';
 import 'data/full_backup.dart';
 import 'data/full_backup_compare.dart';
+import 'data/backup_review_snapshot_guard.dart';
 import 'data/backup_cloud_safety.dart';
 import 'data/reconciliation_dry_run.dart';
 import 'data/reconciliation_worksheet.dart';
@@ -594,6 +595,31 @@ class _NotesHomeState extends ConsumerState<NotesHome> {
       if (!mounted || ref.read(cloudAuthProvider).userId != owner) {
         return;
       }
+      // A review may outlive its original SQLite/preferences snapshot.
+      // Any local change invalidates the cloud evidence and draft choices.
+      // This is a read-only check, NOT a lock over SQLite + preferences.
+      Future<bool> reviewStillCurrent() async {
+        if (!mounted) return false;
+        final session = ref.read(cloudAuthProvider);
+        if (!session.authenticated || session.userId != owner) {
+          return false;
+        }
+        try {
+          final latest = await const FullBackupSource().capture(
+            database: ref.read(databaseProvider),
+            preferences: await SharedPreferences.getInstance(),
+            ownerId: owner,
+          );
+          return mounted &&
+              ref.read(cloudAuthProvider).userId == owner &&
+              const BackupReviewSnapshotGuard().isUnchanged(
+                baseline: current, latest: latest,
+              );
+        } catch (_) {
+          return false;
+        }
+      }
+
       final comparison = const FullBackupCompare().preview(
         current: current, backup: backup,
       );
@@ -642,6 +668,10 @@ class _NotesHomeState extends ConsumerState<NotesHome> {
                         throw const FormatException(
                             'Sessione cloud non disponibile.');
                       }
+                      if (!await reviewStillCurrent()) {
+                        throw const FormatException(
+                            'Dati locali cambiati: ripeti il confronto.');
+                      }
                       final client = http.Client();
                       try {
                         final check = await const ReconciliationPreflightClient()
@@ -651,6 +681,10 @@ class _NotesHomeState extends ConsumerState<NotesHome> {
                           accessToken: () async => token,
                           inventory: remote,
                         );
+                        if (!await reviewStillCurrent()) {
+                          throw const FormatException(
+                              'Dati locali cambiati durante il controllo.');
+                        }
                         if (!mounted || !dialogContext.mounted ||
                             ref.read(cloudAuthProvider).userId != owner) {
                           return;
@@ -671,10 +705,14 @@ class _NotesHomeState extends ConsumerState<NotesHome> {
                         client.close();
                       }
                     } catch (_) {
+                      final stillCurrent = await reviewStillCurrent();
                       if (dialogContext.mounted) {
                         refresh(() {
-                          revisionCheckSummary = 'Ricontrollo revisioni '
-                              'non disponibile. Nessuna modifica eseguita.';
+                          revisionCheckSummary = stillCurrent
+                              ? 'Ricontrollo revisioni non disponibile. '
+                                  'Nessuna modifica eseguita.'
+                              : 'Dati del dispositivo cambiati: '
+                                  'chiudi e ripeti il confronto.';
                           cloudSummary = 'L’inventario precedente non è più '
                               'utilizzabile. Ripeti la consultazione cloud.';
                           // Fail closed: the former preview cannot be
@@ -710,9 +748,22 @@ class _NotesHomeState extends ConsumerState<NotesHome> {
                       });
                       return;
                     }
+                    if (!await reviewStillCurrent()) {
+                      if (dialogContext.mounted) {
+                        refresh(() {
+                          worksheet = null;
+                          lastInventory = null;
+                          dryRun = null;
+                          revisionCheckSummary = null;
+                          cloudSummary = 'I dati locali sono cambiati. '
+                              'Chiudi e ripeti il confronto backup.';
+                        });
+                      }
+                      return;
+                    }
                     if (worksheet != null && worksheet!.items.isNotEmpty &&
                         dialogContext.mounted) {
-                      await _showReconciliationWorksheet(
+                      final invalidated = await _showReconciliationWorksheet(
                         dialogContext,
                         worksheet!,
                         () {
@@ -732,7 +783,18 @@ class _NotesHomeState extends ConsumerState<NotesHome> {
                             dryRun = newDraft;
                           });
                         },
+                        reviewStillCurrent,
                       );
+                      if (invalidated && dialogContext.mounted) {
+                        refresh(() {
+                          worksheet = null;
+                          lastInventory = null;
+                          dryRun = null;
+                          revisionCheckSummary = null;
+                          cloudSummary = 'Dati locali cambiati: '
+                              'chiudi e ripeti il confronto.';
+                        });
+                      }
                       return;
                     }
                     final strategies = ReconciliationStrategy.values;
@@ -772,6 +834,10 @@ class _NotesHomeState extends ConsumerState<NotesHome> {
                       throw const FormatException(
                           'Sessione cloud non disponibile.');
                     }
+                    if (!await reviewStillCurrent()) {
+                      throw const FormatException(
+                          'Dati locali cambiati: ripeti il confronto.');
+                    }
                     final client = http.Client();
                     try {
                       final remote = await const RestoreServerInventoryReader()
@@ -780,6 +846,10 @@ class _NotesHomeState extends ConsumerState<NotesHome> {
                         apiBase: Uri.parse(CloudConfig.apiBaseUrl),
                         accessToken: () async => token,
                       );
+                      if (!await reviewStillCurrent()) {
+                        throw const FormatException(
+                            'Dati locali cambiati durante la consultazione.');
+                      }
                       if (!mounted || !dialogContext.mounted ||
                           ref.read(cloudAuthProvider).userId != owner) {
                         return;
@@ -818,12 +888,16 @@ class _NotesHomeState extends ConsumerState<NotesHome> {
                       client.close();
                     }
                   } catch (_) {
+                    final stillCurrent = await reviewStillCurrent();
                     if (dialogContext.mounted) {
                       refresh(() {
-                        cloudSummary =
-                            'Inventario cloud non disponibile o incompatibile. '
-                            'I dati locali e remoti non sono stati modificati. '
-                            'Il ripristino resta disabilitato.';
+                        cloudSummary = stillCurrent
+                            ? 'Inventario cloud non disponibile o '
+                                'incompatibile. Nessuna modifica eseguita; '
+                                'ripristino disabilitato.'
+                            : 'Dati del dispositivo cambiati: '
+                                'chiudi e ripeti il confronto. '
+                                'Nessun ripristino eseguito.';
                         revisionCheckSummary = null;
                         worksheet = null;
                         lastInventory = null;
@@ -859,12 +933,14 @@ class _NotesHomeState extends ConsumerState<NotesHome> {
 
   /// Non-persistent per-item worksheet. The app never passes these choices
   /// to the DB, SharedPreferences, restore codec, or CloudSync.
-  Future<void> _showReconciliationWorksheet(
+  Future<bool> _showReconciliationWorksheet(
     BuildContext parent,
     ReconciliationWorksheet initial,
     VoidCallback simulateOverallStrategy,
+    Future<bool> Function() isLocalSnapshotCurrent,
   ) async {
     var sheet = initial;
+    var invalidated = false;
     await showFDialog<void>(
       context: parent,
       builder: (ctx, style, animation) => StatefulBuilder(
@@ -917,7 +993,15 @@ class _NotesHomeState extends ConsumerState<NotesHome> {
                             FButton(
                               variant: FButtonVariant.ghost,
                               onPress: item.availableChoices.length < 2
-                                  ? null : () {
+                                  ? null : () async {
+                                if (!await isLocalSnapshotCurrent()) {
+                                  invalidated = true;
+                                  if (innerContext.mounted) {
+                                    Navigator.pop(ctx);
+                                  }
+                                  return;
+                                }
+                                if (!innerContext.mounted) return;
                                 final options = item.availableChoices;
                                 final next = options[
                                     (options.indexOf(item.choice) + 1) %
@@ -945,7 +1029,13 @@ class _NotesHomeState extends ConsumerState<NotesHome> {
           actions: [
             FButton(
               variant: FButtonVariant.ghost,
-              onPress: () {
+              onPress: () async {
+                if (!await isLocalSnapshotCurrent()) {
+                  invalidated = true;
+                  if (innerContext.mounted) Navigator.pop(ctx);
+                  return;
+                }
+                if (!innerContext.mounted) return;
                 simulateOverallStrategy();
                 updateSheet(() {});
               },
@@ -959,6 +1049,8 @@ class _NotesHomeState extends ConsumerState<NotesHome> {
         ),
       ),
     );
+    // A snapshot may change while the nested dialog is simply being viewed.
+    return invalidated || !await isLocalSnapshotCurrent();
   }
 
   Future<void> _importArchive() async {

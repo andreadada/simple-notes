@@ -240,3 +240,9 @@ La protezione fingerprint V11 dispone ora di un HTTP 409 machine-readable per il
 ## P2.4B2R — No release PASS con backend V10 e DB V11
 
 Oltre a verificare la colonna V11, la release readiness richiede che l'API autenticata annunci `syncOperationFingerprintSchema=1`. La capability è sola lettura: né la sua presenza né il PASS del gate autorizzano il restore live o il replay di una outbox importata. La versione backend distribuita dovrà comunque essere provata separatamente e la UI non si abilita da questo flag. [Runbook](RELEASE-V11-READINESS.md).
+
+## P2.4B2S — Rifiuto delle revisioni locali obsolete (06/11/2026)
+
+Il confronto backup/cloud ora lega la bozza a uno **snapshot del dispositivo** e lo ricontrolla in sola lettura prima e dopo ogni richiesta remota esplicita (GET inventario e POST di preflight non mutante), oltre che prima di mostrare o modificare una simulazione per-entità. `BackupReviewSnapshotGuard` valida due snapshot owner-scoped e confronta un digest canonico SHA-256 delle cinque tabelle SQLite V8 (incluse tombstone, outbox e cursor) e delle preferenze, ordinando i record per chiave. Esclude solo l'ora di cattura, che non rappresenta una modifica ai dati. Account diverso, dati/tema/cursor/outbox cambiati o snapshot non valido causano invalidazione senza scritture.
+
+Questa protezione **non blocca le scritture concorrenti**: SQLite e SharedPreferences non formano una transazione comune, e una modifica può avvenire subito dopo il controllo. Non è una prova di stabilità cloud, una firma persistente, un consenso, un lease o una procedura di restore. In caso di invalidazione si deve **chiudere e ripetere il confronto**; nessun replay delle operazioni importate, riavvio AutoSync o restore live è abilitato. Test unitari coprono timestamp/ordine irrilevanti, variazioni dei dati, cursor, outbox, account, preferenze e input malformato.

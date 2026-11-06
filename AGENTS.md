@@ -217,3 +217,7 @@ Il backend deve distinguere un conflitto versionato risolvibile da `SYNC_OPERATI
 ## Vincolo P2.4B2R — V11 richiede anche capability runtime
 
 Non interpretare `FLYWAY_LATEST=11` come prova che il binario API sia aggiornato: `release-v11-readiness.sh` deve verificare il campo JWT `syncOperationFingerprintSchema=1` con tipo **intero**, rifiutando campo assente/stringa/bool. Il gate storico V10 rimane compatibile senza flag obbligatorio. La capability non deve esporre fingerprint, ID, body, email, JWT o payload; non deve attivare ripristino/scritture. Testare il validatore Python offline e l'API con Testcontainers. [Runbook](docs/RELEASE-V11-READINESS.md).
+
+## Vincolo P2.4B2S — nessuna bozza utilizzabile su snapshot locale stantio
+
+Il confronto `.snb` / inventario / worksheet è valido solo rispetto allo snapshot **locale** originariamente catturato. Prima e dopo GET inventory e POST reconciliation preflight, e prima di aprire il worksheet, ricatturare SQLite + preferenze owner-scoped e confrontare l'intera semantica inclusi tombstone, outbox, cursor, theme; ignorare solo capture timestamp e ordine righe. Qualsiasi errore, owner cambiato o differenza invalida il draft in modalità fail-closed. Non persistire il digest, non esporre titoli/body/token/owner nei riepiloghi e **non** trasformare il match in permesso di ripristino o replay. Il doppio controllo non dà atomicità cross-store o un cloud lease: nessun writer restore è autorizzato.

@@ -99,7 +99,7 @@ class ReconciliationReviewReceiptBuilder {
         preflight.mismatchedEntities >= 0 &&
         preflight.mismatchedEntities <= preflight.checkedEntities;
     final consistentCheck = currentCheck &&
-        preflight!.consistent &&
+        preflight.consistent &&
         preflight.mismatchedEntities == 0;
 
     // An obsolete worksheet must not count as reviewed, even if all choices

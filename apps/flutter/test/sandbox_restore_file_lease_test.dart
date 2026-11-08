@@ -103,7 +103,7 @@ void main() {
     if (Platform.isWindows) return; // Symlink creation needs privileges.
     final lease = SandboxRestoreFileLease(directory);
     final sentinel = File(path.join(directory.parent.path,
-        'simple-notes-sentinel-${directory.pathSegments.last}.txt'));
+        'simple-notes-sentinel-${path.basename(directory.path)}.txt'));
     addTearDown(() async {
       if (await sentinel.exists()) await sentinel.delete();
     });

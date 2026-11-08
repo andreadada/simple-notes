@@ -9,6 +9,7 @@ import 'package:path/path.dart' as path;
 import 'app_database.dart';
 import 'full_backup.dart';
 import 'full_backup_recovery_guard.dart';
+import 'posix_sandbox_directory_sync.dart';
 import 'sandbox_restore_file_lease.dart';
 
 /// P2.4B2D: a *test-only* persistent cross-store recovery rehearsal.
@@ -30,7 +31,18 @@ class DiskRestoreRehearsal {
   File get _sqlite => File(path.join(directory.path, 'sandbox.sqlite'));
   File get _prefs => File(path.join(directory.path, 'preferences.json'));
   FileRestoreJournal get _journal => FileRestoreJournal(
-      Directory(path.join(directory.path, 'journal')));
+        Directory(path.join(directory.path, 'journal')),
+        // Linux CI exercises a real native directory fsync. Windows and
+        // Android deliberately retain non-durable rehearsal semantics.
+        directoryBarrier:
+            Platform.isLinux ? const PosixSandboxDirectorySync() : null,
+      );
+
+  Future<void> _syncSandboxDirectoryIfSupported() async {
+    if (Platform.isLinux) {
+      await const PosixSandboxDirectorySync().syncDirectory(directory);
+    }
+  }
 
   static String _sha(List<int> data) => hash.sha256.convert(data).toString();
 
@@ -53,6 +65,7 @@ class DiskRestoreRehearsal {
     if (_sha(await file.readAsBytes()) != _sha(bytes)) {
       throw const FormatException('File di prova non integro.');
     }
+    await _syncSandboxDirectoryIfSupported();
   }
 
   Future<void> _replacePrefs(Map<String, String?> values) async {
@@ -66,6 +79,7 @@ class DiskRestoreRehearsal {
     try {
       await staged.writeAsString(jsonEncode(values), flush: true);
       await staged.rename(_prefs.path);
+      await _syncSandboxDirectoryIfSupported();
     } finally {
       if (await staged.exists()) await staged.delete();
     }

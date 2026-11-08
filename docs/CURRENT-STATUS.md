@@ -1,10 +1,10 @@
 # Stato corrente — Simple Notes
 
-**Aggiornato 6 novembre 2026.** Questo documento prevale sulla cronologia. **Codice/CI, deploy Coolify, installazione e collaudo fisico sono stati distinti.**
+**Aggiornato 8 novembre 2026.** Questo documento prevale sulla cronologia. **Codice/CI, deploy Coolify, installazione e collaudo fisico sono stati distinti.**
 
 | Area | Stato verificato | Gate ancora aperti |
 |---|---|---|
-| `main` | **P0–P2.4B2U integrate**, Flutter **`0.31.0+33`**, [PR #53](https://github.com/andreadada/simple-notes/pull/53) merged (`afa835d6`); [Flutter CI](https://github.com/andreadada/simple-notes/actions/runs/42239264547) e [Markdown CI](https://github.com/andreadada/simple-notes/actions/runs/42239264424) **success** | Restore live/outbox replay **disabilitati**; VPS attestata V10, backend V11 solo nel codice, real-device E2E rinviati |
+| `main` | **P0–P2.4B2V integrate**, Flutter **`0.31.0+33`**, [PR #54](https://github.com/andreadada/simple-notes/pull/54) merged (`73dba8ad`). [Flutter CI #42522660761](https://github.com/andreadada/simple-notes/actions/runs/42522660761) **success**: 331 test, Windows recovery/EXE/MSIX, Android Java 17/21; [Markdown CI #42522660755](https://github.com/andreadada/simple-notes/actions/runs/42522660755) **success** | **Restore live disabilitato**, writer non cooperanti / fsync directory / atomicità cross-store non risolti. VPS attestata Flyway V10; codice Flyway V11, API strict e collaudi fisici non attestati |
 | P1.18 integrata (storico) | [PR #19](https://github.com/andreadada/simple-notes/pull/19) merged, Flutter **`0.23.0+25`**, temi chiaro/scuro/sistema, preferenza locale e Sticky | CI verde; test visivi e su dispositivi fisici ancora aperti |
 | CI P2.4B1 | [Flutter #41636993011](https://github.com/andreadada/simple-notes/actions/runs/41636993011) **success**: 204 test, Windows EXE/MSIX, Android JDK17/21; [Markdown #41636993004](https://github.com/andreadada/simple-notes/actions/runs/41636993004) **success** | Nessun restore live, prova picker/share o Windows↔Android su dispositivi reali |
 | CI P2.4A | [Flutter #41562133925](https://github.com/andreadada/simple-notes/actions/runs/41562133925) **success**: 198 test, Windows EXE/MSIX, Android JDK17/21; [Markdown #41561797719](https://github.com/andreadada/simple-notes/actions/runs/41561797719) **success** | Collaudo CSV nativo e Windows↔Android rinviati |
@@ -19,6 +19,13 @@
 | Gate R1 (codice) | [PR #26](https://github.com/andreadada/simple-notes/pull/26) merged; [Compose CI #41523319857](https://github.com/andreadada/simple-notes/actions/runs/41523319857) success (V6 rifiutata, V10 incompleta rifiutata, V10 sintetica accettata), [Markdown #41523319860](https://github.com/andreadada/simple-notes/actions/runs/41523319860) success | **Non certifica Flyway V10 reale, health e API autenticata in VPS** |
 | Backend nel repository | Spring Boot/PostgreSQL 17, Flyway **V11**; client Drift/SQLite **V8** | VPS attestata solo a Flyway **V10 (03/11/2026)**; backend V11/capability non verificati sulla VPS |
 | Test reali | VPS V10 verificata il 03/11; Google Windows connesso e pending 0 nel report disponibile | Android E2E, API strict, V11 e restore live ancora aperti |
+
+## Snapshot corrente dopo la PR #54 (08/11/2026)
+
+- `main` integra **P2.4B2V** ([PR #54](https://github.com/andreadada/simple-notes/pull/54), merge `73dba8ad`) oltre alle fasi precedenti.
+- [Flutter CI #42522660761](https://github.com/andreadada/simple-notes/actions/runs/42522660761) **success**: 331 test Flutter, analisi statica, lock cross-process in test Linux/Windows, recovery sandbox Windows, EXE/MSIX Windows e APK Android Java 17/21. [Markdown CI #42522660755](https://github.com/andreadada/simple-notes/actions/runs/42522660755) **success**.
+- Il lock ora rifiuta richieste concorrenti nel medesimo isolate e fra processi **cooperanti**, verifica lock/path non regolari e il journal dopo append. Il lock rimane advisory e non copre isolate separati nello stesso processo POSIX, writer esterni, TOCTOU/hardlink né directory fsync. Tutto il recovery rimane sandbox/test-only, senza restore live o replay outbox.
+- Nessun deploy o modifica alla VPS. Il database di produzione è attestato fino a Flyway **V10 (03/11/2026)**, mentre V11 esiste nel codice; E2E Windows/Android fisici ancora rinviati. I riepiloghi storici sottostanti restano cronologia, non uno stato corrente.
 
 ## Snapshot corrente dopo la PR #53 (06/11/2026)
 
@@ -238,6 +245,6 @@ Nuovo controllo a livello client che riassume le scelte simulate solo se il work
 
 Incremento integrato in `main` con PR #53: consenso monouso per l'esecuzione **solo in sandbox temporanea**, validazione AES-GCM same-owner e compensazione SQLite/preferenze dopo crash simulati. Nessuna modifica a startup, OAuth, cloud o profili installati; i getter di autorizzazione live/sync/replay restano sempre false. Le garanzie native cross-process/fsync e i test fisici sono ancora aperti. La tabella iniziale descrive lo stato integrato; questo non costituisce rilascio o deploy.
 
-## P2.4B2V — Hardening lock/journal in sandbox (08/11/2026, sviluppo PR)
+## P2.4B2V — Hardening lock/journal in sandbox (08/11/2026, integrato PR #54)
 
-Branch `feat/p2-4b2v-sandbox-lock-journal-hardening`: aggiunto lease OS non bloccante e guardia intra-isolate per le simulazioni di recupero, verifiche fail-closed dei tipi di file e della directory journal, read-back post-append e test con processo Dart separato. Nessun intervento sul client in uso, sui dati locali installati, sul cloud o sulla VPS. Il lock resta advisory, senza garanzie contro TOCTOU/hardlink, e manca fsync directory. Finché la PR non è integrata, la tabella di stato `main` resta quella di P2.4B2U.
+Branch `feat/p2-4b2v-sandbox-lock-journal-hardening`: aggiunto lease OS non bloccante e guardia intra-isolate per le simulazioni di recupero, verifiche fail-closed dei tipi di file e della directory journal, read-back post-append e test con processo Dart separato. Nessun intervento sul client in uso, sui dati locali installati, sul cloud o sulla VPS. Il lock resta advisory, senza garanzie contro TOCTOU/hardlink, e manca fsync directory. L'integrazione su `main` è documentata nello snapshot corrente; nessun ripristino reale è autorizzato.

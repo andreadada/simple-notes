@@ -9,6 +9,7 @@ import 'package:path/path.dart' as path;
 import 'app_database.dart';
 import 'full_backup.dart';
 import 'full_backup_recovery_guard.dart';
+import 'sandbox_restore_file_lease.dart';
 
 /// P2.4B2D: a *test-only* persistent cross-store recovery rehearsal.
 /// All files live in a freshly-created OS temporary directory. No API to
@@ -28,23 +29,21 @@ class DiskRestoreRehearsal {
   File get _target => File(path.join(directory.path, 'target.snb'));
   File get _sqlite => File(path.join(directory.path, 'sandbox.sqlite'));
   File get _prefs => File(path.join(directory.path, 'preferences.json'));
-  File get _lock => File(path.join(directory.path, 'exclusive.lock'));
   FileRestoreJournal get _journal => FileRestoreJournal(
       Directory(path.join(directory.path, 'journal')));
 
   static String _sha(List<int> data) => hash.sha256.convert(data).toString();
 
-  Future<T> _exclusive<T>(Future<T> Function() work) async {
-    final handle = await _lock.open(mode: FileMode.append);
-    try {
-      await handle.lock(FileLock.exclusive);
-      try {
-        return await work();
-      } finally {
-        await handle.unlock();
-      }
-    } finally {
-      await handle.close();
+  Future<T> _exclusive<T>(Future<T> Function() work) =>
+      SandboxRestoreFileLease(directory).runExclusive(work);
+
+  /// Refuse symlinks/non-files in disposable stores before opening them.
+  /// This is a conservative test-sandbox check, not a race-free OS sandbox.
+  Future<void> _requireRegularOrMissing(File file) async {
+    final kind = await FileSystemEntity.type(file.path, followLinks: false);
+    if (kind != FileSystemEntityType.notFound &&
+        kind != FileSystemEntityType.file) {
+      throw const FormatException('Store sandbox non regolare.');
     }
   }
 
@@ -57,6 +56,7 @@ class DiskRestoreRehearsal {
   }
 
   Future<void> _replacePrefs(Map<String, String?> values) async {
+    await _requireRegularOrMissing(_prefs);
     // A unique name ensures an orphan temporary file from abrupt process
     // death cannot block the next compensation attempt. Never overwrite it.
     final nonce = Random.secure().nextInt(1 << 32);
@@ -93,6 +93,7 @@ class DiskRestoreRehearsal {
   }
 
   Future<T> _database<T>(Future<T> Function(AppDatabase) action) async {
+    await _requireRegularOrMissing(_sqlite);
     final db = AppDatabase(NativeDatabase(_sqlite));
     try {
       await db.customSelect('SELECT * FROM sync_settings LIMIT 1').get();
@@ -172,6 +173,14 @@ class DiskRestoreRehearsal {
     await codec.inspect(targetBytes,
         password: targetPassword, expectedOwnerId: expectedOwnerId);
     await _exclusive(() async {
+      // Recheck the empty-workspace precondition *inside* the exclusive
+      // lease. Only its newly created regular lock file may exist.
+      final entries = await directory.list(followLinks: false).toList();
+      if (entries.length != 1 ||
+          path.basename(entries.single.path) != 'exclusive.lock' ||
+          entries.single is! File) {
+        throw StateError('Sandbox non vuota durante il preflight.');
+      }
       await _writeNew(_checkpoint, checkpointBytes);
       await _writeNew(_target, targetBytes);
       await _database((db) => _writeRows(db, current));

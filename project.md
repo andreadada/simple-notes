@@ -595,3 +595,11 @@ Esempio: `2026-10-21 14:20 CEST | commit abc1234 | Aggiunto modulo promemoria e 
 - [x] Simulazione su SQLite + preferenze solo OS temp con stage e rollback dopo cold-start.
 - [x] Test per consenso assente, riuso, file/owner diversi, password errata, crash multipli e divieto permanente di replay/sync.
 - [ ] Restore live, fsync directory, lock multi-processo, atomicità cross-store, quarantena reale delle mutation e prove Windows/Android fisiche: **non implementati**.
+
+### P2.4B2V — Lease sandbox e journal
+
+- [x] Lock file cooperativo e non bloccante per processi separati + guardia delle richieste simultanee nello stesso isolate.
+- [x] Rifiuto di lock/root/journal/link SQLite-preferenze non regolari; controllo workspace dopo aver acquisito il lease.
+- [x] Rilettura e verifica del journal dopo ogni marker scritto; nessun reset automatico di sequenze sospette.
+- [x] Test per lock interprocesso (seconda VM Dart), cold-start concorrente, symlink e recovery; CI Windows estesa con lease tests e guard anti-import.
+- [ ] Directory fsync, hardlink/TOCTOU, isolamento di writer non partecipanti, commit atomico cross-store, restore live e test fisici reali: **non implementati**.

@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:drift/native.dart';
@@ -200,6 +201,73 @@ void main() {
     final report = await recover();
     expect(report.rollbackVerifiedOnDisk, isTrue);
     expect(report.automaticSyncAuthorized, isFalse);
+  });
+
+  test('concurrent cold start is refused until the first rollback exits',
+      () async {
+    await prepare();
+    final entered = Completer<void>();
+    final release = Completer<void>();
+    final first = recover(crash: (stage) async {
+      if (stage == 'recovery-marked') {
+        entered.complete();
+        await release.future;
+      }
+    });
+    await entered.future.timeout(const Duration(seconds: 20));
+    try {
+      await expectLater(recover(), throwsStateError);
+    } finally {
+      release.complete();
+    }
+    final result = await first;
+    expect(result.rollbackVerifiedOnDisk, isTrue);
+    expect(result.automaticSyncAuthorized, isFalse);
+    expect((await recover()).rollbackVerifiedOnDisk, isTrue);
+  });
+
+  test('replaced journal directory symlink cannot redirect recovery',
+      () async {
+    if (Platform.isWindows) return;
+    await prepare();
+    final journal = Directory(path.join(sandbox.directory.path, 'journal'));
+    final saved = Directory(path.join(
+      sandbox.directory.path, 'journal-original',
+    ));
+    await journal.rename(saved.path);
+    await Link(journal.path).create(saved.path);
+    await expectLater(recover(), throwsFormatException);
+    await Link(journal.path).delete();
+    await saved.rename(journal.path);
+    expect((await recover()).rollbackVerifiedOnDisk, isTrue);
+  });
+
+  test('SQLite and preferences symlinks cannot redirect rollback writes',
+      () async {
+    if (Platform.isWindows) return;
+    for (final name in ['sandbox.sqlite', 'preferences.json']) {
+      await prepare();
+      final expected = File(path.join(sandbox.directory.path, name));
+      final saved = File(path.join(sandbox.directory.path, '$name.saved'));
+      final sentinel = File(path.join(
+        sandbox.directory.path, '$name.sentinel',
+      ));
+      await expected.rename(saved.path);
+      await sentinel.writeAsString('DO NOT WRITE', flush: true);
+      await Link(expected.path).create(sentinel.path);
+      await expectLater(recover(), throwsFormatException);
+      expect(await sentinel.readAsString(), 'DO NOT WRITE');
+      await Link(expected.path).delete();
+      await saved.rename(expected.path);
+      final result = await recover();
+      expect(result.rollbackVerifiedOnDisk, isTrue);
+      expect(result.automaticSyncAuthorized, isFalse);
+      // Use a fresh sandbox for the second target without touching profiles.
+      if (name == 'sandbox.sqlite') {
+        await sandbox.disposeForTest();
+        sandbox = await DiskRestoreRehearsal.create();
+      }
+    }
   });
 
   test('recovered snapshot cannot grant replay even when target was applied',

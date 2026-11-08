@@ -470,3 +470,9 @@ Aggiunti `data/reconciliation_review_receipt.dart` e `test/reconciliation_review
 ## Handoff P2.4B2U — Test-only sandbox orchestrator (06/11/2026)
 
 Nuove classi `SandboxRestoreConsent` e `SandboxRestoreOrchestrator` in `apps/flutter/lib/data/full_backup_sandbox_orchestrator.dart`; test in `apps/flutter/test/full_backup_sandbox_orchestrator_test.dart`. Simulazione con consenso esplicito monouso, owner/checkpoint/target bloccati a digest, preflight cifrato, sequenza stage e rollback cross-store sulla sola directory temp. Crash injection, cold-start e retry sono testati; nessuna connessione a profilo installato, login, API o AutoSync. L'incremento non rende sicuro il restore reale: fsync directory, multi-process lock, integrazione nativa e consenso operativo restano aperti.
+
+## Handoff P2.4B2V — Sandbox lock e journal (08/11/2026)
+
+Branch `feat/p2-4b2v-sandbox-lock-journal-hardening`: nuovo `sandbox_restore_file_lease.dart`, integrazione su tutti i passaggi di `DiskRestoreRehearsal`, verifica preventiva di SQLite/preferenze non-symlink, controllo della workspace dopo aver preso il lock. `full_backup_recovery_guard.dart` verifica la directory journal e il read-back della sequenza immediatamente dopo l'append. Test nuovi in `sandbox_restore_file_lease_test.dart` con helper `test/support/hold_sandbox_lease.dart` (un processo Dart separato), più casi di concorrenza e symlink nei test del recovery. `flutter-ci.yml` esegue il lease anche su Windows e vieta import produttivi dei moduli di sandbox. CI da verificare prima del merge.
+
+Nessun restore live: lock advisory, race di percorso, fsync directory e atomicità multiprocesso/cross-store ancora non dimostrati. Non interpretare i test come autorizzazione a toccare il profilo installato o la VPS.

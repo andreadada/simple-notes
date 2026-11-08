@@ -53,7 +53,7 @@ jobs:
         run: flutter analyze
       - name: Reject sandbox recovery modules in production Dart imports
         run: |
-          if grep -R --include='*.dart' -nE '(full_backup_sandbox_orchestrator|full_backup_disk_recovery_rehearsal|sandbox_restore_file_lease)\.dart' apps/flutter/lib/ | grep -Ev '^apps/flutter/lib/data/(full_backup_sandbox_orchestrator|full_backup_disk_recovery_rehearsal|sandbox_restore_file_lease)\.dart:'; then
+          if grep -R --include='*.dart' -nE '(full_backup_sandbox_orchestrator|full_backup_disk_recovery_rehearsal|sandbox_restore_file_lease|posix_sandbox_directory_sync)\.dart' apps/flutter/lib/ | grep -Ev '^apps/flutter/lib/data/(full_backup_sandbox_orchestrator|full_backup_disk_recovery_rehearsal|sandbox_restore_file_lease|posix_sandbox_directory_sync)\.dart:'; then
             echo 'Test-only sandbox recovery code must not be imported by production Dart' >&2
             exit 1
           fi
@@ -139,7 +139,7 @@ jobs:
         run: dart run build_runner build
       - name: P2 recovery and exclusive-lease tests (Windows temp sandbox)
         working-directory: apps/flutter
-        run: flutter test test/full_backup_disk_recovery_rehearsal_test.dart test/full_backup_sandbox_orchestrator_test.dart test/sandbox_restore_file_lease_test.dart
+        run: flutter test test/full_backup_disk_recovery_rehearsal_test.dart test/full_backup_sandbox_orchestrator_test.dart test/sandbox_restore_file_lease_test.dart test/recovery_directory_barrier_test.dart
       - name: Build Windows executable
         working-directory: apps/flutter
         run: flutter build windows --release

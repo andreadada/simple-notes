@@ -248,3 +248,7 @@ Incremento integrato in `main` con PR #53: consenso monouso per l'esecuzione **s
 ## P2.4B2V — Hardening lock/journal in sandbox (08/11/2026, integrato PR #54)
 
 Branch `feat/p2-4b2v-sandbox-lock-journal-hardening`: aggiunto lease OS non bloccante e guardia intra-isolate per le simulazioni di recupero, verifiche fail-closed dei tipi di file e della directory journal, read-back post-append e test con processo Dart separato. Nessun intervento sul client in uso, sui dati locali installati, sul cloud o sulla VPS. Il lock resta advisory, senza garanzie contro TOCTOU/hardlink, e manca fsync directory. L'integrazione su `main` è documentata nello snapshot corrente; nessun ripristino reale è autorizzato.
+
+## P2.4B2W — Durability / isolate sandbox (08/11/2026, PR in verifica)
+
+Incremento di sviluppo: claim cooperativo su `IsolateNameServer` oltre al lock OS per provare l'esclusione tra isolate Flutter; barriera fsync del journal e dei rename dei file sandbox disponibile esclusivamente su Linux, e fallback esplicitamente non attestato altrove. Test su contesa, errori prima/dopo rename e OS sync. **Il profilo installato, il cloud e il deploy non sono modificati**. Restano aperti test reali power-loss, durabilità Windows/Android, atomicità SQLite/preferenze, non-cooperating writers e restore live. [Contratto](P2-RESTORE-DURABILITY.md).

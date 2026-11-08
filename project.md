@@ -603,3 +603,10 @@ Esempio: `2026-10-21 14:20 CEST | commit abc1234 | Aggiunto modulo promemoria e 
 - [x] Rilettura e verifica del journal dopo ogni marker scritto; nessun reset automatico di sequenze sospette.
 - [x] Test per lock interprocesso (seconda VM Dart), cold-start concorrente, symlink e recovery; CI Windows estesa con lease tests e guard anti-import.
 - [ ] Directory fsync, hardlink/TOCTOU, isolamento di writer non partecipanti, commit atomico cross-store, restore live e test fisici reali: **non implementati**.
+
+### P2.4B2W — Claim isolate e durability gate (solo sandbox)
+
+- [x] Claim `IsolateNameServer` cooperativo per impedire concorrenza tra isolate, in aggiunta al lock OS tra processi.
+- [x] Barriera di directory fsync tramite libc Linux FFI, richiesta dopo creazione directory journal e rename marker, con opt-in fail-closed sugli OS non supportati.
+- [x] Prove di contesa tra isolate/processi, ordine e fallimenti della barriera, recupero su filesystem temporaneo e fallback Windows non attestato.
+- [ ] Certificazione power-loss Windows/Android, coordinamento SQLite+preferenze, isolamento di writer non partecipanti e restore live **non implementati**. [Runbook](docs/P2-RESTORE-DURABILITY.md).

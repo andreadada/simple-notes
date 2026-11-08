@@ -6,6 +6,7 @@ import 'package:path/path.dart' as path;
 
 import 'full_backup.dart';
 import 'full_backup_rollback_rehearsal.dart';
+import 'recovery_directory_barrier.dart';
 
 /// B2C: detached cold-start simulation. Never connected to production startup.
 enum RestorePhase { prepared, staging, verifying, recoveryRequired, rollbackVerified }
@@ -54,13 +55,15 @@ class RestoreMarker {
 }
 
 /// A deliberately single-writer, append-only journal in an EXPLICIT test
-/// directory. Does not guarantee directory fsync or cross-process locking.
+/// directory. Optional directory barriers are sandbox-only; even with them,
+/// cross-store atomicity and safe installed-profile recovery are unproven.
 /// Any torn/orphan marker, unknown file, gap or invalid transition FAILS CLOSED.
 /// The journal contains only hashes/phases, never credentials or note contents.
 class FileRestoreJournal {
-  const FileRestoreJournal(this.directory);
+  const FileRestoreJournal(this.directory, {this.directoryBarrier});
 
   final Directory directory;
+  final RecoveryDirectoryBarrier? directoryBarrier;
 
   static String _name(int sequence) {
     final padded = sequence.toString().padLeft(3, '0');
@@ -126,6 +129,12 @@ class FileRestoreJournal {
   }
 
   Future<void> append(RestoreMarker marker) async {
+    // Never attempt a "strict" append if the platform cannot implement its
+    // directory barrier. This check happens before the first mutation.
+    final barrier = directoryBarrier;
+    if (barrier != null && !barrier.supportedHere) {
+      throw UnsupportedError('Fsync directory richiesto ma non disponibile.');
+    }
     final initialType = await FileSystemEntity.type(
       directory.path, followLinks: false,
     );
@@ -138,6 +147,11 @@ class FileRestoreJournal {
           directory.path, followLinks: false,
         ) != FileSystemEntityType.directory) {
       throw const FormatException('Directory journal sostituita.');
+    }
+    // Persist the new journal directory entry in its parent before any
+    // recovery marker; only a native capability may claim this barrier.
+    if (initialType == FileSystemEntityType.notFound && barrier != null) {
+      await barrier.syncDirectory(directory.parent);
     }
     final previous = await read();
     if (previous == null) {
@@ -164,8 +178,11 @@ class FileRestoreJournal {
         throw StateError('Registro già esistente.');
       }
       await temporary.rename(destination.path);
-      // Fresh read-back catches unexpected content and invalid sequences
-      // immediately; it does NOT guarantee parent-directory fsync.
+      // A flushed file still requires the parent directory entry to be
+      // synchronized. Unsupported platforms MUST NOT fake this guarantee.
+      if (barrier != null) await barrier.syncDirectory(directory);
+      // Read-back also catches torn/invalid sequences, but does not provide
+      // SQLite + preference atomicity or protection from power loss alone.
       final verified = await read();
       if (verified == null ||
           verified.sequence != marker.sequence ||

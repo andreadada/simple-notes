@@ -222,3 +222,7 @@ Flutter `0.29.0+31`: `ui/ics_source_details.dart` descrive tipo, conteggi e ulti
 ## P2.4B2V — Protezioni recovery su sandbox
 
 `data/sandbox_restore_file_lease.dart` vincola la procedura di staging/rollback in una sandbox OS temporanea con lock cooperativo, guardia locale e rifiuto di lock e store non regolari. Il journal viene verificato dopo ogni scrittura, ma non dispone di garanzie di fsync directory o atomicità cross-store. Sono aggiunti test con una seconda VM Dart per la contesa del lock, test di concurrent cold-start e symlink; Windows CI li esegue insieme alle prove esistenti. Nessuna UI o procedura sul profilo installato utilizza questi componenti.
+
+## P2.4B2W — Durability gate test-only
+
+Il lease di sandbox usa `IsolateNameServer` e lock OS per richieste cooperative intra-processo e tra processi. `FileRestoreJournal` può sincronizzare la directory padre e il journal con `PosixSandboxDirectorySync` Linux FFI, opt-in senza fallback che possa simulare fsync su Windows/Android. Test in `test/recovery_directory_barrier_test.dart` e `test/sandbox_restore_file_lease_test.dart`. Nessuna nuova funzione del client installato. [Dettagli](../../docs/P2-RESTORE-DURABILITY.md).

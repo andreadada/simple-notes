@@ -1,10 +1,15 @@
+import 'dart:convert';
 import 'dart:io';
+import 'dart:isolate';
+import 'dart:ui' as ui;
+
+import 'package:crypto/crypto.dart' as crypto;
 
 import 'package:path/path.dart' as path;
 
 /// P2.4B2V: cooperative, NON-PRODUCTION lock for one disposable restore
 /// rehearsal. The OS file lock serializes cooperating processes; the in-isolate
-/// guard closes a platform-dependent gap for two Dart callers in one process.
+/// guard and engine-wide claim close the gap for callers in distinct isolates.
 ///
 /// Deliberately does not claim crash durability, hostile-path resistance or
 /// platform-wide exclusion of SQLite/SharedPreferences writers. File locks
@@ -30,6 +35,20 @@ class SandboxRestoreFileLease {
     }
     if (!_heldInIsolate.add(root)) {
       throw StateError('Sandbox già in uso nel processo.');
+    }
+
+    // Isolate-local statics are not shared across isolates. The Flutter
+    // engine's name server provides an atomic, process-wide *cooperative*
+    // claim, in addition to the OS file lock used across processes.
+    final claimPort = ReceivePort();
+    final claimKey =
+        'simple-notes-recovery-sandbox-v1-${crypto.sha256.convert(utf8.encode(root))}';
+    if (!ui.IsolateNameServer.registerPortWithName(
+      claimPort.sendPort, claimKey,
+    )) {
+      claimPort.close();
+      _heldInIsolate.remove(root);
+      throw StateError('Sandbox già in uso da un altro isolate.');
     }
 
     RandomAccessFile? handle;
@@ -70,6 +89,8 @@ class SandboxRestoreFileLease {
         try {
           await handle?.close();
         } finally {
+          ui.IsolateNameServer.removePortNameMapping(claimKey);
+          claimPort.close();
           _heldInIsolate.remove(root);
         }
       }

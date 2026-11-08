@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
@@ -45,6 +46,50 @@ void main() {
     expect(await first, 42);
     expect(secondRan, isFalse);
     expect(await File(path.join(directory.path, 'exclusive.lock')).length(), 0);
+  });
+
+  test('separate Dart process holding OS lock excludes recovery', () async {
+    final holder = await Process.start(
+      'dart',
+      ['test/support/hold_sandbox_lease.dart', directory.path],
+      workingDirectory: Directory.current.path,
+    );
+    addTearDown(() async {
+      if (holder.kill()) {
+        await holder.exitCode;
+      }
+    });
+    try {
+      final ready = await holder.stdout
+          .transform(utf8.decoder)
+          .transform(const LineSplitter())
+          .first
+          .timeout(const Duration(seconds: 30));
+      expect(ready, 'LOCKED');
+      var entered = false;
+      await expectLater(
+        SandboxRestoreFileLease(directory).runExclusive(() async {
+          entered = true;
+          return 1;
+        }),
+        throwsStateError,
+      );
+      expect(entered, isFalse);
+      holder.stdin.writeln('release');
+      await holder.stdin.flush();
+      expect(
+        await holder.exitCode.timeout(const Duration(seconds: 15)),
+        0,
+      );
+      // The same OS lock inode is reusable after a real process exit.
+      expect(
+        await SandboxRestoreFileLease(directory)
+            .runExclusive(() async => 10),
+        10,
+      );
+    } finally {
+      holder.kill();
+    }
   });
 
   test('after failure the lease releases and a new instance can recover',

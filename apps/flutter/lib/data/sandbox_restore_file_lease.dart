@@ -41,8 +41,8 @@ class SandboxRestoreFileLease {
     // engine's name server provides an atomic, process-wide *cooperative*
     // claim, in addition to the OS file lock used across processes.
     final claimPort = ReceivePort();
-    final claimKey = 'simple-notes-recovery-sandbox-v1-' +
-        crypto.sha256.convert(utf8.encode(root)).toString();
+    final claimKey =
+        'simple-notes-recovery-sandbox-v1-${crypto.sha256.convert(utf8.encode(root))}';
     if (!ui.IsolateNameServer.registerPortWithName(
       claimPort.sendPort, claimKey,
     )) {

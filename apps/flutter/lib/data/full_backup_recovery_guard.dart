@@ -81,7 +81,13 @@ class FileRestoreJournal {
       };
 
   Future<RestoreMarker?> read() async {
-    if (!await directory.exists()) return null;
+    final kind = await FileSystemEntity.type(
+      directory.path, followLinks: false,
+    );
+    if (kind == FileSystemEntityType.notFound) return null;
+    if (kind != FileSystemEntityType.directory) {
+      throw const FormatException('Directory journal non regolare.');
+    }
     final entries = await directory.list(followLinks: false).toList();
     if (entries.isEmpty) return null;
     if (entries.length > 13 || entries.any((entry) =>
@@ -120,7 +126,19 @@ class FileRestoreJournal {
   }
 
   Future<void> append(RestoreMarker marker) async {
+    final initialType = await FileSystemEntity.type(
+      directory.path, followLinks: false,
+    );
+    if (initialType != FileSystemEntityType.notFound &&
+        initialType != FileSystemEntityType.directory) {
+      throw const FormatException('Directory journal non regolare.');
+    }
     await directory.create(recursive: true);
+    if (await FileSystemEntity.type(
+          directory.path, followLinks: false,
+        ) != FileSystemEntityType.directory) {
+      throw const FormatException('Directory journal sostituita.');
+    }
     final previous = await read();
     if (previous == null) {
       if (marker.sequence != 0 || marker.phase != RestorePhase.prepared) {
@@ -146,6 +164,17 @@ class FileRestoreJournal {
         throw StateError('Registro già esistente.');
       }
       await temporary.rename(destination.path);
+      // Fresh read-back catches unexpected content and invalid sequences
+      // immediately; it does NOT guarantee parent-directory fsync.
+      final verified = await read();
+      if (verified == null ||
+          verified.sequence != marker.sequence ||
+          verified.phase != marker.phase ||
+          verified.ownerHash != marker.ownerHash ||
+          verified.checkpointHash != marker.checkpointHash ||
+          verified.targetHash != marker.targetHash) {
+        throw const FormatException('Registro recovery non verificabile.');
+      }
     } finally {
       if (await temporary.exists()) await temporary.delete();
     }

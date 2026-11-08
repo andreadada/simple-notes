@@ -1,10 +1,26 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import 'dart:isolate';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:path/path.dart' as path;
 import 'package:simple_notes/data/sandbox_restore_file_lease.dart';
+
+@pragma('vm:entry-point')
+Future<void> _holdSandboxInOtherIsolate(List<Object> message) async {
+  final root = message[0] as String;
+  final ready = message[1] as SendPort;
+  final release = ReceivePort();
+  try {
+    await SandboxRestoreFileLease(Directory(root)).runExclusive(() async {
+      ready.send(release.sendPort);
+      await release.first;
+    });
+  } finally {
+    release.close();
+  }
+}
 
 void main() {
   late Directory directory;
@@ -46,6 +62,41 @@ void main() {
     expect(await first, 42);
     expect(secondRan, isFalse);
     expect(await File(path.join(directory.path, 'exclusive.lock')).length(), 0);
+  });
+
+  test('a second Dart isolate cannot enter an active sandbox lease',
+      () async {
+    final ready = ReceivePort();
+    final exited = ReceivePort();
+    Isolate? worker;
+    try {
+      worker = await Isolate.spawn(
+        _holdSandboxInOtherIsolate,
+        <Object>[directory.path, ready.sendPort],
+        onExit: exited.sendPort,
+      );
+      final release = await ready.first
+          .timeout(const Duration(seconds: 25)) as SendPort;
+      var executed = false;
+      await expectLater(
+        SandboxRestoreFileLease(directory).runExclusive(() async {
+          executed = true;
+        }),
+        throwsStateError,
+      );
+      expect(executed, isFalse);
+      release.send('release');
+      await exited.first.timeout(const Duration(seconds: 25));
+      expect(
+        await SandboxRestoreFileLease(directory)
+            .runExclusive(() async => 'reacquired'),
+        'reacquired',
+      );
+    } finally {
+      worker?.kill(priority: Isolate.immediate);
+      ready.close();
+      exited.close();
+    }
   });
 
   test('separate Dart process holding OS lock excludes recovery', () async {

@@ -237,3 +237,7 @@ Nuovo controllo a livello client che riassume le scelte simulate solo se il work
 ## P2.4B2U — Sandbox consent + recovery (06/11/2026, integrato PR #53)
 
 Incremento integrato in `main` con PR #53: consenso monouso per l'esecuzione **solo in sandbox temporanea**, validazione AES-GCM same-owner e compensazione SQLite/preferenze dopo crash simulati. Nessuna modifica a startup, OAuth, cloud o profili installati; i getter di autorizzazione live/sync/replay restano sempre false. Le garanzie native cross-process/fsync e i test fisici sono ancora aperti. La tabella iniziale descrive lo stato integrato; questo non costituisce rilascio o deploy.
+
+## P2.4B2V — Hardening lock/journal in sandbox (08/11/2026, sviluppo PR)
+
+Branch `feat/p2-4b2v-sandbox-lock-journal-hardening`: aggiunto lease OS non bloccante e guardia intra-isolate per le simulazioni di recupero, verifiche fail-closed dei tipi di file e della directory journal, read-back post-append e test con processo Dart separato. Nessun intervento sul client in uso, sui dati locali installati, sul cloud o sulla VPS. Il lock resta advisory, senza garanzie contro TOCTOU/hardlink, e manca fsync directory. Finché la PR non è integrata, la tabella di stato `main` resta quella di P2.4B2U.

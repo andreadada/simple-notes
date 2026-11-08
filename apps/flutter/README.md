@@ -218,3 +218,7 @@ Flutter `0.29.0+31`: `ui/ics_source_details.dart` descrive tipo, conteggi e ulti
 ## P2.4B2U — Consenso e rollback su sandbox temporanea
 
 `lib/data/full_backup_sandbox_orchestrator.dart` è disponibile esclusivamente per la suite test: richiede una conferma monouso, autentica due archivi cifrati dello stesso account e prova lo staging e il rollback su SQLite e preferenze in OS temp. Il test `test/full_backup_sandbox_orchestrator_test.dart` include guasti dopo scrittura, cold-start e rifiuto replay. Il client installato **non** espone ripristino reale e non importa l'orchestratore in `main.dart`.
+
+## P2.4B2V — Protezioni recovery su sandbox
+
+`data/sandbox_restore_file_lease.dart` vincola la procedura di staging/rollback in una sandbox OS temporanea con lock cooperativo, guardia locale e rifiuto di lock e store non regolari. Il journal viene verificato dopo ogni scrittura, ma non dispone di garanzie di fsync directory o atomicità cross-store. Sono aggiunti test con una seconda VM Dart per la contesa del lock, test di concurrent cold-start e symlink; Windows CI li esegue insieme alle prove esistenti. Nessuna UI o procedura sul profilo installato utilizza questi componenti.

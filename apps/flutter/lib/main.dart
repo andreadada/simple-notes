@@ -22,6 +22,8 @@ import 'ui/task_due_editor.dart';
 import 'ui/calendar_board.dart';
 import 'ui/eisenhower_board.dart';
 import 'ui/kanban_board.dart';
+import 'ui/task_timeline_board.dart';
+import 'ui/task_productivity_boards.dart';
 import 'ui/pomodoro_board.dart';
 import 'ui/habits_board.dart';
 import 'ui/countdowns_board.dart';
@@ -49,6 +51,7 @@ import 'data/reconciliation_preflight_client.dart';
 import 'data/reconciliation_review_receipt.dart';
 import 'data/restore_cloud_inventory.dart';
 import 'data/app_database.dart';
+import 'data/task_insights.dart';
 import 'auth/cloud_auth.dart';
 import 'sync/cloud_sync.dart';
 import 'sync/auto_sync.dart';
@@ -142,7 +145,7 @@ class _SimpleNotesAppState extends State<SimpleNotesApp> {
       );
 }
 
-enum Section { today, next7, inbox, everything, completed, calendar, eisenhower, kanban, pomodoro, habits, countdowns, notes, trash }
+enum Section { today, next7, inbox, everything, completed, calendar, timeline, analytics, templates, eisenhower, kanban, pomodoro, habits, countdowns, notes, trash }
 
 extension SectionLabel on Section {
   String get label => switch (this) {
@@ -152,6 +155,9 @@ extension SectionLabel on Section {
         Section.everything => 'Tutto',
         Section.completed => 'Completati',
         Section.calendar => 'Calendario',
+        Section.timeline => 'Timeline',
+        Section.analytics => 'Statistiche',
+        Section.templates => 'Modelli',
         Section.eisenhower => 'Matrice Eisenhower',
         Section.kanban => 'Kanban',
         Section.pomodoro => 'Pomodoro',
@@ -167,6 +173,9 @@ extension SectionLabel on Section {
         Section.everything => Icons.list_alt,
         Section.completed => Icons.check_circle_outline,
         Section.calendar => Icons.calendar_month_outlined,
+        Section.timeline => Icons.view_timeline_outlined,
+        Section.analytics => Icons.insights_outlined,
+        Section.templates => Icons.library_add_outlined,
         Section.eisenhower => Icons.grid_view_outlined,
         Section.kanban => Icons.view_kanban_outlined,
         Section.pomodoro => Icons.timer_outlined,
@@ -189,7 +198,17 @@ class _NotesHomeState extends ConsumerState<NotesHome> {
   String? activeListId;
   int? priorityFilter;
   String searchQuery = '';
+  String? tagFilter;
+  TaskDueScope dueFilter = TaskDueScope.any;
+  TaskSortOrder sortOrder = TaskSortOrder.priority;
+  bool _templateBusy = false;
   bool _archiveBusy = false;
+
+  bool get _taskListMode => !const <Section>{
+    Section.calendar, Section.timeline, Section.analytics, Section.templates,
+    Section.eisenhower, Section.kanban, Section.pomodoro, Section.habits,
+    Section.countdowns, Section.notes, Section.trash,
+  }.contains(section);
   final newTask = TextEditingController();
   final newTaskFocus = FocusNode();
   TaskDue quickDue = TaskDue.none;
@@ -1230,7 +1249,7 @@ Ctrl+/ · Questo elenco'''),
           Section.completed => t.completed,
           Section.inbox => !t.completed && t.listId == null,
           Section.everything => !t.completed,
-          Section.calendar || Section.eisenhower || Section.kanban || Section.pomodoro || Section.habits || Section.countdowns || Section.notes || Section.trash => false,
+          Section.calendar || Section.timeline || Section.analytics || Section.templates || Section.eisenhower || Section.kanban || Section.pomodoro || Section.habits || Section.countdowns || Section.notes || Section.trash => false,
         }).toList()..sort((a, b) => a.createdAt.compareTo(b.createdAt));
   }
 
@@ -1247,21 +1266,13 @@ Ctrl+/ · Questo elenco'''),
     final reminders = ref.watch(reminderControllerProvider);
     final desktop = NotesResponsivePolicy.usesSidebar(MediaQuery.sizeOf(context).width);
     final wideDetails = NotesResponsivePolicy.usesDetails(MediaQuery.sizeOf(context).width);
-    final query = searchQuery.trim().toLowerCase();
-    final list = visibleTasks(data.tasks)
-        .where((task) => (priorityFilter == null ||
-                task.priority == priorityFilter) &&
-            (query.isEmpty ||
-              task.title.toLowerCase().contains(query) ||
-              task.description.toLowerCase().contains(query) ||
-              task.tags.any((tag) => tag.toLowerCase().contains(query)) ||
-              task.subtasks.any((sub) =>
-                  sub.title.toLowerCase().contains(query))))
-        .toList()
-      ..sort((a, b) {
-        final priority = b.priority.compareTo(a.priority);
-        return priority != 0 ? priority : a.createdAt.compareTo(b.createdAt);
-      });
+    final list = TaskQuery(
+      search: searchQuery, priority: priorityFilter, tag: tagFilter,
+      dueScope: dueFilter, sort: sortOrder,
+    ).apply(visibleTasks(data.tasks));
+    final availableTags = data.tasks.expand((task) => task.tags)
+        .map((tag) => tag.trim()).where((tag) => tag.isNotEmpty)
+        .toSet().toList()..sort();
     final activeList = data.lists.where((item) => item.id == activeListId)
         .firstOrNull;
     final pageTitle = activeList?.title ?? section.label;
@@ -1568,7 +1579,8 @@ Ctrl+/ · Questo elenco'''),
           children: [
             for (final s in Section.values.where((s) =>
                 s != Section.pomodoro && s != Section.habits &&
-                s != Section.countdowns))
+                s != Section.countdowns && s != Section.timeline &&
+                s != Section.analytics && s != Section.templates))
               FSidebarItem(
                 key: Key('nav-${s.name}'),
                 selected: section == s,
@@ -1616,8 +1628,31 @@ Ctrl+/ · Questo elenco'''),
             ),
           ],
         ),
-        // Keep the frequent task/list actions in view on short desktops.
-        // Pomodoro remains accessible in the scrollable sidebar below lists.
+        // Keep list creation in reach on compact desktops. Secondary P2
+        // screens live after the list group, not above its New list action.
+        FSidebarGroup(
+          label: const Text('STRUMENTI'),
+          children: [
+            for (final s in const <Section>[
+              Section.timeline, Section.analytics, Section.templates,
+            ])
+              FSidebarItem(
+                key: Key('nav-${s.name}'),
+                selected: section == s,
+                icon: Icon(s.icon, size: 20),
+                label: Text(s.label),
+                onPress: () {
+                  setState(() {
+                    section = s;
+                    activeListId = null;
+                    selectedId = null;
+                  });
+                  if (!desktop) Navigator.maybePop(context);
+                },
+              ),
+          ],
+        ),
+        // Focus tools are below task and list operations.
         FSidebarGroup(
           label: const Text('FOCUS'),
           children: [
@@ -1734,7 +1769,7 @@ Ctrl+/ · Questo elenco'''),
                           .renameList(activeList.id, title),
                     )),
             ),
-          if (section != Section.calendar && section != Section.eisenhower && section != Section.kanban && section != Section.pomodoro && section != Section.habits && section != Section.countdowns && section != Section.notes && section != Section.trash)
+          if (_taskListMode)
             Padding(
               padding: const EdgeInsets.fromLTRB(16, 0, 16, 4),
               child: FTextField(
@@ -1749,10 +1784,12 @@ Ctrl+/ · Questo elenco'''),
 
               ),
             ),
-          if (section != Section.calendar && section != Section.eisenhower && section != Section.kanban && section != Section.pomodoro && section != Section.habits && section != Section.countdowns && section != Section.notes && section != Section.trash)
+          if (_taskListMode)
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 5),
-              child: Row(children: [
+              child: SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(children: [
                 FButton(
                   key: const Key('priority-filter'),
                   variant: FButtonVariant.outline,
@@ -1767,6 +1804,72 @@ Ctrl+/ · Questo elenco'''),
                     : (MediaQuery.sizeOf(context).width < 400
                         ? 'P${priorityFilter!}' : 'Priorità P${priorityFilter!}')),
                 ),
+                const SizedBox(width: 8),
+                PopupMenuButton<TaskDueScope>(
+                  key: const Key('advanced-due-filter'),
+                  tooltip: 'Filtra per scadenza',
+                  onSelected: (value) => setState(() => dueFilter = value),
+                  itemBuilder: (_) => [
+                    for (final option in TaskDueScope.values)
+                      PopupMenuItem(value: option, child: Text(switch (option) {
+                        TaskDueScope.any => 'Qualsiasi scadenza',
+                        TaskDueScope.overdue => 'Scadute',
+                        TaskDueScope.today => 'Oggi',
+                        TaskDueScope.next7 => 'Prossimi 7 giorni',
+                        TaskDueScope.withoutDate => 'Senza data',
+                      })),
+                  ],
+                  child: InputChip(
+                    avatar: const Icon(Icons.event_outlined, size: 16),
+                    label: Text(switch (dueFilter) {
+                      TaskDueScope.any => 'Scadenza',
+                      TaskDueScope.overdue => 'Scadute',
+                      TaskDueScope.today => 'Oggi',
+                      TaskDueScope.next7 => '7 giorni',
+                      TaskDueScope.withoutDate => 'Senza data',
+                    }),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                PopupMenuButton<String>(
+                  key: const Key('advanced-tag-filter'),
+                  tooltip: 'Filtra per tag',
+                  onSelected: (value) => setState(() =>
+                      tagFilter = value.isEmpty ? null : value),
+                  itemBuilder: (_) => [
+                    const PopupMenuItem(value: '', child: Text('Tutti i tag')),
+                    for (final tag in availableTags)
+                      PopupMenuItem(value: tag, child: Text(tag)),
+                  ],
+                  child: InputChip(
+                    avatar: const Icon(Icons.sell_outlined, size: 16),
+                    label: Text(tagFilter ?? 'Tag'),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                PopupMenuButton<TaskSortOrder>(
+                  key: const Key('advanced-sort'),
+                  tooltip: 'Ordina attività',
+                  onSelected: (value) => setState(() => sortOrder = value),
+                  itemBuilder: (_) => [
+                    for (final option in TaskSortOrder.values)
+                      PopupMenuItem(value: option, child: Text(switch (option) {
+                        TaskSortOrder.priority => 'Per priorità',
+                        TaskSortOrder.deadline => 'Per scadenza',
+                        TaskSortOrder.createdNewest => 'Più recenti',
+                        TaskSortOrder.title => 'Alfabetico',
+                      })),
+                  ],
+                  child: InputChip(
+                    avatar: const Icon(Icons.sort_outlined, size: 16),
+                    label: Text(switch (sortOrder) {
+                      TaskSortOrder.priority => 'Priorità ↓',
+                      TaskSortOrder.deadline => 'Scadenza ↑',
+                      TaskSortOrder.createdNewest => 'Recenti',
+                      TaskSortOrder.title => 'Titolo A–Z',
+                    }),
+                  ),
+                ),
                 if (activeListId != null) ...[
                   const SizedBox(width: 8),
                   FButton(
@@ -1778,9 +1881,9 @@ Ctrl+/ · Questo elenco'''),
                     child: const Icon(Icons.delete_outline, size: 17),
                   ),
                 ],
-              ]),
+              ])),
             ),
-          if (section != Section.calendar && section != Section.eisenhower && section != Section.kanban && section != Section.pomodoro && section != Section.habits && section != Section.countdowns && section != Section.notes && section != Section.trash)
+          if (_taskListMode)
             Padding(
               padding: const EdgeInsets.fromLTRB(16, 8, 16, 12),
               child: Row(children: [
@@ -1846,6 +1949,44 @@ Ctrl+/ · Questo elenco'''),
             ),
           if (section == Section.calendar)
             Expanded(child: CalendarBoard(ownerId: cloud.userId))
+          else if (section == Section.timeline)
+            Expanded(child: TaskTimelineBoard(
+              tasks: data.tasks,
+              onOpenTask: (task) {
+                setState(() => selectedId = task.id);
+                if (!wideDetails) showTaskDetails(task);
+              },
+            ))
+          else if (section == Section.analytics)
+            Expanded(child: TaskAnalyticsBoard(
+              tasks: data.tasks, lists: data.lists,
+            ))
+          else if (section == Section.templates)
+            Expanded(child: TaskTemplatesBoard(
+              busy: _templateBusy,
+              onCreate: (template) async {
+                if (_templateBusy) return;
+                setState(() => _templateBusy = true);
+                try {
+                  final created = await ref.read(localStoreProvider.notifier)
+                      .createTaskFromTemplate(template.id);
+                  if (!mounted) return;
+                  setState(() {
+                    selectedId = created.id;
+                    section = Section.everything;
+                  });
+                  if (!wideDetails) showTaskDetails(created);
+                } catch (_) {
+                  if (!mounted || !context.mounted) return;
+                  ScaffoldMessenger.maybeOf(context)?.showSnackBar(
+                    const SnackBar(content: Text(
+                      'Creazione dal modello non riuscita.')),
+                  );
+                } finally {
+                  if (mounted) setState(() => _templateBusy = false);
+                }
+              },
+            ))
           else if (section == Section.eisenhower)
             Expanded(child: EisenhowerBoard(onOpenTask: (task) {
               setState(() => selectedId = task.id);

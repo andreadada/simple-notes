@@ -312,3 +312,7 @@ Per i test sul disco usa `flutter test test/sandbox_restore_file_lease_test.dart
 ## P2.4B2W — Test del claim isolate e fsync Linux
 
 Su Linux, `flutter test test/sandbox_restore_file_lease_test.dart test/recovery_directory_barrier_test.dart test/full_backup_disk_recovery_rehearsal_test.dart` prova lock nello stesso processo, in processi distinti e sync della directory padre e journal. Windows CI esegue il fallback (non dichiarare fsync Windows), mentre Android CI compila APK Java 17/21. Il barrier `UnavailableRecoveryDirectoryBarrier` deve rifiutare `append` prima di creare file; una failure di fsync dopo rename deve far fallire l'operazione anche se il marker è visibile. Vedere [P2-RESTORE-DURABILITY.md](P2-RESTORE-DURABILITY.md). Nessuna esecuzione su profili reali o VPS.
+
+## P2 — Test funzionalità locali e scope di release (09/11/2026)
+
+Eseguire flutter analyze e flutter test nell'app; verificare test/task_insights_test.dart, test/task_timeline_board_test.dart, test/task_template_persistence_test.dart, e build Windows/Android CI. I preset devono scrivere una normale mutation nella stessa transazione task; l'analisi task deve restare locale e non includere telemetria. Timeline mostra una scadenza senza ora come milestone, non pianifica una mezzanotte UTC; la UI deve restare read-only per i blocchi esistenti. Le integrazioni server calendar OAuth/S3/ACL e restore live richiedono percorsi separati con permessi, gate di sicurezza e test reali. [Matrice P2](P2-DELIVERY-MATRIX.md).

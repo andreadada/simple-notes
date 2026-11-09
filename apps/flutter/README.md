@@ -226,3 +226,7 @@ Flutter `0.29.0+31`: `ui/ics_source_details.dart` descrive tipo, conteggi e ulti
 ## P2.4B2W — Durability gate test-only
 
 Il lease di sandbox usa `IsolateNameServer` e lock OS per richieste cooperative intra-processo e tra processi. `FileRestoreJournal` può sincronizzare la directory padre e il journal con `PosixSandboxDirectorySync` Linux FFI, opt-in senza fallback che possa simulare fsync su Windows/Android. Test in `test/recovery_directory_barrier_test.dart` e `test/sandbox_restore_file_lease_test.dart`. Nessuna nuova funzione del client installato. [Dettagli](../../docs/P2-RESTORE-DURABILITY.md).
+
+## P2 — Timeline, filtri, statistiche e modelli integrati (09/11/2026, PR)
+
+Le nuove sezioni Timeline, Statistiche e Modelli sono locali e offline; nelle liste sono disponibili filtri scadenza/tag e sort oltre a ricerca/priorità. I preset creano task/sottotask nel database attuale e nella coda sync con UUID nuovi. Il batch aggiunge test di date civili, ordinamento e persistence. Non esiste cloud analytics né nuovo backend. [Matrice di consegna](../../docs/P2-DELIVERY-MATRIX.md).

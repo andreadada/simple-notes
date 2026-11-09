@@ -154,3 +154,7 @@ Il client include anche il lettore sperimentale di inventario cloud, con validaz
 **P2.4B2Q (in sviluppo):** i conflitti di riuso dell'operation ID hanno un codice distinto; Flutter interrompe la sincronizzazione e conserva outbox/SQLite anziché proporre un rebase errato. [Dettagli](docs/P2-SYNC-INTENT-CONFLICTS.md).
 
 **P2.4B2R (in sviluppo):** il gate V11 verifica anche la capability autenticata del backend, impedendo un PASS solo perché le colonne DB sono aggiornate. Nessun deploy o test su dati reali. [Runbook V11](docs/RELEASE-V11-READINESS.md).
+
+### Estensioni P2 — batch operativo
+
+Sono in verifica timeline/Gantt, filtri avanzati, statistiche locali e modelli attività, oltre a JSON/ICS/CSV/backup cifrato già esistenti. Le integrazioni provider, collaborazione, allegati, widget Android e ripristino live non sono ancora disponibili: [stato e criteri](docs/P2-DELIVERY-MATRIX.md).

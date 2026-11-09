@@ -610,3 +610,11 @@ Esempio: `2026-10-21 14:20 CEST | commit abc1234 | Aggiunto modulo promemoria e 
 - [x] Barriera di directory fsync tramite libc Linux FFI, richiesta dopo creazione directory journal e rename marker, con opt-in fail-closed sugli OS non supportati.
 - [x] Prove di contesa tra isolate/processi, ordine e fallimenti della barriera, recupero su filesystem temporaneo e fallback Windows non attestato.
 - [ ] Certificazione power-loss Windows/Android, coordinamento SQLite+preferenze, isolamento di writer non partecipanti e restore live **non implementati**. [Runbook](docs/P2-RESTORE-DURABILITY.md).
+
+## P2 — Batch funzionalità visibili (9 novembre 2026, PR in verifica)
+
+- [ ] **Timeline/Gantt**: nuova vista di 14 giorni con pianificazioni multiple, milestone da scadenze civili, navigazione e apertura task. Codice e test aggiunti; CI da verificare prima di segnare completata.
+- [ ] **Filtri avanzati**: tag, ricerca full-text locale per titolo/descrizione/sottotask, scadenze e ordinamento con criteri composti. UI e test aggiunti; CI da verificare.
+- [ ] **Statistiche locali**: completamento, scadenze arretrate, prossimi 7 giorni, priorità, minuti pianificati e distribuzione liste, senza telemetria esterna. UI e test aggiunti; CI da verificare.
+- [ ] **Modelli integrati**: cinque preset checklist con creazione di task reali in SQLite e outbox. Test di identità e persistenza aggiunti; CI da verificare.
+- [ ] **Altri requisiti P2 non chiusi:** provider OAuth Calendar/Outlook, collaborazione ACL, S3, widget Android, automazioni configurabili e restore live. Nessuna di queste funzioni va dichiarata pronta senza implementazione/test. Matrice: [P2-DELIVERY-MATRIX](docs/P2-DELIVERY-MATRIX.md).

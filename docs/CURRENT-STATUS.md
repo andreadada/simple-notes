@@ -258,3 +258,7 @@ Branch `feat/p2-4b2v-sandbox-lock-journal-hardening`: aggiunto lease OS non bloc
 ## P2.4B2W — Durability / isolate sandbox (08/11/2026, integrata PR #55)
 
 Incremento integrato in `main` con la PR #55: claim cooperativo su `IsolateNameServer` oltre al lock OS per provare l'esclusione tra isolate Flutter; barriera fsync del journal e dei rename dei file sandbox disponibile esclusivamente su Linux, e fallback esplicitamente non attestato altrove. Test su contesa, errori prima/dopo rename e OS sync. **Il profilo installato, il cloud e il deploy non sono modificati**. Restano aperti test reali power-loss, durabilità Windows/Android, atomicità SQLite/preferenze, non-cooperating writers e restore live. [Contratto](P2-RESTORE-DURABILITY.md).
+
+## Batch funzionalità P2 (09/11/2026, PR da validare)
+
+In sviluppo su branch feat/p2-completion-ui-batch: Timeline/Gantt a 14 giorni, filtri avanzati per task, analytics solo sui dati locali e cinque modelli con sottotask/UUID salvati in SQLite + outbox. Test dedicati introdotti; attendere esito CI prima di marcarli integrati. Backend Flyway V11 è **solo nel codice** e non attestato sulla VPS; restore live e le integrazioni OAuth Calendar/Outlook, collaborazione/S3/widget Android rimangono aperti. La matrice effettiva della P2 è in [P2-DELIVERY-MATRIX.md](P2-DELIVERY-MATRIX.md). La tabella main sopra rimane lo stato integrato fino al merge.

@@ -78,3 +78,7 @@ Nel batch fisico finale provare salvataggio Windows e condivisione Android del b
 ## Verifiche differite per il trasferimento dei modelli P2 (PR #58)
 
 Il codice per esportare/importare modelli JSON è integrato su `main` (`e926a5a`) e ha superato [Flutter CI #42688444850](https://github.com/andreadada/simple-notes/actions/runs/42688444850): 369 test, analisi, build Android JDK17/21 e Windows EXE/MSIX. **Non è stato ancora collaudato** il picker su Windows, lo share sheet Android, il trasferimento di un file fra dispositivi o il cambio account durante il picker. Restano anche i test launcher/cold-start/logout del widget Android della PR #57. Il JSON dei modelli è non cifrato, locale e additivo; non autorizza il restore `.snb` live o alcuna modifica cloud. [Specifiche](P2-TEMPLATE-TRANSFER.md) · [Matrice](P2-DELIVERY-MATRIX.md).
+
+## Regole promemoria P2 — prove fisiche differite (PR #59)
+
+Verificare con il build realmente installato: creazione/modifica/disabilitazione/cancellazione regole, permessi Android, cancellazione di notifiche già programmate, DST, scadenze date-only, cambio account, logout, riavvio, app chiusa, Android idle e Windows MSIX con package identity. ZIP/EXE non deve mostrare un opt-in. Niente test hardware o permessi OS attestati dalla sola CI. [Specifica](P2-REMINDER-AUTOMATIONS.md).

@@ -234,3 +234,7 @@ Le nuove sezioni Timeline, Statistiche e Modelli sono locali e offline; nelle li
 ## P2 — Funzioni aggiuntive (09/11/2026, branch)
 
 Esportazione calendario locale ICS e widget Android con pulsanti Oggi/Inbox/Nuova attività, senza mostrare dati utente. Modelli personalizzati CRUD in SharedPreferences owner-scoped e inclusi come preferenza opzionale nei nuovi backup .snb; i task creati continuano a usare SQLite/outbox. Non è sync automatica con Google Calendar, né restore live. [Dettagli](../../docs/P2-LOCAL-INTEGRATIONS.md).
+
+## P2 — Automazioni promemoria native (PR #59 in verifica)
+
+La schermata Strumenti → Automazioni offre regole locali per avvisi da scadenze con ora o blocchi, anticipo e priorità minima, integrate al ledger OS P1.7. Le regole sono isolate per owner su SharedPreferences e opzionali nel backup cifrato; non introducono job server e non cambiano task/outbox. Android usa scheduling inexact, Windows solo MSIX; nessun collaudo hardware attestato. [Contratto](../../docs/P2-REMINDER-AUTOMATIONS.md).

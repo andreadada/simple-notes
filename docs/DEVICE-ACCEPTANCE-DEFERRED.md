@@ -84,3 +84,7 @@ Il codice per esportare/importare modelli JSON è integrato su `main` (`e926a5a`
 Verificare con il build realmente installato: creazione/modifica/disabilitazione/cancellazione regole, permessi Android, cancellazione di notifiche già programmate, DST, scadenze date-only, cambio account, logout, riavvio, app chiusa, Android idle e Windows MSIX con package identity. ZIP/EXE non deve mostrare un opt-in. Niente test hardware o permessi OS attestati dalla sola CI. [Specifica](P2-REMINDER-AUTOMATIONS.md).
 
 **Nota CI (09/11/2026):** [Flutter #42701809601](https://github.com/andreadada/simple-notes/actions/runs/42701809601) supera 377 test, build Android JDK17/21 e Windows EXE/MSIX; questo **non certifica** notifiche consegnate su hardware Android o Windows. Nessuna prova fisica eseguita.
+
+## P2 azioni task (PR #60): prove hardware differite
+
+Con il client reale verificare regole su creazione/completamento manuali, spostamento su lista, match titolo case-insensitive, ricorrenza, undo, account/guest e passaggio Windows ↔ Android; nessuna azione deve partire dal pull cloud o dall'import. Nessuna prova su dispositivi reali eseguita. [Specifica](P2-TASK-ACTIONS.md).

@@ -18,3 +18,7 @@ La voce **Strumenti → Automazioni** consente di aggiungere, modificare, sospen
 `reminder_automations_test.dart`: default retrocompatibili, limiti, isolamento account, confronto ledger e dedup, disabilitazione, schema futuro e contenuto malformato. `reminder_automations_widget_test.dart`: editor Forui e blocco archivio corrotto. `user_template_backup_test.dart`: snapshot cifrato per owner, schema opzionale e rifiuto di archivi di regole rotti.
 
 **Non è la chiusura complessiva delle automazioni P2.** Restano esecuzione affidabile di azioni configurate su task, dedup durevole distribuita, sincronizzazione regole tra dispositivi, pianificazione quando l'app non viene riaperta, collaudo su hardware, migrazione V11 reale e gli altri gate P2. Il collaudo manuale resta nel [registro differito](DEVICE-ACCEPTANCE-DEFERRED.md) e lo stato canonico nella [matrice](P2-DELIVERY-MATRIX.md).
+
+## Estensione P2 successiva — automazioni che modificano task
+
+Le notifiche OS di questa specifica restano indipendenti dalle nuove azioni task locali su creazione/completamento, integrate nello stesso menu Strumenti → Automazioni. [Contratto separato della PR #60](P2-TASK-ACTIONS.md). Le azioni task non richiedono il permesso notifiche.

@@ -20,6 +20,10 @@
 | Backend nel repository | Spring Boot/PostgreSQL 17, Flyway **V11**; client Drift/SQLite **V8** | VPS attestata solo a Flyway **V10 (03/11/2026)**; backend V11/capability non verificati sulla VPS |
 | Test reali | VPS V10 verificata il 03/11; Google Windows connesso e pending 0 nel report disponibile | Android E2E, API strict, V11 e restore live ancora aperti |
 
+## Incremento P2 — automazioni task locali (PR #60 in verifica, 09/11/2026)
+
+- [PR #60](https://github.com/andreadada/simple-notes/pull/60): in sviluppo regole crea/completa, filtro titolo, priorità/tag/lista, editor Forui, una sola scrittura task/outbox per evento e backup .snb opzionale. **Non ancora integrata su main:** CI/merge da verificare, nessuna modifica server/restore live o device E2E. [Contratto](P2-TASK-ACTIONS.md).
+
 ## Incremento P2 — automazioni promemoria locali (PR #59 integrata, 09/11/2026)
 
 - Implementate nel branch regole owner-scoped per scadenze con ora e blocchi, anticipi configurabili, priorità minima, enable/disable, editor Forui, dedup ledger e compatibilità con il precedente default 15/15. Il backup `.snb` include un campo opzionale validato; nessun restore live o nuovo deploy.

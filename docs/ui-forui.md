@@ -1,7 +1,7 @@
 # Simple Notes — UI e design system Forui
 
 <!-- CURRENT-STATUS-REF -->
-> **Stato corrente 09/11/2026:** [PR #59](https://github.com/andreadada/simple-notes/pull/59) merged (`aa17094`), regole locali di notifiche per owner e backup opzionale. [Flutter CI #42701809601](https://github.com/andreadada/simple-notes/actions/runs/42701809601) **success**: 377 test, analisi e build Android/Windows; [Markdown #42701809467](https://github.com/andreadada/simple-notes/actions/runs/42701809467) **success**. Flyway V11 nel codice, VPS V10 attestata; nessun deploy o E2E. Automazioni task/server e resto P2 non conclusi. [Stato canonico](CURRENT-STATUS.md).
+> **Stato corrente 09/11/2026:** [PR #60](https://github.com/andreadada/simple-notes/pull/60) merged `e051162`, automazioni locali crea/completa con tag/priorità/lista, un solo upsert/outbox e backup opzionale. [Flutter CI #42714514197](https://github.com/andreadada/simple-notes/actions/runs/42714514197) **success** (392 test, Windows EXE/MSIX/recovery, Android JDK17/21), [Markdown #42714514223](https://github.com/andreadada/simple-notes/actions/runs/42714514223) **success**. Flutter `0.31.0+33`, Flyway V11 nel repo, VPS V10 verificata il 03/11, nessun deploy/restore live/E2E. Restano aperti automazioni server, OAuth provider, ACL, S3 e release gates. [Stato canonico](CURRENT-STATUS.md).
 
 > **Cronologia (stato del 02/11 o 31/10/2026):** P2.3D gestione fonti ICS integrata su `main` ([PR #25](https://github.com/andreadada/simple-notes/pull/25), Flutter `0.29.0+31`; [CI Flutter](https://github.com/andreadada/simple-notes/actions/runs/41471546808) success: **191 test**, Windows EXE/MSIX, Android JDK17/21; [Markdown](https://github.com/andreadada/simple-notes/actions/runs/41471546568) success). Nessun deploy, reset, installazione o test hardware. Backend Flyway V10 in repo, VPS ultima attestazione V8. [Stato](CURRENT-STATUS.md) · [Gestione ICS](P2-ICS-SOURCE-MANAGEMENT.md).
 
@@ -198,3 +198,7 @@ Una voce **Esporta CSV** apre dialog Forui con testo esplicativo e tre azioni (A
 ## P2.4B1 — Password e anteprima con Forui
 
 Nel menu avatar Crea backup cifrato / Verifica backup. `NotesDialog` e `FTextField.password` con controller gestiti e password mai persistita; secondo campo solo alla creazione. Il dialog di verifica mostra conteggi aggregati e non valori degli elementi; chiarire «nessun dato ripristinato». Windows Save As / Android share sheet, nessun comando Ripristina fino a P2.4B2. [Specifica](P2-FULL-BACKUP.md).
+
+## P2 — Form regole di azione task (PR #60 integrata)
+
+La nuova sezione Strumenti → Automazioni presenta regole separate dai promemoria OS. Il dialog Forui gestisce trigger crea/completa, testo filtro sul titolo, scelta azione priorità/tag/lista e salvataggio. I `TextFormField` sotto `Material(type: MaterialType.transparency)` mantengono il look minimale e non usano controller distrutti durante le animazioni di chiusura. Conferma richiesta per l'eliminazione, editor bloccato su JSON corrotto senza sovrascritture. [Contratto](P2-TASK-ACTIONS.md).

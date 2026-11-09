@@ -1,7 +1,7 @@
 # Delta Sync v1 — protocollo e storia degli incrementi
 
 <!-- CURRENT-STATUS-REF -->
-> **Stato corrente 09/11/2026:** [PR #59](https://github.com/andreadada/simple-notes/pull/59) merged (`aa17094`), regole locali di notifiche per owner e backup opzionale. [Flutter CI #42701809601](https://github.com/andreadada/simple-notes/actions/runs/42701809601) **success**: 377 test, analisi e build Android/Windows; [Markdown #42701809467](https://github.com/andreadada/simple-notes/actions/runs/42701809467) **success**. Flyway V11 nel codice, VPS V10 attestata; nessun deploy o E2E. Automazioni task/server e resto P2 non conclusi. [Stato canonico](CURRENT-STATUS.md).
+> **Stato corrente 09/11/2026:** [PR #60](https://github.com/andreadada/simple-notes/pull/60) merged `e051162`, automazioni locali crea/completa con tag/priorità/lista, un solo upsert/outbox e backup opzionale. [Flutter CI #42714514197](https://github.com/andreadada/simple-notes/actions/runs/42714514197) **success** (392 test, Windows EXE/MSIX/recovery, Android JDK17/21), [Markdown #42714514223](https://github.com/andreadada/simple-notes/actions/runs/42714514223) **success**. Flutter `0.31.0+33`, Flyway V11 nel repo, VPS V10 verificata il 03/11, nessun deploy/restore live/E2E. Restano aperti automazioni server, OAuth provider, ACL, S3 e release gates. [Stato canonico](CURRENT-STATUS.md).
 
 
 ## Ultima versione di un elemento / risoluzione conflitto (P0)
@@ -169,3 +169,7 @@ Client Flutter: soltanto il codice esplicito `SYNC_OPERATION_ID_REUSE` su `/sync
 ## P2.4B2R — Capability operativa V11 e client precedenti
 
 Il campo `syncOperationFingerprintSchema=1` segnala che l'istanza API pubblica il supporto per il fingerprint idempotente. I client preesistenti ignorano il nuovo campo senza cambi di protocollo; il gate V11 deve controllarlo per evitare un falso PASS quando DB e binario sono di versioni differenti. È un'annuncio, non una prova transazionale di un singolo retry o un'autorizzazione al restore. [Runbook](RELEASE-V11-READINESS.md).
+
+## P2 — azioni automatiche locali e protocollo outbox
+
+La [PR #60](https://github.com/andreadada/simple-notes/pull/60) integra azioni task sul solo evento locale di creazione/completamento. La trasformazione avviene **prima** della scrittura SQL e del normale `upsert` outbox. Il pull remoto non innesca automazioni e non crea nuove mutazioni; il server continua a imporre il normale `remoteVersion` e le risoluzioni conflitti. Le regole non sono sincronizzate: non esiste deduplica distribuita di trigger. [Specifiche](P2-TASK-ACTIONS.md).

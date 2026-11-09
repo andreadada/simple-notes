@@ -1,7 +1,7 @@
 # Backend — Coolify
 
 <!-- CURRENT-STATUS-REF -->
-> **Stato verificato 09/11/2026:** [PR #59](https://github.com/andreadada/simple-notes/pull/59) integrata (`aa17094`): regole locali configurabili per promemoria Android/Windows MSIX. [Flutter CI #42701809601](https://github.com/andreadada/simple-notes/actions/runs/42701809601) **success** (377 test, analyze, build Windows EXE/MSIX, Android JDK17/21); [Markdown #42701809467](https://github.com/andreadada/simple-notes/actions/runs/42701809467) **success**. Client `0.31.0+33`, Flyway V11 nel codice e V10 attestata in VPS (03/11); nessun deploy o hardware test. P2 resta aperta per automazioni task/server, OAuth provider, ACL, S3 e restore live. [Stato canonico](../docs/CURRENT-STATUS.md).
+> **Stato corrente 09/11/2026:** [PR #60](https://github.com/andreadada/simple-notes/pull/60) merged `e051162`, automazioni locali crea/completa con tag/priorità/lista, un solo upsert/outbox e backup opzionale. [Flutter CI #42714514197](https://github.com/andreadada/simple-notes/actions/runs/42714514197) **success** (392 test, Windows EXE/MSIX/recovery, Android JDK17/21), [Markdown #42714514223](https://github.com/andreadada/simple-notes/actions/runs/42714514223) **success**. Flutter `0.31.0+33`, Flyway V11 nel repo, VPS V10 verificata il 03/11, nessun deploy/restore live/E2E. Restano aperti automazioni server, OAuth provider, ACL, S3 e release gates. [Stato canonico](../docs/CURRENT-STATUS.md).
 
 
 ## Cronologia — rilascio 0.7.0+9 (superato da P1.6)

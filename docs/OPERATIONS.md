@@ -1,6 +1,6 @@
 # Guida operativa — Simple Notes
 
-> **Stato verificato 09/11/2026:** [PR #59](https://github.com/andreadada/simple-notes/pull/59) integrata (`aa17094`): regole locali configurabili per promemoria Android/Windows MSIX. [Flutter CI #42701809601](https://github.com/andreadada/simple-notes/actions/runs/42701809601) **success** (377 test, analyze, build Windows EXE/MSIX, Android JDK17/21); [Markdown #42701809467](https://github.com/andreadada/simple-notes/actions/runs/42701809467) **success**. Client `0.31.0+33`, Flyway V11 nel codice e V10 attestata in VPS (03/11); nessun deploy o hardware test. P2 resta aperta per automazioni task/server, OAuth provider, ACL, S3 e restore live. [Stato canonico](CURRENT-STATUS.md).
+> **Stato corrente 09/11/2026:** [PR #60](https://github.com/andreadada/simple-notes/pull/60) merged `e051162`, automazioni locali crea/completa con tag/priorità/lista, un solo upsert/outbox e backup opzionale. [Flutter CI #42714514197](https://github.com/andreadada/simple-notes/actions/runs/42714514197) **success** (392 test, Windows EXE/MSIX/recovery, Android JDK17/21), [Markdown #42714514223](https://github.com/andreadada/simple-notes/actions/runs/42714514223) **success**. Flutter `0.31.0+33`, Flyway V11 nel repo, VPS V10 verificata il 03/11, nessun deploy/restore live/E2E. Restano aperti automazioni server, OAuth provider, ACL, S3 e release gates. [Stato canonico](CURRENT-STATUS.md).
 
 **Fonte operativa** per checkout Windows, CI, Coolify, Android e Windows ZIP/MSIX. Lo stato canonico aggiornato è in [CURRENT-STATUS.md](CURRENT-STATUS.md); le versioni precedenti qui riportate costituiscono cronologia, non conferme di deploy.
 
@@ -320,3 +320,7 @@ Eseguire flutter analyze e flutter test nell'app; verificare test/task_insights_
 ## P2 — Verifiche ICS/modelli/widget Android (09/11/2026)
 
 Eseguire flutter analyze e flutter test; suite portable_task_calendar_test.dart, user_task_templates_test.dart, user_template_backup_test.dart, android_widget_navigation_test.dart. Android JDK17/21 deve compilare Java AppWidgetProvider, manifest e risorse. In test reale, aggiungere il widget dalla galleria e verificare le tre destinazioni senza bypass del restore startup gate. Un file .ics non è cifrato: condividerlo soltanto per azione esplicita. Verificare un vecchio .snb v1 senza la preferenza templates e un nuovo backup con chiave templates dell'owner giusto. Nessuna operazione reale di restore o deploy. [Contratto](P2-LOCAL-INTEGRATIONS.md).
+
+## P2 azioni task — note operative (PR #60 integrata)
+
+Build verificate in CI: [Flutter #42714514197](https://github.com/andreadada/simple-notes/actions/runs/42714514197) (392 test, Android JDK17/21, Windows EXE/MSIX e recovery). Nessuna nuova configurazione backend, Flyway/Drift o permesso OAuth. Le regole sono locali al dispositivo/account e vengono applicate soltanto alla creazione/completamento manuali; trasferirle fra dispositivi mediante sync non è disponibile. Non eseguire un deploy né prove scriventi/restore live in base alla sola CI; il batch fisico rimane differito. [Specifica](P2-TASK-ACTIONS.md).

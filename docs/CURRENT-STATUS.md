@@ -4,7 +4,7 @@
 
 | Area | Stato verificato | Gate ancora aperti |
 |---|---|---|
-| `main` | **P0–P2.4B2W + batch funzionalità locali P2 integrati**, Flutter `0.31.0+33`, [PR #56](https://github.com/andreadada/simple-notes/pull/56) merged (`56d40317`). [Flutter CI #42625648804](https://github.com/andreadada/simple-notes/actions/runs/42625648804) **success**: 350 test, Windows recovery/EXE/MSIX, APK Android JDK 17/21; [Markdown CI #42625649033](https://github.com/andreadada/simple-notes/actions/runs/42625649033) **success** | **P2 completa non attestata:** provider Google Calendar/Outlook OAuth, ACL liste condivise, allegati S3, widget Android, automazioni configurabili e restore live non implementati. VPS Flyway V10, V11 solo codice; test fisici rinviati |
+| `main` | **P0–P2.4B2W + batch P2 #56 e #57 integrati**, Flutter `0.31.0+33`, [PR #57](https://github.com/andreadada/simple-notes/pull/57) merged (`90e5e26a`). [Flutter CI #42634429343](https://github.com/andreadada/simple-notes/actions/runs/42634429343) **success**: 365 test, Windows recovery/EXE/MSIX, APK Android JDK17/21; [Markdown CI #42634428206](https://github.com/andreadada/simple-notes/actions/runs/42634428206) **success** | **P2 non interamente conclusa:** OAuth Google Calendar/Outlook, ACL liste condivise, allegati S3, automazioni configurabili, restore live e prove fisiche widget/E2E. VPS Flyway V10, V11 solo codice; nessun deploy |
 | P1.18 integrata (storico) | [PR #19](https://github.com/andreadada/simple-notes/pull/19) merged, Flutter **`0.23.0+25`**, temi chiaro/scuro/sistema, preferenza locale e Sticky | CI verde; test visivi e su dispositivi fisici ancora aperti |
 | CI P2.4B1 | [Flutter #41636993011](https://github.com/andreadada/simple-notes/actions/runs/41636993011) **success**: 204 test, Windows EXE/MSIX, Android JDK17/21; [Markdown #41636993004](https://github.com/andreadada/simple-notes/actions/runs/41636993004) **success** | Nessun restore live, prova picker/share o Windows↔Android su dispositivi reali |
 | CI P2.4A | [Flutter #41562133925](https://github.com/andreadada/simple-notes/actions/runs/41562133925) **success**: 198 test, Windows EXE/MSIX, Android JDK17/21; [Markdown #41561797719](https://github.com/andreadada/simple-notes/actions/runs/41561797719) **success** | Collaudo CSV nativo e Windows↔Android rinviati |
@@ -19,6 +19,13 @@
 | Gate R1 (codice) | [PR #26](https://github.com/andreadada/simple-notes/pull/26) merged; [Compose CI #41523319857](https://github.com/andreadada/simple-notes/actions/runs/41523319857) success (V6 rifiutata, V10 incompleta rifiutata, V10 sintetica accettata), [Markdown #41523319860](https://github.com/andreadada/simple-notes/actions/runs/41523319860) success | **Non certifica Flyway V10 reale, health e API autenticata in VPS** |
 | Backend nel repository | Spring Boot/PostgreSQL 17, Flyway **V11**; client Drift/SQLite **V8** | VPS attestata solo a Flyway **V10 (03/11/2026)**; backend V11/capability non verificati sulla VPS |
 | Test reali | VPS V10 verificata il 03/11; Google Windows connesso e pending 0 nel report disponibile | Android E2E, API strict, V11 e restore live ancora aperti |
+
+## Snapshot corrente dopo la PR #57 (09/11/2026)
+
+- `main` include **P2 batch #57** ([PR #57](https://github.com/andreadada/simple-notes/pull/57), merge `90e5e26a`): esportazione file calendario RFC5545 ICS, modelli personalizzati locali per account e inclusione opzionale retrocompatibile nei backup cifrati .snb, widget Android di accesso rapido a Oggi/Inbox/Nuovo task.
+- [Flutter CI #42634429343](https://github.com/andreadada/simple-notes/actions/runs/42634429343) **success**: 365 test, analisi statica, Windows EXE/MSIX e test di recovery, Android JDK17/21. [Markdown #42634428206](https://github.com/andreadada/simple-notes/actions/runs/42634428206) **success**.
+- Il widget Android non visualizza dati personali; l'esportazione ICS richiede azione esplicita, non è sync OAuth. I modelli personalizzati sono **locali al dispositivo**, non sincronizzati tra dispositivi.
+- La **P2 complessiva rimane aperta** per OAuth provider, collaborazione ACL, allegati S3, automazioni configurabili e restore live; prove hardware widget, Android↔Windows e deploy/API V11 non eseguite. [Matrice](P2-DELIVERY-MATRIX.md), [specifica](P2-LOCAL-INTEGRATIONS.md).
 
 ## Snapshot corrente dopo la PR #56 (09/11/2026)
 
@@ -270,6 +277,6 @@ Incremento integrato in `main` con la PR #55: claim cooperativo su `IsolateNameS
 
 Integrato su `main` con PR #56: Timeline/Gantt a 14 giorni, filtri avanzati per task, analytics solo sui dati locali e cinque modelli con sottotask/UUID salvati in SQLite + outbox. Test dedicati e CI Flutter/Windows/Android superati. Backend Flyway V11 è **solo nel codice** e non attestato sulla VPS; restore live e le integrazioni OAuth Calendar/Outlook, collaborazione/S3/widget Android rimangono aperti. La matrice effettiva della P2 è in [P2-DELIVERY-MATRIX.md](P2-DELIVERY-MATRIX.md). La tabella principale sopra descrive lo stato integrato.
 
-## Incremento P2 in verifica — Calendario esportabile, modelli utente e widget Android (09/11/2026)
+## Incremento P2 integrato — Calendario esportabile, modelli utente e widget Android (09/11/2026)
 
-Branch feat/p2-custom-templates-calendar-export-android-widget: esportazione manuale eventi in ICS, modello utente CRUD per account/dispositivo con chiave hashed e backup .snb retrocompatibile, widget launcher Android senza dati privati. Quattro nuove suite di test dedicate. Le CI/merge vanno verificati prima di marcare integrato. Nessun deploy, modifica alla VPS, migrazione o restore live. [Dettagli](P2-LOCAL-INTEGRATIONS.md).
+Integrazione PR #57 su `main`: esportazione manuale eventi in ICS, modello utente CRUD per account/dispositivo con chiave hashed e backup .snb retrocompatibile, widget launcher Android senza dati privati. Quattro nuove suite di test dedicate. CI Flutter/Windows/Android e Markdown superate; merge completato. Nessun deploy, modifica alla VPS, migrazione o restore live. [Dettagli](P2-LOCAL-INTEGRATIONS.md).

@@ -1,6 +1,6 @@
 # Simple Notes
 
-> **Stato operativo 09/11/2026:** `main` integra P2.4B2W e il **batch P2 locale** ([PR #56](https://github.com/andreadada/simple-notes/pull/56), merge `56d40317`): Timeline/Gantt, filtri avanzati, analytics locali, modelli. [Flutter CI #42625648804](https://github.com/andreadada/simple-notes/actions/runs/42625648804) **success** (350 test, Windows EXE/MSIX, Android JDK17/21); [Markdown #42625649033](https://github.com/andreadada/simple-notes/actions/runs/42625649033) **success**. **P2 non completamente terminata**: OAuth Calendar/Outlook, condivisione ACL, S3, widget Android, automazioni configurabili, restore live e test fisici ancora aperti. VPS attestata Flyway V10 (03/11), V11 solo nel codice; nessun deploy. [Stato](docs/CURRENT-STATUS.md) · [P2](docs/P2-DELIVERY-MATRIX.md) · [Backup](docs/P2-FULL-BACKUP.md) · [V11](docs/RELEASE-V11-READINESS.md).
+> **Stato operativo 09/11/2026:** `main` integra P2.4B2W e i **batch funzionali P2 #56 e #57** ([PR #57](https://github.com/andreadada/simple-notes/pull/57), merge `90e5e26a`): Timeline/Gantt, filtri, analytics, modelli personali, esportazione ICS, widget Android non sensibile. [Flutter CI #42634429343](https://github.com/andreadada/simple-notes/actions/runs/42634429343) **success** (365 test, Android JDK17/21, Windows EXE/MSIX); [Markdown #42634428206](https://github.com/andreadada/simple-notes/actions/runs/42634428206) **success**. **P2 ancora aperta:** OAuth Calendar/Outlook, condivisione ACL, allegati S3, automazioni, restore live, collaudi fisici. VPS attestata Flyway V10 (03/11), V11 solo codice; nessun deploy. [Stato](docs/CURRENT-STATUS.md) · [Matrice P2](docs/P2-DELIVERY-MATRIX.md) · [Integrazioni](docs/P2-LOCAL-INTEGRATIONS.md).
 
 App offline-first per **Windows 11 e Android** dedicata ad attività, note e pianificazione. Flutter/Forui con Drift SQLite locale, Google OAuth e sincronizzazione con Spring Boot/PostgreSQL su Coolify.
 
@@ -159,6 +159,6 @@ Il client include anche il lettore sperimentale di inventario cloud, con validaz
 
 Integrate e verificate [PR #56](https://github.com/andreadada/simple-notes/pull/56): timeline/Gantt, filtri avanzati, statistiche locali e modelli attività, oltre a JSON/ICS/CSV/backup cifrato già esistenti. Le integrazioni provider, collaborazione, allegati, widget Android e ripristino live non sono ancora disponibili: [stato e criteri](docs/P2-DELIVERY-MATRIX.md).
 
-### P2 — Integrazioni locali in sviluppo
+### P2 — Integrazioni locali integrate (PR #57)
 
 Esportazione ICS unidirezionale per Google Calendar/Outlook (importazione manuale), modelli personalizzabili nel dispositivo e widget Android di accesso rapido senza dati privati. [Stato e limiti](docs/P2-LOCAL-INTEGRATIONS.md).

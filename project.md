@@ -1,6 +1,6 @@
 # Simple Notes — Progetto e roadmap
 
-> **Stato operativo 09/11/2026:** `main` integra P2.4B2W e il **batch P2 locale** ([PR #56](https://github.com/andreadada/simple-notes/pull/56), merge `56d40317`): Timeline/Gantt, filtri avanzati, analytics locali, modelli. [Flutter CI #42625648804](https://github.com/andreadada/simple-notes/actions/runs/42625648804) **success** (350 test, Windows EXE/MSIX, Android JDK17/21); [Markdown #42625649033](https://github.com/andreadada/simple-notes/actions/runs/42625649033) **success**. **P2 non completamente terminata**: OAuth Calendar/Outlook, condivisione ACL, S3, widget Android, automazioni configurabili, restore live e test fisici ancora aperti. VPS attestata Flyway V10 (03/11), V11 solo nel codice; nessun deploy. [Stato](docs/CURRENT-STATUS.md) · [P2](docs/P2-DELIVERY-MATRIX.md) · [Backup](docs/P2-FULL-BACKUP.md) · [V11](docs/RELEASE-V11-READINESS.md).
+> **Stato operativo 09/11/2026:** `main` integra P2.4B2W e i **batch funzionali P2 #56 e #57** ([PR #57](https://github.com/andreadada/simple-notes/pull/57), merge `90e5e26a`): Timeline/Gantt, filtri, analytics, modelli personali, esportazione ICS, widget Android non sensibile. [Flutter CI #42634429343](https://github.com/andreadada/simple-notes/actions/runs/42634429343) **success** (365 test, Android JDK17/21, Windows EXE/MSIX); [Markdown #42634428206](https://github.com/andreadada/simple-notes/actions/runs/42634428206) **success**. **P2 ancora aperta:** OAuth Calendar/Outlook, condivisione ACL, allegati S3, automazioni, restore live, collaudi fisici. VPS attestata Flyway V10 (03/11), V11 solo codice; nessun deploy. [Stato](docs/CURRENT-STATUS.md) · [Matrice P2](docs/P2-DELIVERY-MATRIX.md) · [Integrazioni](docs/P2-LOCAL-INTEGRATIONS.md).
 
 <!-- CURRENT-STATUS-REF -->
 
@@ -617,11 +617,11 @@ Esempio: `2026-10-21 14:20 CEST | commit abc1234 | Aggiunto modulo promemoria e 
 - [x] **Filtri avanzati**: tag, ricerca full-text locale per titolo/descrizione/sottotask, scadenze e ordinamento con criteri composti. UI e test verificati in CI Flutter #42625648804.
 - [x] **Statistiche locali**: completamento, scadenze arretrate, prossimi 7 giorni, priorità, minuti pianificati e distribuzione liste, senza telemetria esterna. UI e test aggiunti; CI da verificare.
 - [x] **Modelli integrati**: cinque preset checklist con creazione di task reali in SQLite e outbox. Test di identità e persistenza verificati in CI Flutter #42625648804.
-- [ ] **Altri requisiti P2 non chiusi:** provider OAuth Calendar/Outlook, collaborazione ACL, S3, widget Android, automazioni configurabili e restore live. Nessuna di queste funzioni va dichiarata pronta senza implementazione/test. Matrice: [P2-DELIVERY-MATRIX](docs/P2-DELIVERY-MATRIX.md).
+- [ ] **Altri requisiti P2 non chiusi:** provider OAuth Calendar/Outlook, collaborazione ACL, S3, collaudo fisico widget Android, automazioni configurabili e restore live. Nessuna di queste funzioni va dichiarata pronta senza implementazione/test. Matrice: [P2-DELIVERY-MATRIX](docs/P2-DELIVERY-MATRIX.md).
 
-## Batch P2 — Interoperabilità ICS, modelli utente e launcher Android (09/11/2026, CI in verifica)
+## Batch P2 — Interoperabilità ICS, modelli utente e launcher Android (09/11/2026, integrato PR #57)
 
-- [ ] Esportazione locale ICS per task e time block, compatibile con date-only, UTC, UID stabili, UTF-8 folding e limiti. Codice/test predisposti, CI da verificare.
-- [ ] CRUD dei modelli personalizzati su dispositivo per account, inclusione opzionale nel backup cifrato senza perdere compatibilità .snb v1 e creazione task/outbox. Codice/test predisposti, CI da verificare.
-- [ ] Widget Android per accesso rapido a Oggi, Inbox e Nuova attività, nessun dato utente nel launcher; build nativa e prove su device ancora da verificare.
+- [x] Esportazione locale ICS per task/time block, date-only e UTC: test e analisi superati nella CI #42634429343.
+- [x] CRUD modelli personalizzati su dispositivo per owner, backup .snb v1 retrocompatibile e creazione task/outbox; CI #42634429343 superata.
+- [x] Widget Android Oggi/Inbox/Nuova attività implementato e build Java 17/21 superate. **Resta [ ] il collaudo fisico** su launcher, cold-start e logout.
 - [ ] Integrazioni OAuth provider Calendar/Outlook, collaborazione ACL, storage S3, automazioni ricche, ripristino live e test reali restano non conclusi. [Matrice](docs/P2-DELIVERY-MATRIX.md); [contratto](docs/P2-LOCAL-INTEGRATIONS.md).

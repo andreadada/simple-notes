@@ -3,14 +3,17 @@ import 'package:forui/forui.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../data/reminder_automations.dart';
+import '../data/models.dart';
+import 'task_action_automations_panel.dart';
 import 'notes_dialogs.dart';
 import 'notes_theme.dart';
 
-/// Device-local rules only: no server jobs and no task/outbox mutations.
+/// Device-local notification rules, followed by explicit local task actions.
 class ReminderAutomationsBoard extends StatefulWidget {
   const ReminderAutomationsBoard({
     super.key,
     required this.ownerId,
+    required this.lists,
     required this.supported,
     required this.notificationsEnabled,
     required this.onToggleNotifications,
@@ -18,6 +21,7 @@ class ReminderAutomationsBoard extends StatefulWidget {
   });
 
   final String? ownerId;
+  final List<LocalTaskList> lists;
   final bool supported;
   final bool notificationsEnabled;
   final Future<void> Function() onToggleNotifications;
@@ -314,6 +318,14 @@ class _ReminderAutomationsBoardState extends State<ReminderAutomationsBoard> {
             'avviata per ricalcolare le regole e il sistema operativo '
             'può ritardare la consegna.',
           style: TextStyle(color: colors.secondaryText, fontSize: 12)),
+        const SizedBox(height: 28),
+        const Divider(height: 1),
+        const SizedBox(height: 22),
+        TaskActionAutomationsPanel(
+          key: ValueKey('task-actions-owner-${widget.ownerId ?? 'guest'}'),
+          ownerId: widget.ownerId,
+          lists: widget.lists,
+        ),
       ],
     );
   }

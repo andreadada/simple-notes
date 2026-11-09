@@ -5,6 +5,7 @@ import 'package:simple_notes/data/app_database.dart';
 import 'package:simple_notes/data/full_backup.dart';
 import 'package:simple_notes/data/user_task_templates.dart';
 import 'package:simple_notes/data/reminder_automations.dart';
+import 'package:simple_notes/data/task_action_automations.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -129,6 +130,56 @@ void main() {
       '{"schema":999,"rules":[]}');
     await expectLater(const FullBackupSource().capture(
       database: db, preferences: prefs, ownerId: 'bad-automation-owner'),
+      throwsFormatException);
+  });
+
+  test('encrypted .snb archives task actions only for the bound owner',
+      () async {
+    final db = AppDatabase(NativeDatabase.memory());
+    addTearDown(db.close);
+    await db.bindOwner('actions-A');
+    final prefs = await SharedPreferences.getInstance();
+    const store = TaskActionStore();
+    await store.save(prefs, 'actions-A', TaskActionLibrary(rules: [
+      TaskActionLibrary.newRule(
+        trigger: 'created', action: 'tag', value: 'private'),
+    ]));
+    await store.save(prefs, 'actions-B', TaskActionLibrary(rules: [
+      TaskActionLibrary.newRule(
+        trigger: 'completed', action: 'tag', value: 'OTHER-OWNER-SECRET'),
+    ]));
+    final backup = await const FullBackupSource().capture(
+      database: db, preferences: prefs, ownerId: 'actions-A');
+    expect(backup.preferences['taskActions'], contains('private'));
+    expect(backup.toJson().toString(),
+      isNot(contains('OTHER-OWNER-SECRET')));
+    final encoded = await const FullBackupCodec()
+      .encrypt(backup, 'password-for-task-actions-2026');
+    final inspected = await const FullBackupCodec().inspect(encoded,
+      password: 'password-for-task-actions-2026',
+      expectedOwnerId: 'actions-A');
+    expect(inspected.preferences['taskActions'],
+        backup.preferences['taskActions']);
+    // Archives created before task-actions existed remain compatible.
+    final old = backup.toJson();
+    final prevPrefs = Map<String, dynamic>.from(
+        old['preferences'] as Map);
+    prevPrefs.remove('taskActions');
+    old['preferences'] = prevPrefs;
+    expect(FullBackupSnapshot.fromJson(old)
+        .preferences.containsKey('taskActions'), isFalse);
+  });
+
+  test('bad action catalog blocks encrypted backup rather than losing rules',
+      () async {
+    final db = AppDatabase(NativeDatabase.memory());
+    addTearDown(db.close);
+    await db.bindOwner('bad-rule');
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(TaskActionStore.keyForOwner('bad-rule'),
+        '{"schema":999,"rules":[]}');
+    await expectLater(const FullBackupSource().capture(
+      database: db, preferences: prefs, ownerId: 'bad-rule'),
       throwsFormatException);
   });
 

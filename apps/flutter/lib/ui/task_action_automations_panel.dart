@@ -106,18 +106,15 @@ class _TaskActionAutomationsPanelState
       return;
     }
     final owner = widget.ownerId;
-    final keyword = TextEditingController(text: original?.titleContains ?? '');
-    final tag = TextEditingController(text:
-      original?.action == 'tag' ? original!.value : '');
+    var keyword = original?.titleContains ?? '';
+    var tag = original?.action == 'tag' ? original!.value : '';
     var trigger = original?.trigger ?? 'created';
     var action = original?.action ?? 'priority';
     var priority = original?.action == 'priority'
         ? original!.value : '2';
     var targetList = original?.action == 'list'
         ? original!.value : (widget.lists.firstOrNull?.id ?? '');
-    TaskActionRule? edited;
-    try {
-      edited = await showFDialog<TaskActionRule>(
+    final edited = await showFDialog<TaskActionRule>(
         context: context,
         builder: (ctx, style, animation) => StatefulBuilder(
           builder: (inner, refresh) => NotesDialog(
@@ -150,9 +147,10 @@ class _TaskActionAutomationsPanelState
                 const SizedBox(height: 7),
                 Material(
                   type: MaterialType.transparency,
-                  child: TextField(
+                  child: TextFormField(
                     key: const Key('action-keyword'),
-                    controller: keyword,
+                    initialValue: keyword,
+                    onChanged: (value) => keyword = value,
                     maxLength: 100,
                     decoration: const InputDecoration(
                       hintText: 'Es. esame',
@@ -196,9 +194,11 @@ class _TaskActionAutomationsPanelState
                 else if (action == 'tag')
                   Material(
                     type: MaterialType.transparency,
-                    child: TextField(
+                    child: TextFormField(
                       key: const Key('action-tag'),
-                      controller: tag, maxLength: 40,
+                      initialValue: tag,
+                      onChanged: (value) => tag = value,
+                      maxLength: 40,
                       decoration: const InputDecoration(
                         hintText: 'Tag da aggiungere',
                         filled: false, border: UnderlineInputBorder(),
@@ -238,14 +238,14 @@ class _TaskActionAutomationsPanelState
                 onPress: () {
                   final value = switch (action) {
                     'priority' => priority,
-                    'tag' => tag.text.trim(),
+                    'tag' => tag.trim(),
                     _ => targetList,
                   };
                   try {
                     final result = original == null
                         ? TaskActionLibrary.newRule(
                             trigger: trigger, action: action, value: value,
-                            titleContains: keyword.text.trim())
+                            titleContains: keyword.trim())
                         : original.copyWith(
                             trigger: trigger, action: action, value: value,
                             titleContains: keyword.text.trim());
@@ -263,10 +263,6 @@ class _TaskActionAutomationsPanelState
           ),
         ),
       );
-    } finally {
-      keyword.dispose();
-      tag.dispose();
-    }
     if (!mounted || owner != widget.ownerId || edited == null) return;
     try {
       await _save(_library.upsert(edited));

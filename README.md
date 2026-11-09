@@ -25,7 +25,7 @@ App offline-first per **Windows 11 e Android** dedicata ad attività, note e pia
 ## Percorso rapido
 
 - [Stato canonico e prossimi gate](docs/CURRENT-STATUS.md), [guida operativa](docs/OPERATIONS.md), [Kanban P1.9](docs/P1-KANBAN.md), [Pomodoro P1.10](docs/P1-POMODORO.md), [Habit Tracker P1.11](docs/P1-HABITS.md), [Countdown P1.12](docs/P1-COUNTDOWNS.md), [P1.13 Weekly Habit](docs/P1-WEEKLY-HABITS.md)
-- [Roadmap P0–P3](project.md), [regole per agenti](AGENTS.md), [design](design.md)
+- [Roadmap P0–P3](project.md), [regole per agenti](AGENTS.md), [design](design.md), [trasferimento modelli P2](docs/P2-TEMPLATE-TRANSFER.md)
 - [Handoff e cronologia](docs/HANDOFF.md)
 - [Architettura](docs/architecture.md), [API](docs/api.md), [sync](docs/sync.md)
 - [Client Windows/Android](apps/flutter/README.md), [backend/Coolify](infra/README.md)

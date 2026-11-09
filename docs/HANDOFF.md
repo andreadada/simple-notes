@@ -4,6 +4,8 @@
 
 <!-- CURRENT-STATUS-REF -->
 
+> **Sviluppo P2 (09/11/2026):** ramo di import/export manuale modelli JSON; copie additive, file non cifrato, nessuna sync/provider/deploy/restore live. CI e merge da verificare. [Specifica](P2-TEMPLATE-TRANSFER.md).
+
 > **Cronologia P1.10 (superata):** Pomodoro `0.15.0+17` per dispositivo/account, timer UTC e stats locali. [Specifica](P1-POMODORO.md); CI e test reali da completare.
 
 > **P1.9 integrata su main con PR #10 (26/10/2026):** [Guida operativa aggiornata](OPERATIONS.md), [Kanban per liste](P1-KANBAN.md) già su main. Flutter 0.14.0+16, CI PR verde; nessun nuovo schema/deploy. Device E2E ancora aperti.

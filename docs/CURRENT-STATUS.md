@@ -20,6 +20,11 @@
 | Backend nel repository | Spring Boot/PostgreSQL 17, Flyway **V11**; client Drift/SQLite **V8** | VPS attestata solo a Flyway **V10 (03/11/2026)**; backend V11/capability non verificati sulla VPS |
 | Test reali | VPS V10 verificata il 03/11; Google Windows connesso e pending 0 nel report disponibile | Android E2E, API strict, V11 e restore live ancora aperti |
 
+## Incremento P2 — trasferimento modelli JSON (sviluppo, 09/11/2026)
+
+- Preparato import/export manuale dei modelli personali device-local, validazione fail-closed, ID rigenerati e consenso Forui. Nessuna nuova API, Flyway, sincronizzazione delle definizioni, restore live, deploy o modifica dati installati.
+- **CI e merge sono da verificare**; il precedente stato certificato di `main` rimane PR #57. [Contratto](P2-TEMPLATE-TRANSFER.md).
+
 ## Snapshot corrente dopo la PR #57 (09/11/2026)
 
 - `main` include **P2 batch #57** ([PR #57](https://github.com/andreadada/simple-notes/pull/57), merge `90e5e26a`): esportazione file calendario RFC5545 ICS, modelli personalizzati locali per account e inclusione opzionale retrocompatibile nei backup cifrati .snb, widget Android di accesso rapido a Oggi/Inbox/Nuovo task.

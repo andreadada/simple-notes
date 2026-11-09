@@ -21,6 +21,7 @@ La roadmap P2 include funzioni implementate, estensioni non ancora realizzate e 
 | Filtri avanzati | Tag, ricerca, priorità, scadenze e ordinamento | Locali/offline, nessun nuovo endpoint |
 | Statistiche | Totali, completate, arretrate, priorità, prossimi 7 giorni, tempo e liste | Fotografia dello stato, non cronologia |
 | Modelli attività | Cinque preset + CRUD di modelli utente, owner-scoped locali, nuovi task tramite outbox e backup .snb compatibile | Definizioni personalizzate non sincronizzate fra dispositivi |
+| Trasferimento modelli JSON | Import/export manuale definizioni con copia additiva e conferma, nessun task/outbox creato | Non cifrato, non sostituisce la sync; prove fisiche rinviate |
 
 Le statistiche sono calcolate sui dati locali senza telemetria. I modelli producono normali attività e operation ID distinti nella coda di sincronizzazione. Le date civili non sono riclassificate in un'ora UTC inventata.
 
@@ -32,7 +33,7 @@ Le statistiche sono calcolate sui dati locali senza telemetria. I modelli produc
 | Google Calendar/Outlook | OAuth separato, permessi minimi revocabili, API e token per account, test autenticati |
 | Liste condivise | ACL multiowner, ruoli, assegnazioni, audit server, migrazioni, protezioni accesso e UI |
 | Allegati S3 | Bucket e policy, endpoint signed URL, quote, verifiche file e flussi offline |
-| Widget Android | Widget nativo Oggi/Inbox/Nuova attività implementato e compilato (Java 17/21) | Launcher/cold-start/logout su dispositivo fisico non verificati |
+| Widget Android | Widget nativo Oggi/Inbox/Nuova attività compilato (Java 17/21); launcher/cold-start/logout su dispositivo fisico non verificati |
 | Automazioni configurabili | Regole persistenti, esecuzione affidabile, deduplica ed editor; le ricorrenze/reminder esistenti non bastano |
 | Release | VPS V11, OAuth Android, upgrade Windows, firma, backup/offsite, E2E Windows↔Android e controlli reali |
 
@@ -43,7 +44,7 @@ Le statistiche sono calcolate sui dati locali senza telemetria. I modelli produc
 - La preflight del cloud non fornisce un lease e un confronto non è un'autorizzazione alla scrittura.
 - Chiudere i requisiti con un criterio verificabile e test diretto; evitare nuove micro-fasi che aggiungono solo documentazione.
 
-**La P2 non va marcata completata finché le righe aperte restano tali.** La CI del batch locale viene registrata in CURRENT-STATUS dopo l'esecuzione.
+**La P2 non va marcata completata finché le righe aperte restano tali.** Il trasferimento JSON non equivale alla sincronizzazione cloud dei modelli. La CI del batch locale viene registrata in CURRENT-STATUS dopo l'esecuzione.
 
 ## Batch P2: calendario, modelli e accesso rapido Android (09/11/2026, integrato PR #57)
 

@@ -24,6 +24,8 @@ Il catalogo ha uno schema locale v1, massimo 50 modelli, 50 sottotask per modell
 
 Le definizioni **non si sincronizzano fra dispositivi**: sono locali, ma incluse nei nuovi backup cifrati. Il restore live .snb resta disabilitato.
 
+Per l'import/export manuale delle definizioni locali, vedere [trasferimento modelli](P2-TEMPLATE-TRANSFER.md). Il JSON non è cifrato e non sincronizza fra dispositivi.
+
 ## Widget Android
 
 Aggiunto un AppWidgetProvider nella galleria launcher con «Oggi», «Inbox», «+ Attività» e PendingIntent immutabili. Il widget non espone titoli, note, task count, account o altri dati personali. Non ha bisogno di leggere lo storage dell'utente o di lavorare in background.

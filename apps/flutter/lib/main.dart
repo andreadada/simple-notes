@@ -1579,7 +1579,8 @@ Ctrl+/ · Questo elenco'''),
           children: [
             for (final s in Section.values.where((s) =>
                 s != Section.pomodoro && s != Section.habits &&
-                s != Section.countdowns))
+                s != Section.countdowns && s != Section.timeline &&
+                s != Section.analytics && s != Section.templates))
               FSidebarItem(
                 key: Key('nav-${s.name}'),
                 selected: section == s,
@@ -1627,8 +1628,31 @@ Ctrl+/ · Questo elenco'''),
             ),
           ],
         ),
-        // Keep the frequent task/list actions in view on short desktops.
-        // Pomodoro remains accessible in the scrollable sidebar below lists.
+        // Keep list creation in reach on compact desktops. Secondary P2
+        // screens live after the list group, not above its New list action.
+        FSidebarGroup(
+          label: const Text('STRUMENTI'),
+          children: [
+            for (final s in const <Section>[
+              Section.timeline, Section.analytics, Section.templates,
+            ])
+              FSidebarItem(
+                key: Key('nav-${s.name}'),
+                selected: section == s,
+                icon: Icon(s.icon, size: 20),
+                label: Text(s.label),
+                onPress: () {
+                  setState(() {
+                    section = s;
+                    activeListId = null;
+                    selectedId = null;
+                  });
+                  if (!desktop) Navigator.maybePop(context);
+                },
+              ),
+          ],
+        ),
+        // Focus tools are below task and list operations.
         FSidebarGroup(
           label: const Text('FOCUS'),
           children: [

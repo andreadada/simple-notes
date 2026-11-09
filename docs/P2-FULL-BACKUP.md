@@ -279,4 +279,4 @@ Test: contesa tra isolate/processi, barriere iniettate che falliscono prima/dopo
 
 ## Estensione opzionale P2 — automazioni promemoria locali
 
-La PR #59 aggiunge la preferenza **opzionale** `automations` alla whitelist del backup `.snb` v1; la deserializzazione valida il catalogo `ReminderAutomationLibrary` prima di cifrare e quando si ispeziona un file. I vecchi archivi senza tale chiave restano leggibili. Non include il ledger notifiche OS né l'opt-in globale, che non vanno ricreati da un archivio. Non abilita restore live, sincronizzazione cloud o replay di task. [Contratto](P2-REMINDER-AUTOMATIONS.md).
+La PR #59 **integrata** (`aa17094`, CI verde) aggiunge la preferenza **opzionale** `automations` alla whitelist del backup `.snb` v1; la deserializzazione valida il catalogo `ReminderAutomationLibrary` prima di cifrare e quando si ispeziona un file. I vecchi archivi senza tale chiave restano leggibili. Non include il ledger notifiche OS né l'opt-in globale, che non vanno ricreati da un archivio. Non abilita restore live, sincronizzazione cloud o replay di task. [Contratto](P2-REMINDER-AUTOMATIONS.md).

@@ -1,6 +1,6 @@
 # P2 — Regole locali configurabili per i promemoria
 
-**9 novembre 2026 — [PR #59](https://github.com/andreadada/simple-notes/pull/59) in verifica.** Prima tranche delle automazioni P2: **regole di notifica native locali**, non automazioni server generali. CI, merge, Windows/Android reali e deploy rimangono stati separati.
+**9 novembre 2026 — [PR #59](https://github.com/andreadada/simple-notes/pull/59) integrata su `main` (`aa17094`).** [Flutter CI #42701809601](https://github.com/andreadada/simple-notes/actions/runs/42701809601) **success** (377 test, analyze, Android JDK17/21 e Windows EXE/MSIX/recovery); [Markdown #42701809467](https://github.com/andreadada/simple-notes/actions/runs/42701809467) **success**. Nessun deploy o test hardware. Prima tranche delle automazioni P2: **regole di notifica native locali**, non automazioni server generali. CI, merge, Windows/Android reali e deploy rimangono stati separati.
 
 ## Flusso e confini
 

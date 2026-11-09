@@ -1,12 +1,12 @@
 # Simple Notes — Progetto e roadmap
 
-> **Stato verificato 09/11/2026:** [PR #59](https://github.com/andreadada/simple-notes/pull/59) merged (`aa17094`) con regole di notifica locali per owner, [Flutter CI #42701809601](https://github.com/andreadada/simple-notes/actions/runs/42701809601) **success** (377 test, Windows/Android), [Markdown #42701809467](https://github.com/andreadada/simple-notes/actions/runs/42701809467) **success**. Flyway V11 nel codice, VPS V10; nessun deploy, restore live o E2E fisico. Automazioni generali e resto P2 ancora aperti.
+> **Stato verificato 09/11/2026:** [PR #60](https://github.com/andreadada/simple-notes/pull/60) merged (`e051162`), automazioni locali di azione sui task. [Flutter CI #42714514197](https://github.com/andreadada/simple-notes/actions/runs/42714514197) **success** (392 test e build Windows/Android) e [Markdown #42714514223](https://github.com/andreadada/simple-notes/actions/runs/42714514223) **success**. Flyway V11 nel codice, VPS V10 attestata; nessun deploy, restore live o E2E fisico. Automazioni distribuite e altri gate P2 restano aperti.
 
 <!-- CURRENT-STATUS-REF -->
 
 **Obiettivo:** Windows 11 + Android offline-first, Google OAuth, Flutter/Forui/Drift + Spring Boot/PostgreSQL su Coolify. Regole UX in [design.md](design.md); deploy sicuro in [P1-RELEASE-BATCH.md](docs/P1-RELEASE-BATCH.md). Le checklist sotto includono traguardi storici: `[x]` significa **codice verificato nella CI o prova specifica**, non distribuzione sul VPS.
 
-## Gate corrente (P2 PR #59 integrata; automazioni generaliste, hardware e deploy ancora aperti)
+## Gate corrente (P2 PR #60 integrata; automazioni distribuite, hardware e deploy ancora aperti)
 
 - [x] P1.7 Android con scheduler inexact, ledger, opt-in e CI verde (PR #6). [ ] Prova fisica Android app chiusa/reboot e controllo permessi; [x] codice packaging MSIX + promemoria Windows integrato (PR #7, CI verde); [ ] test fisici MSIX/identità/dati e firma pubblica.
 - [x] Flyway V10 verificata nella VPS reale il 03/11/2026, 0 migrazioni fallite; [ ] health/capability strict ancora aperti.
@@ -135,7 +135,7 @@
 - [ ] Liste condivise, ruoli, assegnazioni e audit.
 - [ ] Allegati con storage S3 compatibile.
 - [x] Widget Android di navigazione, template personali e analytics locali (PR #56/#57; collaudo fisico del widget da eseguire).
-- [ ] Automazioni (parziale): notifiche locali PR #59 integrate; azioni task PR #60 in verifica (creazione/completamento, priorità/tag/lista); restano scheduler server, dedup multi-device, regole sincronizzate e test OS. [Specifica](docs/P2-TASK-ACTIONS.md).
+- [ ] Automazioni (parziale): notifiche locali PR #59 e azioni task locali PR #60 **integrate**, CI verde (392 test); restano scheduler server/temporale, dedup multi-device, regole sincronizzate e prove OS. [Specifica](docs/P2-TASK-ACTIONS.md).
 - [ ] Test manuali del widget e del trasferimento modelli JSON tra Windows e Android.
 - [ ] Backup verificato, installer Windows e release Android.
 
@@ -195,7 +195,7 @@ Dettagli e matrice: [docs/ui-design-audit.md](docs/ui-design-audit.md). Aggiorna
 - Tutti i nuovi moduli devono avere error states, migrazioni e test minimi.
 
 ## Edit Timespan
-- 2026-11-09 | feat(p2-task-actions) | [PR #60](https://github.com/andreadada/simple-notes/pull/60) in verifica: trigger locali crea/completa, filtro titolo, priorità/tag/lista, editor Forui, singolo upsert/outbox, backup opzionale. Nessun job server o deploy. [Contratto](docs/P2-TASK-ACTIONS.md). CI e merge da attestare.
+- 2026-11-09 | merge(p2-task-actions) | [PR #60](https://github.com/andreadada/simple-notes/pull/60) merged `e051162`: trigger locali crea/completa, filtro titolo, priorità/tag/lista, editor Forui, singolo upsert/outbox, backup opzionale. [Flutter CI #42714514197](https://github.com/andreadada/simple-notes/actions/runs/42714514197) PASS (392 test, build Windows/Android), [Markdown #42714514223](https://github.com/andreadada/simple-notes/actions/runs/42714514223) PASS. Nessun job server, deploy o restore live. [Contratto](docs/P2-TASK-ACTIONS.md).
 - 2026-11-09 | merge(p2-reminder-automations) | [PR #59](https://github.com/andreadada/simple-notes/pull/59) merged `aa17094`: regole locali owner-scoped, editor Forui, dedup ledger, backup .snb opzionale. [Flutter CI #42701809601](https://github.com/andreadada/simple-notes/actions/runs/42701809601) PASS (377 test, build Windows/Android), [Markdown #42701809467](https://github.com/andreadada/simple-notes/actions/runs/42701809467) PASS. No migrazione, deploy, restore o cloud jobs. [Contratto](docs/P2-REMINDER-AUTOMATIONS.md).
 - 2026-11-09 | merge(p2-template-transfer) | [PR #58](https://github.com/andreadada/simple-notes/pull/58) integrata su main (`e926a5a`): JSON manuale dei modelli personali, ID nuovi, conferma Forui, test e doc allineate. [Flutter CI #42688444850](https://github.com/andreadada/simple-notes/actions/runs/42688444850) success 369 test e build Windows/Android; [Markdown #42688444618](https://github.com/andreadada/simple-notes/actions/runs/42688444618) success. Nessun deploy, restore live o collaudo hardware.
 - 2026-11-05 | feat(p2.4b2r) | Capability backend syncOperationFingerprintSchema=1 e gate read-only V11 strict, validatore Python/test compatibilità V10, documentazione. Nessun deploy. [Runbook](docs/RELEASE-V11-READINESS.md).

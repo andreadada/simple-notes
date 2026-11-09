@@ -1,10 +1,10 @@
 # Simple Notes — Passaggio di consegne (handoff)
 
-> **Stato verificato 09/11/2026:** [PR #59](https://github.com/andreadada/simple-notes/pull/59) merged (`aa17094`) con regole di notifica locali per owner, [Flutter CI #42701809601](https://github.com/andreadada/simple-notes/actions/runs/42701809601) **success** (377 test, Windows/Android), [Markdown #42701809467](https://github.com/andreadada/simple-notes/actions/runs/42701809467) **success**. Flyway V11 nel codice, VPS V10; nessun deploy, restore live o E2E fisico. Automazioni generali e resto P2 ancora aperti.
+> **Stato verificato 09/11/2026:** [PR #60](https://github.com/andreadada/simple-notes/pull/60) merged (`e051162`), automazioni locali di azione sui task. [Flutter CI #42714514197](https://github.com/andreadada/simple-notes/actions/runs/42714514197) **success** (392 test e build Windows/Android) e [Markdown #42714514223](https://github.com/andreadada/simple-notes/actions/runs/42714514223) **success**. Flyway V11 nel codice, VPS V10 attestata; nessun deploy, restore live o E2E fisico. Automazioni distribuite e altri gate P2 restano aperti.
 
 <!-- CURRENT-STATUS-REF -->
 
-> **In verifica (09/11/2026):** [PR #60](https://github.com/andreadada/simple-notes/pull/60), azioni task solo su crea/completa locali, editor Forui, owner guard, singolo upsert/outbox e archivio .snb opzionale. [Specifica](P2-TASK-ACTIONS.md). Nessuna prova hardware o deploy.
+> **Quinto incremento P2 integrato (09/11/2026):** [PR #60](https://github.com/andreadada/simple-notes/pull/60) merged `e051162`, [Flutter CI #42714514197](https://github.com/andreadada/simple-notes/actions/runs/42714514197) verde (392 test e build Android/Windows); azioni task locali crea/completa, editor Forui, owner guard, un upsert/outbox e archivio `.snb` opzionale. Nessun job server, deploy o hardware test. [Specifica](P2-TASK-ACTIONS.md).
 
 
 > **Incremento P2 integrato (09/11/2026):** [PR #59](https://github.com/andreadada/simple-notes/pull/59) merged (`aa17094`), CI Flutter verde (377 test e build native). Regole locali, editor Forui, scheduler e backup `.snb` opzionale. Non sono azioni cloud o scheduling server. [Contratto](P2-REMINDER-AUTOMATIONS.md).

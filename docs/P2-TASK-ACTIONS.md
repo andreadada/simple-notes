@@ -1,6 +1,6 @@
 # P2 — Azioni automatiche locali sulle attività
 
-**9 novembre 2026 — [PR #60](https://github.com/andreadada/simple-notes/pull/60) in verifica.** [Stato canonico](CURRENT-STATUS.md).
+**9 novembre 2026 — [PR #60](https://github.com/andreadada/simple-notes/pull/60) integrata su `main` (`e051162`).** [Flutter CI #42714514197](https://github.com/andreadada/simple-notes/actions/runs/42714514197) **success** (392 test, analisi, Android JDK17/21, Windows EXE/MSIX/recovery); [Markdown #42714514223](https://github.com/andreadada/simple-notes/actions/runs/42714514223) **success**. Nessun deploy o hardware test. [Stato canonico](CURRENT-STATUS.md).
 
 ## Funzionalità
 

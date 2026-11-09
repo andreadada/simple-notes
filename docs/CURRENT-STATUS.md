@@ -4,7 +4,7 @@
 
 | Area | Stato verificato | Gate ancora aperti |
 |---|---|---|
-| `main` | **P0–P2.4B2W e P2 #56–#59 integrate**, Flutter `0.31.0+33`. [PR #59](https://github.com/andreadada/simple-notes/pull/59) merged `aa17094`. [Flutter CI #42701809601](https://github.com/andreadada/simple-notes/actions/runs/42701809601) **success**: 377 test, analisi, recovery Windows, build EXE/MSIX e APK Android JDK17/21; [Markdown #42701809467](https://github.com/andreadada/simple-notes/actions/runs/42701809467) **success**. Nessun deploy/migrazione effettuati. | **P2 incompleta:** automazioni task/server, OAuth Calendar/Outlook, ACL, S3, restore live, E2E fisici. VPS Flyway V10 attestata al 03/11, V11 solo nel repository |
+| `main` | **P0–P2.4B2W e P2 #56–#60 integrate**, Flutter `0.31.0+33`. [PR #60](https://github.com/andreadada/simple-notes/pull/60) merged `e051162`: automazioni locali task crea/completa, editor Forui, una outbox per evento, preferenza opzionale `.snb`. [Flutter CI #42714514197](https://github.com/andreadada/simple-notes/actions/runs/42714514197) **success**: 392 test, analisi, Windows EXE/MSIX/recovery e Android JDK17/21; [Markdown #42714514223](https://github.com/andreadada/simple-notes/actions/runs/42714514223) **success**. Nessun deploy/migrazione eseguito. | **P2 incompleta:** automazioni server/temporali e regole multi-device, OAuth Calendar/Outlook, ACL, S3, restore live, E2E fisici. VPS Flyway V10 attestata al 03/11, V11 soltanto nel repository |
 | P1.18 integrata (storico) | [PR #19](https://github.com/andreadada/simple-notes/pull/19) merged, Flutter **`0.23.0+25`**, temi chiaro/scuro/sistema, preferenza locale e Sticky | CI verde; test visivi e su dispositivi fisici ancora aperti |
 | CI P2.4B1 | [Flutter #41636993011](https://github.com/andreadada/simple-notes/actions/runs/41636993011) **success**: 204 test, Windows EXE/MSIX, Android JDK17/21; [Markdown #41636993004](https://github.com/andreadada/simple-notes/actions/runs/41636993004) **success** | Nessun restore live, prova picker/share o Windows↔Android su dispositivi reali |
 | CI P2.4A | [Flutter #41562133925](https://github.com/andreadada/simple-notes/actions/runs/41562133925) **success**: 198 test, Windows EXE/MSIX, Android JDK17/21; [Markdown #41561797719](https://github.com/andreadada/simple-notes/actions/runs/41561797719) **success** | Collaudo CSV nativo e Windows↔Android rinviati |
@@ -20,9 +20,9 @@
 | Backend nel repository | Spring Boot/PostgreSQL 17, Flyway **V11**; client Drift/SQLite **V8** | VPS attestata solo a Flyway **V10 (03/11/2026)**; backend V11/capability non verificati sulla VPS |
 | Test reali | VPS V10 verificata il 03/11; Google Windows connesso e pending 0 nel report disponibile | Android E2E, API strict, V11 e restore live ancora aperti |
 
-## Incremento P2 — automazioni task locali (PR #60 in verifica, 09/11/2026)
+## Incremento P2 — automazioni task locali (PR #60 integrata, 09/11/2026)
 
-- [PR #60](https://github.com/andreadada/simple-notes/pull/60): in sviluppo regole crea/completa, filtro titolo, priorità/tag/lista, editor Forui, una sola scrittura task/outbox per evento e backup .snb opzionale. **Non ancora integrata su main:** CI/merge da verificare, nessuna modifica server/restore live o device E2E. [Contratto](P2-TASK-ACTIONS.md).
+- [PR #60](https://github.com/andreadada/simple-notes/pull/60) **merged** (`e051162`): regole crea/completa, filtro titolo, priorità/tag/lista, editor Forui, un solo upsert/outbox per evento e backup `.snb` opzionale. [Flutter CI #42714514197](https://github.com/andreadada/simple-notes/actions/runs/42714514197) **success** (392 test, build Android e Windows), [Markdown #42714514223](https://github.com/andreadada/simple-notes/actions/runs/42714514223) **success**. Nessun job server, nuovo deploy, restore live o test fisico. [Contratto](P2-TASK-ACTIONS.md).
 
 ## Incremento P2 — automazioni promemoria locali (PR #59 integrata, 09/11/2026)
 

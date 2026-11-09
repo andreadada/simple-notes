@@ -2,7 +2,7 @@
 
 Aggiornato 9 novembre 2026. **CI verde non equivale a deploy Coolify o collaudo su dispositivi reali.**
 
-**Incremento in verifica (PR #59):** editor e regole locali per notifiche native. Non equivale ad automazioni generaliste né a notifiche con delivery garantita. [Specifica](P2-REMINDER-AUTOMATIONS.md).
+**Quarto incremento P2 integrato:** [PR #59](https://github.com/andreadada/simple-notes/pull/59) merged (`aa17094`), [Flutter CI #42701809601](https://github.com/andreadada/simple-notes/actions/runs/42701809601) success (377 test e build Android/Windows), [Markdown #42701809467](https://github.com/andreadada/simple-notes/actions/runs/42701809467) success. Regole locali per notifiche native, non automazioni generaliste o delivery OS garantita. [Specifica](P2-REMINDER-AUTOMATIONS.md).
 
 **Terzo incremento P2 integrato:** [PR #58](https://github.com/andreadada/simple-notes/pull/58), merge `e926a5a`, trasferimento manuale JSON dei modelli locali. [Flutter CI #42688444850](https://github.com/andreadada/simple-notes/actions/runs/42688444850) PASS (369 test e build Windows/Android), [Markdown #42688444618](https://github.com/andreadada/simple-notes/actions/runs/42688444618) PASS. Il file è non cifrato e non realizza la sync dei modelli o il restore live.
 
@@ -26,7 +26,7 @@ La roadmap P2 include funzioni implementate, estensioni non ancora realizzate e 
 | Statistiche | Totali, completate, arretrate, priorità, prossimi 7 giorni, tempo e liste | Fotografia dello stato, non cronologia |
 | Modelli attività | Cinque preset + CRUD di modelli utente, owner-scoped locali, nuovi task tramite outbox e backup .snb compatibile | Definizioni personalizzate non sincronizzate fra dispositivi |
 | Trasferimento modelli JSON | Import/export manuale definizioni con copia additiva e conferma, nessun task/outbox creato | Non cifrato, non sostituisce la sync; prove fisiche rinviate |
-| Regole promemoria locali (PR #59 in verifica) | Tipi due/block, anticipo e priorità, editor Forui, dedup ledger e backup opzionale | Solo OS notifiche e quando l'app aggiorna il piano; non sono automazioni server generali |
+| Regole promemoria locali (PR #59 integrata) | Tipi due/block, anticipo e priorità, editor Forui, dedup ledger e backup opzionale | Solo OS notifiche e quando l'app aggiorna il piano; non sono automazioni server generali |
 
 Le statistiche sono calcolate sui dati locali senza telemetria. I modelli producono normali attività e operation ID distinti nella coda di sincronizzazione. Le date civili non sono riclassificate in un'ora UTC inventata.
 
@@ -39,7 +39,7 @@ Le statistiche sono calcolate sui dati locali senza telemetria. I modelli produc
 | Liste condivise | ACL multiowner, ruoli, assegnazioni, audit server, migrazioni, protezioni accesso e UI |
 | Allegati S3 | Bucket e policy, endpoint signed URL, quote, verifiche file e flussi offline |
 | Widget Android | Widget nativo Oggi/Inbox/Nuova attività compilato (Java 17/21); launcher/cold-start/logout su dispositivo fisico non verificati |
-| Automazioni configurabili | **Parziale:** regole locali di notifica PR #59; restano azioni su task, esecuzione sempre attiva, dedup server/multi-device, delivery reale e UI estesa |
+| Automazioni configurabili | **Parziale:** regole locali di notifica PR #59 integrate; restano azioni su task, esecuzione sempre attiva, dedup server/multi-device, delivery reale e UI estesa |
 | Release | VPS V11, OAuth Android, upgrade Windows, firma, backup/offsite, E2E Windows↔Android e controlli reali |
 
 ## Criteri per dichiarare P2 completata

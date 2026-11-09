@@ -1,10 +1,10 @@
 # Simple Notes — Passaggio di consegne (handoff)
 
-> **Stato operativo verificato 09/11/2026:** `main` integra [PR #58](https://github.com/andreadada/simple-notes/pull/58) (merge `e926a5a`, trasferimento manuale modelli JSON) oltre a P2.4B2W e ai batch #56/#57. [Flutter CI del branch #42688444850](https://github.com/andreadada/simple-notes/actions/runs/42688444850) **success**: analisi, 369 test, Android JDK17/21, Windows EXE/MSIX/recovery. [Markdown #42688444618](https://github.com/andreadada/simple-notes/actions/runs/42688444618) **success**. Flutter `0.31.0+33`, repository Flyway V11, VPS attestata Flyway V10 (03/11); nessun deploy/restore live o collaudo hardware. P2 ancora aperta: OAuth provider, ACL, S3, automazioni, restore live.
+> **Stato verificato 09/11/2026:** [PR #59](https://github.com/andreadada/simple-notes/pull/59) merged (`aa17094`) con regole di notifica locali per owner, [Flutter CI #42701809601](https://github.com/andreadada/simple-notes/actions/runs/42701809601) **success** (377 test, Windows/Android), [Markdown #42701809467](https://github.com/andreadada/simple-notes/actions/runs/42701809467) **success**. Flyway V11 nel codice, VPS V10; nessun deploy, restore live o E2E fisico. Automazioni generali e resto P2 ancora aperti.
 
 <!-- CURRENT-STATUS-REF -->
 
-> **Sviluppo P2 (09/11/2026):** [PR #59](https://github.com/andreadada/simple-notes/pull/59) per automazioni locali dei promemoria: regole owner-scoped, editor Forui, scheduler esistente, backup `.snb` opzionale e test; CI/merge da verificare. Non sono azioni cloud o scheduling server. [Contratto](P2-REMINDER-AUTOMATIONS.md).
+> **Incremento P2 integrato (09/11/2026):** [PR #59](https://github.com/andreadada/simple-notes/pull/59) merged (`aa17094`), CI Flutter verde (377 test e build native). Regole locali, editor Forui, scheduler e backup `.snb` opzionale. Non sono azioni cloud o scheduling server. [Contratto](P2-REMINDER-AUTOMATIONS.md).
 
 
 > **P2 integrata (09/11/2026):** [PR #58](https://github.com/andreadada/simple-notes/pull/58) merged (`e926a5a`), 369 test Flutter e build Android/Windows verdi; import/export manuale modelli JSON con copie additive, file non cifrato, nessuna sync/provider/deploy/restore live. [Specifica](P2-TEMPLATE-TRANSFER.md).

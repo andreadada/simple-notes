@@ -1,10 +1,10 @@
 # Stato corrente — Simple Notes
 
-**Aggiornato 8 novembre 2026.** Questo documento prevale sulla cronologia. **Codice/CI, deploy Coolify, installazione e collaudo fisico sono stati distinti.**
+**Aggiornato 9 novembre 2026.** Questo documento prevale sulla cronologia. **Codice/CI, deploy Coolify, installazione e collaudo fisico sono stati distinti.**
 
 | Area | Stato verificato | Gate ancora aperti |
 |---|---|---|
-| `main` | **P0–P2.4B2W integrate**, Flutter **`0.31.0+33`**, [PR #55](https://github.com/andreadada/simple-notes/pull/55) merged (`e5ab7b76`). [Flutter CI #42525928542](https://github.com/andreadada/simple-notes/actions/runs/42525928542) **success**: 338 test Flutter, Windows recovery/EXE/MSIX, Android Java 17/21; [Markdown CI #42525928540](https://github.com/andreadada/simple-notes/actions/runs/42525928540) **success** | **Restore live disabilitato**; sincronizzazione directory attestata solo sulla sandbox Linux, Windows/Android non attestati per fsync. Mancano power-loss real-device, atomicità SQLite/preferenze e protezione writer non cooperanti; VPS Flyway V10, codice Flyway V11 |
+| `main` | **P0–P2.4B2W + batch funzionalità locali P2 integrati**, Flutter `0.31.0+33`, [PR #56](https://github.com/andreadada/simple-notes/pull/56) merged (`56d40317`). [Flutter CI #42625648804](https://github.com/andreadada/simple-notes/actions/runs/42625648804) **success**: 350 test, Windows recovery/EXE/MSIX, APK Android JDK 17/21; [Markdown CI #42625649033](https://github.com/andreadada/simple-notes/actions/runs/42625649033) **success** | **P2 completa non attestata:** provider Google Calendar/Outlook OAuth, ACL liste condivise, allegati S3, widget Android, automazioni configurabili e restore live non implementati. VPS Flyway V10, V11 solo codice; test fisici rinviati |
 | P1.18 integrata (storico) | [PR #19](https://github.com/andreadada/simple-notes/pull/19) merged, Flutter **`0.23.0+25`**, temi chiaro/scuro/sistema, preferenza locale e Sticky | CI verde; test visivi e su dispositivi fisici ancora aperti |
 | CI P2.4B1 | [Flutter #41636993011](https://github.com/andreadada/simple-notes/actions/runs/41636993011) **success**: 204 test, Windows EXE/MSIX, Android JDK17/21; [Markdown #41636993004](https://github.com/andreadada/simple-notes/actions/runs/41636993004) **success** | Nessun restore live, prova picker/share o Windows↔Android su dispositivi reali |
 | CI P2.4A | [Flutter #41562133925](https://github.com/andreadada/simple-notes/actions/runs/41562133925) **success**: 198 test, Windows EXE/MSIX, Android JDK17/21; [Markdown #41561797719](https://github.com/andreadada/simple-notes/actions/runs/41561797719) **success** | Collaudo CSV nativo e Windows↔Android rinviati |
@@ -19,6 +19,13 @@
 | Gate R1 (codice) | [PR #26](https://github.com/andreadada/simple-notes/pull/26) merged; [Compose CI #41523319857](https://github.com/andreadada/simple-notes/actions/runs/41523319857) success (V6 rifiutata, V10 incompleta rifiutata, V10 sintetica accettata), [Markdown #41523319860](https://github.com/andreadada/simple-notes/actions/runs/41523319860) success | **Non certifica Flyway V10 reale, health e API autenticata in VPS** |
 | Backend nel repository | Spring Boot/PostgreSQL 17, Flyway **V11**; client Drift/SQLite **V8** | VPS attestata solo a Flyway **V10 (03/11/2026)**; backend V11/capability non verificati sulla VPS |
 | Test reali | VPS V10 verificata il 03/11; Google Windows connesso e pending 0 nel report disponibile | Android E2E, API strict, V11 e restore live ancora aperti |
+
+## Snapshot corrente dopo la PR #56 (09/11/2026)
+
+- `main` include **P2.4B2W + batch P2 locale** ([PR #56](https://github.com/andreadada/simple-notes/pull/56), merge `56d40317`): Timeline/Gantt 14 giorni, filtri avanzati, statistiche locali e cinque modelli con task e sottotask inviabili tramite outbox.
+- [Flutter CI #42625648804](https://github.com/andreadada/simple-notes/actions/runs/42625648804) **success**: 350 test, `flutter analyze`, Windows recovery/EXE/MSIX e APK Android JDK17/21; [Markdown #42625649033](https://github.com/andreadada/simple-notes/actions/runs/42625649033) **success**. Test sidebar creazione lista verde dopo la correzione che sposta gli strumenti sotto le liste.
+- Nessun deploy, migrazione o modifiche ai dati installati. La VPS resta attestata a **Flyway V10 (03/11/2026)**, V11 solo nel codice; il restore live e il replay dell'outbox importata sono disabilitati.
+- **La P2 originale non è interamente completata**: [matrice di consegna](P2-DELIVERY-MATRIX.md) identifica provider OAuth Calendar/Outlook, liste multiutente/ACL, allegati S3, widget Android, automazioni configurabili, restore live e prove hardware/release ancora pendenti.
 
 ## Snapshot corrente dopo la PR #55 (08/11/2026)
 
@@ -259,6 +266,6 @@ Branch `feat/p2-4b2v-sandbox-lock-journal-hardening`: aggiunto lease OS non bloc
 
 Incremento integrato in `main` con la PR #55: claim cooperativo su `IsolateNameServer` oltre al lock OS per provare l'esclusione tra isolate Flutter; barriera fsync del journal e dei rename dei file sandbox disponibile esclusivamente su Linux, e fallback esplicitamente non attestato altrove. Test su contesa, errori prima/dopo rename e OS sync. **Il profilo installato, il cloud e il deploy non sono modificati**. Restano aperti test reali power-loss, durabilità Windows/Android, atomicità SQLite/preferenze, non-cooperating writers e restore live. [Contratto](P2-RESTORE-DURABILITY.md).
 
-## Batch funzionalità P2 (09/11/2026, PR da validare)
+## Batch funzionalità P2 (09/11/2026, integrato PR #56)
 
-In sviluppo su branch feat/p2-completion-ui-batch: Timeline/Gantt a 14 giorni, filtri avanzati per task, analytics solo sui dati locali e cinque modelli con sottotask/UUID salvati in SQLite + outbox. Test dedicati introdotti; attendere esito CI prima di marcarli integrati. Backend Flyway V11 è **solo nel codice** e non attestato sulla VPS; restore live e le integrazioni OAuth Calendar/Outlook, collaborazione/S3/widget Android rimangono aperti. La matrice effettiva della P2 è in [P2-DELIVERY-MATRIX.md](P2-DELIVERY-MATRIX.md). La tabella main sopra rimane lo stato integrato fino al merge.
+Integrato su `main` con PR #56: Timeline/Gantt a 14 giorni, filtri avanzati per task, analytics solo sui dati locali e cinque modelli con sottotask/UUID salvati in SQLite + outbox. Test dedicati e CI Flutter/Windows/Android superati. Backend Flyway V11 è **solo nel codice** e non attestato sulla VPS; restore live e le integrazioni OAuth Calendar/Outlook, collaborazione/S3/widget Android rimangono aperti. La matrice effettiva della P2 è in [P2-DELIVERY-MATRIX.md](P2-DELIVERY-MATRIX.md). La tabella principale sopra descrive lo stato integrato.

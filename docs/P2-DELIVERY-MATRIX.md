@@ -2,6 +2,8 @@
 
 Aggiornato 9 novembre 2026. **CI verde non equivale a deploy Coolify o collaudo su dispositivi reali.**
 
+**Batch locale integrato:** [PR #56](https://github.com/andreadada/simple-notes/pull/56) merged (`56d40317`); [Flutter CI](https://github.com/andreadada/simple-notes/actions/runs/42625648804) PASS (350 test, Android JDK17/21, Windows), [Markdown CI](https://github.com/andreadada/simple-notes/actions/runs/42625649033) PASS. **La P2 complessiva resta aperta** sulle integrazioni elencate sotto.
+
 La roadmap P2 include funzioni implementate, estensioni non ancora realizzate e gate operativi rinviati. Questo documento impedisce che una simulazione di backup o una compilazione vengano dichiarate ripristino o rilascio reali.
 
 ## Codice già disponibile, o sviluppato nel batch di chiusura

@@ -1,6 +1,6 @@
 # Simple Notes — Progetto e roadmap
 
-> **Stato operativo 08/11/2026:** `main` integra fino a **P2.4B2W** ([PR #55](https://github.com/andreadada/simple-notes/pull/55), merge `e5ab7b76`); Flutter `0.31.0+33`, Drift V8, backend Flyway **V11 solo nel codice**. [Flutter CI #42525928542](https://github.com/andreadada/simple-notes/actions/runs/42525928542) **success** (338 test, Linux isolate/fsync sandbox, Windows EXE/MSIX, Android Java 17/21); [Markdown CI #42525928540](https://github.com/andreadada/simple-notes/actions/runs/42525928540) **success**. Backend/Compose attestati sulla precedente [PR #50](https://github.com/andreadada/simple-notes/pull/50). **VPS attestata solo Flyway V10 (03/11); V11/API strict e test fisici non verificati.** Restore live, replay outbox e deploy esclusi. [Stato](docs/CURRENT-STATUS.md) · [Backup](docs/P2-FULL-BACKUP.md) · [Durabilità](docs/P2-RESTORE-DURABILITY.md) · [V11](docs/RELEASE-V11-READINESS.md).
+> **Stato operativo 09/11/2026:** `main` integra P2.4B2W e il **batch P2 locale** ([PR #56](https://github.com/andreadada/simple-notes/pull/56), merge `56d40317`): Timeline/Gantt, filtri avanzati, analytics locali, modelli. [Flutter CI #42625648804](https://github.com/andreadada/simple-notes/actions/runs/42625648804) **success** (350 test, Windows EXE/MSIX, Android JDK17/21); [Markdown #42625649033](https://github.com/andreadada/simple-notes/actions/runs/42625649033) **success**. **P2 non completamente terminata**: OAuth Calendar/Outlook, condivisione ACL, S3, widget Android, automazioni configurabili, restore live e test fisici ancora aperti. VPS attestata Flyway V10 (03/11), V11 solo nel codice; nessun deploy. [Stato](docs/CURRENT-STATUS.md) · [P2](${prefix}P2-DELIVERY-MATRIX.md) · [Backup](${prefix}P2-FULL-BACKUP.md) · [V11](${prefix}RELEASE-V11-READINESS.md).
 
 <!-- CURRENT-STATUS-REF -->
 
@@ -129,7 +129,7 @@
 
 ## P2 — Estensioni
 - [x] **P2.3A — Identità sorgenti ICS**: PR #22 integrata su `main`, Flutter `0.26.0+28`; ID stabili, schema 2 con lettura legacy schema 1 senza riscrittura, rimozione per ID, kind `file/url` riservato; CI 166 test, Windows EXE/MSIX, Android JDK17/21 e Markdown verdi. [Contratto](docs/P2-ICS-SOURCES.md).
-- [ ] Timeline/Gantt e filtri avanzati.
+- [x] Timeline/Gantt a 14 giorni e filtri avanzati implementati e verificati in [PR #56](https://github.com/andreadada/simple-notes/pull/56).
 - [x] P2.1 Import/export JSON non distruttivo (PR #20, 152 test e CI verde). [x] Subscription ICS HTTPS manuale integrata in P2.3C (PR #24); refresh solo su richiesta, cache offline, nessun OAuth.
 - [ ] Collegamento Google Calendar/Outlook con consenso separato.
 - [ ] Liste condivise, ruoli, assegnazioni e audit.
@@ -611,10 +611,10 @@ Esempio: `2026-10-21 14:20 CEST | commit abc1234 | Aggiunto modulo promemoria e 
 - [x] Prove di contesa tra isolate/processi, ordine e fallimenti della barriera, recupero su filesystem temporaneo e fallback Windows non attestato.
 - [ ] Certificazione power-loss Windows/Android, coordinamento SQLite+preferenze, isolamento di writer non partecipanti e restore live **non implementati**. [Runbook](docs/P2-RESTORE-DURABILITY.md).
 
-## P2 — Batch funzionalità visibili (9 novembre 2026, PR in verifica)
+## P2 — Batch funzionalità visibili (9 novembre 2026, integrato PR #56)
 
-- [ ] **Timeline/Gantt**: nuova vista di 14 giorni con pianificazioni multiple, milestone da scadenze civili, navigazione e apertura task. Codice e test aggiunti; CI da verificare prima di segnare completata.
-- [ ] **Filtri avanzati**: tag, ricerca full-text locale per titolo/descrizione/sottotask, scadenze e ordinamento con criteri composti. UI e test aggiunti; CI da verificare.
-- [ ] **Statistiche locali**: completamento, scadenze arretrate, prossimi 7 giorni, priorità, minuti pianificati e distribuzione liste, senza telemetria esterna. UI e test aggiunti; CI da verificare.
-- [ ] **Modelli integrati**: cinque preset checklist con creazione di task reali in SQLite e outbox. Test di identità e persistenza aggiunti; CI da verificare.
+- [x] **Timeline/Gantt**: nuova vista di 14 giorni con pianificazioni multiple, milestone da scadenze civili, navigazione e apertura task. Codice e test verificati da CI Flutter #42625648804.
+- [x] **Filtri avanzati**: tag, ricerca full-text locale per titolo/descrizione/sottotask, scadenze e ordinamento con criteri composti. UI e test verificati in CI Flutter #42625648804.
+- [x] **Statistiche locali**: completamento, scadenze arretrate, prossimi 7 giorni, priorità, minuti pianificati e distribuzione liste, senza telemetria esterna. UI e test aggiunti; CI da verificare.
+- [x] **Modelli integrati**: cinque preset checklist con creazione di task reali in SQLite e outbox. Test di identità e persistenza verificati in CI Flutter #42625648804.
 - [ ] **Altri requisiti P2 non chiusi:** provider OAuth Calendar/Outlook, collaborazione ACL, S3, widget Android, automazioni configurabili e restore live. Nessuna di queste funzioni va dichiarata pronta senza implementazione/test. Matrice: [P2-DELIVERY-MATRIX](docs/P2-DELIVERY-MATRIX.md).

@@ -384,7 +384,7 @@ class _TaskActionAutomationsPanelState
                   ),
                 ]),
               ],
-            ))),
+            )),
           ),
         const SizedBox(height: 10),
         Text('Le ricorrenze avanzano senza attivare il trigger '

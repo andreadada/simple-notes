@@ -89,7 +89,9 @@ class LocalStore extends Notifier<LocalData> {
       // A login switch during asynchronous preferences load invalidates
       // the rule source; no cross-account automation may run.
       if (ref.read(cloudAuthProvider).userId != owner ||
-          await db.setting('boundOwnerId') != owner) return task;
+          await db.setting('boundOwnerId') != owner) {
+        return task;
+      }
       return library.apply(task, trigger: trigger, lists: state.lists);
     } on FormatException {
       // Invalid local rule archive remains untouched; the task still saves.

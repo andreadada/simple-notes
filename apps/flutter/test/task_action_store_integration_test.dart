@@ -29,7 +29,7 @@ void main() {
     final container = ProviderContainer(overrides: [
       databaseProvider.overrideWithValue(db),
       initialDataProvider.overrideWithValue(const LocalData()),
-      cloudAuthProvider.overrideWith(() => TestAccount(owner)),
+      cloudAuthProvider.overrideWith((ref) => TestAccount(owner)),
     ]);
     addTearDown(() async {
       container.dispose();

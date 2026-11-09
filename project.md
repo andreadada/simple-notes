@@ -618,3 +618,10 @@ Esempio: `2026-10-21 14:20 CEST | commit abc1234 | Aggiunto modulo promemoria e 
 - [x] **Statistiche locali**: completamento, scadenze arretrate, prossimi 7 giorni, priorità, minuti pianificati e distribuzione liste, senza telemetria esterna. UI e test aggiunti; CI da verificare.
 - [x] **Modelli integrati**: cinque preset checklist con creazione di task reali in SQLite e outbox. Test di identità e persistenza verificati in CI Flutter #42625648804.
 - [ ] **Altri requisiti P2 non chiusi:** provider OAuth Calendar/Outlook, collaborazione ACL, S3, widget Android, automazioni configurabili e restore live. Nessuna di queste funzioni va dichiarata pronta senza implementazione/test. Matrice: [P2-DELIVERY-MATRIX](docs/P2-DELIVERY-MATRIX.md).
+
+## Batch P2 — Interoperabilità ICS, modelli utente e launcher Android (09/11/2026, CI in verifica)
+
+- [ ] Esportazione locale ICS per task e time block, compatibile con date-only, UTC, UID stabili, UTF-8 folding e limiti. Codice/test predisposti, CI da verificare.
+- [ ] CRUD dei modelli personalizzati su dispositivo per account, inclusione opzionale nel backup cifrato senza perdere compatibilità .snb v1 e creazione task/outbox. Codice/test predisposti, CI da verificare.
+- [ ] Widget Android per accesso rapido a Oggi, Inbox e Nuova attività, nessun dato utente nel launcher; build nativa e prove su device ancora da verificare.
+- [ ] Integrazioni OAuth provider Calendar/Outlook, collaborazione ACL, storage S3, automazioni ricche, ripristino live e test reali restano non conclusi. [Matrice](docs/P2-DELIVERY-MATRIX.md); [contratto](docs/P2-LOCAL-INTEGRATIONS.md).

@@ -158,3 +158,7 @@ Il client include anche il lettore sperimentale di inventario cloud, con validaz
 ### Estensioni P2 — batch operativo
 
 Integrate e verificate [PR #56](https://github.com/andreadada/simple-notes/pull/56): timeline/Gantt, filtri avanzati, statistiche locali e modelli attività, oltre a JSON/ICS/CSV/backup cifrato già esistenti. Le integrazioni provider, collaborazione, allegati, widget Android e ripristino live non sono ancora disponibili: [stato e criteri](docs/P2-DELIVERY-MATRIX.md).
+
+### P2 — Integrazioni locali in sviluppo
+
+Esportazione ICS unidirezionale per Google Calendar/Outlook (importazione manuale), modelli personalizzabili nel dispositivo e widget Android di accesso rapido senza dati privati. [Stato e limiti](docs/P2-LOCAL-INTEGRATIONS.md).

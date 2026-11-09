@@ -1,9 +1,13 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:uuid/uuid.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+import '../auth/cloud_auth.dart';
 import 'app_database.dart';
 import 'models.dart';
 import 'portable_archive.dart';
 import 'task_templates.dart';
+import 'task_action_automations.dart';
 
 export 'models.dart';
 
@@ -60,11 +64,39 @@ class LocalStore extends Notifier<LocalData> {
     if (listId != null && !state.lists.any((item) => item.id == listId)) {
       throw StateError('La lista selezionata non esiste.');
     }
-    final created = template.instantiate(listId: listId);
+    final created = await _automate(
+      template.instantiate(listId: listId), trigger: 'created');
     await ref.read(databaseProvider).upsertTask(created);
     state = state.copyWith(tasks: [...state.tasks, created]);
     _changed();
     return created;
+  }
+
+  /// Apply only at the local source event, BEFORE the single task upsert.
+  /// If rule storage is corrupt/unavailable, preserve ordinary task edits.
+  /// Never run this during reload, remote pull, offline sync or import.
+  Future<LocalTask> _automate(LocalTask task, {
+    required String trigger,
+  }) async {
+    final session = ref.read(cloudAuthProvider);
+    if (!session.authenticated || session.userId == null) return task;
+    final owner = session.userId!;
+    final db = ref.read(databaseProvider);
+    if (await db.setting('boundOwnerId') != owner) return task;
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final library = await const TaskActionStore().load(prefs, owner);
+      // A login switch during asynchronous preferences load invalidates
+      // the rule source; no cross-account automation may run.
+      if (ref.read(cloudAuthProvider).userId != owner ||
+          await db.setting('boundOwnerId') != owner) return task;
+      return library.apply(task, trigger: trigger, lists: state.lists);
+    } on FormatException {
+      // Invalid local rule archive remains untouched; the task still saves.
+      return task;
+    } on StateError {
+      return task;
+    }
   }
 
   void _changed() => ref.read(localMutationRevisionProvider.notifier).state++;
@@ -75,10 +107,10 @@ class LocalStore extends Notifier<LocalData> {
     if (listId != null && !state.lists.any((list) => list.id == listId)) {
       throw StateError('La lista selezionata non esiste.');
     }
-    final task = LocalTask(
+    final task = await _automate(LocalTask(
       id: const Uuid().v4(), title: trimmed, dueAt: dueAt, due: due,
       completed: false, createdAt: DateTime.now(), listId: listId,
-    );
+    ), trigger: 'created');
     await ref.read(databaseProvider).upsertTask(task);
     state = state.copyWith(tasks: [...state.tasks, task]);
     _changed();
@@ -316,7 +348,14 @@ class LocalStore extends Notifier<LocalData> {
           due: next, changeDue: true, completed: false));
       return;
     }
-    await _persistTask(task.copyWith(completed: !task.completed));
+    if (!task.completed) {
+      final updated = await _automate(
+        task.copyWith(completed: true), trigger: 'completed');
+      await _persistTask(updated);
+    } else {
+      // Undo never replays completion rules.
+      await _persistTask(task.copyWith(completed: false));
+    }
   }
 
   Future<void> toggleSubtask(String taskId, String subtaskId) async {

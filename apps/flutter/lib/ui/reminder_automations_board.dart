@@ -86,7 +86,9 @@ class _ReminderAutomationsBoardState extends State<ReminderAutomationsBoard> {
 
   Future<void> _save(ReminderAutomationLibrary next) async {
     if (_loading || _saving || _error != null ||
-        _prefs == null || widget.ownerId == null) return;
+        _prefs == null || widget.ownerId == null) {
+      return;
+    }
     final owner = widget.ownerId!;
     setState(() => _saving = true);
     try {
@@ -304,7 +306,7 @@ class _ReminderAutomationsBoardState extends State<ReminderAutomationsBoard> {
                     child: const Text('Elimina')),
                 ]),
               ],
-            ))),
+            )),
           ),
         const SizedBox(height: 16),
         Text('Fino a 100 notifiche nei prossimi 14 giorni. '

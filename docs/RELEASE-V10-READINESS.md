@@ -1,6 +1,8 @@
 # Gate cumulativo R1 — Server-first Flyway V10 e capability
 
-**Stato 02/11/2026:** strumenti read-only integrati su `main` con [PR #26](https://github.com/andreadada/simple-notes/pull/26). [Compose CI #41523319857](https://github.com/andreadada/simple-notes/actions/runs/41523319857) e [Markdown #41523319860](https://github.com/andreadada/simple-notes/actions/runs/41523319860) success, esclusivamente su dati sintetici. La VPS reale **non è stata interrogata** durante questo incremento: l'ultima attestazione documentata è Flyway V8; il repository contiene Flyway V10. **Nessun deploy, backup, restore, reset o installazione effettuato.**
+**Nota corrente 09/11/2026:** questo documento è il runbook *storico* del gate V10; la VPS è stata attestata a Flyway **V10 il 03/11/2026**, mentre il repository contiene anche V11 (non attestata in produzione). Per il nuovo contratto usare [gate V11](RELEASE-V11-READINESS.md) senza effettuare deploy automatici. [Stato corrente](CURRENT-STATUS.md).
+
+**Cronologia al 02/11/2026:** strumenti read-only integrati su `main` con [PR #26](https://github.com/andreadada/simple-notes/pull/26). [Compose CI #41523319857](https://github.com/andreadada/simple-notes/actions/runs/41523319857) e [Markdown #41523319860](https://github.com/andreadada/simple-notes/actions/runs/41523319860) success, esclusivamente su dati sintetici. La VPS reale **non è stata interrogata** durante questo incremento: l'ultima attestazione documentata è Flyway V8; il repository contiene Flyway V10. **Nessun deploy, backup, restore, reset o installazione effettuato.**
 
 ## Obiettivo e limiti
 

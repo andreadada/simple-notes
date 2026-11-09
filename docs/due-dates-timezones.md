@@ -1,7 +1,9 @@
 # P0 — Scadenze, date-only e fusi orari
 
 <!-- CURRENT-STATUS-REF -->
-> **Stato operativo 31/10/2026:** P2.2 ICS read-only integrata su `main` ([PR #21](https://github.com/andreadada/simple-notes/pull/21), Flutter `0.25.0+27`, CI Flutter/Markdown verde: 162 test, Windows EXE/MSIX, Android JDK17/21). Test fisici e deploy cumulativo non attestati. Backend repo Flyway V10, VPS ultima attestazione V8; nessun deploy/reset. [Stato](CURRENT-STATUS.md) · [ICS](P2-ICS.md).
+> **Stato operativo verificato 09/11/2026:** `main` integra P0, P1 e i batch P2 fino alla PR #57 (Flutter `0.31.0+33`, SQLite/Drift V8 e backend Flyway **V11 nel codice**). GitHub Actions sul commit `18b40d6` [Flutter](https://github.com/andreadada/simple-notes/actions/runs/42656872945) e [Markdown](https://github.com/andreadada/simple-notes/actions/runs/42656872849) completate con successo. **Sulla VPS risulta attestata Flyway V10 il 03/11/2026; V11/deploy, health/capability strict ed E2E fisici non attestati.** P2 rimane incompleta (restore live, OAuth provider, ACL, S3 e automazioni). [Stato canonico](CURRENT-STATUS.md).
+
+> **Cronologia (stato del 02/11 o 31/10/2026):** P2.2 ICS read-only integrata su `main` ([PR #21](https://github.com/andreadada/simple-notes/pull/21), Flutter `0.25.0+27`, CI Flutter/Markdown verde: 162 test, Windows EXE/MSIX, Android JDK17/21). Test fisici e deploy cumulativo non attestati. Backend repo Flyway V10, VPS ultima attestazione V8; nessun deploy/reset. [Stato](CURRENT-STATUS.md) · [ICS](P2-ICS.md).
 
 
 > **Stato reale 24/10/2026:** PostgreSQL `simplenotes` 17.11, Flyway V1–V7 riuscite, backup `simple-notes-20261024T132857Z-271921.dump` con SHA256 valido e restore isolato PASS. Copia offsite non effettuata per scelta dell'utente. Restano da verificare l'API autenticata (`taskDueSchema:1`) e il collaudo T4.2 Windows↔Android con Flutter `0.4.0+4`. Non ripetere backup, migrazioni o deploy automaticamente. [T4.2](T4-DEVICE-SYNC.md).

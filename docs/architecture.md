@@ -1,7 +1,9 @@
 # Simple Notes — Architettura applicativa
 
 <!-- CURRENT-STATUS-REF -->
-> **Stato operativo 02/11/2026:** R1 gate server-first integrato su `main` ([PR #26](https://github.com/andreadada/simple-notes/pull/26), commit [`f19ee8b0`](https://github.com/andreadada/simple-notes/commit/f19ee8b0a5bea2cb2c2231d85b3e8ad10a5233a7); [Compose CI](https://github.com/andreadada/simple-notes/actions/runs/41523319857) **success** con PostgreSQL 17 sintetico, [Markdown](https://github.com/andreadada/simple-notes/actions/runs/41523319860) **success**). Flutter resta `0.29.0+31` e 191 test già attestati. **VPS reale V10, health/capability live, backup recente e collaudo hardware non verificati**; ultimo stato VPS attestato V8. Nessun deploy o intervento su dati. [Stato](CURRENT-STATUS.md) · [R1]( RELEASE-V10-READINESS.md).
+> **Stato operativo verificato 09/11/2026:** `main` integra P0, P1 e i batch P2 fino alla PR #57 (Flutter `0.31.0+33`, SQLite/Drift V8 e backend Flyway **V11 nel codice**). GitHub Actions sul commit `18b40d6` [Flutter](https://github.com/andreadada/simple-notes/actions/runs/42656872945) e [Markdown](https://github.com/andreadada/simple-notes/actions/runs/42656872849) completate con successo. **Sulla VPS risulta attestata Flyway V10 il 03/11/2026; V11/deploy, health/capability strict ed E2E fisici non attestati.** P2 rimane incompleta (restore live, OAuth provider, ACL, S3 e automazioni). [Stato canonico](CURRENT-STATUS.md).
+
+> **Cronologia (stato del 02/11 o 31/10/2026):** R1 gate server-first integrato su `main` ([PR #26](https://github.com/andreadada/simple-notes/pull/26), commit [`f19ee8b0`](https://github.com/andreadada/simple-notes/commit/f19ee8b0a5bea2cb2c2231d85b3e8ad10a5233a7); [Compose CI](https://github.com/andreadada/simple-notes/actions/runs/41523319857) **success** con PostgreSQL 17 sintetico, [Markdown](https://github.com/andreadada/simple-notes/actions/runs/41523319860) **success**). Flutter resta `0.29.0+31` e 191 test già attestati. **VPS reale V10, health/capability live, backup recente e collaudo hardware non verificati**; ultimo stato VPS attestato V8. Nessun deploy o intervento su dati. [Stato](CURRENT-STATUS.md) · [R1](RELEASE-V10-READINESS.md).
 
 ## Componenti del codice attuale
 
@@ -11,7 +13,7 @@
 | Persistenza client | Drift/SQLite schema **V8**, `app_database.dart`, `local_store.dart` | Offline-first, revisioni remote, owner, tombstone, outbox durevole |
 | Sync | `auto_sync.dart`, `cloud_sync.dart` | Mutazioni idempotenti, delta per cursor, verifica capability, 409 e 426 |
 | API | Spring Boot Java 21/Spring Security, `services/api` | OAuth Google, task/note/liste, sync autorizzata per utente |
-| Server | PostgreSQL 17 + Flyway **V1–V10 nel repo**; Compose/Coolify | Stato cloud condiviso, versioni, migrazioni additive |
+| Server | PostgreSQL 17 + Flyway **V1–V11 nel repo**; Compose/Coolify | Stato cloud condiviso, versioni, migrazioni additive |
 
 ## Modello e migrazioni
 
@@ -38,7 +40,7 @@ La pianificazione promemoria P1.7 è device-local (opt-in/ledger), Android inexa
 - [Forui e regole grafiche](ui-forui.md), [design](../design.md), [roadmap](../project.md)
 - [Runbook V10](P1-RELEASE-BATCH.md), [check dispositivi](T4-DEVICE-SYNC.md), [handoff storico](HANDOFF.md)
 
-**Deploy non attestato:** VPS verificata fino a V8 il 25/10; migrazioni V9/V10, capability di produzione e acceptance Windows↔Android devono essere controllate prima del prossimo rilascio. Non eseguire reset, cancellare volumi o assumere che `main` sia già su Coolify.
+**Deploy non attestato per V11:** VPS attestata fino a Flyway V10 il 03/11/2026; migrazione V11, capability autenticate strict e collaudo Windows↔Android restano da verificare separatamente prima del prossimo rilascio. Non eseguire reset, cancellare volumi o assumere che `main` sia già su Coolify.
 
 ## P1.9 — Kanban per liste (integrato su main)
 
@@ -83,7 +85,7 @@ Hide/restore/quit della finestra non crea entità, endpoint, migrazione, cursor,
 
 ## P2.2 — ICS reader device-local (main, PR #21)
 
-`IcsParser` produce eventi esterni immutabili da file in UTF-8 con validazione fail-closed. `IcsLibrary` serializza sorgenti multiple in SharedPreferences per hash del Google owner; `CalendarBoard` le proietta senza metodi `LocalStore` o sync. La subscription remota, il refresh automatico, le ricorrenze e l'autorizzazione a calendari terzi **non esistono ancora**. [P2-ICS.md](P2-ICS.md).
+`IcsParser` produce eventi esterni immutabili da file in UTF-8 con validazione fail-closed. `IcsLibrary` serializza sorgenti multiple in SharedPreferences per hash del Google owner; `CalendarBoard` le proietta senza metodi `LocalStore` o sync. **Limite storico del solo P2.2:** in quel batch non esistevano feed HTTPS o ricorrenze; P2.3B–P2.3D li hanno aggiunti successivamente. L'OAuth con i provider non è implementato. [P2-ICS.md](P2-ICS.md).
 
 ## P2.3A — Identità sorgenti ICS (main, PR #22, Flutter 0.26)
 
@@ -103,7 +105,7 @@ La UI calendario continua a invocare `IcsLibrary.onDay`, che unisce eventi singo
 
 ## R1 — Gate architetturale server-first
 
-Il client Flutter `0.29.0+31` contiene funzionalità sync che richiedono Flyway V10 e le capability versione 1. Gli strumenti `infra/release-readiness.sh`, `t4-inspect-db.sh`, `t4-check-api.sh` verificano il contratto solo dopo un eventuale deploy approvato. Nessun nuovo microservizio, endpoint o migration; test sintetici non equivalgono a stato reale VPS. [Runbook](RELEASE-V10-READINESS.md).
+Il client Flutter storico `0.29.0+31` contiene funzionalità sync che richiedono Flyway V10 e le capability versione 1. Gli strumenti `infra/release-readiness.sh`, `t4-inspect-db.sh`, `t4-check-api.sh` verificano il contratto solo dopo un eventuale deploy approvato. Nessun nuovo microservizio, endpoint o migration; test sintetici non equivalgono a stato reale VPS. [Runbook](RELEASE-V10-READINESS.md).
 
 ## P2.4A — Export CSV client-only
 
@@ -112,3 +114,7 @@ Il client Flutter `0.29.0+31` contiene funzionalità sync che richiedono Flyway 
 ## P2.4B1 — Architettura archivio cifrato locale
 
 Nuovo modulo `lib/data/full_backup.dart`: `FullBackupSource.capture` combina `AppDatabase.fullBackupRows` (transazione read-only per cinque tabelle SQLite Drift V8, incluse tombstone/outbox) e preferenze locali per owner. Whitelist di tabelle/colonne/sync settings e validatori di dominio fail-closed; `FullBackupCodec` cifra AES-256-GCM con chiave PBKDF2-HMAC-SHA256 (180.000 iterazioni). Il file .snb contiene owner solo nel payload cifrato. La cattura delle SharedPreferences avviene separatamente e non offre atomicità globale tra storage. Nessun RESTORE live fino a P2.4B2 cold-start con rollback e stop sync. [Specifica](P2-FULL-BACKUP.md).
+
+## Stato P2 aggiornato al 09/11/2026
+
+La repository include API Flyway V11 di fingerprint delle operazioni sync, controlli server-first read-only e client Flutter con timeline, dashboard analytics, modelli personali locali, calendario ICS export e widget Android di sola navigazione. Le definizioni dei modelli non sono sincronizzate fra dispositivi: il loro JSON di trasferimento manuale è una funzionalità in sviluppo separata. I gate di ripristino restano esercitati solo in sandbox: nessun writer di produzione, nessun replay dell'outbox importata. VPS V11, backup/restore live, S3, OAuth Calendar/Outlook, collaborazione ACL e collaudi fisici non sono attestati. [Matrice P2](P2-DELIVERY-MATRIX.md) · [Restore](P2-RESTORE-DURABILITY.md) · [V11](RELEASE-V11-READINESS.md).

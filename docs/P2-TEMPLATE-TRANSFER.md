@@ -1,6 +1,6 @@
 # P2 — Trasferimento manuale dei modelli personali
 
-**9 novembre 2026 — incremento client in sviluppo. CI e merge da verificare.** Le definizioni personali nella pagina **Modelli** sono locali per account/dispositivo e incluse nel backup cifrato .snb. Questo incremento aggiunge un trasferimento volontario e non distruttivo via JSON, senza cloud o migrazioni.
+**9 novembre 2026 — [PR #58](https://github.com/andreadada/simple-notes/pull/58) integrata su `main`** (`e926a5a`); [Flutter CI #42688444850](https://github.com/andreadada/simple-notes/actions/runs/42688444850) success (369 test, Android/Windows), [Markdown #42688444618](https://github.com/andreadada/simple-notes/actions/runs/42688444618) success. **Nessun deploy né prova fisica eseguita.** Le definizioni personali nella pagina **Modelli** sono locali per account/dispositivo e incluse nel backup cifrato .snb. Questo incremento aggiunge un trasferimento volontario e non distruttivo via JSON, senza cloud o migrazioni.
 
 ## Windows e Android
 

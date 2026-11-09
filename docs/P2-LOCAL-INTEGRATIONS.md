@@ -2,6 +2,8 @@
 
 Aggiornato 9 novembre 2026. Ambito: client Flutter/Android e backup locale. **Nessuna nuova API, migrazione o deploy.**
 
+**Incremento successivo integrato:** [PR #58](https://github.com/andreadada/simple-notes/pull/58) (merge `e926a5a`) permette export/import JSON manuale dei modelli personali; definizioni locali, non cifrate e non sincronizzate. [Dettagli](P2-TEMPLATE-TRANSFER.md).
+
 **Integrato su `main`:** [PR #57](https://github.com/andreadada/simple-notes/pull/57), merge `90e5e26a`. [Flutter CI #42634429343](https://github.com/andreadada/simple-notes/actions/runs/42634429343) PASS (365 test, Android 17/21, Windows), [Markdown #42634428206](https://github.com/andreadada/simple-notes/actions/runs/42634428206) PASS. Test fisici e provider OAuth rimangono fuori scope.
 
 ## Esportazione calendari ICS

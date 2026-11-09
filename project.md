@@ -1,12 +1,12 @@
 # Simple Notes — Progetto e roadmap
 
-> **Stato operativo 09/11/2026:** `main` integra P2.4B2W e i **batch funzionali P2 #56 e #57** ([PR #57](https://github.com/andreadada/simple-notes/pull/57), merge `90e5e26a`): Timeline/Gantt, filtri, analytics, modelli personali, esportazione ICS, widget Android non sensibile. [Flutter CI #42634429343](https://github.com/andreadada/simple-notes/actions/runs/42634429343) **success** (365 test, Android JDK17/21, Windows EXE/MSIX); [Markdown #42634428206](https://github.com/andreadada/simple-notes/actions/runs/42634428206) **success**. **P2 ancora aperta:** OAuth Calendar/Outlook, condivisione ACL, allegati S3, automazioni, restore live, collaudi fisici. VPS attestata Flyway V10 (03/11), V11 solo codice; nessun deploy. [Stato](docs/CURRENT-STATUS.md) · [Matrice P2](docs/P2-DELIVERY-MATRIX.md) · [Integrazioni](docs/P2-LOCAL-INTEGRATIONS.md).
+> **Stato operativo verificato 09/11/2026:** `main` integra [PR #58](https://github.com/andreadada/simple-notes/pull/58) (merge `e926a5a`, trasferimento manuale modelli JSON) oltre a P2.4B2W e ai batch #56/#57. [Flutter CI del branch #42688444850](https://github.com/andreadada/simple-notes/actions/runs/42688444850) **success**: analisi, 369 test, Android JDK17/21, Windows EXE/MSIX/recovery. [Markdown #42688444618](https://github.com/andreadada/simple-notes/actions/runs/42688444618) **success**. Flutter `0.31.0+33`, repository Flyway V11, VPS attestata Flyway V10 (03/11); nessun deploy/restore live o collaudo hardware. P2 ancora aperta: OAuth provider, ACL, S3, automazioni, restore live.
 
 <!-- CURRENT-STATUS-REF -->
 
 **Obiettivo:** Windows 11 + Android offline-first, Google OAuth, Flutter/Forui/Drift + Spring Boot/PostgreSQL su Coolify. Regole UX in [design.md](design.md); deploy sicuro in [P1-RELEASE-BATCH.md](docs/P1-RELEASE-BATCH.md). Le checklist sotto includono traguardi storici: `[x]` significa **codice verificato nella CI o prova specifica**, non distribuzione sul VPS.
 
-## Gate corrente (CI P2.4B1 superata; test fisici differiti)
+## Gate corrente (P2 PR #58 integrata; test fisici e deploy differiti)
 
 - [x] P1.7 Android con scheduler inexact, ledger, opt-in e CI verde (PR #6). [ ] Prova fisica Android app chiusa/reboot e controllo permessi; [x] codice packaging MSIX + promemoria Windows integrato (PR #7, CI verde); [ ] test fisici MSIX/identità/dati e firma pubblica.
 - [x] Flyway V10 verificata nella VPS reale il 03/11/2026, 0 migrazioni fallite; [ ] health/capability strict ancora aperti.
@@ -195,7 +195,7 @@ Dettagli e matrice: [docs/ui-design-audit.md](docs/ui-design-audit.md). Aggiorna
 - Tutti i nuovi moduli devono avere error states, migrazioni e test minimi.
 
 ## Edit Timespan
-- 2026-11-09 | feat(p2-template-transfer) | Import/export JSON volontario dei modelli personali locali con ID nuovi, validazione fail-closed, consenso Forui e test; nessuna sync, migrazione, restore o deploy. [Specifiche](docs/P2-TEMPLATE-TRANSFER.md). CI/merge da verificare.
+- 2026-11-09 | merge(p2-template-transfer) | [PR #58](https://github.com/andreadada/simple-notes/pull/58) integrata su main (`e926a5a`): JSON manuale dei modelli personali, ID nuovi, conferma Forui, test e doc allineate. [Flutter CI #42688444850](https://github.com/andreadada/simple-notes/actions/runs/42688444850) success 369 test e build Windows/Android; [Markdown #42688444618](https://github.com/andreadada/simple-notes/actions/runs/42688444618) success. Nessun deploy, restore live o collaudo hardware.
 - 2026-11-05 | feat(p2.4b2r) | Capability backend syncOperationFingerprintSchema=1 e gate read-only V11 strict, validatore Python/test compatibilità V10, documentazione. Nessun deploy. [Runbook](docs/RELEASE-V11-READINESS.md).
 - 2026-11-05 | feat(p2.4b2q) | 409 tipizzato per operationId diverso + blocco non-ribasabile Flutter con outbox conservata, test backend/Flutter e doc. CI/merge da verificare; nessun deploy. [Specifica](docs/P2-SYNC-INTENT-CONFLICTS.md).
 - 2026-11-05 | feat(p2.4b2p) | Read-only V11 post-release gate, inspector nullable fingerprint e CI PostgreSQL sintetica; nessun deploy/migrazione sulla VPS, docs e runbook aggiornati. CI/merge da verificare. [Runbook](docs/RELEASE-V11-READINESS.md).

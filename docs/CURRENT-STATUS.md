@@ -4,7 +4,7 @@
 
 | Area | Stato verificato | Gate ancora aperti |
 |---|---|---|
-| `main` | **P0–P2.4B2W + batch P2 #56 e #57 integrati**, Flutter `0.31.0+33`, [PR #57](https://github.com/andreadada/simple-notes/pull/57) merged (`90e5e26a`). [Flutter CI #42634429343](https://github.com/andreadada/simple-notes/actions/runs/42634429343) **success**: 365 test, Windows recovery/EXE/MSIX, APK Android JDK17/21; [Markdown CI #42634428206](https://github.com/andreadada/simple-notes/actions/runs/42634428206) **success** | **P2 non interamente conclusa:** OAuth Google Calendar/Outlook, ACL liste condivise, allegati S3, automazioni configurabili, restore live e prove fisiche widget/E2E. VPS Flyway V10, V11 solo codice; nessun deploy |
+| `main` | **P0–P2.4B2W e P2 #56/#57/#58 integrate**, Flutter `0.31.0+33`, [PR #58](https://github.com/andreadada/simple-notes/pull/58) merge `e926a5a`. [Flutter CI #42688444850](https://github.com/andreadada/simple-notes/actions/runs/42688444850) **success** su branch PR: 369 test, analisi, Windows recovery/EXE/MSIX e APK Android JDK17/21; [Markdown #42688444618](https://github.com/andreadada/simple-notes/actions/runs/42688444618) **success**. Il merge su `main` non equivale a deploy VPS. | **P2 non conclusa:** OAuth Calendar/Outlook, liste condivise/ACL, allegati S3, automazioni configurabili, restore live e prove E2E; Flyway V11 nel codice, VPS V10 attestata al 03/11 |
 | P1.18 integrata (storico) | [PR #19](https://github.com/andreadada/simple-notes/pull/19) merged, Flutter **`0.23.0+25`**, temi chiaro/scuro/sistema, preferenza locale e Sticky | CI verde; test visivi e su dispositivi fisici ancora aperti |
 | CI P2.4B1 | [Flutter #41636993011](https://github.com/andreadada/simple-notes/actions/runs/41636993011) **success**: 204 test, Windows EXE/MSIX, Android JDK17/21; [Markdown #41636993004](https://github.com/andreadada/simple-notes/actions/runs/41636993004) **success** | Nessun restore live, prova picker/share o Windows↔Android su dispositivi reali |
 | CI P2.4A | [Flutter #41562133925](https://github.com/andreadada/simple-notes/actions/runs/41562133925) **success**: 198 test, Windows EXE/MSIX, Android JDK17/21; [Markdown #41561797719](https://github.com/andreadada/simple-notes/actions/runs/41561797719) **success** | Collaudo CSV nativo e Windows↔Android rinviati |
@@ -20,10 +20,10 @@
 | Backend nel repository | Spring Boot/PostgreSQL 17, Flyway **V11**; client Drift/SQLite **V8** | VPS attestata solo a Flyway **V10 (03/11/2026)**; backend V11/capability non verificati sulla VPS |
 | Test reali | VPS V10 verificata il 03/11; Google Windows connesso e pending 0 nel report disponibile | Android E2E, API strict, V11 e restore live ancora aperti |
 
-## Incremento P2 — trasferimento modelli JSON (sviluppo, 09/11/2026)
+## Incremento P2 — trasferimento modelli JSON (integrato, PR #58, 09/11/2026)
 
 - Preparato import/export manuale dei modelli personali device-local, validazione fail-closed, ID rigenerati e consenso Forui. Nessuna nuova API, Flyway, sincronizzazione delle definizioni, restore live, deploy o modifica dati installati.
-- **CI e merge sono da verificare**; il precedente stato certificato di `main` rimane PR #57. [Contratto](P2-TEMPLATE-TRANSFER.md).
+- [PR #58](https://github.com/andreadada/simple-notes/pull/58) **merged** (`e926a5a`) dopo [Flutter CI #42688444850](https://github.com/andreadada/simple-notes/actions/runs/42688444850) **success**: 369 test, analisi e build Android/Windows, e [Markdown CI #42688444618](https://github.com/andreadada/simple-notes/actions/runs/42688444618) **success**. Non è stata attestata alcuna installazione o prova hardware. [Contratto](P2-TEMPLATE-TRANSFER.md).
 
 ## Snapshot corrente dopo la PR #57 (09/11/2026)
 

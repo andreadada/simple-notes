@@ -1,10 +1,10 @@
 # Simple Notes — Passaggio di consegne (handoff)
 
-> **Stato operativo 09/11/2026:** `main` integra P2.4B2W e i **batch funzionali P2 #56 e #57** ([PR #57](https://github.com/andreadada/simple-notes/pull/57), merge `90e5e26a`): Timeline/Gantt, filtri, analytics, modelli personali, esportazione ICS, widget Android non sensibile. [Flutter CI #42634429343](https://github.com/andreadada/simple-notes/actions/runs/42634429343) **success** (365 test, Android JDK17/21, Windows EXE/MSIX); [Markdown #42634428206](https://github.com/andreadada/simple-notes/actions/runs/42634428206) **success**. **P2 ancora aperta:** OAuth Calendar/Outlook, condivisione ACL, allegati S3, automazioni, restore live, collaudi fisici. VPS attestata Flyway V10 (03/11), V11 solo codice; nessun deploy. [Stato](CURRENT-STATUS.md) · [Matrice P2](P2-DELIVERY-MATRIX.md) · [Integrazioni](P2-LOCAL-INTEGRATIONS.md).
+> **Stato operativo verificato 09/11/2026:** `main` integra [PR #58](https://github.com/andreadada/simple-notes/pull/58) (merge `e926a5a`, trasferimento manuale modelli JSON) oltre a P2.4B2W e ai batch #56/#57. [Flutter CI del branch #42688444850](https://github.com/andreadada/simple-notes/actions/runs/42688444850) **success**: analisi, 369 test, Android JDK17/21, Windows EXE/MSIX/recovery. [Markdown #42688444618](https://github.com/andreadada/simple-notes/actions/runs/42688444618) **success**. Flutter `0.31.0+33`, repository Flyway V11, VPS attestata Flyway V10 (03/11); nessun deploy/restore live o collaudo hardware. P2 ancora aperta: OAuth provider, ACL, S3, automazioni, restore live.
 
 <!-- CURRENT-STATUS-REF -->
 
-> **Sviluppo P2 (09/11/2026):** ramo di import/export manuale modelli JSON; copie additive, file non cifrato, nessuna sync/provider/deploy/restore live. CI e merge da verificare. [Specifica](P2-TEMPLATE-TRANSFER.md).
+> **P2 integrata (09/11/2026):** [PR #58](https://github.com/andreadada/simple-notes/pull/58) merged (`e926a5a`), 369 test Flutter e build Android/Windows verdi; import/export manuale modelli JSON con copie additive, file non cifrato, nessuna sync/provider/deploy/restore live. [Specifica](P2-TEMPLATE-TRANSFER.md).
 
 > **Cronologia P1.10 (superata):** Pomodoro `0.15.0+17` per dispositivo/account, timer UTC e stats locali. [Specifica](P1-POMODORO.md); CI e test reali da completare.
 

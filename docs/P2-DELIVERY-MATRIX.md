@@ -2,6 +2,8 @@
 
 Aggiornato 9 novembre 2026. **CI verde non equivale a deploy Coolify o collaudo su dispositivi reali.**
 
+**Terzo incremento P2 integrato:** [PR #58](https://github.com/andreadada/simple-notes/pull/58), merge `e926a5a`, trasferimento manuale JSON dei modelli locali. [Flutter CI #42688444850](https://github.com/andreadada/simple-notes/actions/runs/42688444850) PASS (369 test e build Windows/Android), [Markdown #42688444618](https://github.com/andreadada/simple-notes/actions/runs/42688444618) PASS. Il file è non cifrato e non realizza la sync dei modelli o il restore live.
+
 **Secondo batch locale integrato:** [PR #57](https://github.com/andreadada/simple-notes/pull/57), merge `90e5e26a`; [Flutter CI #42634429343](https://github.com/andreadada/simple-notes/actions/runs/42634429343) PASS (365 test, Android JDK17/21 e Windows), [Markdown #42634428206](https://github.com/andreadada/simple-notes/actions/runs/42634428206) PASS.
 
 **Batch locale integrato:** [PR #56](https://github.com/andreadada/simple-notes/pull/56) merged (`56d40317`); [Flutter CI](https://github.com/andreadada/simple-notes/actions/runs/42625648804) PASS (350 test, Android JDK17/21, Windows), [Markdown CI](https://github.com/andreadada/simple-notes/actions/runs/42625649033) PASS. **La P2 complessiva resta aperta** sulle integrazioni elencate sotto.

@@ -202,10 +202,11 @@ class _TaskTemplatesBoardState extends State<TaskTemplatesBoard> {
     final description = TextEditingController(text: old?.description ?? '');
     final subtasks = TextEditingController(text: old?.subtasks.join('\n') ?? '');
     final tags = TextEditingController(text: old?.tags.join(', ') ?? '');
-    try {
-      final result = await showFDialog<TaskTemplate>(
+    final result = await showFDialog<TaskTemplate>(
         context: context,
-        builder: (ctx, style, animation) => NotesDialog(
+        builder: (ctx, style, animation) => NotesEditorControllerScope(
+          controllers: [title, description, subtasks, tags],
+          child: NotesDialog(
           style: style, animation: animation,
           title: Text(old == null ? 'Nuovo modello' : 'Modifica modello'),
           body: SizedBox(
@@ -267,6 +268,7 @@ class _TaskTemplatesBoardState extends State<TaskTemplatesBoard> {
               child: const Text('Salva modello'),
             ),
           ],
+          ),
         ),
       );
       if (!mounted || owner != widget.ownerId || result == null) return;
@@ -276,12 +278,6 @@ class _TaskTemplatesBoardState extends State<TaskTemplatesBoard> {
       } on FormatException catch (error) {
         _showError(error.message);
       }
-    } finally {
-      title.dispose();
-      description.dispose();
-      subtasks.dispose();
-      tags.dispose();
-    }
   }
 
   Future<void> _remove(TaskTemplate template) async {

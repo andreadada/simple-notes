@@ -42,3 +42,10 @@ Le statistiche sono calcolate sui dati locali senza telemetria. I modelli produc
 - Chiudere i requisiti con un criterio verificabile e test diretto; evitare nuove micro-fasi che aggiungono solo documentazione.
 
 **La P2 non va marcata completata finché le righe aperte restano tali.** La CI del batch locale viene registrata in CURRENT-STATUS dopo l'esecuzione.
+
+## Batch P2: calendario, modelli e accesso rapido Android (09/11/2026, CI in verifica)
+
+- Esportazione manuale ICS per task non completati: date-only senza falso timestamp, istanti UTC esatti, time block, UID stabili, escaping e folding UTF-8, limite 8 MiB.
+- Modelli utente in SharedPreferences per owner: CRUD e definizioni backup compatibili con vecchi archivi .snb v1; applicazione del modello come task SQLite/outbox. Definizioni locali al dispositivo, non condivise in cloud.
+- Widget Android launcher: apri Oggi, Inbox, nuova attività via MainActivity/MethodChannel, senza memorizzare/esporre contenuti. Non è un widget che mostra task, né prova hardware completata.
+- Resta **non implementato**: collegamento OAuth automatico Google/Outlook, collaborazione ACL, allegati S3, automazioni configurabili, restore live e collaudo fisico Android. [Contratto](P2-LOCAL-INTEGRATIONS.md).

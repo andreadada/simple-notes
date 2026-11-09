@@ -230,3 +230,7 @@ Il lease di sandbox usa `IsolateNameServer` e lock OS per richieste cooperative 
 ## P2 — Timeline, filtri, statistiche e modelli integrati (09/11/2026, PR)
 
 Le nuove sezioni Timeline, Statistiche e Modelli sono locali e offline; nelle liste sono disponibili filtri scadenza/tag e sort oltre a ricerca/priorità. I preset creano task/sottotask nel database attuale e nella coda sync con UUID nuovi. Il batch aggiunge test di date civili, ordinamento e persistence. Non esiste cloud analytics né nuovo backend. [Matrice di consegna](../../docs/P2-DELIVERY-MATRIX.md).
+
+## P2 — Funzioni aggiuntive (09/11/2026, branch)
+
+Esportazione calendario locale ICS e widget Android con pulsanti Oggi/Inbox/Nuova attività, senza mostrare dati utente. Modelli personalizzati CRUD in SharedPreferences owner-scoped e inclusi come preferenza opzionale nei nuovi backup .snb; i task creati continuano a usare SQLite/outbox. Non è sync automatica con Google Calendar, né restore live. [Dettagli](../../docs/P2-LOCAL-INTEGRATIONS.md).

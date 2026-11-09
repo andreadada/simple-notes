@@ -316,3 +316,7 @@ Su Linux, `flutter test test/sandbox_restore_file_lease_test.dart test/recovery_
 ## P2 — Test funzionalità locali e scope di release (09/11/2026)
 
 Eseguire flutter analyze e flutter test nell'app; verificare test/task_insights_test.dart, test/task_timeline_board_test.dart, test/task_template_persistence_test.dart, e build Windows/Android CI. I preset devono scrivere una normale mutation nella stessa transazione task; l'analisi task deve restare locale e non includere telemetria. Timeline mostra una scadenza senza ora come milestone, non pianifica una mezzanotte UTC; la UI deve restare read-only per i blocchi esistenti. Le integrazioni server calendar OAuth/S3/ACL e restore live richiedono percorsi separati con permessi, gate di sicurezza e test reali. [Matrice P2](P2-DELIVERY-MATRIX.md).
+
+## P2 — Verifiche ICS/modelli/widget Android (09/11/2026)
+
+Eseguire flutter analyze e flutter test; suite portable_task_calendar_test.dart, user_task_templates_test.dart, user_template_backup_test.dart, android_widget_navigation_test.dart. Android JDK17/21 deve compilare Java AppWidgetProvider, manifest e risorse. In test reale, aggiungere il widget dalla galleria e verificare le tre destinazioni senza bypass del restore startup gate. Un file .ics non è cifrato: condividerlo soltanto per azione esplicita. Verificare un vecchio .snb v1 senza la preferenza templates e un nuovo backup con chiave templates dell'owner giusto. Nessuna operazione reale di restore o deploy. [Contratto](P2-LOCAL-INTEGRATIONS.md).

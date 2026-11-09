@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="12dp"
+    android:background="@drawable/simple_notes_widget_background">
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Simple Notes"
+        android:textStyle="bold"
+        android:textColor="#FFFFFF"
+        android:textSize="16sp"
+        android:contentDescription="Simple Notes accesso rapido" />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="8dp">
+        <TextView
+            android:id="@+id/quick_today"
+            android:layout_width="0dp"
+            android:layout_height="40dp"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="Oggi"
+            android:textStyle="bold"
+            android:textColor="#FFFFFF"
+            android:contentDescription="Apri le attività di oggi" />
+        <TextView
+            android:id="@+id/quick_inbox"
+            android:layout_width="0dp"
+            android:layout_height="40dp"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="Inbox"
+            android:textStyle="bold"
+            android:textColor="#FFFFFF"
+            android:contentDescription="Apri Inbox" />
+        <TextView
+            android:id="@+id/quick_new"
+            android:layout_width="0dp"
+            android:layout_height="40dp"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="+ Attività"
+            android:textStyle="bold"
+            android:textColor="#FFFFFF"
+            android:contentDescription="Apri e scrivi una nuova attività" />
+    </LinearLayout>
+</LinearLayout>

@@ -269,3 +269,7 @@ Incremento integrato in `main` con la PR #55: claim cooperativo su `IsolateNameS
 ## Batch funzionalità P2 (09/11/2026, integrato PR #56)
 
 Integrato su `main` con PR #56: Timeline/Gantt a 14 giorni, filtri avanzati per task, analytics solo sui dati locali e cinque modelli con sottotask/UUID salvati in SQLite + outbox. Test dedicati e CI Flutter/Windows/Android superati. Backend Flyway V11 è **solo nel codice** e non attestato sulla VPS; restore live e le integrazioni OAuth Calendar/Outlook, collaborazione/S3/widget Android rimangono aperti. La matrice effettiva della P2 è in [P2-DELIVERY-MATRIX.md](P2-DELIVERY-MATRIX.md). La tabella principale sopra descrive lo stato integrato.
+
+## Incremento P2 in verifica — Calendario esportabile, modelli utente e widget Android (09/11/2026)
+
+Branch feat/p2-custom-templates-calendar-export-android-widget: esportazione manuale eventi in ICS, modello utente CRUD per account/dispositivo con chiave hashed e backup .snb retrocompatibile, widget launcher Android senza dati privati. Quattro nuove suite di test dedicate. Le CI/merge vanno verificati prima di marcare integrato. Nessun deploy, modifica alla VPS, migrazione o restore live. [Dettagli](P2-LOCAL-INTEGRATIONS.md).

@@ -11,6 +11,7 @@ import '../ui/ics_calendar.dart';
 import '../ui/pomodoro_model.dart';
 import '../ui/theme_mode_preference.dart';
 import 'app_database.dart';
+import 'user_task_templates.dart';
 
 /// P2.4B1: encrypted, owner-bound *read-only* complete profile archive.
 /// Import is deliberately PREVIEW ONLY until cold-start restore guards exist.
@@ -52,8 +53,13 @@ class FullBackupSnapshot {
   static const allowedSettings = <String>{
     'boundOwnerId', 'syncCursor', 'lastSyncSuccessUtc',
   };
-  static const preferenceNames = <String>{
+  // Required v1 fields stay stable. New, optional domain preferences are
+  // backward-compatible: older encrypted v1 backups remain inspectable.
+  static const requiredPreferenceNames = <String>{
     'ics', 'pomodoro', 'habits', 'countdowns', 'theme',
+  };
+  static const preferenceNames = <String>{
+    ...requiredPreferenceNames, 'templates',
   };
 
   final String ownerId;
@@ -80,8 +86,8 @@ class FullBackupSnapshot {
         !createdAtUtc.isUtc ||
         tables.keys.toSet().length != columns.length ||
         !tables.keys.toSet().containsAll(columns.keys) ||
-        preferences.keys.toSet().length != preferenceNames.length ||
-        !preferences.keys.toSet().containsAll(preferenceNames)) {
+        !preferences.keys.toSet().containsAll(requiredPreferenceNames) ||
+        preferences.keys.any((name) => !preferenceNames.contains(name))) {
       throw const FormatException('Archivio non compatibile.');
     }
     var total = 0;
@@ -147,6 +153,8 @@ class FullBackupSnapshot {
           if (!const {'dark', 'light', 'system'}.contains(value)) {
             throw const FormatException('Preferenza tema non valida.');
           }
+        case 'templates':
+          UserTaskTemplateLibrary.deserialize(value);
       }
     }
   }
@@ -207,6 +215,7 @@ class FullBackupSource {
       'habits': 'simple_notes.habits.v1.$suffix',
       'countdowns': 'simple_notes.countdowns.v1.$suffix',
       'theme': ThemeModePreference.key,
+      'templates': UserTaskTemplateStore.keyForOwner(ownerId),
     };
   }
 

@@ -21,4 +21,4 @@ La voce **Strumenti → Automazioni** consente di aggiungere, modificare, sospen
 
 ## Estensione P2 successiva — automazioni che modificano task
 
-Le notifiche OS di questa specifica restano indipendenti dalle nuove azioni task locali su creazione/completamento, integrate nello stesso menu Strumenti → Automazioni. [Contratto separato della PR #60](P2-TASK-ACTIONS.md). Le azioni task non richiedono il permesso notifiche.
+Le notifiche OS di questa specifica restano indipendenti dalle nuove azioni task locali su creazione/completamento, integrate nello stesso menu Strumenti → Automazioni. [Contratto separato della PR #60 integrata](P2-TASK-ACTIONS.md). Le azioni task non richiedono il permesso notifiche.

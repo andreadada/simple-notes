@@ -85,6 +85,8 @@ Verificare con il build realmente installato: creazione/modifica/disabilitazione
 
 **Nota CI (09/11/2026):** [Flutter #42701809601](https://github.com/andreadada/simple-notes/actions/runs/42701809601) supera 377 test, build Android JDK17/21 e Windows EXE/MSIX; questo **non certifica** notifiche consegnate su hardware Android o Windows. Nessuna prova fisica eseguita.
 
-## P2 azioni task (PR #60): prove hardware differite
+## P2 azioni task (PR #60 integrata, CI verde): prove hardware differite
 
 Con il client reale verificare regole su creazione/completamento manuali, spostamento su lista, match titolo case-insensitive, ricorrenza, undo, account/guest e passaggio Windows ↔ Android; nessuna azione deve partire dal pull cloud o dall'import. Nessuna prova su dispositivi reali eseguita. [Specifica](P2-TASK-ACTIONS.md).
+
+**Verifica CI (09/11/2026):** [Flutter #42714514197](https://github.com/andreadada/simple-notes/actions/runs/42714514197) supera 392 test e build Windows EXE/MSIX, Android JDK17/21; la riuscita non certifica esecuzione o sincronizzazione cross-device su dispositivi fisici. Nessun test fisico e nessun deploy effettuati.

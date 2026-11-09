@@ -24,6 +24,7 @@ import 'ui/eisenhower_board.dart';
 import 'ui/kanban_board.dart';
 import 'ui/task_timeline_board.dart';
 import 'ui/task_productivity_boards.dart';
+import 'ui/android_widget_navigation.dart';
 import 'ui/pomodoro_board.dart';
 import 'ui/habits_board.dart';
 import 'ui/countdowns_board.dart';
@@ -41,6 +42,7 @@ import 'package:uuid/uuid.dart';
 import 'data/local_store.dart';
 import 'data/portable_archive.dart';
 import 'data/portable_csv.dart';
+import 'data/portable_task_calendar.dart';
 import 'data/full_backup.dart';
 import 'data/full_backup_compare.dart';
 import 'data/backup_review_snapshot_guard.dart';
@@ -212,9 +214,36 @@ class _NotesHomeState extends ConsumerState<NotesHome> {
   final newTask = TextEditingController();
   final newTaskFocus = FocusNode();
   TaskDue quickDue = TaskDue.none;
+  final AndroidWidgetNavigation _widgetNavigation =
+      const AndroidWidgetNavigation();
+
+  @override
+  void initState() {
+    super.initState();
+    if (defaultTargetPlatform == TargetPlatform.android) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) {
+          unawaited(_widgetNavigation.listen(_handleWidgetNavigation));
+        }
+      });
+    }
+  }
+
+  Future<void> _handleWidgetNavigation(String destination) async {
+    if (!mounted) return;
+    switch (destination) {
+      case 'today':
+        _shortcutNavigate(Section.today);
+      case 'inbox':
+        _shortcutNavigate(Section.inbox);
+      case 'new':
+        _shortcutNewTask();
+    }
+  }
 
   @override
   void dispose() {
+    _widgetNavigation.dispose();
     newTaskFocus.dispose();
     newTask.dispose();
     super.dispose();
@@ -367,6 +396,48 @@ class _NotesHomeState extends ConsumerState<NotesHome> {
       _archiveMessage(error.message);
     } catch (_) {
       _archiveMessage('Impossibile esportare il CSV. I dati restano invariati.');
+    } finally {
+      if (mounted) setState(() => _archiveBusy = false);
+    }
+  }
+
+  /// One-way calendar export for Google Calendar, Outlook and ICS clients.
+  /// The user explicitly chooses the destination; no provider OAuth scope.
+  Future<void> _exportCalendar() async {
+    if (_archiveBusy) return;
+    setState(() => _archiveBusy = true);
+    try {
+      final data = await ref.read(databaseProvider).snapshot();
+      final bytes = PortableTaskCalendar(data.tasks).encode();
+      final filename = 'simple-notes-calendar-'
+          '${DateTime.now().toIso8601String().substring(0, 10)}.ics';
+      final output = XFile.fromData(
+        Uint8List.fromList(bytes), name: filename, mimeType: 'text/calendar',
+      );
+      if (defaultTargetPlatform == TargetPlatform.windows) {
+        final location = await getSaveLocation(
+          suggestedName: filename,
+          acceptedTypeGroups: [
+            const XTypeGroup(label: 'Calendario ICS', extensions: ['ics']),
+          ],
+        );
+        if (location == null) return;
+        await output.saveTo(location.path);
+        _archiveMessage('Calendario ICS salvato. Importalo manualmente '
+            'nell’app calendario che preferisci.');
+      } else {
+        final result = await SharePlus.instance.share(ShareParams(
+          files: [output], fileNameOverrides: [filename],
+        ));
+        if (result.status == ShareResultStatus.success) {
+          _archiveMessage('Calendario ICS condiviso. I dati restano locali.');
+        }
+      }
+    } on FormatException catch (error) {
+      _archiveMessage(error.message);
+    } catch (_) {
+      _archiveMessage('Esportazione calendario non riuscita. '
+          'Nessuna attività modificata.');
     } finally {
       if (mounted) setState(() => _archiveBusy = false);
     }
@@ -1309,6 +1380,8 @@ Ctrl+/ · Questo elenco'''),
         await _importArchive();
       } else if (value == 'csv-export') {
         await _exportCsv();
+      } else if (value == 'calendar-export') {
+        await _exportCalendar();
       } else if (value == 'full-backup') {
         await _exportFullBackup();
       } else if (value == 'verify-full-backup') {
@@ -1445,6 +1518,12 @@ Ctrl+/ · Questo elenco'''),
             prefix: const Icon(Icons.compare_arrows, size: 18),
             enabled: !_archiveBusy && cloud.authenticated,
             onPress: () => accountAction('compare-full-backup'),
+          ),
+          .item(
+            title: const Text('Esporta calendario ICS'),
+            prefix: const Icon(Icons.event_available_outlined, size: 18),
+            enabled: !_archiveBusy,
+            onPress: () => accountAction('calendar-export'),
           ),
           .item(
             title: const Text('Esporta CSV'),
@@ -1963,13 +2042,15 @@ Ctrl+/ · Questo elenco'''),
             ))
           else if (section == Section.templates)
             Expanded(child: TaskTemplatesBoard(
+              key: ValueKey('template-owner-${cloud.userId ?? 'guest'}'),
+              ownerId: cloud.userId,
               busy: _templateBusy,
               onCreate: (template) async {
                 if (_templateBusy) return;
                 setState(() => _templateBusy = true);
                 try {
                   final created = await ref.read(localStoreProvider.notifier)
-                      .createTaskFromTemplate(template.id);
+                      .createTaskFromDefinition(template);
                   if (!mounted) return;
                   setState(() {
                     selectedId = created.id;

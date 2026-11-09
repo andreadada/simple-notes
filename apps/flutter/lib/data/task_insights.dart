@@ -42,7 +42,6 @@ class TaskQuery {
 
   List<LocalTask> apply(Iterable<LocalTask> tasks, {DateTime? at}) {
     final now = _day(at ?? DateTime.now());
-    final tomorrow = DateTime(now.year, now.month, now.day + 1);
     final after7 = DateTime(now.year, now.month, now.day + 7);
     final needle = search.trim().toLowerCase();
     final selectedTag = tag?.trim().toLowerCase();

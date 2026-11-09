@@ -1953,7 +1953,7 @@ Ctrl+/ · Questo elenco'''),
                   });
                   if (!wideDetails) showTaskDetails(created);
                 } catch (_) {
-                  if (!mounted) return;
+                  if (!mounted || !context.mounted) return;
                   ScaffoldMessenger.maybeOf(context)?.showSnackBar(
                     const SnackBar(content: Text(
                       'Creazione dal modello non riuscita.')),

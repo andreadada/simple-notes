@@ -4,6 +4,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:simple_notes/data/app_database.dart';
 import 'package:simple_notes/data/full_backup.dart';
 import 'package:simple_notes/data/user_task_templates.dart';
+import 'package:simple_notes/data/reminder_automations.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -78,4 +79,57 @@ void main() {
       database: db, preferences: prefs, ownerId: 'owner',
     ), throwsFormatException);
   });
+  test('encrypted .snb includes owner-only automation rules as optional data',
+      () async {
+    final db = AppDatabase(NativeDatabase.memory());
+    addTearDown(db.close);
+    await db.bindOwner('automations-A');
+    final prefs = await SharedPreferences.getInstance();
+    const store = ReminderAutomationStore();
+    await store.save(prefs, 'automations-A', ReminderAutomationLibrary(
+      rules: const [
+        ReminderAutomationRule(
+          id: 'rule-private', kind: 'block', leadMinutes: 30,
+          minPriority: 2),
+      ],
+    ));
+    await store.save(prefs, 'automations-B', ReminderAutomationLibrary(
+      rules: const [
+        ReminderAutomationRule(
+          id: 'rule-other-account', kind: 'due', leadMinutes: 60),
+      ],
+    ));
+    final snapshot = await const FullBackupSource().capture(
+      database: db, preferences: prefs, ownerId: 'automations-A');
+    expect(snapshot.preferences['automations'], contains('rule-private'));
+    expect(snapshot.toJson().toString(), isNot(contains('rule-other-account')));
+    final file = await const FullBackupCodec().encrypt(
+      snapshot, 'password-for-automations-2026');
+    final checked = await const FullBackupCodec().inspect(file,
+      password: 'password-for-automations-2026',
+      expectedOwnerId: 'automations-A');
+    expect(checked.preferences['automations'],
+        snapshot.preferences['automations']);
+    final legacy = snapshot.toJson();
+    final prefsCopy = Map<String, dynamic>.from(
+      legacy['preferences'] as Map);
+    prefsCopy.remove('automations');
+    legacy['preferences'] = prefsCopy;
+    expect(FullBackupSnapshot.fromJson(legacy)
+        .preferences.containsKey('automations'), isFalse);
+  });
+
+  test('invalid automation JSON prevents incomplete full backup', () async {
+    final db = AppDatabase(NativeDatabase.memory());
+    addTearDown(db.close);
+    await db.bindOwner('bad-automation-owner');
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(
+      ReminderAutomationStore.keyForOwner('bad-automation-owner'),
+      '{"schema":999,"rules":[]}');
+    await expectLater(const FullBackupSource().capture(
+      database: db, preferences: prefs, ownerId: 'bad-automation-owner'),
+      throwsFormatException);
+  });
+
 }

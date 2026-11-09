@@ -12,6 +12,7 @@ import '../ui/pomodoro_model.dart';
 import '../ui/theme_mode_preference.dart';
 import 'app_database.dart';
 import 'user_task_templates.dart';
+import 'reminder_automations.dart';
 
 /// P2.4B1: encrypted, owner-bound *read-only* complete profile archive.
 /// Import is deliberately PREVIEW ONLY until cold-start restore guards exist.
@@ -59,7 +60,7 @@ class FullBackupSnapshot {
     'ics', 'pomodoro', 'habits', 'countdowns', 'theme',
   };
   static const preferenceNames = <String>{
-    ...requiredPreferenceNames, 'templates',
+    ...requiredPreferenceNames, 'templates', 'automations',
   };
 
   final String ownerId;
@@ -155,6 +156,8 @@ class FullBackupSnapshot {
           }
         case 'templates':
           UserTaskTemplateLibrary.deserialize(value);
+        case 'automations':
+          ReminderAutomationLibrary.deserialize(value);
       }
     }
   }
@@ -216,6 +219,7 @@ class FullBackupSource {
       'countdowns': 'simple_notes.countdowns.v1.$suffix',
       'theme': ThemeModePreference.key,
       'templates': UserTaskTemplateStore.keyForOwner(ownerId),
+      'automations': ReminderAutomationStore.keyForOwner(ownerId),
     };
   }
 

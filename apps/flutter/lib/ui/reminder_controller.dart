@@ -10,6 +10,7 @@ import 'package:timezone/timezone.dart' as tz;
 
 import '../auth/cloud_auth.dart';
 import '../data/local_store.dart';
+import '../data/reminder_automations.dart';
 import 'reminder_planner.dart';
 import 'reminder_reconcile.dart';
 
@@ -192,11 +193,22 @@ class ReminderController extends StateNotifier<ReminderStatus> {
         ledger[entry.key as String] = entry.value as int;
       }
     }
+    // The old 15/15 schedule is the default when no rule archive exists.
+    // A malformed archive stops reconciliation instead of silently erasing it.
+    final rules = forceEmpty ? <ReminderAutomationRule>[] :
+        (await const ReminderAutomationStore().load(prefs, owner!)).rules;
+    // An owner switch while reading preferences must never schedule stale
+    // private reminders for the newly signed-in account.
+    if (!forceEmpty &&
+        (_ref.read(cloudAuthProvider).userId != owner ||
+         await _ref.read(databaseProvider).setting('boundOwnerId') != owner)) {
+      return;
+    }
     final plans = forceEmpty ? <ReminderPlan>[] :
-        ReminderPlanner.desiredSchedule(
+        ReminderPlanner.desiredScheduleForRules(
           _ref.read(localStoreProvider).tasks,
           ownerId: owner!, now: DateTime.now().toUtc(),
-          dueLeadMinutes: 15, blockLeadMinutes: 15,
+          rules: rules,
         );
     final changes = ReminderReconciler.diff(recorded: ledger, desired: plans);
     if (changes.cancelIds.isEmpty && changes.schedule.isEmpty) {

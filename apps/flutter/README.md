@@ -1,6 +1,6 @@
 # Flutter client — P0 e P1
 
-> **Stato operativo verificato 09/11/2026:** `main` integra [PR #58](https://github.com/andreadada/simple-notes/pull/58) (merge `e926a5a`, trasferimento manuale modelli JSON) oltre a P2.4B2W e ai batch #56/#57. [Flutter CI del branch #42688444850](https://github.com/andreadada/simple-notes/actions/runs/42688444850) **success**: analisi, 369 test, Android JDK17/21, Windows EXE/MSIX/recovery. [Markdown #42688444618](https://github.com/andreadada/simple-notes/actions/runs/42688444618) **success**. Flutter `0.31.0+33`, repository Flyway V11, VPS attestata Flyway V10 (03/11); nessun deploy/restore live o collaudo hardware. P2 ancora aperta: OAuth provider, ACL, S3, automazioni, restore live.
+> **Stato verificato 09/11/2026:** [PR #59](https://github.com/andreadada/simple-notes/pull/59) integrata (`aa17094`): regole locali configurabili per promemoria Android/Windows MSIX. [Flutter CI #42701809601](https://github.com/andreadada/simple-notes/actions/runs/42701809601) **success** (377 test, analyze, build Windows EXE/MSIX, Android JDK17/21); [Markdown #42701809467](https://github.com/andreadada/simple-notes/actions/runs/42701809467) **success**. Client `0.31.0+33`, Flyway V11 nel codice e V10 attestata in VPS (03/11); nessun deploy o hardware test. P2 resta aperta per automazioni task/server, OAuth provider, ACL, S3 e restore live. [Stato canonico](../../docs/CURRENT-STATUS.md).
 
 <!-- CURRENT-STATUS-REF -->
 
@@ -235,6 +235,6 @@ Le nuove sezioni Timeline, Statistiche e Modelli sono locali e offline; nelle li
 
 Esportazione calendario locale ICS e widget Android con pulsanti Oggi/Inbox/Nuova attività, senza mostrare dati utente. Modelli personalizzati CRUD in SharedPreferences owner-scoped e inclusi come preferenza opzionale nei nuovi backup .snb; i task creati continuano a usare SQLite/outbox. Non è sync automatica con Google Calendar, né restore live. [Dettagli](../../docs/P2-LOCAL-INTEGRATIONS.md).
 
-## P2 — Automazioni promemoria native (PR #59 in verifica)
+## P2 — Automazioni promemoria native (integrata PR #59, CI verde)
 
 La schermata Strumenti → Automazioni offre regole locali per avvisi da scadenze con ora o blocchi, anticipo e priorità minima, integrate al ledger OS P1.7. Le regole sono isolate per owner su SharedPreferences e opzionali nel backup cifrato; non introducono job server e non cambiano task/outbox. Android usa scheduling inexact, Windows solo MSIX; nessun collaudo hardware attestato. [Contratto](../../docs/P2-REMINDER-AUTOMATIONS.md).

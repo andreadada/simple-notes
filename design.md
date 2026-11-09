@@ -1,6 +1,6 @@
 # Simple Notes — Design & Product Specification
 
-> **Stato operativo verificato 09/11/2026:** `main` integra [PR #58](https://github.com/andreadada/simple-notes/pull/58) (merge `e926a5a`, trasferimento manuale modelli JSON) oltre a P2.4B2W e ai batch #56/#57. [Flutter CI del branch #42688444850](https://github.com/andreadada/simple-notes/actions/runs/42688444850) **success**: analisi, 369 test, Android JDK17/21, Windows EXE/MSIX/recovery. [Markdown #42688444618](https://github.com/andreadada/simple-notes/actions/runs/42688444618) **success**. Flutter `0.31.0+33`, repository Flyway V11, VPS attestata Flyway V10 (03/11); nessun deploy/restore live o collaudo hardware. P2 ancora aperta: OAuth provider, ACL, S3, automazioni, restore live.
+> **Stato verificato 09/11/2026:** [PR #59](https://github.com/andreadada/simple-notes/pull/59) integrata (`aa17094`): regole locali configurabili per promemoria Android/Windows MSIX. [Flutter CI #42701809601](https://github.com/andreadada/simple-notes/actions/runs/42701809601) **success** (377 test, analyze, build Windows EXE/MSIX, Android JDK17/21); [Markdown #42701809467](https://github.com/andreadada/simple-notes/actions/runs/42701809467) **success**. Client `0.31.0+33`, Flyway V11 nel codice e V10 attestata in VPS (03/11); nessun deploy o hardware test. P2 resta aperta per automazioni task/server, OAuth provider, ACL, S3 e restore live. [Stato canonico](docs/CURRENT-STATUS.md).
 
 <!-- CURRENT-STATUS-REF -->
 
@@ -323,6 +323,6 @@ Se un client prova a riutilizzare un'operazione già applicata con payload, azio
 
 Nel menu account, un conflitto `SYNC_OPERATION_ID_REUSE` deve presentare esplicitamente il motivo e non offrire «Risolvi conflitto», perché la normale scelta di versione non può cambiare l'intento già registrato. Le modifiche locali rimangono visibili e la sync automatica sospesa. Un normale conflitto 409 mantiene il dialog Forui precedente. Non aggiungere pulsanti «Forza», «Ripristina», cancellazione outbox o reset. [Specifica](docs/P2-SYNC-INTENT-CONFLICTS.md).
 
-## P2 — Editor di regole dei promemoria (in verifica)
+## P2 — Editor di regole dei promemoria (integrato, PR #59)
 
 La schermata Forui **Automazioni** modifica parametri compositi (trigger scadenza/blocco, anticipo, priorità) con un dialog dedicato; le singole regole visibili offrono azioni Attiva/Disattiva, Modifica, Elimina. Questo è un caso motivato in cui una modale per campi correlati è preferibile all'editing inline del titolo. Confermare eliminazioni; mantenere sempre accessibilità e rendering compatto. Non esporre dati personali nelle notifiche. [Specifica](docs/P2-REMINDER-AUTOMATIONS.md).

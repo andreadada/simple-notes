@@ -1,6 +1,6 @@
 # Simple Notes
 
-> **Stato operativo verificato 09/11/2026:** `main` integra [PR #58](https://github.com/andreadada/simple-notes/pull/58) (merge `e926a5a`, trasferimento manuale modelli JSON) oltre a P2.4B2W e ai batch #56/#57. [Flutter CI del branch #42688444850](https://github.com/andreadada/simple-notes/actions/runs/42688444850) **success**: analisi, 369 test, Android JDK17/21, Windows EXE/MSIX/recovery. [Markdown #42688444618](https://github.com/andreadada/simple-notes/actions/runs/42688444618) **success**. Flutter `0.31.0+33`, repository Flyway V11, VPS attestata Flyway V10 (03/11); nessun deploy/restore live o collaudo hardware. P2 ancora aperta: OAuth provider, ACL, S3, automazioni, restore live.
+> **Stato verificato 09/11/2026:** [PR #59](https://github.com/andreadada/simple-notes/pull/59) integrata (`aa17094`): regole locali configurabili per promemoria Android/Windows MSIX. [Flutter CI #42701809601](https://github.com/andreadada/simple-notes/actions/runs/42701809601) **success** (377 test, analyze, build Windows EXE/MSIX, Android JDK17/21); [Markdown #42701809467](https://github.com/andreadada/simple-notes/actions/runs/42701809467) **success**. Client `0.31.0+33`, Flyway V11 nel codice e V10 attestata in VPS (03/11); nessun deploy o hardware test. P2 resta aperta per automazioni task/server, OAuth provider, ACL, S3 e restore live. [Stato canonico](docs/CURRENT-STATUS.md).
 
 App offline-first per **Windows 11 e Android** dedicata ad attività, note e pianificazione. Flutter/Forui con Drift SQLite locale, Google OAuth e sincronizzazione con Spring Boot/PostgreSQL su Coolify.
 
@@ -11,7 +11,7 @@ App offline-first per **Windows 11 e Android** dedicata ad attività, note e pia
 - Login Google, note e task, liste/priorità/tag/sottotask, modifica direttamente sul testo visualizzato, cestino note e sincronizzazione offline-first con coda persistente.
 - Calendario giorno/settimana/mese, scadenze civili e date-time con fuso IANA e DST.
 - Blocchi orari multipli e drag/resize, riepilogo del tempo, slot liberi, ricerca e filtri.
-- Ricorrenze giornaliere/settimanali/mensili (P1.6). P1.7 aggiunge promemoria opt-in Android e Windows **solo MSIX** (non su EXE/ZIP); funzionamento reale ancora da collaudare.
+- Ricorrenze giornaliere/settimanali/mensili (P1.6). P1.7 aggiunge promemoria opt-in Android e Windows **solo MSIX** (non su EXE/ZIP); P2 #59 integra regole locali personalizzabili per evento, anticipo e priorità. Funzionamento reale ancora da collaudare.
 
 - Matrice Eisenhower P1.8: quattro quadranti da priorità/scadenza, adattiva e con modifica diretta dei task.
 - Kanban P1.9 per liste con drag/drop, aggiunta rapida e spostamento accessibile: **integrato su main**.
@@ -25,7 +25,7 @@ App offline-first per **Windows 11 e Android** dedicata ad attività, note e pia
 ## Percorso rapido
 
 - [Stato canonico e prossimi gate](docs/CURRENT-STATUS.md), [guida operativa](docs/OPERATIONS.md), [Kanban P1.9](docs/P1-KANBAN.md), [Pomodoro P1.10](docs/P1-POMODORO.md), [Habit Tracker P1.11](docs/P1-HABITS.md), [Countdown P1.12](docs/P1-COUNTDOWNS.md), [P1.13 Weekly Habit](docs/P1-WEEKLY-HABITS.md)
-- [Automazioni promemoria P2 (PR #59 in verifica)](docs/P2-REMINDER-AUTOMATIONS.md)
+- [Automazioni promemoria P2 (integrate PR #59)](docs/P2-REMINDER-AUTOMATIONS.md)
 - [Roadmap P0–P3](project.md), [regole per agenti](AGENTS.md), [design](design.md), [trasferimento modelli P2](docs/P2-TEMPLATE-TRANSFER.md)
 - [Handoff e cronologia](docs/HANDOFF.md)
 - [Architettura](docs/architecture.md), [API](docs/api.md), [sync](docs/sync.md)

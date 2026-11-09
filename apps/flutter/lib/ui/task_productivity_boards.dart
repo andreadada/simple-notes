@@ -1,8 +1,13 @@
+import 'dart:typed_data';
+
+import 'package:file_selector/file_selector.dart';
 import 'package:flutter/material.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:forui/forui.dart';
 
 import '../data/models.dart';
+import '../data/portable_template_archive.dart';
 import '../data/task_insights.dart';
 import '../data/task_templates.dart';
 import '../data/user_task_templates.dart';
@@ -195,6 +200,100 @@ class _TaskTemplatesBoardState extends State<TaskTemplatesBoard> {
     }
   }
 
+
+  Future<void> _exportTemplates() async {
+    if (_loading || _saving || _loadError != null) return;
+    final owner = widget.ownerId;
+    setState(() => _saving = true);
+    try {
+      final bytes = PortableTemplateArchive.encode(_library);
+      final filename = 'simple-notes-modelli-'
+          '${DateTime.now().toIso8601String().substring(0, 10)}.json';
+      final output = XFile.fromData(Uint8List.fromList(bytes),
+          name: filename, mimeType: 'application/json');
+      if (!mounted || widget.ownerId != owner) return;
+      if (defaultTargetPlatform == TargetPlatform.windows) {
+        final location = await getSaveLocation(
+          suggestedName: filename,
+          acceptedTypeGroups: [
+            const XTypeGroup(label: 'Modelli JSON', extensions: ['json']),
+          ]);
+        if (location == null || !mounted || widget.ownerId != owner) return;
+        await output.saveTo(location.path);
+        _showError('Modelli esportati in JSON non cifrato.');
+      } else {
+        final result = await SharePlus.instance.share(ShareParams(
+          files: [output], fileNameOverrides: [filename],
+        ));
+        if (result.status == ShareResultStatus.success &&
+            mounted && widget.ownerId == owner) {
+          _showError('Modelli condivisi in JSON non cifrato.');
+        }
+      }
+    } on FormatException catch (error) {
+      _showError(error.message);
+    } catch (_) {
+      _showError('Esportazione non riuscita. Nessun dato modificato.');
+    } finally {
+      if (mounted && widget.ownerId == owner) {
+        setState(() => _saving = false);
+      }
+    }
+  }
+
+  Future<void> _importTemplates() async {
+    if (_loading || _saving || _loadError != null || _prefs == null) return;
+    final owner = widget.ownerId;
+    setState(() => _saving = true);
+    try {
+      final file = await openFile(acceptedTypeGroups: [
+        const XTypeGroup(label: 'Modelli JSON', extensions: ['json']),
+      ]);
+      if (file == null || !mounted || widget.ownerId != owner) return;
+      if (await file.length() > PortableTemplateArchive.maxBytes) {
+        throw const FormatException('File modelli superiore a 128 KiB.');
+      }
+      final incoming = PortableTemplateArchive.inspect(await file.readAsBytes());
+      if (!mounted || widget.ownerId != owner) return;
+      if (incoming.templates.isEmpty) {
+        _showError('Il file non contiene modelli da importare.');
+        return;
+      }
+      final combined = PortableTemplateArchive.addCopies(_library, incoming);
+      final approved = await showFDialog<bool>(
+        context: context,
+        builder: (ctx, style, animation) => NotesDialog(
+          style: style, animation: animation,
+          title: const Text('Importa modelli personali'),
+          body: Text('Aggiungere ${incoming.templates.length} modelli '
+              'a questo dispositivo? Verranno create copie con nuovi ID. '
+              'I modelli attuali, i task e il cloud non saranno modificati.'),
+          actions: [
+            FButton(variant: FButtonVariant.ghost,
+              onPress: () => Navigator.pop(ctx, false),
+              child: const Text('Annulla')),
+            FButton(key: const Key('confirm-template-import'),
+              onPress: () => Navigator.pop(ctx, true),
+              child: const Text('Importa copie')),
+          ],
+        ),
+      );
+      if (approved != true || !mounted || widget.ownerId != owner) return;
+      await const UserTaskTemplateStore().save(_prefs!, owner, combined);
+      if (!mounted || widget.ownerId != owner) return;
+      setState(() => _library = combined);
+      _showError('Modelli importati come nuove copie locali.');
+    } on FormatException catch (error) {
+      _showError(error.message);
+    } catch (_) {
+      _showError('Importazione non riuscita. Dati precedenti invariati.');
+    } finally {
+      if (mounted && widget.ownerId == owner) {
+        setState(() => _saving = false);
+      }
+    }
+  }
+
   Future<void> _edit([TaskTemplate? old]) async {
     if (_saving || _loading || _loadError != null) return;
     final owner = widget.ownerId;
@@ -321,23 +420,37 @@ class _TaskTemplatesBoardState extends State<TaskTemplatesBoard> {
         const SizedBox(height: 6),
         Text('Ogni modello crea una nuova attività sincronizzabile. '
             'I modelli personali restano su questo dispositivo e sono '
-            'inclusi nel backup cifrato del profilo.',
+            'inclusi nel backup cifrato del profilo. Puoi trasferirli '
+            'manualmente in JSON non cifrato: non è sincronizzazione.',
           style: TextStyle(fontSize: 12, color: colors.secondaryText)),
         const SizedBox(height: 14),
-        Row(children: [
-          FButton(
-            key: const Key('add-custom-template'),
-            mainAxisSize: MainAxisSize.min,
-            onPress: _loading || _saving || _loadError != null
-                ? null : () => _edit(),
-            child: const Text('Nuovo modello'),
-          ),
-          if (_loading) ...[
-            const SizedBox(width: 10),
-            const SizedBox(width: 16, height: 16,
+        Wrap(spacing: 8, runSpacing: 8,
+          crossAxisAlignment: WrapCrossAlignment.center,
+          children: [
+            FButton(
+              key: const Key('add-custom-template'),
+              mainAxisSize: MainAxisSize.min,
+              onPress: _loading || _saving || _loadError != null
+                  ? null : () => _edit(),
+              child: const Text('Nuovo modello')),
+            FButton(
+              key: const Key('export-custom-templates'),
+              variant: FButtonVariant.outline,
+              mainAxisSize: MainAxisSize.min,
+              onPress: _loading || _saving || _loadError != null
+                  ? null : _exportTemplates,
+              child: const Text('Esporta modelli')),
+            FButton(
+              key: const Key('import-custom-templates'),
+              variant: FButtonVariant.outline,
+              mainAxisSize: MainAxisSize.min,
+              onPress: _loading || _saving || _loadError != null
+                  ? null : _importTemplates,
+              child: const Text('Importa modelli')),
+            if (_loading) const SizedBox(width: 16, height: 16,
               child: CircularProgressIndicator(strokeWidth: 2)),
           ],
-        ]),
+        ),
         if (_loadError != null)
           Padding(padding: const EdgeInsets.symmetric(vertical: 10),
             child: Text(_loadError!,

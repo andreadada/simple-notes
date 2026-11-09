@@ -27,7 +27,7 @@ class PortableTaskCalendar {
     for (final task in tasks) {
       if (task.completed) continue;
       if (task.due.kind != 'none') {
-        final rawDay = task.due.date;
+        final rawDay = task.due.kind == 'date' ? task.due.date : null;
         final day = rawDay == null ? null : _civil(rawDay);
         final instant = task.due.instant;
         if (day != null) {

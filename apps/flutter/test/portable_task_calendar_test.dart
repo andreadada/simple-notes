@@ -53,8 +53,10 @@ void main() {
     expect(RegExp('BEGIN:VEVENT').allMatches(value).length, 2);
     expect(value, contains('DTSTART:20261109T100000Z'));
     expect(value, contains('DTEND:20261109T110000Z'));
+    // RFC5545 may fold UID lines before the @domain suffix.
+    final unfolded = value.replaceAll('\r\n ', '');
     expect(RegExp('UID:[a-f0-9]+@simple-notes.local')
-        .allMatches(value).map((m) => m.group(0)).toSet().length, 2);
+        .allMatches(unfolded).map((m) => m.group(0)).toSet().length, 2);
     expect(export([t]), value);
   });
 

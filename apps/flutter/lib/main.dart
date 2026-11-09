@@ -33,6 +33,7 @@ import 'ui/sticky_windows.dart'
 import 'ui/task_blocks_panel.dart';
 import 'ui/task_recurrence_panel.dart';
 import 'ui/reminder_controller.dart';
+import 'ui/reminder_automations_board.dart';
 import 'data/task_due_view.dart';
 import 'ui/sync_conflict_dialog.dart';
 import 'ui/sync_diagnostics_dialog.dart';
@@ -147,7 +148,7 @@ class _SimpleNotesAppState extends State<SimpleNotesApp> {
       );
 }
 
-enum Section { today, next7, inbox, everything, completed, calendar, timeline, analytics, templates, eisenhower, kanban, pomodoro, habits, countdowns, notes, trash }
+enum Section { today, next7, inbox, everything, completed, calendar, timeline, analytics, templates, automations, eisenhower, kanban, pomodoro, habits, countdowns, notes, trash }
 
 extension SectionLabel on Section {
   String get label => switch (this) {
@@ -160,6 +161,7 @@ extension SectionLabel on Section {
         Section.timeline => 'Timeline',
         Section.analytics => 'Statistiche',
         Section.templates => 'Modelli',
+        Section.automations => 'Automazioni',
         Section.eisenhower => 'Matrice Eisenhower',
         Section.kanban => 'Kanban',
         Section.pomodoro => 'Pomodoro',
@@ -178,6 +180,7 @@ extension SectionLabel on Section {
         Section.timeline => Icons.view_timeline_outlined,
         Section.analytics => Icons.insights_outlined,
         Section.templates => Icons.library_add_outlined,
+        Section.automations => Icons.rule_outlined,
         Section.eisenhower => Icons.grid_view_outlined,
         Section.kanban => Icons.view_kanban_outlined,
         Section.pomodoro => Icons.timer_outlined,
@@ -208,7 +211,7 @@ class _NotesHomeState extends ConsumerState<NotesHome> {
 
   bool get _taskListMode => !const <Section>{
     Section.calendar, Section.timeline, Section.analytics, Section.templates,
-    Section.eisenhower, Section.kanban, Section.pomodoro, Section.habits,
+    Section.automations, Section.eisenhower, Section.kanban, Section.pomodoro, Section.habits,
     Section.countdowns, Section.notes, Section.trash,
   }.contains(section);
   final newTask = TextEditingController();
@@ -1320,7 +1323,7 @@ Ctrl+/ · Questo elenco'''),
           Section.completed => t.completed,
           Section.inbox => !t.completed && t.listId == null,
           Section.everything => !t.completed,
-          Section.calendar || Section.timeline || Section.analytics || Section.templates || Section.eisenhower || Section.kanban || Section.pomodoro || Section.habits || Section.countdowns || Section.notes || Section.trash => false,
+          Section.calendar || Section.timeline || Section.analytics || Section.templates || Section.automations || Section.eisenhower || Section.kanban || Section.pomodoro || Section.habits || Section.countdowns || Section.notes || Section.trash => false,
         }).toList()..sort((a, b) => a.createdAt.compareTo(b.createdAt));
   }
 
@@ -1659,7 +1662,8 @@ Ctrl+/ · Questo elenco'''),
             for (final s in Section.values.where((s) =>
                 s != Section.pomodoro && s != Section.habits &&
                 s != Section.countdowns && s != Section.timeline &&
-                s != Section.analytics && s != Section.templates))
+                s != Section.analytics && s != Section.templates &&
+                s != Section.automations))
               FSidebarItem(
                 key: Key('nav-${s.name}'),
                 selected: section == s,
@@ -1714,6 +1718,7 @@ Ctrl+/ · Questo elenco'''),
           children: [
             for (final s in const <Section>[
               Section.timeline, Section.analytics, Section.templates,
+              Section.automations,
             ])
               FSidebarItem(
                 key: Key('nav-${s.name}'),
@@ -2039,6 +2044,19 @@ Ctrl+/ · Questo elenco'''),
           else if (section == Section.analytics)
             Expanded(child: TaskAnalyticsBoard(
               tasks: data.tasks, lists: data.lists,
+            ))
+          else if (section == Section.automations)
+            Expanded(child: ReminderAutomationsBoard(
+              key: ValueKey('reminder-rules-owner-${cloud.userId ?? 'guest'}'),
+              ownerId: cloud.userId,
+              supported: ReminderController.supported,
+              notificationsEnabled: reminders.enabled,
+              onToggleNotifications: () async {
+                await ref.read(reminderControllerProvider.notifier)
+                    .setEnabled(!ref.read(reminderControllerProvider).enabled);
+              },
+              onChanged: () =>
+                  ref.read(reminderControllerProvider.notifier).reconcile(),
             ))
           else if (section == Section.templates)
             Expanded(child: TaskTemplatesBoard(

@@ -13,6 +13,7 @@ import '../ui/theme_mode_preference.dart';
 import 'app_database.dart';
 import 'user_task_templates.dart';
 import 'reminder_automations.dart';
+import 'task_action_automations.dart';
 
 /// P2.4B1: encrypted, owner-bound *read-only* complete profile archive.
 /// Import is deliberately PREVIEW ONLY until cold-start restore guards exist.
@@ -60,7 +61,7 @@ class FullBackupSnapshot {
     'ics', 'pomodoro', 'habits', 'countdowns', 'theme',
   };
   static const preferenceNames = <String>{
-    ...requiredPreferenceNames, 'templates', 'automations',
+    ...requiredPreferenceNames, 'templates', 'automations', 'taskActions',
   };
 
   final String ownerId;
@@ -158,6 +159,8 @@ class FullBackupSnapshot {
           UserTaskTemplateLibrary.deserialize(value);
         case 'automations':
           ReminderAutomationLibrary.deserialize(value);
+        case 'taskActions':
+          TaskActionLibrary.deserialize(value);
       }
     }
   }
@@ -220,6 +223,7 @@ class FullBackupSource {
       'theme': ThemeModePreference.key,
       'templates': UserTaskTemplateStore.keyForOwner(ownerId),
       'automations': ReminderAutomationStore.keyForOwner(ownerId),
+      'taskActions': TaskActionStore.keyForOwner(ownerId),
     };
   }
 

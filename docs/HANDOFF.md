@@ -4,6 +4,9 @@
 
 <!-- CURRENT-STATUS-REF -->
 
+> **In verifica (09/11/2026):** [PR #60](https://github.com/andreadada/simple-notes/pull/60), azioni task solo su crea/completa locali, editor Forui, owner guard, singolo upsert/outbox e archivio .snb opzionale. [Specifica](P2-TASK-ACTIONS.md). Nessuna prova hardware o deploy.
+
+
 > **Incremento P2 integrato (09/11/2026):** [PR #59](https://github.com/andreadada/simple-notes/pull/59) merged (`aa17094`), CI Flutter verde (377 test e build native). Regole locali, editor Forui, scheduler e backup `.snb` opzionale. Non sono azioni cloud o scheduling server. [Contratto](P2-REMINDER-AUTOMATIONS.md).
 
 

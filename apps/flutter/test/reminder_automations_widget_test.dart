@@ -17,7 +17,7 @@ void main() {
       home: FTheme(
         data: NotesTheme.forPlatform(TargetPlatform.windows),
         child: Scaffold(body: ReminderAutomationsBoard(
-          ownerId: 'rules-account',
+          ownerId: 'rules-account', lists: const [],
           supported: true,
           notificationsEnabled: false,
           onToggleNotifications: () async {},
@@ -63,7 +63,7 @@ void main() {
       home: FTheme(
         data: NotesTheme.forPlatform(TargetPlatform.windows),
         child: Scaffold(body: ReminderAutomationsBoard(
-          ownerId: 'corrupt', supported: true, notificationsEnabled: false,
+          ownerId: 'corrupt', lists: const [], supported: true, notificationsEnabled: false,
           onToggleNotifications: () async {}, onChanged: () {},
         )),
       ),

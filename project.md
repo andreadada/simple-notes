@@ -135,7 +135,7 @@
 - [ ] Liste condivise, ruoli, assegnazioni e audit.
 - [ ] Allegati con storage S3 compatibile.
 - [x] Widget Android di navigazione, template personali e analytics locali (PR #56/#57; collaudo fisico del widget da eseguire).
-- [ ] Automazioni (parziale): prima tranche regole locali di notifica (PR #59 integrata, CI verde); restano azioni e scheduler server, dedup multi-device, test OS e delivery affidabile.
+- [ ] Automazioni (parziale): notifiche locali PR #59 integrate; azioni task PR #60 in verifica (creazione/completamento, priorità/tag/lista); restano scheduler server, dedup multi-device, regole sincronizzate e test OS. [Specifica](docs/P2-TASK-ACTIONS.md).
 - [ ] Test manuali del widget e del trasferimento modelli JSON tra Windows e Android.
 - [ ] Backup verificato, installer Windows e release Android.
 
@@ -195,6 +195,7 @@ Dettagli e matrice: [docs/ui-design-audit.md](docs/ui-design-audit.md). Aggiorna
 - Tutti i nuovi moduli devono avere error states, migrazioni e test minimi.
 
 ## Edit Timespan
+- 2026-11-09 | feat(p2-task-actions) | [PR #60](https://github.com/andreadada/simple-notes/pull/60) in verifica: trigger locali crea/completa, filtro titolo, priorità/tag/lista, editor Forui, singolo upsert/outbox, backup opzionale. Nessun job server o deploy. [Contratto](docs/P2-TASK-ACTIONS.md). CI e merge da attestare.
 - 2026-11-09 | merge(p2-reminder-automations) | [PR #59](https://github.com/andreadada/simple-notes/pull/59) merged `aa17094`: regole locali owner-scoped, editor Forui, dedup ledger, backup .snb opzionale. [Flutter CI #42701809601](https://github.com/andreadada/simple-notes/actions/runs/42701809601) PASS (377 test, build Windows/Android), [Markdown #42701809467](https://github.com/andreadada/simple-notes/actions/runs/42701809467) PASS. No migrazione, deploy, restore o cloud jobs. [Contratto](docs/P2-REMINDER-AUTOMATIONS.md).
 - 2026-11-09 | merge(p2-template-transfer) | [PR #58](https://github.com/andreadada/simple-notes/pull/58) integrata su main (`e926a5a`): JSON manuale dei modelli personali, ID nuovi, conferma Forui, test e doc allineate. [Flutter CI #42688444850](https://github.com/andreadada/simple-notes/actions/runs/42688444850) success 369 test e build Windows/Android; [Markdown #42688444618](https://github.com/andreadada/simple-notes/actions/runs/42688444618) success. Nessun deploy, restore live o collaudo hardware.
 - 2026-11-05 | feat(p2.4b2r) | Capability backend syncOperationFingerprintSchema=1 e gate read-only V11 strict, validatore Python/test compatibilità V10, documentazione. Nessun deploy. [Runbook](docs/RELEASE-V11-READINESS.md).

@@ -326,3 +326,7 @@ Nel menu account, un conflitto `SYNC_OPERATION_ID_REUSE` deve presentare esplici
 ## P2 — Editor di regole dei promemoria (integrato, PR #59)
 
 La schermata Forui **Automazioni** modifica parametri compositi (trigger scadenza/blocco, anticipo, priorità) con un dialog dedicato; le singole regole visibili offrono azioni Attiva/Disattiva, Modifica, Elimina. Questo è un caso motivato in cui una modale per campi correlati è preferibile all'editing inline del titolo. Confermare eliminazioni; mantenere sempre accessibilità e rendering compatto. Non esporre dati personali nelle notifiche. [Specifica](docs/P2-REMINDER-AUTOMATIONS.md).
+
+## P2 — Azioni automatiche task (PR #60 in verifica)
+
+Una seconda sezione nella schermata Forui Automazioni gestisce regole su eventi crea/completa. Il dialog è giustificato da più campi correlati: condizione sul titolo, trigger e azione priorità/tag/lista. Evitare container pesanti sugli input; confermare eliminazioni, proteggere il cambio account, disabilitare le modifiche quando la preferenza non è leggibile. [Contratto](docs/P2-TASK-ACTIONS.md).

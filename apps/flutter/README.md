@@ -238,3 +238,7 @@ Esportazione calendario locale ICS e widget Android con pulsanti Oggi/Inbox/Nuov
 ## P2 — Automazioni promemoria native (integrata PR #59, CI verde)
 
 La schermata Strumenti → Automazioni offre regole locali per avvisi da scadenze con ora o blocchi, anticipo e priorità minima, integrate al ledger OS P1.7. Le regole sono isolate per owner su SharedPreferences e opzionali nel backup cifrato; non introducono job server e non cambiano task/outbox. Android usa scheduling inexact, Windows solo MSIX; nessun collaudo hardware attestato. [Contratto](../../docs/P2-REMINDER-AUTOMATIONS.md).
+
+## P2 — Regole di azione sui task (PR #60 in verifica)
+
+Da Strumenti → Automazioni, regole locali per creare/completare task e modificare priorità/tag/lista, filtro titolo. L'effetto precede un solo upsert SQLite+outbox; non esegue replay su remote pull, import o app startup. Preferenza per owner opzionale in backup cifrato .snb. [Specifica](../../docs/P2-TASK-ACTIONS.md). Non dichiarare CI verde/merge prima della verifica.

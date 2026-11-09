@@ -2049,6 +2049,7 @@ Ctrl+/ · Questo elenco'''),
             Expanded(child: ReminderAutomationsBoard(
               key: ValueKey('reminder-rules-owner-${cloud.userId ?? 'guest'}'),
               ownerId: cloud.userId,
+              lists: data.lists,
               supported: ReminderController.supported,
               notificationsEnabled: reminders.enabled,
               onToggleNotifications: () async {

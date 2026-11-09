@@ -1,7 +1,7 @@
 # Simple Notes API v1
 
 <!-- CURRENT-STATUS-REF -->
-> **Stato operativo 09/11/2026:** `main` integra P2.4B2W e i **batch funzionali P2 #56 e #57** ([PR #57](https://github.com/andreadada/simple-notes/pull/57), merge `90e5e26a`): Timeline/Gantt, filtri, analytics, modelli personali, esportazione ICS, widget Android non sensibile. [Flutter CI #42634429343](https://github.com/andreadada/simple-notes/actions/runs/42634429343) **success** (365 test, Android JDK17/21, Windows EXE/MSIX); [Markdown #42634428206](https://github.com/andreadada/simple-notes/actions/runs/42634428206) **success**. **P2 ancora aperta:** OAuth Calendar/Outlook, condivisione ACL, allegati S3, automazioni, restore live, collaudi fisici. VPS attestata Flyway V10 (03/11), V11 solo codice; nessun deploy. [Stato](CURRENT-STATUS.md) · [Matrice P2](P2-DELIVERY-MATRIX.md) · [Integrazioni](P2-LOCAL-INTEGRATIONS.md).
+> **Stato corrente 09/11/2026:** `main` include [PR #58](https://github.com/andreadada/simple-notes/pull/58) (merge `e926a5a`; trasferimento modelli manuale) e i batch P2 #56/#57. [CI Flutter #42688444850](https://github.com/andreadada/simple-notes/actions/runs/42688444850) verde: 369 test e build Windows/Android; [Markdown #42688444618](https://github.com/andreadada/simple-notes/actions/runs/42688444618) verde. Backend **Flyway V11 nel codice**, **V10 attestata sulla VPS** (03/11), client `0.31.0+33`; restore live, OAuth/provider, ACL, S3, automazioni, deploy V11 e collaudi fisici restano aperti. [Fonte canonica](CURRENT-STATUS.md).
 
 
 ## Auth

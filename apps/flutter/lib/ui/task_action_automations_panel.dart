@@ -248,7 +248,7 @@ class _TaskActionAutomationsPanelState
                             titleContains: keyword.trim())
                         : original.copyWith(
                             trigger: trigger, action: action, value: value,
-                            titleContains: keyword.text.trim());
+                            titleContains: keyword.trim());
                     result.validate();
                     Navigator.pop(ctx, result);
                   } on FormatException {

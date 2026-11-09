@@ -148,14 +148,17 @@ class _TaskActionAutomationsPanelState
                 const SizedBox(height: 14),
                 const Text('Solo se il titolo contiene (facoltativo)'),
                 const SizedBox(height: 7),
-                TextField(
-                  key: const Key('action-keyword'),
-                  controller: keyword,
-                  maxLength: 100,
-                  decoration: const InputDecoration(
-                    hintText: 'Es. esame',
-                    filled: false,
-                    border: UnderlineInputBorder(),
+                Material(
+                  type: MaterialType.transparency,
+                  child: TextField(
+                    key: const Key('action-keyword'),
+                    controller: keyword,
+                    maxLength: 100,
+                    decoration: const InputDecoration(
+                      hintText: 'Es. esame',
+                      filled: false,
+                      border: UnderlineInputBorder(),
+                    ),
                   ),
                 ),
                 const SizedBox(height: 12),
@@ -191,12 +194,15 @@ class _TaskActionAutomationsPanelState
                       ),
                   ])
                 else if (action == 'tag')
-                  TextField(
-                    key: const Key('action-tag'),
-                    controller: tag, maxLength: 40,
-                    decoration: const InputDecoration(
-                      hintText: 'Tag da aggiungere',
-                      filled: false, border: UnderlineInputBorder(),
+                  Material(
+                    type: MaterialType.transparency,
+                    child: TextField(
+                      key: const Key('action-tag'),
+                      controller: tag, maxLength: 40,
+                      decoration: const InputDecoration(
+                        hintText: 'Tag da aggiungere',
+                        filled: false, border: UnderlineInputBorder(),
+                      ),
                     ),
                   )
                 else if (widget.lists.isEmpty)

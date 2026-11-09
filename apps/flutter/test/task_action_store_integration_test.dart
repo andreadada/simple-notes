@@ -132,4 +132,37 @@ void main() {
     await container.read(localStoreProvider.notifier).addTask('Guest');
     expect((await db.snapshot()).tasks.single.priority, 0);
   });
+  test('recurrent completion advances due without triggering completion action',
+      () async {
+    final (db, container) = await prepare();
+    final prefs = await SharedPreferences.getInstance();
+    await const TaskActionStore().save(prefs, 'account-a',
+      TaskActionLibrary(rules: [
+        TaskActionLibrary.newRule(
+          trigger: 'completed', action: 'tag', value: 'completed-only'),
+      ]));
+    final store = container.read(localStoreProvider.notifier);
+    await store.addTask('Recurring', due: TaskDue.dateOnly('2026-11-10'));
+    final id = (await db.snapshot()).tasks.single.id;
+    await store.setTaskRecurrence(id, TaskRecurrence('daily'));
+    await store.toggleTask(id);
+    final result = (await db.snapshot()).tasks.single;
+    expect(result.completed, isFalse);
+    expect(result.due.date, '2026-11-11');
+    expect(result.tags, isNot(contains('completed-only')));
+    expect(await db.pendingCount(), 3);
+  });
+
+  test('matching owner with corrupt archive still persists an unchanged task',
+      () async {
+    final (db, container) = await prepare();
+    final prefs = await SharedPreferences.getInstance();
+    final key = TaskActionStore.keyForOwner('account-a');
+    await prefs.setString(key, '{broken');
+    await container.read(localStoreProvider.notifier).addTask('Ordinary');
+    expect((await db.snapshot()).tasks.single.priority, 0);
+    expect(await db.pendingCount(), 1);
+    expect(prefs.getString(key), '{broken');
+  });
+
 }

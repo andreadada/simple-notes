@@ -44,8 +44,8 @@ void main() {
       TimeSlot(
         id: 'block',
         block: TimeBlock(
-          start: DateTime(2026, 11, 8, 16),
-          end: DateTime(2026, 11, 10, 15),
+          start: DateTime(2026, 11, 9, 23),
+          end: DateTime(2026, 11, 10, 22),
           timeZone: 'Europe/Rome',
         ),
       ),

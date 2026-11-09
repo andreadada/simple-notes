@@ -1,6 +1,8 @@
 # P1.15 — Scorciatoie tastiera Windows
 
-> **Stato operativo 31/10/2026:** P2.2 ICS read-only integrata su `main` ([PR #21](https://github.com/andreadada/simple-notes/pull/21), Flutter `0.25.0+27`, CI Flutter/Markdown verde: 162 test, Windows EXE/MSIX, Android JDK17/21). Test fisici e deploy cumulativo non attestati. Backend repo Flyway V10, VPS ultima attestazione V8; nessun deploy/reset. [Stato](CURRENT-STATUS.md) · [ICS](P2-ICS.md).
+> **Stato corrente 09/11/2026:** P0/P1 integrati nel codice; [PR #58](https://github.com/andreadada/simple-notes/pull/58) merged, 369 test Flutter e build Windows/Android verificate nel branch. Flyway V11 nel codice, VPS V10 attestata; P2, deploy e collaudi fisici ancora aperti. [Stato canonico](CURRENT-STATUS.md).
+
+> **Cronologia al 31/10/2026:** P2.2 ICS read-only integrata su `main` ([PR #21](https://github.com/andreadada/simple-notes/pull/21), Flutter `0.25.0+27`, CI Flutter/Markdown verde: 162 test, Windows EXE/MSIX, Android JDK17/21). Test fisici e deploy cumulativo non attestati. Backend repo Flyway V10, VPS ultima attestazione V8; nessun deploy/reset. [Stato](CURRENT-STATUS.md) · [ICS](P2-ICS.md).
 
 **Stato 26/10/2026:** **integrata in `main` con PR #16**, Flutter `0.20.0+22`, [CI Flutter verde](https://github.com/andreadada/simple-notes/actions/runs/40384676154) e [Markdown verde](https://github.com/andreadada/simple-notes/actions/runs/40384676062). P1.14 Sticky Notes [PR #15](https://github.com/andreadada/simple-notes/pull/15) è integrata su `main` (Flutter `0.19.0+21`, [Flutter CI verde](https://github.com/andreadada/simple-notes/actions/runs/40377359849) e [Markdown verde](https://github.com/andreadada/simple-notes/actions/runs/40377360259)). CI/merge P1.15 confermati; installazione e prove fisiche ancora da verificare.
 

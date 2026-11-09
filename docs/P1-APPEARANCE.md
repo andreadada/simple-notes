@@ -1,6 +1,8 @@
 # P1.18 — Aspetto chiaro/scuro/sistema (Windows e Android)
 
-> **Stato operativo 31/10/2026:** P2.2 ICS read-only integrata su `main` ([PR #21](https://github.com/andreadada/simple-notes/pull/21), Flutter `0.25.0+27`, CI Flutter/Markdown verde: 162 test, Windows EXE/MSIX, Android JDK17/21). Test fisici e deploy cumulativo non attestati. Backend repo Flyway V10, VPS ultima attestazione V8; nessun deploy/reset. [Stato](CURRENT-STATUS.md) · [ICS](P2-ICS.md).
+> **Stato corrente 09/11/2026:** P0/P1 integrati nel codice; [PR #58](https://github.com/andreadada/simple-notes/pull/58) merged, 369 test Flutter e build Windows/Android verificate nel branch. Flyway V11 nel codice, VPS V10 attestata; P2, deploy e collaudi fisici ancora aperti. [Stato canonico](CURRENT-STATUS.md).
+
+> **Cronologia al 31/10/2026:** P2.2 ICS read-only integrata su `main` ([PR #21](https://github.com/andreadada/simple-notes/pull/21), Flutter `0.25.0+27`, CI Flutter/Markdown verde: 162 test, Windows EXE/MSIX, Android JDK17/21). Test fisici e deploy cumulativo non attestati. Backend repo Flyway V10, VPS ultima attestazione V8; nessun deploy/reset. [Stato](CURRENT-STATUS.md) · [ICS](P2-ICS.md).
 
 **Implementazione P1.18 (storica):** integrata in `main` tramite [PR #19](https://github.com/andreadada/simple-notes/pull/19), Flutter `0.23.0+25`. [Flutter CI #41067872668](https://github.com/andreadada/simple-notes/actions/runs/41067872668) e [Markdown #41067872675](https://github.com/andreadada/simple-notes/actions/runs/41067872675) **verdi** sullo SHA finale; test fisici e release non attestati. [CURRENT-STATUS](CURRENT-STATUS.md).
 

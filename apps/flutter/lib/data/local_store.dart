@@ -3,6 +3,7 @@ import 'package:uuid/uuid.dart';
 import 'app_database.dart';
 import 'models.dart';
 import 'portable_archive.dart';
+import 'task_templates.dart';
 
 export 'models.dart';
 
@@ -44,6 +45,23 @@ class LocalStore extends Notifier<LocalData> {
 
   Future<void> reload() async {
     state = await ref.read(databaseProvider).snapshot();
+  }
+
+  /// Creates a complete template task in one SQLite transaction. The
+  /// matching sync mutation is inserted in that same transaction.
+  /// No saved task is exposed to the UI until the transaction commits.
+  Future<LocalTask> createTaskFromTemplate(
+    String templateId, {String? listId}
+  ) async {
+    if (listId != null && !state.lists.any((item) => item.id == listId)) {
+      throw StateError('La lista selezionata non esiste.');
+    }
+    final template = TaskTemplateCatalog.find(templateId);
+    final created = template.instantiate(listId: listId);
+    await ref.read(databaseProvider).upsertTask(created);
+    state = state.copyWith(tasks: [...state.tasks, created]);
+    _changed();
+    return created;
   }
 
   void _changed() => ref.read(localMutationRevisionProvider.notifier).state++;

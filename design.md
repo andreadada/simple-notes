@@ -322,3 +322,7 @@ Se un client prova a riutilizzare un'operazione già applicata con payload, azio
 ## UX P2.4B2Q — blocco per collisione immutabile
 
 Nel menu account, un conflitto `SYNC_OPERATION_ID_REUSE` deve presentare esplicitamente il motivo e non offrire «Risolvi conflitto», perché la normale scelta di versione non può cambiare l'intento già registrato. Le modifiche locali rimangono visibili e la sync automatica sospesa. Un normale conflitto 409 mantiene il dialog Forui precedente. Non aggiungere pulsanti «Forza», «Ripristina», cancellazione outbox o reset. [Specifica](docs/P2-SYNC-INTENT-CONFLICTS.md).
+
+## P2 — Editor di regole dei promemoria (in verifica)
+
+La schermata Forui **Automazioni** modifica parametri compositi (trigger scadenza/blocco, anticipo, priorità) con un dialog dedicato; le singole regole visibili offrono azioni Attiva/Disattiva, Modifica, Elimina. Questo è un caso motivato in cui una modale per campi correlati è preferibile all'editing inline del titolo. Confermare eliminazioni; mantenere sempre accessibilità e rendering compatto. Non esporre dati personali nelle notifiche. [Specifica](docs/P2-REMINDER-AUTOMATIONS.md).

@@ -4,6 +4,9 @@
 
 <!-- CURRENT-STATUS-REF -->
 
+> **Sviluppo P2 (09/11/2026):** [PR #59](https://github.com/andreadada/simple-notes/pull/59) per automazioni locali dei promemoria: regole owner-scoped, editor Forui, scheduler esistente, backup `.snb` opzionale e test; CI/merge da verificare. Non sono azioni cloud o scheduling server. [Contratto](P2-REMINDER-AUTOMATIONS.md).
+
+
 > **P2 integrata (09/11/2026):** [PR #58](https://github.com/andreadada/simple-notes/pull/58) merged (`e926a5a`), 369 test Flutter e build Android/Windows verdi; import/export manuale modelli JSON con copie additive, file non cifrato, nessuna sync/provider/deploy/restore live. [Specifica](P2-TEMPLATE-TRANSFER.md).
 
 > **Cronologia P1.10 (superata):** Pomodoro `0.15.0+17` per dispositivo/account, timer UTC e stats locali. [Specifica](P1-POMODORO.md); CI e test reali da completare.

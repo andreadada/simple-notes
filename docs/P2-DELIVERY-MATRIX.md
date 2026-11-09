@@ -2,6 +2,8 @@
 
 Aggiornato 9 novembre 2026. **CI verde non equivale a deploy Coolify o collaudo su dispositivi reali.**
 
+**Incremento in verifica (PR #59):** editor e regole locali per notifiche native. Non equivale ad automazioni generaliste né a notifiche con delivery garantita. [Specifica](P2-REMINDER-AUTOMATIONS.md).
+
 **Terzo incremento P2 integrato:** [PR #58](https://github.com/andreadada/simple-notes/pull/58), merge `e926a5a`, trasferimento manuale JSON dei modelli locali. [Flutter CI #42688444850](https://github.com/andreadada/simple-notes/actions/runs/42688444850) PASS (369 test e build Windows/Android), [Markdown #42688444618](https://github.com/andreadada/simple-notes/actions/runs/42688444618) PASS. Il file è non cifrato e non realizza la sync dei modelli o il restore live.
 
 **Secondo batch locale integrato:** [PR #57](https://github.com/andreadada/simple-notes/pull/57), merge `90e5e26a`; [Flutter CI #42634429343](https://github.com/andreadada/simple-notes/actions/runs/42634429343) PASS (365 test, Android JDK17/21 e Windows), [Markdown #42634428206](https://github.com/andreadada/simple-notes/actions/runs/42634428206) PASS.
@@ -24,6 +26,7 @@ La roadmap P2 include funzioni implementate, estensioni non ancora realizzate e 
 | Statistiche | Totali, completate, arretrate, priorità, prossimi 7 giorni, tempo e liste | Fotografia dello stato, non cronologia |
 | Modelli attività | Cinque preset + CRUD di modelli utente, owner-scoped locali, nuovi task tramite outbox e backup .snb compatibile | Definizioni personalizzate non sincronizzate fra dispositivi |
 | Trasferimento modelli JSON | Import/export manuale definizioni con copia additiva e conferma, nessun task/outbox creato | Non cifrato, non sostituisce la sync; prove fisiche rinviate |
+| Regole promemoria locali (PR #59 in verifica) | Tipi due/block, anticipo e priorità, editor Forui, dedup ledger e backup opzionale | Solo OS notifiche e quando l'app aggiorna il piano; non sono automazioni server generali |
 
 Le statistiche sono calcolate sui dati locali senza telemetria. I modelli producono normali attività e operation ID distinti nella coda di sincronizzazione. Le date civili non sono riclassificate in un'ora UTC inventata.
 
@@ -36,7 +39,7 @@ Le statistiche sono calcolate sui dati locali senza telemetria. I modelli produc
 | Liste condivise | ACL multiowner, ruoli, assegnazioni, audit server, migrazioni, protezioni accesso e UI |
 | Allegati S3 | Bucket e policy, endpoint signed URL, quote, verifiche file e flussi offline |
 | Widget Android | Widget nativo Oggi/Inbox/Nuova attività compilato (Java 17/21); launcher/cold-start/logout su dispositivo fisico non verificati |
-| Automazioni configurabili | Regole persistenti, esecuzione affidabile, deduplica ed editor; le ricorrenze/reminder esistenti non bastano |
+| Automazioni configurabili | **Parziale:** regole locali di notifica PR #59; restano azioni su task, esecuzione sempre attiva, dedup server/multi-device, delivery reale e UI estesa |
 | Release | VPS V11, OAuth Android, upgrade Windows, firma, backup/offsite, E2E Windows↔Android e controlli reali |
 
 ## Criteri per dichiarare P2 completata
@@ -53,4 +56,4 @@ Le statistiche sono calcolate sui dati locali senza telemetria. I modelli produc
 - Esportazione manuale ICS per task non completati: date-only senza falso timestamp, istanti UTC esatti, time block, UID stabili, escaping e folding UTF-8, limite 8 MiB.
 - Modelli utente in SharedPreferences per owner: CRUD e definizioni backup compatibili con vecchi archivi .snb v1; applicazione del modello come task SQLite/outbox. Definizioni locali al dispositivo, non condivise in cloud.
 - Widget Android launcher: apri Oggi, Inbox, nuova attività via MainActivity/MethodChannel, senza memorizzare/esporre contenuti. Non è un widget che mostra task, né prova hardware completata.
-- Resta **non implementato**: collegamento OAuth automatico Google/Outlook, collaborazione ACL, allegati S3, automazioni configurabili e restore live. Il collaudo fisico del widget Android resta **non eseguito**. [Contratto](P2-LOCAL-INTEGRATIONS.md).
+- Resta **non implementato nel batch #57**: collegamento OAuth automatico Google/Outlook, collaborazione ACL, allegati S3, automazioni configurabili e restore live. La successiva PR #59 copre soltanto regole di notifica locali. Il collaudo fisico del widget Android resta **non eseguito**. [Contratto](P2-LOCAL-INTEGRATIONS.md).

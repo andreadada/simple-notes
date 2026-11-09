@@ -1,4 +1,5 @@
 import '../data/models.dart';
+import '../data/reminder_automations.dart';
 
 /// P1.7 domain only: no plugin, permission or background scheduling yet.
 /// A ReminderPlan is a pure desired-state instruction for a future native
@@ -147,4 +148,60 @@ abstract final class ReminderPlanner {
     }
     return result;
   }
+  /// Apply user rules to the existing native reminder ledger.
+  /// Duplicate triggers are coalesced by occurrence key, so multiple rules
+  /// cannot produce two notifications for the same task/start/lead.
+  static List<ReminderPlan> desiredScheduleForRules(
+    Iterable<LocalTask> tasks, {
+    required String ownerId,
+    required DateTime now,
+    required Iterable<ReminderAutomationRule> rules,
+    int horizonDays = 14,
+    int maxNotifications = 100,
+  }) {
+    if (ownerId.trim().isEmpty || horizonDays < 1 || horizonDays > 90 ||
+        maxNotifications < 1 || maxNotifications > 500) {
+      throw const FormatException('Automazioni promemoria non valide.');
+    }
+    final active = rules.toList(growable: false);
+    for (final rule in active) {
+      rule.validate();
+    }
+    final latest = now.toUtc().add(Duration(days: horizonDays));
+    final unique = <String, ReminderPlan>{};
+    void include(ReminderPlan? plan) {
+      if (plan == null || plan.fireAtUtc.isAfter(latest)) return;
+      unique.putIfAbsent(plan.key, () => plan);
+    }
+    for (final task in tasks) {
+      if (task.completed) continue;
+      for (final rule in active) {
+        if (!rule.enabled || task.priority < rule.minPriority) continue;
+        if (rule.kind == 'due') {
+          include(forTaskDue(task, ownerId: ownerId,
+            now: now, leadMinutes: rule.leadMinutes));
+        } else {
+          for (final slot in task.timeBlocks) {
+            include(forTimeBlock(task, ownerId: ownerId,
+              slotId: slot.id, now: now, leadMinutes: rule.leadMinutes));
+          }
+        }
+      }
+    }
+    final plans = unique.values.toList()
+      ..sort((a, b) {
+        final order = a.fireAtUtc.compareTo(b.fireAtUtc);
+        return order == 0 ? a.key.compareTo(b.key) : order;
+      });
+    final ids = <int>{};
+    final result = <ReminderPlan>[];
+    for (final plan in plans) {
+      // Preserve existing fail-safe for rare FNV-1a collisions.
+      if (!ids.add(plan.notificationId)) continue;
+      result.add(plan);
+      if (result.length == maxNotifications) break;
+    }
+    return result;
+  }
+
 }

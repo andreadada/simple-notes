@@ -72,8 +72,8 @@ void main() {
   });
 
   test('long multilingual titles fold at 75 UTF-8 bytes and escape syntax', () {
-    final long = 'Università, studio; schemi\\ note\n' +
-        List.filled(80, 'è').join();
+    final long = 'Università, studio; schemi\\ note\n'
+        "${List.filled(80, 'è').join()}";
     final value = export([task('long',
       due: TaskDue.dateOnly('2026-11-09'), title: long)]);
     expect(value, contains('SUMMARY:Università\\, studio\\; schemi\\\\ note\\n'));

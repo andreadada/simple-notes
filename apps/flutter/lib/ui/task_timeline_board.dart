@@ -46,8 +46,8 @@ class TaskTimelineSchedule {
           .subtract(const Duration(microseconds: 1)), anchor);
       if (end < 0 || start >= days) continue;
       values.add(TimelineSpan(
-        startDay: start.clamp(0, days - 1),
-        endDay: end.clamp(0, days - 1),
+        startDay: start.clamp(0, days - 1).toInt(),
+        endDay: end.clamp(0, days - 1).toInt(),
         milestone: false,
       ));
     }

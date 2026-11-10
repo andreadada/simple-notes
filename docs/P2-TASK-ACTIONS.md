@@ -26,3 +26,7 @@ I file task_action_automations_test.dart, task_action_store_integration_test.dar
 ## Estensione P2 integrata — catalogo cloud con CAS (PR #61)
 
 La PR #61 introduce **pubblicazione e recupero manuali** delle definizioni tramite endpoint JWT owner-scoped versionato; non modifica il trigger locale o il metodo di applicazione sul task, e non abilita esecuzione server o sync continua. [Contratto dedicato](P2-CLOUD-ACTION-CATALOG.md).
+
+## Sync delle definizioni (PR #62 in verifica)
+
+È previsto l'allineamento automatico in primo piano del solo catalogo di regole, con CAS e blocco dei conflitti: **non** dei task risultanti dalle automazioni, né dei trigger server. [Contratto](P2-AUTO-ACTION-CATALOG.md).

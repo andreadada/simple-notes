@@ -17,8 +17,12 @@
 | CI P1.18 | [Flutter CI #41067872668](https://github.com/andreadada/simple-notes/actions/runs/41067872668): **success** (148 test, Windows EXE/MSIX, Android JDK17/21). [Markdown #41067872675](https://github.com/andreadada/simple-notes/actions/runs/41067872675): **success** | Non dimostra test fisico, OAuth né upgrade ZIP→MSIX |
 | CI P1.17 | [Flutter CI #40797207231](https://github.com/andreadada/simple-notes/actions/runs/40797207231): **success** per analyze/test, Windows release + MSIX di sviluppo, Android JDK17 e JDK21. [Markdown #40797207130](https://github.com/andreadada/simple-notes/actions/runs/40797207130): **success** | La CI non certifica interazioni fisiche, Google login o notifiche |
 | Gate R1 (codice) | [PR #26](https://github.com/andreadada/simple-notes/pull/26) merged; [Compose CI #41523319857](https://github.com/andreadada/simple-notes/actions/runs/41523319857) success (V6 rifiutata, V10 incompleta rifiutata, V10 sintetica accettata), [Markdown #41523319860](https://github.com/andreadada/simple-notes/actions/runs/41523319860) success | **Non certifica Flyway V10 reale, health e API autenticata in VPS** |
-| Backend nel repository | Spring Boot/PostgreSQL 17, Flyway **V11**; client Drift/SQLite **V8** | VPS attestata solo a Flyway **V10 (03/11/2026)**; backend V11/capability non verificati sulla VPS |
+| Backend nel repository | Spring Boot/PostgreSQL 17, Flyway **V12**; client Drift/SQLite **V8** | VPS attestata solo a Flyway **V10 (03/11/2026)**; migrazioni V11/V12, API e capability nuove non verificate sulla VPS |
 | Test reali | VPS V10 verificata il 03/11; Google Windows connesso e pending 0 nel report disponibile | Android E2E, API strict, V11 e restore live ancora aperti |
+
+## Incremento P2 — sincronizzazione automatica regole (PR #62 in verifica, 10/11/2026)
+
+- [PR #62](https://github.com/andreadada/simple-notes/pull/62): riconciliazione foreground a tre vie con checkpoint per owner e revisione remota CAS. Upload/download automatici soltanto se univoci; su divergenza offline mostra conflitto e mantiene entrambi i cataloghi. UI Forui sospende l'automatismo mentre è aperto l'editor; nessuna nuova migrazione, modifica task o deploy. **CI dell'ultimo head e merge ancora da verificare.** Aggiunti controlli per rollback cloud e revisione stale durante Scarica. [Specifica](P2-AUTO-ACTION-CATALOG.md).
 
 ## Incremento P2 — catalogo cloud regole task (PR #61 integrata, 10/11/2026)
 

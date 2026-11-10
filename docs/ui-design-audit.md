@@ -161,3 +161,7 @@ Nel batch manuale verificare dialog Forui password/confirm (focus, hide/show, Es
 ## P2 — Controlli trasferimento regole cloud (PR #61 integrata)
 
 Aggiunti i comandi Pubblica e Scarica al pannello Forui automazioni, con messaggi di conferma, conteggio e revisione; stato loading durante I/O e conferma distinta prima della sostituzione. Stato owner incoerente o archivio corrotto impediscono lo scambio. Non vengono esposti errori grezzi server, token o identificatori dell'account. Test widget e CI non equivalgono al collaudo su dispositivi fisici. [Specifica](P2-CLOUD-ACTION-CATALOG.md).
+
+## P2 — Catalogo regole, stato visibile (PR #62 in verifica)
+
+Nel pannello Forui si evidenziano problemi della sincronizzazione senza modali bloccanti a comparsa: testo breve per conflitto, rete, server vecchio o catalogo malformato e comandi Pubblica/Scarica già presenti. La modifica del catalogo interrompe temporaneamente il pull automatico per non chiudere/sovrascrivere campi editabili. I test unitari/widget non sostituiscono il controllo visivo su Windows/Android fisici. [Contratto](P2-AUTO-ACTION-CATALOG.md).

@@ -58,6 +58,7 @@ import 'data/task_insights.dart';
 import 'auth/cloud_auth.dart';
 import 'sync/cloud_sync.dart';
 import 'sync/auto_sync.dart';
+import 'sync/task_action_rule_auto_sync.dart';
 import 'sync/restore_sync_gate.dart';
 import 'data/restore_startup_probe_io.dart'
     if (dart.library.html) 'data/restore_startup_probe_stub.dart'
@@ -2050,6 +2051,17 @@ Ctrl+/ · Questo elenco'''),
               key: ValueKey('reminder-rules-owner-${cloud.userId ?? 'guest'}'),
               ownerId: cloud.userId,
               lists: data.lists,
+              actionAutoSyncLabel: ref.watch(taskActionAutoSyncStateProvider).ownerId == cloud.userId
+                  ? ref.watch(taskActionAutoSyncStateProvider).label : null,
+              onTaskRulesChanged: () {
+                ref.read(taskActionAutoSyncStateProvider.notifier).state =
+                    const TaskActionAutoSyncState();
+                ref.read(taskActionRulesEditRevisionProvider.notifier).state++;
+              },
+              onTaskRulesEditorVisible: (visible) {
+                if (!mounted) return;
+                ref.read(taskActionEditorVisibleProvider.notifier).state = visible;
+              },
               cloudApiBaseUrl: CloudConfig.apiBaseUrl,
               cloudTokenProvider: () =>
                   ref.read(cloudAuthProvider.notifier).validAccessToken(),

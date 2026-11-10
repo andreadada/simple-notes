@@ -198,3 +198,7 @@ L'utente ha verificato dal container PostgreSQL Simple Notes: V10, FAILED_MIGRAT
 ## P2 — Migrazione additiva V12 (PR #61 integrata, non deployata)
 
 La V12 crea solo task_action_catalog(owner_id PK/FK, payload_json TEXT, version BIGINT, updated_at) con limite 32 KiB per catalogo; non modifica task, note, change log o outbox. Le API GET/PUT JWT di /api/v1/automations/task-actions leggono e sostituiscono definizioni owner-scoped con expectedVersion e lock transazionale. Non eseguono automazioni lato server. **V12 non risulta applicata sulla VPS**; ultimo dato verificato V10 (03/11/2026). Non saltare né manipolare manualmente V11 o V12; seguire [OPERATIONS](../docs/OPERATIONS.md) e [specifica](../docs/P2-CLOUD-ACTION-CATALOG.md). Nessun deploy eseguito.
+
+## P2 — Riconciliazione definizioni nel client (PR #62 in verifica)
+
+Non serve una V13 né nuove tabelle: questo incremento usa esclusivamente il GET/PUT con CAS della V12. La JVM e il backend non eseguono regole né pianificano task. Nessun deploy automatico è effettuato; il client deve gestire 404 prima della migrazione V12, senza cancellare regole locali e senza degradare la sincronizzazione principale. Attestazione VPS disponibile al 03/11: Flyway V10. [Contratto](../docs/P2-AUTO-ACTION-CATALOG.md).

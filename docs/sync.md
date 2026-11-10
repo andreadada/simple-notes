@@ -177,3 +177,7 @@ La [PR #60](https://github.com/andreadada/simple-notes/pull/60) integra azioni t
 ## Catalogo cloud regole task: scambio separato da Delta Sync (PR #61 integrata)
 
 Il catalogo JSON owner-scoped non viene inserito nel registro sync_change dei task e non entra nella outbox SQLite. I comandi Forui **Pubblica sul cloud** e **Scarica dal cloud** richiedono un'azione esplicita e verificano account/archivio locale; il PUT usa expectedVersion, quindi in caso di 409 non può cancellare una revisione remota concorrente. Le definizioni non si trasferiscono automaticamente via polling di Delta Sync e il server non modifica né ricalcola attività. [Contratto](P2-CLOUD-ACTION-CATALOG.md).
+
+## P2 — Riconciliazione foreground delle regole (PR #62 in verifica)
+
+Dopo la normale sync Delta Sync, il client confronta local catalog, checkpoint v1 per owner (versione+contenuto), e catalogo cloud V12. Soltanto un ramo cambiato autorizza upload CAS o download; se entrambi divergono, nessuna modifica automatica e richiesta risoluzione manuale Pubblica/Scarica. Questo canale non modifica cursori, task, note o outbox e non interferisce con la loro sync se il backend è vecchio, offline o restituisce 409. [Contratto](P2-AUTO-ACTION-CATALOG.md).

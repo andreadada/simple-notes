@@ -187,3 +187,7 @@ L'endpoint autenticato `GET /api/v1/capabilities` aggiunge il campo numerico `sy
 ## P2 — Catalogo automazioni task, endpoint versionato (PR #61 integrata)
 
 **GET /api/v1/automations/task-actions** (JWT account) restituisce una versione 0 e un catalogo schema 1 con regole vuote in assenza di dati, oppure la revisione e il catalogo pubblicato dell'utente autenticato. **PUT /api/v1/automations/task-actions** riceve expectedVersion e catalog; l'update usa lock owner e compare-and-swap sul valore corrente. HTTP 200 = nuova versione, 400 = payload non valido, 409 = revisione obsoleta senza scrittura, 401 = autenticazione mancante. Il backend precedente può rispondere 404. Sono validate lunghezza UTF-8, schema 1, ID univoci e tutte le opzioni delle regole. API di **definizioni**, non di esecuzione; nessuna scrittura task e nessuna emissione sync_change. Richiede Flyway V12. [Contratto](P2-CLOUD-ACTION-CATALOG.md).
+
+## P2 — Client foreground sulle API catalogo (PR #62 in verifica)
+
+Non si introducono nuovi endpoint oltre a GET e PUT /api/v1/automations/task-actions della V12. La riconciliazione automatica invia PUT solo quando il confronto con il checkpoint per owner indica un'unica modifica locale e il cloud non è cambiato. Sempre CAS expectedVersion; 409/404/426 non autorizzano retry distruttivi né la sostituzione del catalogo. Il motore resta nel client quando l'app è in primo piano; nessuna azione task viene eseguita dal server. [Contratto](P2-AUTO-ACTION-CATALOG.md).

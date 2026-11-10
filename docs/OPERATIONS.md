@@ -328,3 +328,7 @@ Build verificate in CI: [Flutter #42714514197](https://github.com/andreadada/sim
 ## P2 — Catalogo cloud automazioni (PR #61 integrata, nessun deploy)
 
 Il nuovo endpoint autenticato /api/v1/automations/task-actions richiede **Flyway V12** dopo V11. **Non usare la sua sola presenza in GitHub come prova che V12 sia stata migrata sulla VPS**: la verifica reale al 03/11/2026 attesta V10. Su un backend ancora senza endpoint il client mostra incompatibilità (404), senza riscrivere dati locali; una scrittura concorrente restituisce 409 CAS. Prima di autorizzare qualunque deploy sono obbligatori i runbook preesistenti di backup verificato, readiness e controllo migrazione, senza restore scrivente live. [Contratto](P2-CLOUD-ACTION-CATALOG.md).
+
+## P2 — Regole task auto-sync foreground (PR #62 in verifica)
+
+Inizia soltanto con account autenticato, boundOwnerId locale coerente, restore-sync gate aperto e app in primo piano. Usa il catalogo API V12 già integrato nel repository, ma **non risulta deployata sulla VPS** (V10 attestata il 03/11). Una risposta 404/426 lascia le regole locali intatte; errori di rete, checkpoint malformati o 409 non bloccano la normale sync di note/task/liste. I conflitti di regole si risolvono manualmente con conferma. Nessun processo automatico Android a app chiusa; nessun job server, migrazione aggiuntiva o restore live. [Contratto](P2-AUTO-ACTION-CATALOG.md).

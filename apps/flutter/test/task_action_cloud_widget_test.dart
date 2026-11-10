@@ -120,4 +120,24 @@ void main() {
     await tester.pumpAndSettle();
     expect(network, 0);
   });
+  testWidgets('panel reports editor visibility outside lifecycle builds',
+      (tester) async {
+    final calls = <bool>[];
+    await tester.pumpWidget(MaterialApp(
+      home: FTheme(
+        data: NotesTheme.forPlatform(TargetPlatform.windows),
+        child: Scaffold(body: TaskActionAutomationsPanel(
+          ownerId: 'account-auto', lists: const [],
+          onEditorVisibilityChanged: calls.add,
+          autoSyncLabel: 'Regole cloud allineate',
+        )),
+      ),
+    ));
+    await tester.pumpAndSettle();
+    expect(calls, [true]);
+    await tester.pumpWidget(const SizedBox());
+    await tester.pump();
+    expect(calls, [true, false]);
+  });
+
 }

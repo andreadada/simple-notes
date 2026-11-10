@@ -2058,8 +2058,10 @@ Ctrl+/ · Questo elenco'''),
                     const TaskActionAutoSyncState();
                 ref.read(taskActionRulesEditRevisionProvider.notifier).state++;
               },
-              onTaskRulesEditorVisible: (visible) =>
-                  ref.read(taskActionEditorVisibleProvider.notifier).state = visible,
+              onTaskRulesEditorVisible: (visible) {
+                if (!mounted) return;
+                ref.read(taskActionEditorVisibleProvider.notifier).state = visible;
+              },
               cloudApiBaseUrl: CloudConfig.apiBaseUrl,
               cloudTokenProvider: () =>
                   ref.read(cloudAuthProvider.notifier).validAccessToken(),

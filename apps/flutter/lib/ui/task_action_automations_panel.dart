@@ -56,7 +56,11 @@ class _TaskActionAutomationsPanelState
 
   @override
   void dispose() {
-    widget.onEditorVisibilityChanged?.call(false);
+    // Riverpod listeners must not be notified during widget disposal.
+    final callback = widget.onEditorVisibilityChanged;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      callback?.call(false);
+    });
     super.dispose();
   }
 

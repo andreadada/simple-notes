@@ -1,6 +1,6 @@
 # Simple Notes — Design & Product Specification
 
-> **Stato verificato 09/11/2026:** [PR #60](https://github.com/andreadada/simple-notes/pull/60) merged (`e051162`), automazioni locali di azione sui task aggiunte ai promemoria PR #59. [Flutter CI #42714514197](https://github.com/andreadada/simple-notes/actions/runs/42714514197) **success** (392 test, analisi, Android JDK17/21, Windows EXE/MSIX/recovery); [Markdown #42714514223](https://github.com/andreadada/simple-notes/actions/runs/42714514223) **success**. Flutter `0.31.0+33`, Flyway V11 nel repo, VPS V10 attestata il 03/11. Nessun deploy o E2E fisico; automazioni server, OAuth provider, ACL, S3 e restore live restano aperti. [Stato canonico](docs/CURRENT-STATUS.md).
+> **Stato verificato 10/11/2026:** [PR #61](https://github.com/andreadada/simple-notes/pull/61) integrata `bf16cba`: definizioni regole task cloud con JWT, CAS e Flyway V12. [Flutter CI #42821851199](https://github.com/andreadada/simple-notes/actions/runs/42821851199) **success** (399 test, Windows EXE/MSIX/recovery e Android JDK17/21); [Backend CI #42821851073](https://github.com/andreadada/simple-notes/actions/runs/42821851073) **success** (Spring/PostgreSQL 17), [Markdown #42821851207](https://github.com/andreadada/simple-notes/actions/runs/42821851207) **success**. Flutter `0.31.0+33`; V12 nel repo, VPS V10 attestata al 03/11. Nessun deploy, migrazione su dati reali, restore live o collaudo hardware. Scheduler server, sync automatica regole e resto P2 ancora aperti. [Stato canonico](docs/CURRENT-STATUS.md).
 
 <!-- CURRENT-STATUS-REF -->
 
@@ -331,6 +331,6 @@ La schermata Forui **Automazioni** modifica parametri compositi (trigger scadenz
 
 Una seconda sezione nella schermata Forui Automazioni gestisce regole su eventi crea/completa. Il dialog è giustificato da più campi correlati: condizione sul titolo, trigger e azione priorità/tag/lista. Evitare container pesanti sugli input; confermare eliminazioni, proteggere il cambio account, disabilitare le modifiche quando la preferenza non è leggibile. [Contratto](docs/P2-TASK-ACTIONS.md).
 
-## P2 — Trasferimento cloud delle definizioni di automazione (PR #61 in verifica)
+## P2 — Trasferimento cloud delle definizioni di automazione (PR #61 integrata)
 
 Il pannello automazioni task offre **Pubblica sul cloud** e **Scarica dal cloud**, con conferma esplicita, numero di regole e revisione remota. Indicazioni chiare su differenza fra catalogo cloud e automatismi locali; nessun box pesante sugli input. L'editor si disabilita durante l'operazione e conserva i dati in caso di conflitto o account errato. [Specifica](docs/P2-CLOUD-ACTION-CATALOG.md).

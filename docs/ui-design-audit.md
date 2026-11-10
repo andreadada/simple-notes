@@ -1,7 +1,7 @@
 # Audit applicazione di design.md — UI condivisa Flutter
 
 <!-- CURRENT-STATUS-REF -->
-> **Stato corrente 09/11/2026:** [PR #60](https://github.com/andreadada/simple-notes/pull/60) merged `e051162`, automazioni locali crea/completa con tag/priorità/lista, un solo upsert/outbox e backup opzionale. [Flutter CI #42714514197](https://github.com/andreadada/simple-notes/actions/runs/42714514197) **success** (392 test, Windows EXE/MSIX/recovery, Android JDK17/21), [Markdown #42714514223](https://github.com/andreadada/simple-notes/actions/runs/42714514223) **success**. Flutter `0.31.0+33`, Flyway V11 nel repo, VPS V10 verificata il 03/11, nessun deploy/restore live/E2E. Restano aperti automazioni server, OAuth provider, ACL, S3 e release gates. [Stato canonico](CURRENT-STATUS.md).
+> **Stato verificato 10/11/2026:** [PR #61](https://github.com/andreadada/simple-notes/pull/61) integrata `bf16cba`: definizioni regole task cloud con JWT, CAS e Flyway V12. [Flutter CI #42821851199](https://github.com/andreadada/simple-notes/actions/runs/42821851199) **success** (399 test, Windows EXE/MSIX/recovery e Android JDK17/21); [Backend CI #42821851073](https://github.com/andreadada/simple-notes/actions/runs/42821851073) **success** (Spring/PostgreSQL 17), [Markdown #42821851207](https://github.com/andreadada/simple-notes/actions/runs/42821851207) **success**. Flutter `0.31.0+33`; V12 nel repo, VPS V10 attestata al 03/11. Nessun deploy, migrazione su dati reali, restore live o collaudo hardware. Scheduler server, sync automatica regole e resto P2 ancora aperti. [Stato canonico](CURRENT-STATUS.md).
 
 > **Cronologia (stato del 02/11 o 31/10/2026):** P2.3D gestione fonti ICS integrata su `main` ([PR #25](https://github.com/andreadada/simple-notes/pull/25), Flutter `0.29.0+31`; [CI Flutter](https://github.com/andreadada/simple-notes/actions/runs/41471546808) success: **191 test**, Windows EXE/MSIX, Android JDK17/21; [Markdown](https://github.com/andreadada/simple-notes/actions/runs/41471546568) success). Nessun deploy, reset, installazione o test hardware. Backend Flyway V10 in repo, VPS ultima attestazione V8. [Stato](CURRENT-STATUS.md) · [Gestione ICS](P2-ICS-SOURCE-MANAGEMENT.md).
 
@@ -158,6 +158,6 @@ Nel batch manuale verificare dialog Forui password/confirm (focus, hide/show, Es
 
 [PR #60](https://github.com/andreadada/simple-notes/pull/60) merged, CI Flutter 392 test verde. Il form Forui separa trigger, condizione titolo e azione; input sottolineati senza contenitori riempiti, card con Modifica/Elimina/Attiva/Disattiva e conferma di eliminazione. Regole non leggibili fermano l'editor senza ricostruzione implicita. Test di schermata e unitari in CI non sono test visivi su device. [Contratto](P2-TASK-ACTIONS.md).
 
-## P2 — Controlli trasferimento regole cloud (PR #61 in verifica)
+## P2 — Controlli trasferimento regole cloud (PR #61 integrata)
 
 Aggiunti i comandi Pubblica e Scarica al pannello Forui automazioni, con messaggi di conferma, conteggio e revisione; stato loading durante I/O e conferma distinta prima della sostituzione. Stato owner incoerente o archivio corrotto impediscono lo scambio. Non vengono esposti errori grezzi server, token o identificatori dell'account. Test widget e CI non equivalgono al collaudo su dispositivi fisici. [Specifica](P2-CLOUD-ACTION-CATALOG.md).

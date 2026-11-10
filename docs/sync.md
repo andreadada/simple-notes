@@ -1,7 +1,7 @@
 # Delta Sync v1 — protocollo e storia degli incrementi
 
 <!-- CURRENT-STATUS-REF -->
-> **Stato corrente 09/11/2026:** [PR #60](https://github.com/andreadada/simple-notes/pull/60) merged `e051162`, automazioni locali crea/completa con tag/priorità/lista, un solo upsert/outbox e backup opzionale. [Flutter CI #42714514197](https://github.com/andreadada/simple-notes/actions/runs/42714514197) **success** (392 test, Windows EXE/MSIX/recovery, Android JDK17/21), [Markdown #42714514223](https://github.com/andreadada/simple-notes/actions/runs/42714514223) **success**. Flutter `0.31.0+33`, Flyway V11 nel repo, VPS V10 verificata il 03/11, nessun deploy/restore live/E2E. Restano aperti automazioni server, OAuth provider, ACL, S3 e release gates. [Stato canonico](CURRENT-STATUS.md).
+> **Stato verificato 10/11/2026:** [PR #61](https://github.com/andreadada/simple-notes/pull/61) integrata `bf16cba`: definizioni regole task cloud con JWT, CAS e Flyway V12. [Flutter CI #42821851199](https://github.com/andreadada/simple-notes/actions/runs/42821851199) **success** (399 test, Windows EXE/MSIX/recovery e Android JDK17/21); [Backend CI #42821851073](https://github.com/andreadada/simple-notes/actions/runs/42821851073) **success** (Spring/PostgreSQL 17), [Markdown #42821851207](https://github.com/andreadada/simple-notes/actions/runs/42821851207) **success**. Flutter `0.31.0+33`; V12 nel repo, VPS V10 attestata al 03/11. Nessun deploy, migrazione su dati reali, restore live o collaudo hardware. Scheduler server, sync automatica regole e resto P2 ancora aperti. [Stato canonico](CURRENT-STATUS.md).
 
 
 ## Ultima versione di un elemento / risoluzione conflitto (P0)
@@ -174,6 +174,6 @@ Il campo `syncOperationFingerprintSchema=1` segnala che l'istanza API pubblica i
 
 La [PR #60](https://github.com/andreadada/simple-notes/pull/60) integra azioni task sul solo evento locale di creazione/completamento. La trasformazione avviene **prima** della scrittura SQL e del normale `upsert` outbox. Il pull remoto non innesca automazioni e non crea nuove mutazioni; il server continua a imporre il normale `remoteVersion` e le risoluzioni conflitti. Le regole non sono sincronizzate: non esiste deduplica distribuita di trigger. [Specifiche](P2-TASK-ACTIONS.md).
 
-## Catalogo cloud regole task: scambio separato da Delta Sync (PR #61 in verifica)
+## Catalogo cloud regole task: scambio separato da Delta Sync (PR #61 integrata)
 
 Il catalogo JSON owner-scoped non viene inserito nel registro sync_change dei task e non entra nella outbox SQLite. I comandi Forui **Pubblica sul cloud** e **Scarica dal cloud** richiedono un'azione esplicita e verificano account/archivio locale; il PUT usa expectedVersion, quindi in caso di 409 non può cancellare una revisione remota concorrente. Le definizioni non si trasferiscono automaticamente via polling di Delta Sync e il server non modifica né ricalcola attività. [Contratto](P2-CLOUD-ACTION-CATALOG.md).

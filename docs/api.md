@@ -1,7 +1,7 @@
 # Simple Notes API v1
 
 <!-- CURRENT-STATUS-REF -->
-> **Stato corrente 09/11/2026:** [PR #60](https://github.com/andreadada/simple-notes/pull/60) merged `e051162`, automazioni locali crea/completa con tag/priorità/lista, un solo upsert/outbox e backup opzionale. [Flutter CI #42714514197](https://github.com/andreadada/simple-notes/actions/runs/42714514197) **success** (392 test, Windows EXE/MSIX/recovery, Android JDK17/21), [Markdown #42714514223](https://github.com/andreadada/simple-notes/actions/runs/42714514223) **success**. Flutter `0.31.0+33`, Flyway V11 nel repo, VPS V10 verificata il 03/11, nessun deploy/restore live/E2E. Restano aperti automazioni server, OAuth provider, ACL, S3 e release gates. [Stato canonico](CURRENT-STATUS.md).
+> **Stato verificato 10/11/2026:** [PR #61](https://github.com/andreadada/simple-notes/pull/61) integrata `bf16cba`: definizioni regole task cloud con JWT, CAS e Flyway V12. [Flutter CI #42821851199](https://github.com/andreadada/simple-notes/actions/runs/42821851199) **success** (399 test, Windows EXE/MSIX/recovery e Android JDK17/21); [Backend CI #42821851073](https://github.com/andreadada/simple-notes/actions/runs/42821851073) **success** (Spring/PostgreSQL 17), [Markdown #42821851207](https://github.com/andreadada/simple-notes/actions/runs/42821851207) **success**. Flutter `0.31.0+33`; V12 nel repo, VPS V10 attestata al 03/11. Nessun deploy, migrazione su dati reali, restore live o collaudo hardware. Scheduler server, sync automatica regole e resto P2 ancora aperti. [Stato canonico](CURRENT-STATUS.md).
 
 
 ## Auth
@@ -184,6 +184,6 @@ Quando un `operationId` appartiene allo stesso owner ma viene riutilizzato su un
 
 L'endpoint autenticato `GET /api/v1/capabilities` aggiunge il campo numerico `syncOperationFingerprintSchema:1`. Non restituisce fingerprint, operation ID, payload, JWT o dati dei proprietari. Il gate di rilascio V11 lo richiede insieme agli schemi di scadenza/time blocking/ricorrenza; il validatore interpreta solo l'intero 1 come supportato, mai stringhe o boolean. Gli endpoint precedenti restano invariati. [Runbook V11](RELEASE-V11-READINESS.md).
 
-## P2 — Catalogo automazioni task, endpoint versionato (PR #61 in verifica)
+## P2 — Catalogo automazioni task, endpoint versionato (PR #61 integrata)
 
 **GET /api/v1/automations/task-actions** (JWT account) restituisce una versione 0 e un catalogo schema 1 con regole vuote in assenza di dati, oppure la revisione e il catalogo pubblicato dell'utente autenticato. **PUT /api/v1/automations/task-actions** riceve expectedVersion e catalog; l'update usa lock owner e compare-and-swap sul valore corrente. HTTP 200 = nuova versione, 400 = payload non valido, 409 = revisione obsoleta senza scrittura, 401 = autenticazione mancante. Il backend precedente può rispondere 404. Sono validate lunghezza UTF-8, schema 1, ID univoci e tutte le opzioni delle regole. API di **definizioni**, non di esecuzione; nessuna scrittura task e nessuna emissione sync_change. Richiede Flyway V12. [Contratto](P2-CLOUD-ACTION-CATALOG.md).

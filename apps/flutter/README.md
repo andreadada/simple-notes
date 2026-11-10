@@ -1,6 +1,6 @@
 # Flutter client — P0 e P1
 
-> **Stato verificato 09/11/2026:** [PR #60](https://github.com/andreadada/simple-notes/pull/60) merged (`e051162`), automazioni locali di azione sui task aggiunte ai promemoria PR #59. [Flutter CI #42714514197](https://github.com/andreadada/simple-notes/actions/runs/42714514197) **success** (392 test, analisi, Android JDK17/21, Windows EXE/MSIX/recovery); [Markdown #42714514223](https://github.com/andreadada/simple-notes/actions/runs/42714514223) **success**. Flutter `0.31.0+33`, Flyway V11 nel repo, VPS V10 attestata il 03/11. Nessun deploy o E2E fisico; automazioni server, OAuth provider, ACL, S3 e restore live restano aperti. [Stato canonico](../../docs/CURRENT-STATUS.md).
+> **Stato verificato 10/11/2026:** [PR #61](https://github.com/andreadada/simple-notes/pull/61) integrata `bf16cba`: definizioni regole task cloud con JWT, CAS e Flyway V12. [Flutter CI #42821851199](https://github.com/andreadada/simple-notes/actions/runs/42821851199) **success** (399 test, Windows EXE/MSIX/recovery e Android JDK17/21); [Backend CI #42821851073](https://github.com/andreadada/simple-notes/actions/runs/42821851073) **success** (Spring/PostgreSQL 17), [Markdown #42821851207](https://github.com/andreadada/simple-notes/actions/runs/42821851207) **success**. Flutter `0.31.0+33`; V12 nel repo, VPS V10 attestata al 03/11. Nessun deploy, migrazione su dati reali, restore live o collaudo hardware. Scheduler server, sync automatica regole e resto P2 ancora aperti. [Stato canonico](../../docs/CURRENT-STATUS.md).
 
 <!-- CURRENT-STATUS-REF -->
 
@@ -243,6 +243,6 @@ La schermata Strumenti → Automazioni offre regole locali per avvisi da scadenz
 
 Da Strumenti → Automazioni, regole locali per creare/completare task e modificare priorità/tag/lista, filtro titolo. L'effetto precede un solo upsert SQLite+outbox; non esegue replay su remote pull, import o app startup. Preferenza per owner opzionale in backup cifrato .snb. [Specifica](../../docs/P2-TASK-ACTIONS.md). [Flutter CI #42714514197](https://github.com/andreadada/simple-notes/actions/runs/42714514197) verde (392 test, Android e Windows); test su dispositivi e deploy restano rinviati.
 
-## P2 — Pubblica/Scarica catalogo automazioni (PR #61 in verifica)
+## P2 — Pubblica/Scarica catalogo automazioni (PR #61 integrata)
 
 Con account Google autenticato e archivio SQLite coerente, Strumenti → Automazioni permette lo scambio manuale delle regole task tramite TaskActionCloudApi. Il cloud memorizza le sole definizioni, con CAS sulla revisione e conferma esplicita prima di sostituire; 404 su backend precedente e 409 per modifica concorrente sono fail-closed. Flyway V12 è nel codice, non sulla VPS. Il trasferimento non modifica la coda sync né applica regole ai task esistenti. [Contratto](../../docs/P2-CLOUD-ACTION-CATALOG.md).

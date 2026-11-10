@@ -91,6 +91,8 @@ Con il client reale verificare regole su creazione/completamento manuali, sposta
 
 **Verifica CI (09/11/2026):** [Flutter #42714514197](https://github.com/andreadada/simple-notes/actions/runs/42714514197) supera 392 test e build Windows EXE/MSIX, Android JDK17/21; la riuscita non certifica esecuzione o sincronizzazione cross-device su dispositivi fisici. Nessun test fisico e nessun deploy effettuati.
 
-## P2 — Catalogo cloud regole task (PR #61): prove manuali differite
+## P2 — Catalogo cloud regole task (PR #61 integrata): prove manuali differite
 
 Dopo un deploy **autorizzato** con Flyway V12, provare su Windows e Android con lo stesso account: pubblicazione, download con conferma, annullamento, modifica concorrente con 409 CAS, backend pre-migrazione 404, cambio account durante la richiesta, perdita rete e conferma che non vengano modificati task/outbox. Ripetere con due owner e liste mancanti. Le definizioni NON sono sincronizzate automaticamente, né esiste un job di esecuzione server. Nessun collaudo fisico o deploy in questa fase. [Contratto](P2-CLOUD-ACTION-CATALOG.md).
+
+**CI confermata il 10/11/2026:** [Flutter CI #42821851199](https://github.com/andreadada/simple-notes/actions/runs/42821851199) verde (399 test e build Windows/Android); [Backend CI #42821851073](https://github.com/andreadada/simple-notes/actions/runs/42821851073) verde (PostgreSQL 17), [Markdown #42821851207](https://github.com/andreadada/simple-notes/actions/runs/42821851207) verde. Nessuna prova di deploy, migrazione V12 su VPS o test Windows↔Android fisico. Il server attualmente attestato (V10 al 03/11) non deve essere considerato compatibile con l'API del catalogo finché non verificato.

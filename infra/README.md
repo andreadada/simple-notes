@@ -1,7 +1,7 @@
 # Backend — Coolify
 
 <!-- CURRENT-STATUS-REF -->
-> **Stato corrente 09/11/2026:** [PR #60](https://github.com/andreadada/simple-notes/pull/60) merged `e051162`, automazioni locali crea/completa con tag/priorità/lista, un solo upsert/outbox e backup opzionale. [Flutter CI #42714514197](https://github.com/andreadada/simple-notes/actions/runs/42714514197) **success** (392 test, Windows EXE/MSIX/recovery, Android JDK17/21), [Markdown #42714514223](https://github.com/andreadada/simple-notes/actions/runs/42714514223) **success**. Flutter `0.31.0+33`, Flyway V11 nel repo, VPS V10 verificata il 03/11, nessun deploy/restore live/E2E. Restano aperti automazioni server, OAuth provider, ACL, S3 e release gates. [Stato canonico](../docs/CURRENT-STATUS.md).
+> **Stato verificato 10/11/2026:** [PR #61](https://github.com/andreadada/simple-notes/pull/61) integrata `bf16cba`: definizioni regole task cloud con JWT, CAS e Flyway V12. [Flutter CI #42821851199](https://github.com/andreadada/simple-notes/actions/runs/42821851199) **success** (399 test, Windows EXE/MSIX/recovery e Android JDK17/21); [Backend CI #42821851073](https://github.com/andreadada/simple-notes/actions/runs/42821851073) **success** (Spring/PostgreSQL 17), [Markdown #42821851207](https://github.com/andreadada/simple-notes/actions/runs/42821851207) **success**. Flutter `0.31.0+33`; V12 nel repo, VPS V10 attestata al 03/11. Nessun deploy, migrazione su dati reali, restore live o collaudo hardware. Scheduler server, sync automatica regole e resto P2 ancora aperti. [Stato canonico](../docs/CURRENT-STATUS.md).
 
 
 ## Cronologia — rilascio 0.7.0+9 (superato da P1.6)
@@ -195,6 +195,6 @@ L'utente ha verificato dal container PostgreSQL Simple Notes: V10, FAILED_MIGRAT
 
 `release-v11-readiness.sh` ora richiede `syncOperationFingerprintSchema:1` dal servizio autenticato, non solo Flyway 11; il flag è verificato in read-only. `release-readiness.sh` V10 continua a usare il contratto precedente. Verificare separatamente release approvata, runtime e sync dispositivo su account di prova. [Runbook](../docs/RELEASE-V11-READINESS.md).
 
-## P2 — Migrazione additiva V12 (PR #61 in verifica)
+## P2 — Migrazione additiva V12 (PR #61 integrata, non deployata)
 
 La V12 crea solo task_action_catalog(owner_id PK/FK, payload_json TEXT, version BIGINT, updated_at) con limite 32 KiB per catalogo; non modifica task, note, change log o outbox. Le API GET/PUT JWT di /api/v1/automations/task-actions leggono e sostituiscono definizioni owner-scoped con expectedVersion e lock transazionale. Non eseguono automazioni lato server. **V12 non risulta applicata sulla VPS**; ultimo dato verificato V10 (03/11/2026). Non saltare né manipolare manualmente V11 o V12; seguire [OPERATIONS](../docs/OPERATIONS.md) e [specifica](../docs/P2-CLOUD-ACTION-CATALOG.md). Nessun deploy eseguito.

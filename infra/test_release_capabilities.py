@@ -20,11 +20,12 @@ FULL = {
 }
 
 
-def run(value, *, strict=False, blocks=False, intent=False):
+def run(value, *, strict=False, blocks=False, intent=False, attachments=False):
     env = os.environ.copy()
     env["REQUIRE_FULL_SCHEMA"] = "1" if strict else "0"
     env["REQUIRE_TIME_BLOCK_SCHEMA"] = "1" if blocks else "0"
     env["REQUIRE_SYNC_OPERATION_FINGERPRINT_SCHEMA"] = "1" if intent else "0"
+    env["REQUIRE_ATTACHMENT_STORAGE"] = "1" if attachments else "0"
     return subprocess.run(
         [sys.executable, str(SCRIPT)],
         input=json.dumps(value), text=True, capture_output=True, env=env,
@@ -73,6 +74,22 @@ class ReleaseCapabilityContract(unittest.TestCase):
         self.assertEqual(run(old).returncode, 0)
         self.assertNotEqual(run(old, strict=True).returncode, 0)
         self.assertNotEqual(run(old, blocks=True).returncode, 0)
+
+    def test_v14_attachment_storage_must_be_enabled_to_pass_strict_gate(self):
+        enabled = {**FULL, "attachmentSchema": 1, "attachmentStorageEnabled": True}
+        self.assertEqual(run(enabled, strict=True, attachments=True).returncode, 0)
+        # Earlier release gates remain compatible with no attachment capability.
+        self.assertEqual(run(FULL, strict=True).returncode, 0)
+        for value in (False, 0, 1, "true", None):
+            with self.subTest(value=value):
+                bad = {**enabled, "attachmentStorageEnabled": value}
+                self.assertNotEqual(
+                    run(bad, strict=True, attachments=True).returncode, 0)
+        for value in (True, 0, 2, "1", None):
+            with self.subTest(schema=value):
+                bad = {**enabled, "attachmentSchema": value}
+                self.assertNotEqual(
+                    run(bad, strict=True, attachments=True).returncode, 0)
 
     def test_unexpected_types_and_missing_due_kinds_fail_closed(self):
         for input_value in (

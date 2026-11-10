@@ -37,6 +37,12 @@ def run() -> None:
             refuse()
         if intent == "1" and not has_version_one("syncOperationFingerprintSchema"):
             refuse()
+        attachment = os.environ.get("REQUIRE_ATTACHMENT_STORAGE", "0")
+        if attachment not in ("0", "1"):
+            refuse()
+        if attachment == "1":
+            if not has_version_one("attachmentSchema") or obj.get("attachmentStorageEnabled") is not True:
+                refuse()
         strict = os.environ.get("REQUIRE_FULL_SCHEMA", "0")
         time_block = os.environ.get("REQUIRE_TIME_BLOCK_SCHEMA", "0")
         if strict not in ("0", "1") or time_block not in ("0", "1"):

@@ -9,6 +9,7 @@ API_BASE_URL="${API_BASE_URL:-https://api.notes.ddone.it}"
 REQUIRE_TIME_BLOCK_SCHEMA="${REQUIRE_TIME_BLOCK_SCHEMA:-0}"
 REQUIRE_FULL_SCHEMA="${REQUIRE_FULL_SCHEMA:-0}"
 REQUIRE_SYNC_OPERATION_FINGERPRINT_SCHEMA="${REQUIRE_SYNC_OPERATION_FINGERPRINT_SCHEMA:-0}"
+REQUIRE_ATTACHMENT_STORAGE="${REQUIRE_ATTACHMENT_STORAGE:-0}"
 [[ "$REQUIRE_TIME_BLOCK_SCHEMA" == 0 || "$REQUIRE_TIME_BLOCK_SCHEMA" == 1 ]] || {
   echo "REFUSED: REQUIRE_TIME_BLOCK_SCHEMA must be 0 or 1" >&2; exit 2
 }
@@ -19,6 +20,9 @@ REQUIRE_SYNC_OPERATION_FINGERPRINT_SCHEMA="${REQUIRE_SYNC_OPERATION_FINGERPRINT_
    "$REQUIRE_SYNC_OPERATION_FINGERPRINT_SCHEMA" == 1 ]] || {
   echo "REFUSED: REQUIRE_SYNC_OPERATION_FINGERPRINT_SCHEMA must be 0 or 1" >&2
   exit 2
+}
+[[ "$REQUIRE_ATTACHMENT_STORAGE" == 0 || "$REQUIRE_ATTACHMENT_STORAGE" == 1 ]] || {
+  echo "REFUSED: REQUIRE_ATTACHMENT_STORAGE must be 0 or 1" >&2; exit 2
 }
 : "${T4_BEARER_TOKEN:?A real authenticated user access token is required}"
 for command in curl python3; do
@@ -49,10 +53,11 @@ if ! printf '%s' "$capabilities" |
     REQUIRE_TIME_BLOCK_SCHEMA="$REQUIRE_TIME_BLOCK_SCHEMA" \
     REQUIRE_FULL_SCHEMA="$REQUIRE_FULL_SCHEMA" \
     REQUIRE_SYNC_OPERATION_FINGERPRINT_SCHEMA="$REQUIRE_SYNC_OPERATION_FINGERPRINT_SCHEMA" \
+    REQUIRE_ATTACHMENT_STORAGE="$REQUIRE_ATTACHMENT_STORAGE" \
     python3 "$script_dir/validate-release-capabilities.py"; then
   echo "REFUSED: backend capability contract is incompatible." >&2
   exit 1
 fi
 echo "PASS: HTTPS health UP and authenticated API capability contract verified."
-echo "Required: due=1, time-block=$REQUIRE_TIME_BLOCK_SCHEMA, full=$REQUIRE_FULL_SCHEMA, operation-fingerprint=$REQUIRE_SYNC_OPERATION_FINGERPRINT_SCHEMA."
+echo "Required: due=1, time-block=$REQUIRE_TIME_BLOCK_SCHEMA, full=$REQUIRE_FULL_SCHEMA, operation-fingerprint=$REQUIRE_SYNC_OPERATION_FINGERPRINT_SCHEMA, attachments=$REQUIRE_ATTACHMENT_STORAGE."
 echo "This does NOT prove the client sync round-trip or real backup readiness."

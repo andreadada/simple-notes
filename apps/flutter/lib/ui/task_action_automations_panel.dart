@@ -157,16 +157,18 @@ class _TaskActionAutomationsPanelState
       return;
     }
     final owner = widget.ownerId!;
-    if (!await _verifiedOwner(owner)) {
-      _message('Account Google e archivio locale non corrispondono.');
-      return;
-    }
+    // Lock the editor before asynchronous owner checks. Rapid double taps
+    // must never create parallel PUT/download flows.
     setState(() => _cloudBusy = true);
     final api = widget.cloudApi ?? TaskActionCloudApi(
       baseUrl: widget.cloudApiBaseUrl,
       tokenProvider: widget.cloudTokenProvider!,
     );
     try {
+      if (!await _verifiedOwner(owner)) {
+        _message('Account Google e archivio locale non corrispondono.');
+        return;
+      }
       final source = _library.serialize();
       final current = await const TaskActionStore().load(_prefs!, owner);
       if (current.serialize() != source || !await _verifiedOwner(owner)) {

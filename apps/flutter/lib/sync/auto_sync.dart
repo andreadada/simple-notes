@@ -233,7 +233,9 @@ class _AutoSyncHostState extends ConsumerState<AutoSyncHost>
     Future<bool> ownerGuard(String candidate) async {
       if (!mounted || !_active || candidate != owner ||
           ref.read(userTemplatesEditorVisibleProvider) ||
-          !ref.read(restoreSyncGateProvider).canSync) return false;
+          !ref.read(restoreSyncGateProvider).canSync) {
+        return false;
+      }
       final session = ref.read(cloudAuthProvider);
       if (!session.authenticated || session.userId != candidate) return false;
       return await ref.read(databaseProvider).setting('boundOwnerId') ==

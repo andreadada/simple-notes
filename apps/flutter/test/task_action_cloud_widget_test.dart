@@ -8,6 +8,7 @@ import 'package:http/testing.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:simple_notes/data/task_action_automations.dart';
 import 'package:simple_notes/data/task_action_cloud_api.dart';
+import 'package:simple_notes/data/task_action_catalog_mirror.dart';
 import 'package:simple_notes/ui/notes_theme.dart';
 import 'package:simple_notes/ui/task_action_automations_panel.dart';
 
@@ -67,6 +68,7 @@ void main() {
     expect(reads, 1);
     expect((await const TaskActionStore().load(prefs, 'owner-a')).serialize(),
         remote.serialize());
+    expect(TaskActionMirrorAnchor.read(prefs, 'owner-a')?.version, 4);
   });
 
   testWidgets('stale cloud PUT is a safe conflict and keeps local catalog',
@@ -102,6 +104,7 @@ void main() {
     expect(attempts, 1);
     expect((await const TaskActionStore().load(prefs, 'owner-a')).serialize(),
         local.serialize());
+    expect(TaskActionMirrorAnchor.read(prefs, 'owner-a'), isNull);
   });
 
   testWidgets('owner guard prevents any cloud HTTP request', (tester) async {

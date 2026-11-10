@@ -19,13 +19,13 @@ Tutte le route richiedono JWT dell'utente e la nota **attiva e di sua proprietà
 | `GET /api/v1/notes/{noteId}/attachments` | Elenco metadata `READY`, senza URL S3 |
 | `POST /api/v1/notes/{noteId}/attachments` | `{"name":"lezione.pdf","contentType":"application/pdf","sizeBytes":1024}` → HTTP 201 `{id,uploadUrl,headers,expiresAt}` |
 | `PUT {uploadUrl}` | Upload bytes diretto verso S3, solo header firmati, **senza** JWT dell'app |
-| `POST /api/v1/notes/{noteId}/attachments/{id}/complete` | HEAD S3 verifica dimensione e content-type, COPY da `staging/` a `files/`, modifica stato `READY`. Ripetere la conferma dopo successo è idempotente |
+| `POST /api/v1/notes/{noteId}/attachments/{id}/complete` | HEAD S3 verifica dimensione, content-type ed ETag; COPY condizionale `If-Match` da `staging/` a `files/`, modifica stato `READY`. Ripetere la conferma dopo successo è idempotente |
 | `GET /api/v1/notes/{noteId}/attachments/{id}/download` | URL GET S3 firmato per 5 minuti; nessun dato binario nel JSON della API |
 | `DELETE /api/v1/notes/{noteId}/attachments/{id}` | Rimuove oggetto permanente e metadata dopo autorizzazione |
 
 La quota è calcolata per owner su file pronti più pending non scaduti, sotto advisory lock account. I presigned URL PUT e GET durano **5 minuti**; il ticket pending dura 15 minuti. Le chiavi sono generate esclusivamente sul server, senza usare il nome fornito dall'utente. Un PUT non è un allegato visibile fino alla fase `complete`; se HEAD rileva mismatch (dimensione/MIME) la conferma fallisce con 409 e non viene pubblicato.
 
-Il PUT è su `staging/{ownerId}/{attachmentId}`; dopo HEAD il server **copia in una nuova chiave `files/`** per impedire a un precedente PUT firmato ancora valido di sovrascrivere un file già confermato. Oggetti staging orfani devono essere eliminati da una **policy lifecycle S3**, non da un reset applicativo.
+Il PUT è su `staging/{ownerId}/{attachmentId}`; dopo HEAD il server **copia con precondizione ETag in una nuova chiave `files/`** per impedire a un precedente PUT firmato ancora valido di sovrascrivere un file già confermato. Oggetti staging orfani devono essere eliminati da una **policy lifecycle S3**, non da un reset applicativo.
 
 ## Configurazione privata Coolify — non attivata
 

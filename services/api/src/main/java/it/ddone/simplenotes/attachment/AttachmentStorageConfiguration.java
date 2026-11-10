@@ -53,7 +53,8 @@ public class AttachmentStorageConfiguration {
             throw unavailable();
         }
         public Metadata inspect(String key) { throw unavailable(); }
-        public void promote(String source, String destination, String type) {
+        public void promote(String source, String destination,
+                String type, String expectedEtag) {
             throw unavailable();
         }
         public String presignGet(String key) { throw unavailable(); }
@@ -104,7 +105,7 @@ public class AttachmentStorageConfiguration {
             try {
                 var head = client.headObject(HeadObjectRequest.builder()
                     .bucket(bucket).key(key).build());
-                return new Metadata(head.contentLength(), head.contentType());
+                return new Metadata(head.contentLength(), head.contentType(), head.eTag());
             } catch (NoSuchKeyException missing) {
                 throw new ResponseStatusException(HttpStatus.CONFLICT,
                     "Attachment upload not found");
@@ -118,13 +119,14 @@ public class AttachmentStorageConfiguration {
         }
 
         @Override public void promote(String staging, String permanent,
-                String type) {
+                String type, String expectedEtag) {
             // COPY to a distinct final key prevents clients reusing a still
             // valid PUT URL to change already-confirmed content.
             String source = URLEncoder.encode(bucket + "/" + staging,
                 StandardCharsets.UTF_8);
             client.copyObject(CopyObjectRequest.builder()
                 .copySource(source).bucket(bucket).key(permanent)
+                .copySourceIfMatch(expectedEtag)
                 .contentType(type).metadataDirective(MetadataDirective.REPLACE)
                 .build());
             // staging/* is removed by the bucket lifecycle policy, never

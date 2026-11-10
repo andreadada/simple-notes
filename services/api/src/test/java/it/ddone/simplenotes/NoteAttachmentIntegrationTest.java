@@ -88,7 +88,7 @@ class NoteAttachmentIntegrationTest {
                 "https://s3.example/staging/upload",
                 java.util.Map.of("Content-Type", "application/pdf")));
         when(objects.inspect(anyString())).thenReturn(
-            new AttachmentObjectStore.Metadata(1024L, "application/pdf"));
+            new AttachmentObjectStore.Metadata(1024L, "application/pdf", "\"etag-1\""));
         when(objects.presignGet(anyString())).thenReturn(
             "https://s3.example/files/read");
 
@@ -119,7 +119,8 @@ class NoteAttachmentIntegrationTest {
         mvc.perform(post(url + "/" + id + "/complete")
             .header("Authorization", auth(alice.id)))
             .andExpect(status().isOk());
-        verify(objects, times(1)).promote(anyString(), anyString(), eq("application/pdf"));
+        verify(objects, times(1)).promote(
+            anyString(), anyString(), eq("application/pdf"), eq("\"etag-1\""));
         mvc.perform(get(url + "/" + id + "/download")
             .header("Authorization", auth(alice.id)))
             .andExpect(status().isOk())
@@ -159,7 +160,7 @@ class NoteAttachmentIntegrationTest {
             .thenReturn(new AttachmentObjectStore.Ticket(
                 "https://s3.example/pending", java.util.Map.of()));
         when(objects.inspect(anyString())).thenReturn(
-            new AttachmentObjectStore.Metadata(1025L, "application/pdf"));
+            new AttachmentObjectStore.Metadata(1025L, "application/pdf", "\"etag-2\""));
         var response = mvc.perform(post(url).header("Authorization", auth)
             .contentType(MediaType.APPLICATION_JSON).content(REQUEST))
             .andExpect(status().isCreated()).andReturn().getResponse()
@@ -167,7 +168,8 @@ class NoteAttachmentIntegrationTest {
         UUID id = UUID.fromString(json.readTree(response).path("id").asText());
         mvc.perform(post(url + "/" + id + "/complete")
             .header("Authorization", auth)).andExpect(status().isConflict());
-        verify(objects, never()).promote(anyString(), anyString(), anyString());
+        verify(objects, never()).promote(
+            anyString(), anyString(), anyString(), anyString());
         mvc.perform(get(url).header("Authorization", auth))
             .andExpect(jsonPath("$.length()").value(0));
         mvc.perform(get(url + "/" + id + "/download")

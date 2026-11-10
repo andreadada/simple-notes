@@ -85,12 +85,14 @@ public class NoteAttachmentService {
         }
         var actual = objects.inspect(attachment.objectKey);
         if (actual.bytes() != attachment.sizeBytes ||
-            !attachment.contentType.equals(actual.contentType())) {
+            !attachment.contentType.equals(actual.contentType()) ||
+            actual.etag() == null || actual.etag().isBlank()) {
             throw new ResponseStatusException(
                 HttpStatus.CONFLICT, "Attachment size/type mismatch");
         }
         String readyKey = "files/" + owner + "/" + attachment.id;
-        objects.promote(attachment.objectKey, readyKey, attachment.contentType);
+        objects.promote(attachment.objectKey, readyKey,
+            attachment.contentType, actual.etag());
         attachment.objectKey = readyKey;
         attachment.state = "READY";
         return attachments.saveAndFlush(attachment);

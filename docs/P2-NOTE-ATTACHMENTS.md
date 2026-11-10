@@ -1,6 +1,6 @@
 # P2 — Allegati privati per le note con storage S3 (PR #64)
 
-**10 novembre 2026. [PR #64](https://github.com/andreadada/simple-notes/pull/64) in verifica**, non in produzione. [Stato canonico](CURRENT-STATUS.md) · [Matrice P2](P2-DELIVERY-MATRIX.md).
+**10 novembre 2026. [PR #64](https://github.com/andreadada/simple-notes/pull/64) merged `5ae2bd3` su `main`**, non distribuita in produzione. [Stato canonico](CURRENT-STATUS.md) · [Matrice P2](P2-DELIVERY-MATRIX.md).
 
 ## Obiettivo e limiti
 
@@ -48,7 +48,7 @@ Non includere URL presigned in log, screenshot, report o backup: sono token di a
 - Backend Testcontainers PostgreSQL 17: JWT obbligatorio, note di terzi nascoste, create/list/confirm/download/delete, conferma idempotente, mismatch HEAD e note nel cestino, nessun `sync_change` generato.
 - Flutter HTTP: JWT soltanto sull'API, ticket S3 senza token, limite 10 MiB, MIME consentiti, URL HTTPS richiesti, 404/409/503 e JSON non valido.
 - Widget Forui: elenco, consenso alla cancellazione, errore account/server.
-- Test migrazione V6→V14 non tocca dati storici; inspector `infra/t4-inspect-db.sh` supporta V14 e `infra/release-v14-readiness.sh` verifica read-only schema e capability `attachmentSchema=1`, `attachmentStorageEnabled=true` **dopo un deploy separatamente autorizzato**.
+- Test migrazione V6→V14 non tocca dati storici; backend e test Flutter CI verdi, build native su `main` in verifica; inspector `infra/t4-inspect-db.sh` supporta V14 e `infra/release-v14-readiness.sh` verifica read-only schema e capability `attachmentSchema=1`, `attachmentStorageEnabled=true` **dopo un deploy separatamente autorizzato**.
 
 **Gate non coperti dalla CI:** nessun bucket reale creato o verificato, nessun deploy Flyway V11–V14, nessun caricamento reale con provider S3, nessun test Windows/Android, niente scan antivirus/content sniffing, TTL di GET già emessi non revocabile immediatamente, rimozione oggetti dopo cancellazione/soft-delete della nota non ancora automatizzata, lifecycle staging e backup file non attestati, assenza di coda upload offline. **Non dichiarare allegati P2 rilasciati** prima di chiudere questi gate.
 

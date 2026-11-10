@@ -4,7 +4,7 @@
 
 <!-- CURRENT-STATUS-REF -->
 
-> **P2 in verifica 10/11/2026:** [PR #64](https://github.com/andreadada/simple-notes/pull/64) (V14 nel branch), API S3 per allegati note con due fasi upload/HEAD/COPY, per-owner JWT, UI Forui e verifiche quote. Storage spento fino a configurazione privata, nessun deploy, restore o test fisico. [Contratto](P2-NOTE-ATTACHMENTS.md).
+> **P2 integrata su `main` 10/11/2026 (merge `5ae2bd3`):** [PR #64](https://github.com/andreadada/simple-notes/pull/64) (V14 nel repository), API S3 per allegati note con due fasi upload/HEAD/COPY, per-owner JWT, UI Forui e verifiche quote. Storage spento fino a configurazione privata, nessun deploy, restore o test fisico. [Contratto](P2-NOTE-ATTACHMENTS.md).
 
 
 > **Integrata nel codice 10/11/2026 (`b9dd67a`):** [PR #63](https://github.com/andreadada/simple-notes/pull/63) — catalogo cloud manuale modelli personali, Flyway V13 additiva, JWT/CAS, Forui e test. Merge eseguito; CI finale da verificare. Nessun deploy, restore live o sync automatica. [Contratto](P2-CLOUD-TEMPLATES.md).

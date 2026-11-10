@@ -2,11 +2,11 @@
 
 Aggiornato 10 novembre 2026. **CI verde non equivale a deploy Coolify o collaudo su dispositivi reali.**
 
-**Nono incremento P2 in verifica:** [PR #64](https://github.com/andreadada/simple-notes/pull/64) porta API allegati JWT per note con presigned URL PUT/GET, HEAD/COPY e delete, V14 additiva, UI Forui e test. Bucket non configurato; **nessun deploy o rilascio**, CI e merge da verificare. [Contratto](P2-NOTE-ATTACHMENTS.md).
+**Nono incremento P2 integrato su `main` (`5ae2bd3`):** [PR #64](https://github.com/andreadada/simple-notes/pull/64) porta API allegati JWT per note con presigned URL PUT/GET, HEAD/COPY e delete, V14 additiva, UI Forui e test. Bucket non configurato; **nessun deploy o rilascio**, backend CI e Flutter analyze/test verdi; build native e post-merge ancora da confermare. [Contratto](P2-NOTE-ATTACHMENTS.md).
 
 **Ottavo incremento P2 integrato nel codice (`b9dd67a`):** [PR #63](https://github.com/andreadada/simple-notes/pull/63), catalogo manuale cloud dei modelli owner-scoped con CAS e V13. Backend/test e comandi Forui; **Merge e CI finali verdi; deploy ed E2E ancora da verificare.** [Contratto](P2-CLOUD-TEMPLATES.md).
 
-**Settimo incremento P2 integrato in `main` (`766860c`):** [PR #62](https://github.com/andreadada/simple-notes/pull/62), sync foreground conservativa catalogo regole con checkpoint owner-scoped, revisione CAS, auto-upload/pull solo senza conflitti, stato Forui e pausa editor. **Merge verificato; CI dell'ultimo head ancora in corso**, nessun deploy o scheduler server. [Specifica](P2-AUTO-ACTION-CATALOG.md).
+**Settimo incremento P2 integrato in `main` (`766860c`):** [PR #62](https://github.com/andreadada/simple-notes/pull/62), sync foreground conservativa catalogo regole con checkpoint owner-scoped, revisione CAS, auto-upload/pull solo senza conflitti, stato Forui e pausa editor. **Merge e Flutter CI di PR #62 verificate**, nessun deploy o scheduler server. [Specifica](P2-AUTO-ACTION-CATALOG.md).
 
 **Sesto incremento P2 integrato:** [PR #61](https://github.com/andreadada/simple-notes/pull/61) merged `bf16cba`, [Flutter CI #42821851199](https://github.com/andreadada/simple-notes/actions/runs/42821851199) **success** (399 test Flutter, Android JDK17/21, Windows EXE/MSIX/recovery), [Backend CI #42821851073](https://github.com/andreadada/simple-notes/actions/runs/42821851073) **success** (PostgreSQL 17 e bootJar), [Markdown CI #42821851207](https://github.com/andreadada/simple-notes/actions/runs/42821851207) **success**. Catalogo cloud JWT per owner con CAS, Flyway V12 additiva, scambio esplicito Pubblica/Scarica. **Non deployata** (VPS V10 attestata), né sync automatica o esecuzione server. [Contratto](P2-CLOUD-ACTION-CATALOG.md).
 
@@ -51,10 +51,10 @@ Le statistiche sono calcolate sui dati locali senza telemetria. I modelli produc
 | Restore live .snb | Coordinamento SQLite/preferenze installate, lock nativo, recupero dopo power loss, consenso, quarantena e riconciliazione outbox |
 | Google Calendar/Outlook | OAuth separato, permessi minimi revocabili, API e token per account, test autenticati |
 | Liste condivise | ACL multiowner, ruoli, assegnazioni, audit server, migrazioni, protezioni accesso e UI |
-| Allegati S3 | **Parziale in PR #64**: API owner-scoped V14, signed URL PUT/GET, quote, verifica HEAD/COPY, picker/CRUD Forui | Restano bucket/lifecycle reali, file scan, cancellazione oggetti di note eliminate, coda offline, CI/merge/E2E |
+| Allegati S3 | **Parziale in PR #64**: API owner-scoped V14, signed URL PUT/GET, quote, verifica HEAD/COPY, picker/CRUD Forui | Restano bucket/lifecycle reali, file scan, cancellazione oggetti di note eliminate, coda offline, build native/E2E |
 | Widget Android | Widget nativo Oggi/Inbox/Nuova attività compilato (Java 17/21); launcher/cold-start/logout su dispositivo fisico non verificati |
 | Automazioni configurabili | **Parziale:** notifiche PR #59, azioni locali PR #60, catalogo cloud PR #61 integrati; sync conservativa foreground PR #62 integrata. Restano scheduler server, dedup multi-device, gestione manuale dei conflitti, delivery affidabile. |
-| Release | VPS V11–V14 (V14 solo in PR), OAuth Android, upgrade Windows, firma, backup/offsite, E2E Windows↔Android e controlli reali |
+| Release | VPS V11–V14 (V14 solo nel codice), OAuth Android, upgrade Windows, firma, backup/offsite, E2E Windows↔Android e controlli reali |
 
 ## Criteri per dichiarare P2 completata
 

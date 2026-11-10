@@ -18,7 +18,7 @@ La schermata Forui **Modelli** offre *Pubblica cloud* e *Scarica cloud* soltanto
 
 - Test backend PostgreSQL 17 Testcontainers: JWT, isolamento account, rev 0, CAS 409, validazione schema, zero nuove `sync_change`.
 - Test Dart client HTTP (HTTPS, JSON, 404/426/409) e widget Forui (consenso, GET obsoleto, owner, PUT concorrente).
-- **Merge verificato; CI finale in esecuzione.** Dopo un deploy separatamente autorizzato, `infra/release-v13-readiness.sh` controlla in sola lettura schema Flyway 13, capability HTTPS/JWT e GET catalogo senza stampare dati.
+- **Merge e CI Flutter/Backend/Compose/Markdown verificati verdi.** Dopo un deploy separatamente autorizzato, `infra/release-v13-readiness.sh` controlla in sola lettura schema Flyway 13, capability HTTPS/JWT e GET catalogo senza stampare dati.
 - **VPS attestata Flyway V10 il 03/11/2026**. Questa PR non effettua deploy, migration live, restore o test fisici.
 
 Restano aperti per P2: provider OAuth Calendar/Outlook, ACL liste condivise, allegati S3, scheduler server e dedup multi-device, restore live e collaudo hardware. [Matrice](P2-DELIVERY-MATRIX.md) · [Collaudi](DEVICE-ACCEPTANCE-DEFERRED.md) · [JSON manuale](P2-TEMPLATE-TRANSFER.md).

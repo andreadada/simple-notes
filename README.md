@@ -1,6 +1,6 @@
 # Simple Notes
 
-> **Stato codice 10/11/2026:** [PR #63](https://github.com/andreadada/simple-notes/pull/63) merged `b9dd67a` (catalogo modelli manuale V13) e [PR #62](https://github.com/andreadada/simple-notes/pull/62) merged `766860c` (auto-sync foreground regole task). Migrazioni Flyway **V13 nel repository**, VPS **V10 attestata il 03/11**: nessun deploy, restore live o E2E hardware. Backend/Compose/Markdown CI della PR #63 verdi; Flutter CI dell'ultimo codice ancora da completare. [Stato canonico](docs/CURRENT-STATUS.md).
+> **Stato codice 10/11/2026:** [PR #64](https://github.com/andreadada/simple-notes/pull/64) **merged** `5ae2bd3` (allegati S3 alle note, Flyway V14 opt-in), [PR #63](https://github.com/andreadada/simple-notes/pull/63) merged `b9dd67a` (modelli cloud manuali). Backend e Compose CI PR #64 verdi sul branch; analisi e test Flutter PR #64 verdi, build native e CI post-merge ancora da verificare. Flyway **V14 solo nel repository**, VPS **V10 attestata al 03/11**; nessun deploy, storage S3 live, restore o E2E hardware. [Stato canonico](docs/CURRENT-STATUS.md).
 
 App offline-first per **Windows 11 e Android** dedicata ad attività, note e pianificazione. Flutter/Forui con Drift SQLite locale, Google OAuth e sincronizzazione con Spring Boot/PostgreSQL su Coolify.
 
@@ -30,7 +30,7 @@ App offline-first per **Windows 11 e Android** dedicata ad attività, note e pia
 - [Catalogo cloud automazioni task P2 (PR #61 integrata)](docs/P2-CLOUD-ACTION-CATALOG.md)
 - [Sincronizzazione automatica regole P2 (PR #62 integrata)](docs/P2-AUTO-ACTION-CATALOG.md)
 - [Catalogo cloud modelli P2 (PR #63 integrata)](docs/P2-CLOUD-TEMPLATES.md)
-- [Allegati privati S3 per note (PR #64 in verifica)](docs/P2-NOTE-ATTACHMENTS.md)
+- [Allegati privati S3 per note (PR #64 integrata)](docs/P2-NOTE-ATTACHMENTS.md)
 - [Roadmap P0–P3](project.md), [regole per agenti](AGENTS.md), [design](design.md), [trasferimento modelli P2](docs/P2-TEMPLATE-TRANSFER.md)
 - [Indice completo dei documenti Markdown](docs/README.md)
 - [Handoff e cronologia](docs/HANDOFF.md)

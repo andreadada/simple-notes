@@ -194,3 +194,7 @@ L'utente ha verificato dal container PostgreSQL Simple Notes: V10, FAILED_MIGRAT
 ## P2.4B2R — Capability runtime V11
 
 `release-v11-readiness.sh` ora richiede `syncOperationFingerprintSchema:1` dal servizio autenticato, non solo Flyway 11; il flag è verificato in read-only. `release-readiness.sh` V10 continua a usare il contratto precedente. Verificare separatamente release approvata, runtime e sync dispositivo su account di prova. [Runbook](../docs/RELEASE-V11-READINESS.md).
+
+## P2 — Migrazione additiva V12 (PR #61 in verifica)
+
+La V12 crea solo task_action_catalog(owner_id PK/FK, payload_json TEXT, version BIGINT, updated_at) con limite 32 KiB per catalogo; non modifica task, note, change log o outbox. Le API GET/PUT JWT di /api/v1/automations/task-actions leggono e sostituiscono definizioni owner-scoped con expectedVersion e lock transazionale. Non eseguono automazioni lato server. **V12 non risulta applicata sulla VPS**; ultimo dato verificato V10 (03/11/2026). Non saltare né manipolare manualmente V11 o V12; seguire [OPERATIONS](../docs/OPERATIONS.md) e [specifica](../docs/P2-CLOUD-ACTION-CATALOG.md). Nessun deploy eseguito.

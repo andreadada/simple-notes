@@ -183,3 +183,7 @@ Quando un `operationId` appartiene allo stesso owner ma viene riutilizzato su un
 ## P2.4B2R — Capability del backend per fingerprint V11
 
 L'endpoint autenticato `GET /api/v1/capabilities` aggiunge il campo numerico `syncOperationFingerprintSchema:1`. Non restituisce fingerprint, operation ID, payload, JWT o dati dei proprietari. Il gate di rilascio V11 lo richiede insieme agli schemi di scadenza/time blocking/ricorrenza; il validatore interpreta solo l'intero 1 come supportato, mai stringhe o boolean. Gli endpoint precedenti restano invariati. [Runbook V11](RELEASE-V11-READINESS.md).
+
+## P2 — Catalogo automazioni task, endpoint versionato (PR #61 in verifica)
+
+**GET /api/v1/automations/task-actions** (JWT account) restituisce una versione 0 e un catalogo schema 1 con regole vuote in assenza di dati, oppure la revisione e il catalogo pubblicato dell'utente autenticato. **PUT /api/v1/automations/task-actions** riceve expectedVersion e catalog; l'update usa lock owner e compare-and-swap sul valore corrente. HTTP 200 = nuova versione, 400 = payload non valido, 409 = revisione obsoleta senza scrittura, 401 = autenticazione mancante. Il backend precedente può rispondere 404. Sono validate lunghezza UTF-8, schema 1, ID univoci e tutte le opzioni delle regole. API di **definizioni**, non di esecuzione; nessuna scrittura task e nessuna emissione sync_change. Richiede Flyway V12. [Contratto](P2-CLOUD-ACTION-CATALOG.md).

@@ -122,3 +122,7 @@ La repository include API Flyway V11 di fingerprint delle operazioni sync, contr
 ## Batch P2 — automazioni task locali (PR #60 integrata)
 
 I trigger `created` e `completed` vengono intercettati **solo** nel `LocalStore` prima del normale `AppDatabase.upsertTask`. Le azioni (priorità/tag/lista) trasformano in memoria l'oggetto task; SQLite produce quindi **un solo evento nella pending outbox** per operazione. Sono impediti replay all'avvio, sul pull remoto o tramite import: nessun servizio server o migrazione è stato introdotto. Regole per owner in SharedPreferences, `taskActions` opzionale nel backup `.snb`. [Contratto](P2-TASK-ACTIONS.md).
+
+## P2 — Persistenza delle definizioni automatizzate (PR #61 in verifica)
+
+Le regole di azione continuano a essere eseguite **solo nel LocalStore**. Un servizio distinto TaskActionCatalogService espone GET/PUT tramite JWT, conserva un JSON strettamente validato nella nuova tabella PostgreSQL task_action_catalog (V12), e serializza le sostituzioni con lock owner/CAS; non innesca eventi sync. Flutter TaskActionCloudApi usa bearer di sessione, timeout ed errori fail-closed; la UI Forui conferma trasferimenti e non confonde definizioni condivise con uno scheduler server. [Specifica](P2-CLOUD-ACTION-CATALOG.md).

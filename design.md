@@ -330,3 +330,7 @@ La schermata Forui **Automazioni** modifica parametri compositi (trigger scadenz
 ## P2 — Azioni automatiche task (integrate PR #60)
 
 Una seconda sezione nella schermata Forui Automazioni gestisce regole su eventi crea/completa. Il dialog è giustificato da più campi correlati: condizione sul titolo, trigger e azione priorità/tag/lista. Evitare container pesanti sugli input; confermare eliminazioni, proteggere il cambio account, disabilitare le modifiche quando la preferenza non è leggibile. [Contratto](docs/P2-TASK-ACTIONS.md).
+
+## P2 — Trasferimento cloud delle definizioni di automazione (PR #61 in verifica)
+
+Il pannello automazioni task offre **Pubblica sul cloud** e **Scarica dal cloud**, con conferma esplicita, numero di regole e revisione remota. Indicazioni chiare su differenza fra catalogo cloud e automatismi locali; nessun box pesante sugli input. L'editor si disabilita durante l'operazione e conserva i dati in caso di conflitto o account errato. [Specifica](docs/P2-CLOUD-ACTION-CATALOG.md).

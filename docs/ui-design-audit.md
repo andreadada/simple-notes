@@ -157,3 +157,7 @@ Nel batch manuale verificare dialog Forui password/confirm (focus, hide/show, Es
 ## Estensione P2 — automazioni task locali
 
 [PR #60](https://github.com/andreadada/simple-notes/pull/60) merged, CI Flutter 392 test verde. Il form Forui separa trigger, condizione titolo e azione; input sottolineati senza contenitori riempiti, card con Modifica/Elimina/Attiva/Disattiva e conferma di eliminazione. Regole non leggibili fermano l'editor senza ricostruzione implicita. Test di schermata e unitari in CI non sono test visivi su device. [Contratto](P2-TASK-ACTIONS.md).
+
+## P2 — Controlli trasferimento regole cloud (PR #61 in verifica)
+
+Aggiunti i comandi Pubblica e Scarica al pannello Forui automazioni, con messaggi di conferma, conteggio e revisione; stato loading durante I/O e conferma distinta prima della sostituzione. Stato owner incoerente o archivio corrotto impediscono lo scambio. Non vengono esposti errori grezzi server, token o identificatori dell'account. Test widget e CI non equivalgono al collaudo su dispositivi fisici. [Specifica](P2-CLOUD-ACTION-CATALOG.md).

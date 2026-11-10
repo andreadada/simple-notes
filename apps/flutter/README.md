@@ -242,3 +242,7 @@ La schermata Strumenti → Automazioni offre regole locali per avvisi da scadenz
 ## P2 — Regole di azione sui task (integrate PR #60)
 
 Da Strumenti → Automazioni, regole locali per creare/completare task e modificare priorità/tag/lista, filtro titolo. L'effetto precede un solo upsert SQLite+outbox; non esegue replay su remote pull, import o app startup. Preferenza per owner opzionale in backup cifrato .snb. [Specifica](../../docs/P2-TASK-ACTIONS.md). [Flutter CI #42714514197](https://github.com/andreadada/simple-notes/actions/runs/42714514197) verde (392 test, Android e Windows); test su dispositivi e deploy restano rinviati.
+
+## P2 — Pubblica/Scarica catalogo automazioni (PR #61 in verifica)
+
+Con account Google autenticato e archivio SQLite coerente, Strumenti → Automazioni permette lo scambio manuale delle regole task tramite TaskActionCloudApi. Il cloud memorizza le sole definizioni, con CAS sulla revisione e conferma esplicita prima di sostituire; 404 su backend precedente e 409 per modifica concorrente sono fail-closed. Flyway V12 è nel codice, non sulla VPS. Il trasferimento non modifica la coda sync né applica regole ai task esistenti. [Contratto](../../docs/P2-CLOUD-ACTION-CATALOG.md).

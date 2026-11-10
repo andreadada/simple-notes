@@ -324,3 +324,7 @@ Eseguire flutter analyze e flutter test; suite portable_task_calendar_test.dart,
 ## P2 azioni task — note operative (PR #60 integrata)
 
 Build verificate in CI: [Flutter #42714514197](https://github.com/andreadada/simple-notes/actions/runs/42714514197) (392 test, Android JDK17/21, Windows EXE/MSIX e recovery). Nessuna nuova configurazione backend, Flyway/Drift o permesso OAuth. Le regole sono locali al dispositivo/account e vengono applicate soltanto alla creazione/completamento manuali; trasferirle fra dispositivi mediante sync non è disponibile. Non eseguire un deploy né prove scriventi/restore live in base alla sola CI; il batch fisico rimane differito. [Specifica](P2-TASK-ACTIONS.md).
+
+## P2 — Catalogo cloud automazioni (PR #61 in verifica, nessun deploy)
+
+Il nuovo endpoint autenticato /api/v1/automations/task-actions richiede **Flyway V12** dopo V11. **Non usare la sua sola presenza in GitHub come prova che V12 sia stata migrata sulla VPS**: la verifica reale al 03/11/2026 attesta V10. Su un backend ancora senza endpoint il client mostra incompatibilità (404), senza riscrivere dati locali; una scrittura concorrente restituisce 409 CAS. Prima di autorizzare qualunque deploy sono obbligatori i runbook preesistenti di backup verificato, readiness e controllo migrazione, senza restore scrivente live. [Contratto](P2-CLOUD-ACTION-CATALOG.md).

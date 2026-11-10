@@ -334,3 +334,7 @@ Una seconda sezione nella schermata Forui Automazioni gestisce regole su eventi 
 ## P2 — Trasferimento cloud delle definizioni di automazione (PR #61 integrata)
 
 Il pannello automazioni task offre **Pubblica sul cloud** e **Scarica dal cloud**, con conferma esplicita, numero di regole e revisione remota. Indicazioni chiare su differenza fra catalogo cloud e automatismi locali; nessun box pesante sugli input. L'editor si disabilita durante l'operazione e conserva i dati in caso di conflitto o account errato. [Specifica](docs/P2-CLOUD-ACTION-CATALOG.md).
+
+## P2 — Feedback e gestione conflitti auto-sync (PR #62 in verifica)
+
+Il pannello Forui delle azioni task mostra in testo semplice lo stato sincronizzazione, senza contenitori pesanti o dialog di errore ripetuti. Se due cataloghi differiscono dalla stessa baseline, Pubblica/Scarica con conferma è la risoluzione esplicita. Non effettuare merge silenziosi, disabilitare l'auto-sync durante l'editing e mantenere il resto dell'app funzionale anche con backend vecchio/offline. [Specifica](docs/P2-AUTO-ACTION-CATALOG.md).

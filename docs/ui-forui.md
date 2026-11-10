@@ -206,3 +206,7 @@ La nuova sezione Strumenti → Automazioni presenta regole separate dai promemor
 ## P2 — Pubblica/Scarica regole task dal cloud (PR #61 integrata)
 
 Il pannello Forui delle automazioni task contiene due azioni distinte per trasferire **esplicitamente** le definizioni con il proprio account. Prima di sostituire il catalogo remoto/locale, un dialog mostra quantità e versione; durante lo scambio, l'editor viene disabilitato per evitare scritture concorrenti. Su errore di owner, versione 409, backend vecchio 404 o JSON incompatibile, il catalogo presente resta intatto. I bottoni non implicano sync in background. [Contratto](P2-CLOUD-ACTION-CATALOG.md).
+
+## P2 — Stato automatico e risoluzione conflitti (PR #62 in verifica)
+
+La sezione Forui delle regole task mostra il risultato della sincronizzazione foreground: allineata, caricata/pubblicata, non disponibile, non valida o in conflitto. Il pannello blocca la riconciliazione automatica mentre è aperto; la chiusura riprogramma il controllo. I comandi Pubblica/Scarica con conferma restano disponibili per scegliere esplicitamente una versione in presenza di divergenze offline. Non considerare un conflitto come risolto da un merge arbitrario. [Specifica](P2-AUTO-ACTION-CATALOG.md).

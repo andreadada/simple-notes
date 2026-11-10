@@ -126,3 +126,7 @@ I trigger `created` e `completed` vengono intercettati **solo** nel `LocalStore`
 ## P2 — Persistenza delle definizioni automatizzate (PR #61 integrata)
 
 Le regole di azione continuano a essere eseguite **solo nel LocalStore**. Un servizio distinto TaskActionCatalogService espone GET/PUT tramite JWT, conserva un JSON strettamente validato nella nuova tabella PostgreSQL task_action_catalog (V12), e serializza le sostituzioni con lock owner/CAS; non innesca eventi sync. Flutter TaskActionCloudApi usa bearer di sessione, timeout ed errori fail-closed; la UI Forui conferma trasferimenti e non confonde definizioni condivise con uno scheduler server. [Specifica](P2-CLOUD-ACTION-CATALOG.md).
+
+## P2 — Auto-sync delle definizioni task (PR #62 in verifica)
+
+Il client Flutter riconcilia in foreground la preferenza TaskActionStore e il catalogo cloud V12 con un checkpoint locale TaskActionMirrorAnchor contenente revisione e catalogo confermati. Se solo uno dei due cataloghi differisce dal checkpoint, scarica oppure pubblica con CAS; divergenze su entrambe le copie richiedono esplicita risoluzione da UI. La nuova logica non crea task, non avvia job server e non scrive la outbox. Le sessioni del pannello Automazioni sospendono la riconciliazione per non sovrapporsi alle modifiche dell'utente. [Contratto](P2-AUTO-ACTION-CATALOG.md).

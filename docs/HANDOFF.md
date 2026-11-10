@@ -510,3 +510,7 @@ Branch feat/p2-completion-ui-batch: nuovo motore locale task_insights.dart (filt
 ## Batch P2 — Interoperabilità calendario, modelli e widget (09/11/2026)
 
 Il branch feat/p2-custom-templates-calendar-export-android-widget aggiunge PortableTaskCalendar (export ICS offline tramite menu), UserTaskTemplateLibrary/Store (modelli locali separati per owner, backup .snb v1 con preferenza templates opzionale), un editor CRUD Forui in TaskTemplatesBoard e il provider Java QuickAccessWidget (widget Android statico che naviga solamente tramite MethodChannel). Nuovi test per ICS, validazione/owner del catalogo, backup precedente e intent non autorizzati. Nessun endpoint o migrazione. Verificare CI Android JDK17/21 e Windows, e in seguito widget fisico senza contenuti personali. [Specifica](P2-LOCAL-INTEGRATIONS.md).
+
+## 10/11/2026 — PR #65 modelli V13 auto-sync (in verifica)
+
+Il client Flutter prova riconciliazione conservativa foreground delle definizioni personalizzate dopo sync task, con checkpoint SHA-256 owner e CAS. Aggiunta pausa editor Modelli e visibilità stato, oltre all'aggiornamento checkpoint quando Pubblica/Scarica è confermato; nessuna nuova Flyway, nessun deploy, collaudo Windows/Android ancora da verificare. [PR #65](https://github.com/andreadada/simple-notes/pull/65) · [Specifica](P2-AUTO-TEMPLATE-CATALOG.md).

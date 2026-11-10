@@ -2,7 +2,7 @@
 
 **Aggiornato 10 novembre 2026.** Questo documento prevale sulla cronologia. **Codice/CI, deploy Coolify, installazione e collaudo fisico sono stati distinti.**
 
-**Audit Markdown del 10/11/2026:** ricontrollati tutti i **67 file `.md`** del repository (**61 in `docs/`**, indice incluso, e 6 distribuiti nei package/radice). Normalizzate intestazioni P0/P1 e runbook T3/T4, corrette diciture PR #62–#64 e migrazioni Flyway V14 nel codice, aggiunto [indice completo](README.md); controlli link relativi [Markdown CI #42854337893](https://github.com/andreadada/simple-notes/actions/runs/42854337893) **success** dopo il merge. Le modifiche documentali successive mantengono la stessa rete di link. La [CI Flutter della PR #62](https://github.com/andreadada/simple-notes/actions/runs/42854004235) è **success**; la CI Flutter della PR #63 su `main` [#42859684045](https://github.com/andreadada/simple-notes/actions/runs/42859684045) è **success**; PR #64 allegati S3 è in verifica, non su `main`.
+**Audit Markdown del 10/11/2026:** ricontrollati tutti i **68 file `.md`** del repository (**62 in `docs/`**, indice incluso, e 6 distribuiti nei package/radice). Normalizzate intestazioni P0/P1 e runbook T3/T4, corrette diciture PR #62–#64 e migrazioni Flyway V14 nel codice, aggiunto [indice completo](README.md); controlli link relativi [Markdown CI #42854337893](https://github.com/andreadada/simple-notes/actions/runs/42854337893) **success** dopo il merge. Le modifiche documentali successive mantengono la stessa rete di link. La [CI Flutter della PR #62](https://github.com/andreadada/simple-notes/actions/runs/42854004235) è **success**; la CI Flutter della PR #63 su `main` [#42859684045](https://github.com/andreadada/simple-notes/actions/runs/42859684045) è **success**; PR #64 allegati S3 è in verifica, non su `main`.
 
 | Area | Stato verificato | Gate ancora aperti |
 |---|---|---|
@@ -21,6 +21,10 @@
 | Gate R1 (codice) | [PR #26](https://github.com/andreadada/simple-notes/pull/26) merged; [Compose CI #41523319857](https://github.com/andreadada/simple-notes/actions/runs/41523319857) success (V6 rifiutata, V10 incompleta rifiutata, V10 sintetica accettata), [Markdown #41523319860](https://github.com/andreadada/simple-notes/actions/runs/41523319860) success | **Non certifica Flyway V10 reale, health e API autenticata in VPS** |
 | Backend nel repository | Spring Boot/PostgreSQL 17, Flyway **V14**; client Drift/SQLite **V8** | VPS attestata solo a Flyway **V10 (03/11/2026)**; migrazioni V11–V14, API e capability nuove non verificate sulla VPS |
 | Test reali | VPS V10 verificata il 03/11; Google Windows connesso e pending 0 nel report disponibile | Android E2E, API strict, V11 e restore live ancora aperti |
+
+## Incremento P2 — sync automatica conservativa modelli (PR #65 in verifica)
+
+[PR #65](https://github.com/andreadada/simple-notes/pull/65) sincronizza automaticamente in primo piano i cataloghi modelli V13, con checkpoint owner-scoped, PUT CAS e tre-way conflict detection. Pausa mentre la schermata Modelli è aperta, riavvia dopo le modifiche e dopo la sync task; risoluzione manuale esplicita. **Non ancora integrata in `main`; CI in esecuzione.** [Specifica](P2-AUTO-TEMPLATE-CATALOG.md). Non è una nuova sync dei task o background Android.
 
 ## Incremento P2 — allegati cloud alle note (PR #64 integrata)
 

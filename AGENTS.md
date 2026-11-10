@@ -254,3 +254,7 @@ Gli ICS esportati contengono dati personali e sono generati solo su richiesta; n
 ## P2 — Allegati privati S3 (PR #64 integrata)
 
 Gli allegati sono separati da note/SQLite/outbox: GET/list, begin, PUT firmato 5min senza JWT app, HEAD+COPY in chiave permanente, download GET temporaneo e delete esplicito; FK owner/nota e check per soft-delete sempre obbligatori. Mai loggare URL presigned o segreti S3, mai concedere ACL bucket pubbliche. Storage disattivato di default: non inizializzare credenziali in CI o VPS. V14 integrata su `main` con PR #64; **nessun deploy o bucket reale configurato**. [Specifica](docs/P2-NOTE-ATTACHMENTS.md).
+
+## P2 — Autoreconciliazione modelli (PR #65 in verifica)
+
+Il catalogo V13 dei modelli personali si sincronizza in foreground solo dopo sync cloud task riuscita, con tre-way checkpoint account-scoped (catalogo + versione). Mai indovinare una risoluzione di conflitto: due modifiche offline divergenti richiedono Pubblica/Scarica con consenso; Cloud PUT CAS, no reset silenziosi dei dati locali/checkpoint. Schermata Modelli visibile = editor lock; sospendere trasferimenti e riprendere quando esce. Nessuna modifica task/outbox né nuova migrazione. [Contratto](docs/P2-AUTO-TEMPLATE-CATALOG.md).

@@ -5,12 +5,12 @@ set -euo pipefail
 # Run ON the VPS using the explicitly inspected Simple Notes container.
 : "${DB_CONTAINER:?Set DB_CONTAINER to the Simple Notes PostgreSQL container}"
 EXPECTED_POSTGRES_DB="${EXPECTED_POSTGRES_DB:-simplenotes}"
-# Optional exact-version gate for cumulative V10/V11 releases.
+# Optional exact-version gate for cumulative V10–V13 releases.
 # Empty keeps historical T4 inspections backward-compatible/read-only.
 REQUIRE_FLYWAY_VERSION="${REQUIRE_FLYWAY_VERSION:-}"
 if [[ -n "$REQUIRE_FLYWAY_VERSION" &&
-      ! "$REQUIRE_FLYWAY_VERSION" =~ ^([1-9]|10|11)$ ]]; then
-  echo "REFUSED: REQUIRE_FLYWAY_VERSION must be an integer from 1 to 11" >&2
+      ! "$REQUIRE_FLYWAY_VERSION" =~ ^([1-9]|1[0-3])$ ]]; then
+  echo "REFUSED: REQUIRE_FLYWAY_VERSION must be an integer from 1 to 13" >&2
   exit 2
 fi
 command -v docker >/dev/null || { echo "docker is required" >&2; exit 2; }
@@ -39,7 +39,7 @@ names="$(query "SELECT COUNT(*) FROM pg_catalog.pg_class c JOIN pg_catalog.pg_na
 failed="$(query "SELECT COUNT(*) FROM public.flyway_schema_history WHERE NOT success")"
 [[ "$failed" == "0" ]] || { echo "REFUSED: Flyway history has failed migrations" >&2; exit 2; }
 latest="$(query "SELECT COALESCE((SELECT version FROM public.flyway_schema_history WHERE success AND version IS NOT NULL ORDER BY installed_rank DESC LIMIT 1),'unknown')")"
-[[ "$latest" =~ ^[0-9]+$ && "$latest" -ge 1 && "$latest" -le 11 ]] || {
+[[ "$latest" =~ ^[0-9]+$ && "$latest" -ge 1 && "$latest" -le 13 ]] || {
   echo "REFUSED: unknown, unsupported or unexpected Flyway version" >&2; exit 2
 }
 due_columns="$(query "SELECT COUNT(*) FROM information_schema.columns WHERE table_schema='public' AND table_name='task' AND column_name IN ('due_kind','due_date','due_time','due_timezone','due_offset_seconds')")"
@@ -96,6 +96,26 @@ else
     echo "REFUSED: V11 column exists without successful Flyway V11 history" >&2; exit 2
   }
 fi
+
+# V12 and V13 are separate account-scoped catalogs, no task migrations.
+# Check table presence and the exact required field set read-only.
+for schema in "12:task_action_catalog" "13:user_template_catalog"; do
+  version_required="${schema%%:*}"
+  name="${schema#*:}"
+  table_exists="$(query "SELECT COUNT(*) FROM information_schema.tables WHERE table_schema='public' AND table_name='$name' AND table_type='BASE TABLE'")"
+  columns="$(query "SELECT COUNT(*) FROM information_schema.columns WHERE table_schema='public' AND table_name='$name' AND column_name IN ('owner_id','payload_json','version','updated_at')")"
+  if [[ "$latest" -ge "$version_required" ]]; then
+    [[ "$table_exists" == "1" && "$columns" == "4" ]] || {
+      echo "REFUSED: Flyway V$version_required catalog schema incomplete" >&2
+      exit 2
+    }
+  else
+    [[ "$table_exists" == "0" && "$columns" == "0" ]] || {
+      echo "REFUSED: catalog from future Flyway history present" >&2
+      exit 2
+    }
+  fi
+done
 
 if [[ -n "$REQUIRE_FLYWAY_VERSION" &&
       "$latest" != "$REQUIRE_FLYWAY_VERSION" ]]; then

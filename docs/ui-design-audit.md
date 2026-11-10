@@ -165,3 +165,7 @@ Aggiunti i comandi Pubblica e Scarica al pannello Forui automazioni, con messagg
 ## P2 — Catalogo regole, stato visibile (PR #62 integrata)
 
 Nel pannello Forui si evidenziano problemi della sincronizzazione senza modali bloccanti a comparsa: testo breve per conflitto, rete, server vecchio o catalogo malformato e comandi Pubblica/Scarica già presenti. La modifica del catalogo interrompe temporaneamente il pull automatico per non chiudere/sovrascrivere campi editabili. I test unitari/widget non sostituiscono il controllo visivo su Windows/Android fisici. [Contratto](P2-AUTO-ACTION-CATALOG.md).
+
+## P2 — Modelli cloud (PR #65 in verifica)
+
+Aggiunta indicazione di stato sync nel pannello Modelli, mantenendo tema Forui e modifica immediata di titolo/attributi. L'apertura del pannello sospende il mirror foreground: uno scaricamento remoto non può far saltare campi in modifica. Conflitti comunicati tramite testo informativo e risolti solo attraverso Pubblica/Scarica confermati. [Specifica](P2-AUTO-TEMPLATE-CATALOG.md).

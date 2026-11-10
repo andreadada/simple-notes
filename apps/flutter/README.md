@@ -258,3 +258,7 @@ AutoSyncHost, durante il normale ciclo di sync foreground (accesso/ripresa/ricon
 ## P2 — Allegati note con storage S3 (PR #64 integrata)
 
 `NoteAttachmentsPanel` apre un dialog Forui sulla nota autenticata; `NoteAttachmentApi` esegue GET/list, POST/begin, PUT binario direttamente a URL temporaneo S3 (senza bearer), POST/complete dopo verifica sul backend, GET/download e DELETE. File picker nativo supporta PDF/PNG/JPEG/TXT entro 10 MiB, niente cache o outbox per allegati. Per usare la funzionalità serve che la nota abbia completato la sync e che il backend abbia Flyway V14 e bucket privato configurato (default OFF). Il collaudo fisico è differito. [Contratto](../../docs/P2-NOTE-ATTACHMENTS.md).
+
+## P2 — Modelli personali in sync foreground (PR #65 in verifica)
+
+`UserTemplateCatalogMirror` confronta preferenza template, cloud V13 e checkpoint per owner. `AutoSyncHost` richiama la riconciliazione a seguito della sync task e nei risvegli foreground, usando `userTemplatesEditorVisibleProvider` per sospendere il download mentre l'editor è visibile; quando l'utente conferma Pubblica/Scarica, l'anchor viene aggiornato con la versione riconosciuta. `UserTemplateAutoSyncState` espone una stringa di stato nel pannello Forui. I modelli rimangono definizioni: task/outbox non cambiano per la riconciliazione. [Specifica](../../docs/P2-AUTO-TEMPLATE-CATALOG.md).

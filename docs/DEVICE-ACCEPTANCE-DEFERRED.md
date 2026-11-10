@@ -108,3 +108,7 @@ Solo dopo deploy V13 autorizzato: verificare Windows/Android sullo stesso accoun
 ## P2 — Allegati S3, controlli hardware differiti (PR #64)
 
 Solo dopo deploy autorizzato Flyway V14 e bucket privato: verificare picker Android/Windows (PDF/PNG/JPEG/TXT), file esatti 1 byte e 10MiB, file >10MiB senza read/upload, annullamento, rete interrotta fra begin/PUT/complete, 409 quota o HEAD mismatch, URL PUT/GET scaduti, 404 nota locale non ancora sincronizzata, cambio account/logout, nota nel cestino, file deletion con conferma e reinstallazione con recupero cloud. Verificare che nessun file o URL firmato compaia in .snb/outbox/log. Validare lifecycle staging, deny public access, backup bucket e cleanup degli orfani. Nessuna prova di dispositivo reale certificata dalla CI. [Specifiche](P2-NOTE-ATTACHMENTS.md).
+
+## P2 — Auto-sync modelli Windows/Android (PR #65)
+
+Su due installazioni loggate sullo stesso owner: creare/modificare/eliminare modelli su A, uscire dal pannello, verificare pubblicazione V13; su B avviare o tornare foreground per download. Eseguire divergenze offline e verificare che l'UI segnali conflitto senza eliminare copie; provare risoluzione manuale Pubblica/Scarica, rientro in pannello Modelli, account switch, backend V10 senza endpoint, riavvio, JSON corrotto, .snb precedente e Task/outbox invariati. Solo al termine verificare assenza di doppie pubblicazioni. Nessun collaudo device eseguito dalla CI. [Contratto](P2-AUTO-TEMPLATE-CATALOG.md).

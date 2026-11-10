@@ -17,3 +17,7 @@
 `test/portable_template_archive_test.dart` copre roundtrip, copie ID, UTF-8 malformato, schema e campi extra, limite dimensione, quota e libreria vuota. Le verifiche automatiche **non** provano picker e condivisione su hardware né un trasferimento reale fra Windows e Android: rimangono rinviati al batch finale.
 
 Nessun deploy Coolify, nuovo permesso OAuth, sync dei modelli, restore live o migrazione Drift/Flyway. P2 complessiva ancora aperta: [matrice](P2-DELIVERY-MATRIX.md) · [stato](CURRENT-STATUS.md).
+
+## Opzione cloud separata (PR #63 in verifica)
+
+Il file JSON locale qui descritto resta invariato e non cifrato. La PR #63 introduce una via diversa di scambio manuale Pubblica/Scarica per account con CAS/JWT e Flyway V13, senza modificare né sostituire import/export file o backup `.snb`. Non è sync automatica. [Specifica](P2-CLOUD-TEMPLATES.md).

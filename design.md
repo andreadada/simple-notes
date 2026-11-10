@@ -338,3 +338,7 @@ Il pannello automazioni task offre **Pubblica sul cloud** e **Scarica dal cloud*
 ## P2 — Feedback e gestione conflitti auto-sync (PR #62 integrata)
 
 Il pannello Forui delle azioni task mostra in testo semplice lo stato sincronizzazione, senza contenitori pesanti o dialog di errore ripetuti. Se due cataloghi differiscono dalla stessa baseline, Pubblica/Scarica con conferma è la risoluzione esplicita. Non effettuare merge silenziosi, disabilitare l'auto-sync durante l'editing e mantenere il resto dell'app funzionale anche con backend vecchio/offline. [Specifica](docs/P2-AUTO-ACTION-CATALOG.md).
+
+## P2 — Modelli personali nel cloud (PR #63 in verifica)
+
+La schermata Modelli mostra **Pubblica cloud** e **Scarica cloud** accanto a Importa/Esporta. Le modifiche restano locali finché l'utente non sceglie l'operazione. Usare il `NotesDialog` Forui con quantità/revisione e conferma esplicita, senza un nuovo modal di rinomina. 404/409, account errato e revisione superata lasciano invariati i modelli e i task. [Contratto](docs/P2-CLOUD-TEMPLATES.md).

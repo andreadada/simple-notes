@@ -42,3 +42,7 @@ I pulsanti inviano soltanto le azioni consentite today, inbox e new a MainActivi
 - Restore live, provider OAuth, liste condivise/ACL, allegati S3 e automazioni configurabili non sono conclusi.
 
 Test dedicati: portable_task_calendar_test.dart, user_task_templates_test.dart, user_template_backup_test.dart, android_widget_navigation_test.dart. CI e merge si registrano dopo la verifica.
+
+## Estensione successiva in PR #63 — trasferimento cloud modelli
+
+Le descrizioni storiche PR #57/#58 rimangono valide per JSON manuale e storage locale. La PR #63 aggiunge **un'opzione manuale** Pubblica/Scarica tramite cloud V13/CAS, non sincronizzazione automatica. [Contratto](P2-CLOUD-TEMPLATES.md).

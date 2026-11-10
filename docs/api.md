@@ -191,3 +191,7 @@ L'endpoint autenticato `GET /api/v1/capabilities` aggiunge il campo numerico `sy
 ## P2 — Client foreground sulle API catalogo (PR #62 integrata)
 
 Non si introducono nuovi endpoint oltre a GET e PUT /api/v1/automations/task-actions della V12. La riconciliazione automatica invia PUT solo quando il confronto con il checkpoint per owner indica un'unica modifica locale e il cloud non è cambiato. Sempre CAS expectedVersion; 409/404/426 non autorizzano retry distruttivi né la sostituzione del catalogo. Il motore resta nel client quando l'app è in primo piano; nessuna azione task viene eseguita dal server. [Contratto](P2-AUTO-ACTION-CATALOG.md).
+
+## P2 — Catalogo modelli personali V13 (PR #63 in verifica)
+
+`GET /api/v1/templates/catalog` JWT: `{"version":0,"catalog":{"schema":1,"templates":[]}}` se nessun catalogo pubblicato; altrimenti revisione e definizioni. `PUT /api/v1/templates/catalog`: `{"expectedVersion":0,"catalog":{"schema":1,"templates":[...]}}` con CAS e revisione incrementata. HTTP 409 se revisione vecchia, 400 per catalogo non valido, 401 senza JWT. Max 50 modelli, 128 KiB per record. Nessuna scrittura a task, note, `sync_change` o `sync_operation`. Endpoint nuovo rispetto a Flyway V12: non disponibile nella VPS finché V13 non viene effettivamente distribuita. [Contratto](P2-CLOUD-TEMPLATES.md).

@@ -202,3 +202,7 @@ La V12 crea solo task_action_catalog(owner_id PK/FK, payload_json TEXT, version 
 ## P2 — Riconciliazione definizioni nel client (PR #62 integrata)
 
 Non serve una V13 né nuove tabelle: questo incremento usa esclusivamente il GET/PUT con CAS della V12. La JVM e il backend non eseguono regole né pianificano task. Nessun deploy automatico è effettuato; il client deve gestire 404 prima della migrazione V12, senza cancellare regole locali e senza degradare la sincronizzazione principale. Attestazione VPS disponibile al 03/11: Flyway V10. [Contratto](../docs/P2-AUTO-ACTION-CATALOG.md).
+
+## P2 — Catalogo modelli V13 e controllo di sola lettura (PR #63 in verifica)
+
+La migrazione additiva `V13__user_template_catalog.sql` crea il catalogo personale senza toccare task, note o outbox. `infra/t4-inspect-db.sh` riconosce versioni Flyway 1–13 e verifica in sola lettura la presenza/coerenza delle tabelle introdotte da V12/V13. Solo **dopo deploy separatamente autorizzato**, `DB_CONTAINER=... T4_BEARER_TOKEN=... API_BASE_URL=https://api.notes.ddone.it bash infra/release-v13-readiness.sh` verifica V13 esatta, HTTPS JWT e GET catalogo senza stampare dati. Non migra né modifica il DB. [Contratto](../docs/P2-CLOUD-TEMPLATES.md).

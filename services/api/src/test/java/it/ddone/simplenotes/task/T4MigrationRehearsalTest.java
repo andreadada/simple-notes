@@ -104,11 +104,19 @@ class T4MigrationRehearsalTest {
                 postgres.getPassword()).load();
             migrated.migrate();
             migrated.validate();
-            assertEquals("11", migrated.info().current().getVersion().toString());
+            assertEquals("12", migrated.info().current().getVersion().toString());
 
             try (Connection db = DriverManager.getConnection(
                     postgres.getJdbcUrl(), postgres.getUsername(),
                     postgres.getPassword())) {
+                // V12 is additive: it creates an empty, owner-bound
+                // preferences table without migrating or replaying tasks.
+                try (PreparedStatement ps = db.prepareStatement(
+                    "SELECT COUNT(*) FROM task_action_catalog");
+                     ResultSet rs = ps.executeQuery()) {
+                    assertTrue(rs.next());
+                    assertEquals(0, rs.getLong(1));
+                }
                 try (PreparedStatement ps = db.prepareStatement(
                     "SELECT due_kind,due_at,version,tags_json,list_id,block_start_at,block_end_at,block_timezone,blocks_json "
                     + "FROM task WHERE id=?")) {

@@ -173,3 +173,7 @@ Il campo `syncOperationFingerprintSchema=1` segnala che l'istanza API pubblica i
 ## P2 — azioni automatiche locali e protocollo outbox
 
 La [PR #60](https://github.com/andreadada/simple-notes/pull/60) integra azioni task sul solo evento locale di creazione/completamento. La trasformazione avviene **prima** della scrittura SQL e del normale `upsert` outbox. Il pull remoto non innesca automazioni e non crea nuove mutazioni; il server continua a imporre il normale `remoteVersion` e le risoluzioni conflitti. Le regole non sono sincronizzate: non esiste deduplica distribuita di trigger. [Specifiche](P2-TASK-ACTIONS.md).
+
+## Catalogo cloud regole task: scambio separato da Delta Sync (PR #61 in verifica)
+
+Il catalogo JSON owner-scoped non viene inserito nel registro sync_change dei task e non entra nella outbox SQLite. I comandi Forui **Pubblica sul cloud** e **Scarica dal cloud** richiedono un'azione esplicita e verificano account/archivio locale; il PUT usa expectedVersion, quindi in caso di 409 non può cancellare una revisione remota concorrente. Le definizioni non si trasferiscono automaticamente via polling di Delta Sync e il server non modifica né ricalcola attività. [Contratto](P2-CLOUD-ACTION-CATALOG.md).

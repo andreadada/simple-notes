@@ -2050,6 +2050,13 @@ Ctrl+/ · Questo elenco'''),
               key: ValueKey('reminder-rules-owner-${cloud.userId ?? 'guest'}'),
               ownerId: cloud.userId,
               lists: data.lists,
+              cloudApiBaseUrl: CloudConfig.apiBaseUrl,
+              cloudTokenProvider: () =>
+                  ref.read(cloudAuthProvider.notifier).validAccessToken(),
+              cloudOwnerGuard: (owner) async =>
+                  ref.read(cloudAuthProvider).authenticated &&
+                  ref.read(cloudAuthProvider).userId == owner &&
+                  await ref.read(databaseProvider).setting('boundOwnerId') == owner,
               supported: ReminderController.supported,
               notificationsEnabled: reminders.enabled,
               onToggleNotifications: () async {

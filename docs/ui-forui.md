@@ -202,3 +202,7 @@ Nel menu avatar Crea backup cifrato / Verifica backup. `NotesDialog` e `FTextFie
 ## P2 — Form regole di azione task (PR #60 integrata)
 
 La nuova sezione Strumenti → Automazioni presenta regole separate dai promemoria OS. Il dialog Forui gestisce trigger crea/completa, testo filtro sul titolo, scelta azione priorità/tag/lista e salvataggio. I `TextFormField` sotto `Material(type: MaterialType.transparency)` mantengono il look minimale e non usano controller distrutti durante le animazioni di chiusura. Conferma richiesta per l'eliminazione, editor bloccato su JSON corrotto senza sovrascritture. [Contratto](P2-TASK-ACTIONS.md).
+
+## P2 — Pubblica/Scarica regole task dal cloud (PR #61 in verifica)
+
+Il pannello Forui delle automazioni task contiene due azioni distinte per trasferire **esplicitamente** le definizioni con il proprio account. Prima di sostituire il catalogo remoto/locale, un dialog mostra quantità e versione; durante lo scambio, l'editor viene disabilitato per evitare scritture concorrenti. Su errore di owner, versione 409, backend vecchio 404 o JSON incompatibile, il catalogo presente resta intatto. I bottoni non implicano sync in background. [Contratto](P2-CLOUD-ACTION-CATALOG.md).

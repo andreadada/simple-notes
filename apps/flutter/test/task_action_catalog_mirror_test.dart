@@ -211,6 +211,60 @@ void main() {
     expect(prefs.getString(TaskActionStore.keyForOwner(owner)), '{bad');
   });
 
+  test('backend rollback fails closed without local changes', () async {
+    final prefs = await SharedPreferences.getInstance();
+    final baseline = tagged('base');
+    await store.save(prefs, owner, baseline);
+    var remote = baseline, version = 5;
+    final api = server(() => remote, () => version, (_, __) {
+      fail('unexpected upload');
+    });
+    await mirror.synchronize(preferences: prefs,
+        owner: owner, api: api, ownerMatches: (_) async => true);
+    version = 4; remote = tagged('old');
+    expect(await mirror.synchronize(preferences: prefs,
+        owner: owner, api: api, ownerMatches: (_) async => true),
+        TaskActionMirrorResult.conflict);
+    expect((await store.load(prefs, owner)).serialize(), baseline.serialize());
+    expect(TaskActionMirrorAnchor.read(prefs, owner)?.version, 5);
+  });
+
+  test('same version with different remote catalog is a conflict', () async {
+    final prefs = await SharedPreferences.getInstance();
+    final baseline = tagged('base');
+    await store.save(prefs, owner, baseline);
+    var remote = baseline;
+    final api = server(() => remote, () => 2, (_, __) {
+      fail('unexpected upload');
+    });
+    await mirror.synchronize(preferences: prefs,
+        owner: owner, api: api, ownerMatches: (_) async => true);
+    remote = tagged('other');
+    expect(await mirror.synchronize(preferences: prefs,
+        owner: owner, api: api, ownerMatches: (_) async => true),
+        TaskActionMirrorResult.conflict);
+    expect((await store.load(prefs, owner)).serialize(), baseline.serialize());
+  });
+
+  test('upload requires incremented server revision', () async {
+    final prefs = await SharedPreferences.getInstance();
+    final local = tagged('offline');
+    await store.save(prefs, owner, local);
+    final api = TaskActionCloudApi(
+      baseUrl: 'https://api.example.com',
+      tokenProvider: () async => 'token',
+      client: MockClient((request) async => http.Response(jsonEncode({
+          'version': 0,
+          'catalog': jsonDecode(
+              (request.method == 'PUT' ? local : empty).serialize()),
+        }), 200)),
+    );
+    await expectLater(mirror.synchronize(preferences: prefs,
+        owner: owner, api: api, ownerMatches: (_) async => true),
+        throwsFormatException);
+    expect(TaskActionMirrorAnchor.read(prefs, owner), isNull);
+  });
+
   test('manual resolution updates anchor only after user explicitly chooses',
       () async {
     final prefs = await SharedPreferences.getInstance();

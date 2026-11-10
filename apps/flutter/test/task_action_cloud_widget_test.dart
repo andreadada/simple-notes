@@ -65,10 +65,46 @@ void main() {
         old.serialize());
     await tester.tap(find.byKey(const Key('action-cloud-confirm')));
     await tester.pumpAndSettle();
-    expect(reads, 1);
+    expect(reads, 2); // Final read validates the confirmed remote revision.
     expect((await const TaskActionStore().load(prefs, 'owner-a')).serialize(),
         remote.serialize());
     expect(TaskActionMirrorAnchor.read(prefs, 'owner-a')?.version, 4);
+  });
+
+  testWidgets('download rejects a remote change during confirmation',
+      (tester) async {
+    final prefs = await SharedPreferences.getInstance();
+    final local = TaskActionLibrary(rules: [
+      TaskActionLibrary.newRule(
+          trigger: 'created', action: 'tag', value: 'LOCAL'),
+    ]);
+    final remote = TaskActionLibrary(rules: [
+      TaskActionLibrary.newRule(
+          trigger: 'completed', action: 'tag', value: 'REMOTE'),
+    ]);
+    await const TaskActionStore().save(prefs, 'owner-a', local);
+    var reads = 0;
+    final api = TaskActionCloudApi(
+      baseUrl: 'https://api.example.com',
+      tokenProvider: () async => 'token',
+      client: MockClient((request) async {
+        reads++;
+        return http.Response(jsonEncode({
+          'version': reads == 1 ? 4 : 5,
+          'catalog': jsonDecode(remote.serialize()),
+        }), 200);
+      }),
+    );
+    await mount(tester, api);
+    await tester.ensureVisible(find.byKey(const Key('action-cloud-download')));
+    await tester.tap(find.byKey(const Key('action-cloud-download')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('action-cloud-confirm')));
+    await tester.pumpAndSettle();
+    expect(reads, 2);
+    expect((await const TaskActionStore().load(prefs, 'owner-a'))
+        .serialize(), local.serialize());
+    expect(TaskActionMirrorAnchor.read(prefs, 'owner-a'), isNull);
   });
 
   testWidgets('stale cloud PUT is a safe conflict and keeps local catalog',

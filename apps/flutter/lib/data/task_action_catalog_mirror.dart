@@ -101,6 +101,14 @@ class TaskActionCatalogMirror {
     }
 
     final remoteEncoded = remote.library.serialize();
+    // Refuse an unexpected server rollback or catalog mutation without
+    // advancing the revision. Such changes invalidate the trusted anchor.
+    if (anchor != null &&
+        (remote.version < anchor.version ||
+         (remote.version == anchor.version &&
+          remoteEncoded != anchor.catalog.serialize()))) {
+      return TaskActionMirrorResult.conflict;
+    }
     final same = startEncoded == remoteEncoded;
     if (same) {
       await TaskActionMirrorAnchor(
@@ -160,7 +168,8 @@ class TaskActionCatalogMirror {
     final accepted = await api.replace(
       expectedVersion: remoteVersion, library: local);
     if (!await ownerMatches(owner)) return TaskActionMirrorResult.skipped;
-    if (accepted.library.serialize() != expectedLocal) {
+    if (accepted.version <= remoteVersion ||
+        accepted.library.serialize() != expectedLocal) {
       throw const FormatException('Risposta cloud non coerente.');
     }
     await TaskActionMirrorAnchor(

@@ -236,6 +236,10 @@ class _TaskActionAutomationsPanelState
         final saved = await api.replace(
           expectedVersion: remote.version, library: latest);
         if (!await _verifiedOwner(owner)) return;
+        if (saved.version <= remote.version ||
+            saved.library.serialize() != source) {
+          throw const FormatException('Risposta cloud incoerente.');
+        }
         try {
           await const TaskActionCatalogMirror().acknowledgeManual(
             preferences: _prefs!, owner: owner, snapshot: saved);
@@ -269,8 +273,18 @@ class _TaskActionAutomationsPanelState
           _message('Le regole locali sono cambiate. Riprova.');
           return;
         }
+        // Reject a stale confirmation if another device published while
+        // the user was reading the dialog.
+        final latestCloud = await api.read();
+        if (!await _verifiedOwner(owner)) return;
+        if (latestCloud.version != remote.version ||
+            latestCloud.library.serialize() != remote.library.serialize()) {
+          _message('Il cloud è cambiato durante la conferma. '
+              'Nessuna regola locale sostituita: riprova.');
+          return;
+        }
         await const TaskActionStore().save(
-          _prefs!, owner, remote.library);
+          _prefs!, owner, latestCloud.library);
         if (!await _verifiedOwner(owner)) return;
         // Reflect the successful local write even if saving the secondary
         // checkpoint fails; never display a stale rule catalog afterwards.

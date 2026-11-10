@@ -1,6 +1,6 @@
 # Simple Notes
 
-> **Stato verificato 10/11/2026:** [PR #61](https://github.com/andreadada/simple-notes/pull/61) merged `bf16cba`, catalogo cloud versionato per le regole task, con scambio manuale e CAS. [Flutter CI #42821851199](https://github.com/andreadada/simple-notes/actions/runs/42821851199) **success** (399 test Flutter, build Windows/Android), [Backend CI #42821851073](https://github.com/andreadada/simple-notes/actions/runs/42821851073) **success** (PostgreSQL 17), [Markdown CI #42821851207](https://github.com/andreadada/simple-notes/actions/runs/42821851207) **success**. Flutter `0.31.0+33`; V12 nel repository, **VPS V10 attestata il 03/11**, nessun deploy o test fisico. Restano scheduler server, sync automatica, OAuth provider, ACL, S3 e restore live. [Stato canonico](docs/CURRENT-STATUS.md).
+> **Stato codice 10/11/2026:** [PR #63](https://github.com/andreadada/simple-notes/pull/63) merged `b9dd67a` (catalogo modelli manuale V13) e [PR #62](https://github.com/andreadada/simple-notes/pull/62) merged `766860c` (auto-sync foreground regole task). Migrazioni Flyway **V13 nel repository**, VPS **V10 attestata il 03/11**: nessun deploy, restore live o E2E hardware. Backend/Compose/Markdown CI della PR #63 verdi; Flutter CI dell'ultimo codice ancora da completare. [Stato canonico](docs/CURRENT-STATUS.md).
 
 App offline-first per **Windows 11 e Android** dedicata ad attività, note e pianificazione. Flutter/Forui con Drift SQLite locale, Google OAuth e sincronizzazione con Spring Boot/PostgreSQL su Coolify.
 

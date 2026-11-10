@@ -1,6 +1,6 @@
 # Simple Notes — Passaggio di consegne (handoff)
 
-> **Stato verificato 10/11/2026:** [PR #61](https://github.com/andreadada/simple-notes/pull/61) **merged** (`bf16cba`), catalogo cloud automazioni owner-scoped con Flyway V12 additiva, GET/PUT con CAS e comandi Forui Pubblica/Scarica. [Flutter CI #42821851199](https://github.com/andreadada/simple-notes/actions/runs/42821851199) **success** (399 test, analisi, Windows EXE/MSIX/recovery e Android JDK17/21), [Backend CI #42821851073](https://github.com/andreadada/simple-notes/actions/runs/42821851073) **success** (test PostgreSQL 17 e bootJar), [Markdown CI #42821851207](https://github.com/andreadada/simple-notes/actions/runs/42821851207) **success**. Flutter `0.31.0+33`; Flyway V12 nel repository, **VPS V10 attestata al 03/11**. Nessun deploy, migrazione live, restore o test hardware. Restano scheduler server, sync automatica regole, OAuth provider, ACL, S3 e restore live. [Stato canonico](CURRENT-STATUS.md).
+> **Stato codice 10/11/2026:** [PR #63](https://github.com/andreadada/simple-notes/pull/63) merged `b9dd67a` (catalogo modelli manuale V13) e [PR #62](https://github.com/andreadada/simple-notes/pull/62) merged `766860c` (auto-sync foreground regole task). Migrazioni Flyway **V13 nel repository**, VPS **V10 attestata il 03/11**: nessun deploy, restore live o E2E hardware. Backend/Compose/Markdown CI della PR #63 verdi; Flutter CI dell'ultimo codice ancora da completare. [Stato canonico](CURRENT-STATUS.md).
 
 <!-- CURRENT-STATUS-REF -->
 

@@ -1,6 +1,6 @@
 # AGENTS.md — Istruzioni operative per agenti AI
 
-> **Stato codice 10/11/2026:** [PR #62](https://github.com/andreadada/simple-notes/pull/62) integrata su `main` (`766860c`): cataloghi regole task riconciliati solo in foreground con CAS e conflitti non distruttivi. Flyway **V13 nel repository**, VPS **V10 attestata il 03/11**; nessun deploy, restore live o collaudo fisico. CI completa di PR #61 verde; la CI dell'ultimo codice PR #62 è ancora da completare. P2 rimane aperta per scheduler server, reminder cross-device, OAuth provider, ACL, S3 e restore live. [Stato](docs/CURRENT-STATUS.md).
+> **Stato codice 10/11/2026:** [PR #63](https://github.com/andreadada/simple-notes/pull/63) merged `b9dd67a` (catalogo modelli manuale V13) e [PR #62](https://github.com/andreadada/simple-notes/pull/62) merged `766860c` (auto-sync foreground regole task). Migrazioni Flyway **V13 nel repository**, VPS **V10 attestata il 03/11**: nessun deploy, restore live o E2E hardware. Backend/Compose/Markdown CI della PR #63 verdi; Flutter CI dell'ultimo codice ancora da completare. [Stato canonico](docs/CURRENT-STATUS.md).
 
 <!-- CURRENT-STATUS-REF -->
 

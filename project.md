@@ -1,6 +1,6 @@
 # Simple Notes — Progetto e roadmap
 
-> **Stato codice al 10/11/2026:** [PR #62](https://github.com/andreadada/simple-notes/pull/62) **integrata** (`766860c`). Sync foreground delle definizioni task con checkpoint/CAS e risoluzione manuale dei conflitti, Flyway V12 nel repository, Flutter `0.31.0+33`. La CI completa sul commit finale è ancora in corso; nessuna migrazione VPS o collaudo fisico eseguito (V10 attestata il 03/11). Restano automazioni server, reminder multi-device, OAuth provider, ACL, S3 e restore live. [Stato canonico](docs/CURRENT-STATUS.md).
+> **Stato codice 10/11/2026:** [PR #63](https://github.com/andreadada/simple-notes/pull/63) merged `b9dd67a` (catalogo modelli manuale V13) e [PR #62](https://github.com/andreadada/simple-notes/pull/62) merged `766860c` (auto-sync foreground regole task). Migrazioni Flyway **V13 nel repository**, VPS **V10 attestata il 03/11**: nessun deploy, restore live o E2E hardware. Backend/Compose/Markdown CI della PR #63 verdi; Flutter CI dell'ultimo codice ancora da completare. [Stato canonico](docs/CURRENT-STATUS.md).
 
 <!-- CURRENT-STATUS-REF -->
 

@@ -18,6 +18,6 @@
 
 Nessun deploy Coolify, nuovo permesso OAuth, sync dei modelli, restore live o migrazione Drift/Flyway. P2 complessiva ancora aperta: [matrice](P2-DELIVERY-MATRIX.md) · [stato](CURRENT-STATUS.md).
 
-## Opzione cloud separata (PR #63 in verifica)
+## Opzione cloud separata (PR #63 integrata)
 
 Il file JSON locale qui descritto resta invariato e non cifrato. La PR #63 introduce una via diversa di scambio manuale Pubblica/Scarica per account con CAS/JWT e Flyway V13, senza modificare né sostituire import/export file o backup `.snb`. Non è sync automatica. [Specifica](P2-CLOUD-TEMPLATES.md).

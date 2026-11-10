@@ -1,6 +1,6 @@
 # Simple Notes — Design & Product Specification
 
-> **Stato verificato 10/11/2026:** [PR #61](https://github.com/andreadada/simple-notes/pull/61) integrata `bf16cba`: definizioni regole task cloud con JWT, CAS e Flyway V12. [Flutter CI #42821851199](https://github.com/andreadada/simple-notes/actions/runs/42821851199) **success** (399 test, Windows EXE/MSIX/recovery e Android JDK17/21); [Backend CI #42821851073](https://github.com/andreadada/simple-notes/actions/runs/42821851073) **success** (Spring/PostgreSQL 17), [Markdown #42821851207](https://github.com/andreadada/simple-notes/actions/runs/42821851207) **success**. Flutter `0.31.0+33`; V12 nel repo, VPS V10 attestata al 03/11. Nessun deploy, migrazione su dati reali, restore live o collaudo hardware. Scheduler server, sync automatica regole e resto P2 ancora aperti. [Stato canonico](docs/CURRENT-STATUS.md).
+> **Stato verificato 10/11/2026:** [PR #61](https://github.com/andreadada/simple-notes/pull/61) integrata `bf16cba`: definizioni regole task cloud con JWT, CAS e Flyway V13 nel repository (VPS attestata V10). [Flutter CI #42821851199](https://github.com/andreadada/simple-notes/actions/runs/42821851199) **success** (399 test, Windows EXE/MSIX/recovery e Android JDK17/21); [Backend CI #42821851073](https://github.com/andreadada/simple-notes/actions/runs/42821851073) **success** (Spring/PostgreSQL 17), [Markdown #42821851207](https://github.com/andreadada/simple-notes/actions/runs/42821851207) **success**. Flutter `0.31.0+33`; V13 nel repo, VPS V10 attestata al 03/11. Nessun deploy, migrazione su dati reali, restore live o collaudo hardware. Scheduler server, sync automatica regole e resto P2 ancora aperti. [Stato canonico](docs/CURRENT-STATUS.md).
 
 <!-- CURRENT-STATUS-REF -->
 
@@ -339,6 +339,6 @@ Il pannello automazioni task offre **Pubblica sul cloud** e **Scarica dal cloud*
 
 Il pannello Forui delle azioni task mostra in testo semplice lo stato sincronizzazione, senza contenitori pesanti o dialog di errore ripetuti. Se due cataloghi differiscono dalla stessa baseline, Pubblica/Scarica con conferma è la risoluzione esplicita. Non effettuare merge silenziosi, disabilitare l'auto-sync durante l'editing e mantenere il resto dell'app funzionale anche con backend vecchio/offline. [Specifica](docs/P2-AUTO-ACTION-CATALOG.md).
 
-## P2 — Modelli personali nel cloud (PR #63 in verifica)
+## P2 — Modelli personali nel cloud (PR #63 integrata)
 
 La schermata Modelli mostra **Pubblica cloud** e **Scarica cloud** accanto a Importa/Esporta. Le modifiche restano locali finché l'utente non sceglie l'operazione. Usare il `NotesDialog` Forui con quantità/revisione e conferma esplicita, senza un nuovo modal di rinomina. 404/409, account errato e revisione superata lasciano invariati i modelli e i task. [Contratto](docs/P2-CLOUD-TEMPLATES.md).

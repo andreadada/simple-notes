@@ -1,7 +1,7 @@
 # Simple Notes API v1
 
 <!-- CURRENT-STATUS-REF -->
-> **Stato verificato 10/11/2026:** [PR #61](https://github.com/andreadada/simple-notes/pull/61) integrata `bf16cba`: definizioni regole task cloud con JWT, CAS e Flyway V12. [Flutter CI #42821851199](https://github.com/andreadada/simple-notes/actions/runs/42821851199) **success** (399 test, Windows EXE/MSIX/recovery e Android JDK17/21); [Backend CI #42821851073](https://github.com/andreadada/simple-notes/actions/runs/42821851073) **success** (Spring/PostgreSQL 17), [Markdown #42821851207](https://github.com/andreadada/simple-notes/actions/runs/42821851207) **success**. Flutter `0.31.0+33`; V12 nel repo, VPS V10 attestata al 03/11. Nessun deploy, migrazione su dati reali, restore live o collaudo hardware. Scheduler server, notifiche multi-device e resto P2 ancora aperti. [Stato canonico](CURRENT-STATUS.md).
+> **Stato verificato 10/11/2026:** [PR #61](https://github.com/andreadada/simple-notes/pull/61) integrata `bf16cba`: definizioni regole task cloud con JWT, CAS e Flyway V13 nel repository (VPS attestata V10). [Flutter CI #42821851199](https://github.com/andreadada/simple-notes/actions/runs/42821851199) **success** (399 test, Windows EXE/MSIX/recovery e Android JDK17/21); [Backend CI #42821851073](https://github.com/andreadada/simple-notes/actions/runs/42821851073) **success** (Spring/PostgreSQL 17), [Markdown #42821851207](https://github.com/andreadada/simple-notes/actions/runs/42821851207) **success**. Flutter `0.31.0+33`; V13 nel repo, VPS V10 attestata al 03/11. Nessun deploy, migrazione su dati reali, restore live o collaudo hardware. Scheduler server, notifiche multi-device e resto P2 ancora aperti. [Stato canonico](CURRENT-STATUS.md).
 
 
 ## Auth
@@ -192,6 +192,6 @@ L'endpoint autenticato `GET /api/v1/capabilities` aggiunge il campo numerico `sy
 
 Non si introducono nuovi endpoint oltre a GET e PUT /api/v1/automations/task-actions della V12. La riconciliazione automatica invia PUT solo quando il confronto con il checkpoint per owner indica un'unica modifica locale e il cloud non è cambiato. Sempre CAS expectedVersion; 409/404/426 non autorizzano retry distruttivi né la sostituzione del catalogo. Il motore resta nel client quando l'app è in primo piano; nessuna azione task viene eseguita dal server. [Contratto](P2-AUTO-ACTION-CATALOG.md).
 
-## P2 — Catalogo modelli personali V13 (PR #63 in verifica)
+## P2 — Catalogo modelli personali V13 (PR #63 integrata)
 
 `GET /api/v1/templates/catalog` JWT: `{"version":0,"catalog":{"schema":1,"templates":[]}}` se nessun catalogo pubblicato; altrimenti revisione e definizioni. `PUT /api/v1/templates/catalog`: `{"expectedVersion":0,"catalog":{"schema":1,"templates":[...]}}` con CAS e revisione incrementata. HTTP 409 se revisione vecchia, 400 per catalogo non valido, 401 senza JWT. Max 50 modelli, 128 KiB per record. Nessuna scrittura a task, note, `sync_change` o `sync_operation`. Endpoint nuovo rispetto a Flyway V12: non disponibile nella VPS finché V13 non viene effettivamente distribuita. [Contratto](P2-CLOUD-TEMPLATES.md).

@@ -1,7 +1,7 @@
 # Simple Notes — Architettura applicativa
 
 <!-- CURRENT-STATUS-REF -->
-> **Stato verificato 10/11/2026:** [PR #61](https://github.com/andreadada/simple-notes/pull/61) integrata `bf16cba`: definizioni regole task cloud con JWT, CAS e Flyway V12. [Flutter CI #42821851199](https://github.com/andreadada/simple-notes/actions/runs/42821851199) **success** (399 test, Windows EXE/MSIX/recovery e Android JDK17/21); [Backend CI #42821851073](https://github.com/andreadada/simple-notes/actions/runs/42821851073) **success** (Spring/PostgreSQL 17), [Markdown #42821851207](https://github.com/andreadada/simple-notes/actions/runs/42821851207) **success**. Flutter `0.31.0+33`; V12 nel repo, VPS V10 attestata al 03/11. Nessun deploy, migrazione su dati reali, restore live o collaudo hardware. Scheduler server, notifiche multi-device e resto P2 ancora aperti. [Stato canonico](CURRENT-STATUS.md).
+> **Stato verificato 10/11/2026:** [PR #61](https://github.com/andreadada/simple-notes/pull/61) integrata `bf16cba`: definizioni regole task cloud con JWT, CAS e Flyway V13 nel repository (VPS attestata V10). [Flutter CI #42821851199](https://github.com/andreadada/simple-notes/actions/runs/42821851199) **success** (399 test, Windows EXE/MSIX/recovery e Android JDK17/21); [Backend CI #42821851073](https://github.com/andreadada/simple-notes/actions/runs/42821851073) **success** (Spring/PostgreSQL 17), [Markdown #42821851207](https://github.com/andreadada/simple-notes/actions/runs/42821851207) **success**. Flutter `0.31.0+33`; V13 nel repo, VPS V10 attestata al 03/11. Nessun deploy, migrazione su dati reali, restore live o collaudo hardware. Scheduler server, notifiche multi-device e resto P2 ancora aperti. [Stato canonico](CURRENT-STATUS.md).
 
 > **Cronologia (stato del 02/11 o 31/10/2026):** R1 gate server-first integrato su `main` ([PR #26](https://github.com/andreadada/simple-notes/pull/26), commit [`f19ee8b0`](https://github.com/andreadada/simple-notes/commit/f19ee8b0a5bea2cb2c2231d85b3e8ad10a5233a7); [Compose CI](https://github.com/andreadada/simple-notes/actions/runs/41523319857) **success** con PostgreSQL 17 sintetico, [Markdown](https://github.com/andreadada/simple-notes/actions/runs/41523319860) **success**). Flutter resta `0.29.0+31` e 191 test già attestati. **VPS reale V10, health/capability live, backup recente e collaudo hardware non verificati**; ultimo stato VPS attestato V8. Nessun deploy o intervento su dati. [Stato](CURRENT-STATUS.md) · [R1](RELEASE-V10-READINESS.md).
 
@@ -13,7 +13,7 @@
 | Persistenza client | Drift/SQLite schema **V8**, `app_database.dart`, `local_store.dart` | Offline-first, revisioni remote, owner, tombstone, outbox durevole |
 | Sync | `auto_sync.dart`, `cloud_sync.dart` | Mutazioni idempotenti, delta per cursor, verifica capability, 409 e 426 |
 | API | Spring Boot Java 21/Spring Security, `services/api` | OAuth Google, task/note/liste, sync autorizzata per utente |
-| Server | PostgreSQL 17 + Flyway **V1–V12 nel repo**; Compose/Coolify | Stato cloud condiviso, versioni, migrazioni additive |
+| Server | PostgreSQL 17 + Flyway **V1–V13 nel repo**; Compose/Coolify | Stato cloud condiviso, versioni, migrazioni additive |
 
 ## Modello e migrazioni
 
@@ -131,6 +131,6 @@ Le regole di azione continuano a essere eseguite **solo nel LocalStore**. Un ser
 
 Il client Flutter riconcilia in foreground la preferenza TaskActionStore e il catalogo cloud V12 con un checkpoint locale TaskActionMirrorAnchor contenente revisione e catalogo confermati. Se solo uno dei due cataloghi differisce dal checkpoint, scarica oppure pubblica con CAS; divergenze su entrambe le copie richiedono esplicita risoluzione da UI. La nuova logica non crea task, non avvia job server e non scrive la outbox. Le sessioni del pannello Automazioni sospendono la riconciliazione per non sovrapporsi alle modifiche dell'utente. [Contratto](P2-AUTO-ACTION-CATALOG.md).
 
-## P2 — Catalogo cloud dei modelli (PR #63 in verifica)
+## P2 — Catalogo cloud dei modelli (PR #63 integrata)
 
 `UserTemplateCatalogController/Service` persiste definizioni in `user_template_catalog` Flyway V13, con JWT owner e advisory lock PostgreSQL per PUT CAS. La schermata Flutter `TaskTemplatesBoard` usa `UserTemplateCloudApi` su comando esplicito, mantiene i modelli offline in SharedPreferences e richiede conferma per sostituirli con quelli remoti. Il flusso non passa da `/sync`, non crea task e non modifica la coda outbox. [Contratto](P2-CLOUD-TEMPLATES.md).

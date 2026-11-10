@@ -104,7 +104,7 @@ class T4MigrationRehearsalTest {
                 postgres.getPassword()).load();
             migrated.migrate();
             migrated.validate();
-            assertEquals("12", migrated.info().current().getVersion().toString());
+            assertEquals("13", migrated.info().current().getVersion().toString());
 
             try (Connection db = DriverManager.getConnection(
                     postgres.getJdbcUrl(), postgres.getUsername(),
@@ -113,6 +113,14 @@ class T4MigrationRehearsalTest {
                 // preferences table without migrating or replaying tasks.
                 try (PreparedStatement ps = db.prepareStatement(
                     "SELECT COUNT(*) FROM task_action_catalog");
+                     ResultSet rs = ps.executeQuery()) {
+                    assertTrue(rs.next());
+                    assertEquals(0, rs.getLong(1));
+                }
+                // V13 also adds an empty user-template definition catalog;
+                // no historical tasks, notes or outbox rows are migrated.
+                try (PreparedStatement ps = db.prepareStatement(
+                    "SELECT COUNT(*) FROM user_template_catalog");
                      ResultSet rs = ps.executeQuery()) {
                     assertTrue(rs.next());
                     assertEquals(0, rs.getLong(1));

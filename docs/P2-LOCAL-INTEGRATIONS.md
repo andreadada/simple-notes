@@ -46,3 +46,7 @@ Test dedicati: portable_task_calendar_test.dart, user_task_templates_test.dart, 
 ## Estensione successiva in PR #63 — trasferimento cloud modelli
 
 Le descrizioni storiche PR #57/#58 rimangono valide per JSON manuale e storage locale. La PR #63 aggiunge **un'opzione manuale** Pubblica/Scarica tramite cloud V13/CAS, non sincronizzazione automatica. [Contratto](P2-CLOUD-TEMPLATES.md).
+
+## Estensione P2 in verifica — allegati note cloud S3 (PR #64)
+
+Oltre a ICS, modelli e widget locali, la PR #64 introduce allegati per note **solo online**, isolati per owner, con storage S3 e nuova tabella Flyway V14: non esiste una coda file offline e i backup .snb non coprono i file. [Specifica](P2-NOTE-ATTACHMENTS.md).

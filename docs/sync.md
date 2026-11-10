@@ -181,3 +181,7 @@ Il catalogo JSON owner-scoped non viene inserito nel registro sync_change dei ta
 ## P2 — Riconciliazione foreground delle regole (PR #62 integrata)
 
 Dopo la normale sync Delta Sync, il client confronta local catalog, checkpoint v1 per owner (versione+contenuto), e catalogo cloud V12. Soltanto un ramo cambiato autorizza upload CAS o download; se entrambi divergono, nessuna modifica automatica e richiesta risoluzione manuale Pubblica/Scarica. Questo canale non modifica cursori, task, note o outbox e non interferisce con la loro sync se il backend è vecchio, offline o restituisce 409. [Contratto](P2-AUTO-ACTION-CATALOG.md).
+
+## P2 — Allegati note fuori dal canale /sync (PR #64 in verifica)
+
+La nuova API degli allegati S3 è distinta dal sync outbox: gli allegati non diventano `sync_change` o `sync_operation`, non sono importati dai backup locali, e non vengono presi in carico dal motore offline. La nota deve già esistere lato backend con stesso owner. Begin/PUT/HEAD+COPY/Complete e signed GET sono azioni esplicite online; i retry non devono rieseguire automaticamente operazioni su un altro account. 503 backend non configurato e 404 nota non sincronizzata sono fail-closed. [Specifica](P2-NOTE-ATTACHMENTS.md).

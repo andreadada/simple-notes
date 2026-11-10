@@ -206,3 +206,7 @@ Non serve una V13 né nuove tabelle: questo incremento usa esclusivamente il GET
 ## P2 — Catalogo modelli V13 e controllo di sola lettura (PR #63 integrata)
 
 La migrazione additiva `V13__user_template_catalog.sql` crea il catalogo personale senza toccare task, note o outbox. `infra/t4-inspect-db.sh` riconosce versioni Flyway 1–13 e verifica in sola lettura la presenza/coerenza delle tabelle introdotte da V12/V13. Solo **dopo deploy separatamente autorizzato**, `DB_CONTAINER=... T4_BEARER_TOKEN=... API_BASE_URL=https://api.notes.ddone.it bash infra/release-v13-readiness.sh` verifica V13 esatta, HTTPS JWT e GET catalogo senza stampare dati. Non migra né modifica il DB. [Contratto](../docs/P2-CLOUD-TEMPLATES.md).
+
+## P2 — S3 e Flyway V14 per allegati note (PR #64 in verifica)
+
+Il codice introduce la tabella additiva `note_attachment` e l'object store solo quando `APP_ATTACHMENTS_ENABLED=true`; con default false nessuna credenziale AWS viene caricata. Richiede `APP_ATTACHMENTS_BUCKET`, `APP_ATTACHMENTS_REGION`, eventuale `APP_ATTACHMENTS_ENDPOINT=https://...`, e credenziali dell'SDK gestite in **segreti Coolify** (mai in file o chat). Imporre bucket privato, policy ristretta `staging/*`/`files/*`, lifecycle di eliminazione su staging, backup e cleanup degli orfani. Il futuro `bash infra/release-v14-readiness.sh` con DB_CONTAINER e JWT short-lived verifica **solo in lettura** Flyway V14, capabilities e storage enabled. Non crea bucket, non prova PUT/GET reali e non certifica permessi S3. [Specifica](../docs/P2-NOTE-ATTACHMENTS.md).

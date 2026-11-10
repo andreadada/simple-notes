@@ -336,3 +336,7 @@ Inizia soltanto con account autenticato, boundOwnerId locale coerente, restore-s
 ## P2 — Catalogo modelli cloud (PR #63 integrata)
 
 Il client Forui effettua soltanto trasferimenti espliciti Pubblica/Scarica, non sync automatica. Il nuovo endpoint richiede Flyway **V13** sul backend: 404 sulla VPS non aggiornata non deve azzerare i modelli. PUT con revisione `expectedVersion` e 409 per concorrenza; Scarica ricontrolla la revisione dopo il dialog. Non avviare automaticamente Coolify. Il post-deploy, se autorizzato, ha il gate **read-only** `infra/release-v13-readiness.sh` con DB_CONTAINER e JWT effimero in variabili di ambiente, senza stamparlo. [Contratto](P2-CLOUD-TEMPLATES.md).
+
+## P2 — Allegati note in S3 (PR #64 in verifica, V14 solo nel branch)
+
+Non abilitare upload cloud in produzione finché non esistono un bucket privato e una policy che consenta solo gli oggetti `staging/` e `files/`, un lifecycle per i `staging/` e un piano backup dei file. La VM VPS attualmente attestata a Flyway V10 **non espone** questi endpoint. Il codice V14 è opt-in (`APP_ATTACHMENTS_ENABLED=false` default), non avvia automaticamente S3, né una migrazione manuale. Se un futuro deploy viene autorizzato, `infra/release-v14-readiness.sh` verifica **solo in lettura** la versione Flyway esatta, health/JWT e capability `attachmentStorageEnabled=true`. Il gate non verifica bucket policy, PUT/GET reali, retention, scansione contenuti, cleanup su soft-delete o dispositivi fisici. [Contratto completo](P2-NOTE-ATTACHMENTS.md).

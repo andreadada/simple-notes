@@ -226,14 +226,18 @@ class _TaskTemplatesBoardState extends State<TaskTemplatesBoard> {
 
   Future<bool> _verifiedOwner(String owner) async {
     if (!mounted || widget.ownerId != owner ||
-        widget.cloudOwnerGuard == null) return false;
+        widget.cloudOwnerGuard == null) {
+      return false;
+    }
     final valid = await widget.cloudOwnerGuard!(owner);
     return valid && mounted && widget.ownerId == owner;
   }
 
   Future<void> _transferCloud({required bool publish}) async {
     if (!_cloudAvailable || _saving || _loading ||
-        _loadError != null || _prefs == null) return;
+        _loadError != null || _prefs == null) {
+      return;
+    }
     final owner = widget.ownerId!;
     final initial = _library.serialize();
     // Lock local editor/import/export while a network request or
@@ -260,6 +264,7 @@ class _TaskTemplatesBoardState extends State<TaskTemplatesBoard> {
         _showError('Modelli già identici: nessuna modifica richiesta.');
         return;
       }
+      if (!mounted) return;
       if (!publish && remote.version == 0) {
         _showError('Nessun modello pubblicato sul cloud.');
         return;

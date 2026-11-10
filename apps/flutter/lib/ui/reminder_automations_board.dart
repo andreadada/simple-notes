@@ -17,6 +17,8 @@ class ReminderAutomationsBoard extends StatefulWidget {
     required this.lists,
     this.cloudApiBaseUrl = '', this.cloudTokenProvider,
     this.cloudOwnerGuard, this.cloudApi,
+    this.actionAutoSyncLabel, this.onTaskRulesChanged,
+    this.onTaskRulesEditorVisible,
     required this.supported,
     required this.notificationsEnabled,
     required this.onToggleNotifications,
@@ -29,6 +31,9 @@ class ReminderAutomationsBoard extends StatefulWidget {
   final Future<String> Function()? cloudTokenProvider;
   final Future<bool> Function(String)? cloudOwnerGuard;
   final TaskActionCloudApi? cloudApi;
+  final String? actionAutoSyncLabel;
+  final VoidCallback? onTaskRulesChanged;
+  final ValueChanged<bool>? onTaskRulesEditorVisible;
   final bool supported;
   final bool notificationsEnabled;
   final Future<void> Function() onToggleNotifications;
@@ -336,6 +341,9 @@ class _ReminderAutomationsBoardState extends State<ReminderAutomationsBoard> {
           cloudTokenProvider: widget.cloudTokenProvider,
           cloudOwnerGuard: widget.cloudOwnerGuard,
           cloudApi: widget.cloudApi,
+          autoSyncLabel: widget.actionAutoSyncLabel,
+          onRuleCatalogChanged: widget.onTaskRulesChanged,
+          onEditorVisibilityChanged: widget.onTaskRulesEditorVisible,
         ),
       ],
     );

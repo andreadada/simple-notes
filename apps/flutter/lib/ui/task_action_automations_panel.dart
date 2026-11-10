@@ -5,6 +5,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../data/models.dart';
 import '../data/task_action_automations.dart';
 import '../data/task_action_cloud_api.dart';
+import '../data/task_action_catalog_mirror.dart';
 import 'notes_dialogs.dart';
 import 'notes_theme.dart';
 
@@ -15,6 +16,8 @@ class TaskActionAutomationsPanel extends StatefulWidget {
     super.key, required this.ownerId, required this.lists,
     this.cloudApiBaseUrl = '', this.cloudTokenProvider,
     this.cloudOwnerGuard, this.cloudApi,
+    this.autoSyncLabel, this.onRuleCatalogChanged,
+    this.onEditorVisibilityChanged,
   });
 
   final String? ownerId;
@@ -24,6 +27,9 @@ class TaskActionAutomationsPanel extends StatefulWidget {
   final Future<bool> Function(String owner)? cloudOwnerGuard;
   /// Injectable in widget tests. The caller retains client ownership.
   final TaskActionCloudApi? cloudApi;
+  final String? autoSyncLabel;
+  final VoidCallback? onRuleCatalogChanged;
+  final ValueChanged<bool>? onEditorVisibilityChanged;
 
   @override
   State<TaskActionAutomationsPanel> createState() =>
@@ -43,6 +49,15 @@ class _TaskActionAutomationsPanelState
   void initState() {
     super.initState();
     _load();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) widget.onEditorVisibilityChanged?.call(true);
+    });
+  }
+
+  @override
+  void dispose() {
+    widget.onEditorVisibilityChanged?.call(false);
+    super.dispose();
   }
 
   @override
@@ -97,9 +112,20 @@ class _TaskActionAutomationsPanelState
     final owner = widget.ownerId!;
     setState(() => _saving = true);
     try {
+      // A pre-existing background read must never clobber an edit made
+      // after this panel loaded its original catalog.
+      final stored = await const TaskActionStore().load(_prefs!, owner);
+      if (stored.serialize() != _library.serialize()) {
+        if (mounted && owner == widget.ownerId) {
+          setState(() => _library = stored);
+          _message('Le regole sono cambiate: modifica non sovrascritta.');
+        }
+        return;
+      }
       await const TaskActionStore().save(_prefs!, owner, next);
       if (!mounted || owner != widget.ownerId) return;
       setState(() => _library = next);
+      widget.onRuleCatalogChanged?.call();
     } catch (_) {
       if (mounted && owner == widget.ownerId) {
         _message('Regola non salvata: nessun dato precedente eliminato.');
@@ -178,6 +204,10 @@ class _TaskActionAutomationsPanelState
       final remote = await api.read();
       if (!await _verifiedOwner(owner)) return;
       if (remote.library.serialize() == source) {
+        await const TaskActionCatalogMirror().acknowledgeManual(
+          preferences: _prefs!, owner: owner, snapshot: remote);
+        if (!await _verifiedOwner(owner)) return;
+        widget.onRuleCatalogChanged?.call();
         _message('Le regole sono già identiche sui due dispositivi.');
         return;
       }
@@ -202,6 +232,10 @@ class _TaskActionAutomationsPanelState
         final saved = await api.replace(
           expectedVersion: remote.version, library: latest);
         if (!await _verifiedOwner(owner)) return;
+        await const TaskActionCatalogMirror().acknowledgeManual(
+          preferences: _prefs!, owner: owner, snapshot: saved);
+        if (!await _verifiedOwner(owner)) return;
+        widget.onRuleCatalogChanged?.call();
         _message('Pubblicate ${saved.library.rules.length} regole '
             '(versione ${saved.version}).');
       } else {
@@ -228,7 +262,11 @@ class _TaskActionAutomationsPanelState
         await const TaskActionStore().save(
           _prefs!, owner, remote.library);
         if (!await _verifiedOwner(owner)) return;
+        await const TaskActionCatalogMirror().acknowledgeManual(
+          preferences: _prefs!, owner: owner, snapshot: remote);
+        if (!await _verifiedOwner(owner)) return;
         setState(() => _library = remote.library);
+        widget.onRuleCatalogChanged?.call();
         _message('Regole cloud scaricate su questo dispositivo.');
       }
     } on TaskActionCloudConflict {
@@ -546,10 +584,19 @@ class _TaskActionAutomationsPanelState
           Text('Regole cloud per questo account', style: TextStyle(
             fontWeight: FontWeight.w600, color: colors.foreground)),
           const SizedBox(height: 6),
-          Text('Trasferimento esplicito con controllo di versione. '
-              'Le regole rimangono locali finché non le pubblichi '
-              'o scarichi. Nessun task viene modificato.',
+          Text('Le regole si allineano in automatico mentre l’app è '
+              'aperta e il server è disponibile. Se due dispositivi '
+              'modificano le regole offline, nessuna versione viene '
+              'sovrascritta: usa Pubblica o Scarica per risolvere. '
+              'La modifica su questa schermata sospende '
+              'temporaneamente l’auto-sync. Nessun task viene modificato.',
             style: TextStyle(color: colors.secondaryText, fontSize: 12)),
+          if (widget.autoSyncLabel != null) ...[
+            const SizedBox(height: 10),
+            Text(widget.autoSyncLabel!,
+              key: const Key('action-auto-sync-status'),
+              style: TextStyle(color: colors.secondaryText, fontSize: 12)),
+          ],
           const SizedBox(height: 12),
           Wrap(spacing: 8, runSpacing: 8, children: [
             FButton(

@@ -4,7 +4,7 @@
 
 ## Obiettivo e sicurezza
 
-Il batch rende **trasferibili con controllo di versione** le definizioni delle regole di azione task fra Windows e Android per lo stesso account. Non introduce ancora sincronizzazione automatica, un motore di esecuzione lato server, scheduler o trigger temporali. Un catalogo cloud non equivale all'esecuzione remota delle azioni.
+Il batch rende **trasferibili con controllo di versione** le definizioni delle regole di azione task fra Windows e Android per lo stesso account. La sola PR #61 non introduce sincronizzazione automatica; la PR #62 la aggiunge nel client in foreground, senza esecuzione lato server, scheduler o trigger temporali. Un catalogo cloud non equivale all'esecuzione remota delle azioni.
 
 ### Backend Spring / PostgreSQL 17
 

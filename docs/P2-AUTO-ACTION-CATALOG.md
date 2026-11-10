@@ -20,8 +20,9 @@ Per ogni account il client salva in SharedPreferences un checkpoint separato con
 | Entrambi sono cambiati in modo differente | **Conflitto**: nessun upload/download automatico, conservazione di entrambi |
 | Preferenza locale esplicitamente vuota e cloud non vuoto senza checkpoint | **Conflitto**: la lista vuota potrebbe essere una cancellazione intenzionale |
 | JSON incompatibile, checkpoint corrotto, cambio owner, backend 404/426, rete o errore CAS 409 | Fail-closed: nessuna cancellazione dati né modifica a task/outbox |
+| Revisione server inferiore al checkpoint, oppure stessa revisione ma catalogo differente | **Conflitto**: rifiuta il rollback/lo stato incoerente senza sovrascrivere le regole |
 
-L'ordine delle regole è rilevante: per evitare fusioni arbitrarie, **non viene realizzato un merge automatico di modifiche contemporanee**. L'utente risolve dal pannello **Strumenti → Automazioni** scegliendo **Pubblica** o **Scarica** con conferma; al termine, il checkpoint registra la revisione scelta. Se il pannello di modifica è aperto, l'auto-sync rimane temporaneamente sospesa per evitare corse con dialog, salvataggi e conferme. Alla sua chiusura viene pianificato un controllo.
+L'ordine delle regole è rilevante: per evitare fusioni arbitrarie, **non viene realizzato un merge automatico di modifiche contemporanee**. L'utente risolve dal pannello **Strumenti → Automazioni** scegliendo **Pubblica** o **Scarica** con conferma; prima del download manuale si ripete il GET, per rifiutare una conferma diventata obsoleta. Il PUT deve restituire una revisione incrementata e un catalogo coerente; al termine, il checkpoint registra la revisione scelta. Se il pannello di modifica è aperto, l'auto-sync rimane temporaneamente sospesa per evitare corse con dialog, salvataggi e conferme. Alla sua chiusura viene pianificato un controllo.
 
 ### Garanzie operative
 
@@ -33,6 +34,6 @@ L'ordine delle regole è rilevante: per evitare fusioni arbitrarie, **non viene 
 
 ## Test / gate
 
-Unit test TaskActionCatalogMirror: primo bootstrap, pubblicazione offline con CAS, download aggiornamento remoto, anti-loop, conflitto su modifiche concorrenti, preferenza vuota intenzionale, cambio account, edit durante GET, checkpoint corrotto e risoluzione manuale. Test Flutter complessivi e build Android/Windows sono obbligatori prima del merge.
+Unit test TaskActionCatalogMirror: primo bootstrap, pubblicazione offline con CAS, download aggiornamento remoto, anti-loop, conflitto su modifiche concorrenti, preferenza vuota intenzionale, cambio account, edit durante GET, checkpoint corrotto e risoluzione manuale. Test per rollback server, catalogo alterato a revisione invariata, ACK PUT non incrementato e conferma di download obsoleta. Test Flutter complessivi e build Android/Windows sono obbligatori prima del merge.
 
 Restano esclusi: esecuzione server di azioni, trigger a orario, dedup di eventi simultanei su dispositivi diversi, test E2E Windows↔Android reali, deploy Coolify, OAuth Calendar/Outlook, liste ACL, allegati S3 e restore live. [Matrice P2](P2-DELIVERY-MATRIX.md) · [Prove differite](DEVICE-ACCEPTANCE-DEFERRED.md).

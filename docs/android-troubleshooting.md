@@ -1,7 +1,7 @@
 # Android — build, firma, Google OAuth e installazione
 
 <!-- CURRENT-STATUS-REF -->
-> **Stato corrente 09/11/2026:** `main` include [PR #58](https://github.com/andreadada/simple-notes/pull/58) (merge `e926a5a`; trasferimento modelli manuale) e i batch P2 #56/#57. [CI Flutter #42688444850](https://github.com/andreadada/simple-notes/actions/runs/42688444850) verde: 369 test e build Windows/Android; [Markdown #42688444618](https://github.com/andreadada/simple-notes/actions/runs/42688444618) verde. Backend **Flyway V11 nel codice**, **V10 attestata sulla VPS** (03/11), client `0.31.0+33`; restore live, OAuth/provider, ACL, S3, automazioni, deploy V11 e collaudi fisici restano aperti. [Fonte canonica](CURRENT-STATUS.md).
+> **Stato aggiornato al 10/11/2026:** P0/P1 integrati; catalogo cloud delle regole PR #61 integrato, sincronizzazione foreground PR #62 in verifica. Backend Flyway V12 nel codice, **VPS attestata a V10 il 03/11/2026**. Nessun deploy delle nuove migrazioni, restore live o E2E hardware attestato. [Fonte canonica](CURRENT-STATUS.md).
 > **Cronologia al 31/10/2026:** P2.2 ICS read-only integrata su `main` ([PR #21](https://github.com/andreadada/simple-notes/pull/21), Flutter `0.25.0+27`, CI Flutter/Markdown verde: 162 test, Windows EXE/MSIX, Android JDK17/21). Test fisici e deploy cumulativo non attestati. Backend repo Flyway V10, VPS ultima attestazione V8; nessun deploy/reset. [Stato](CURRENT-STATUS.md) · [ICS](P2-ICS.md).
 
 

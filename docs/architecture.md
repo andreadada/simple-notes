@@ -13,7 +13,7 @@
 | Persistenza client | Drift/SQLite schema **V8**, `app_database.dart`, `local_store.dart` | Offline-first, revisioni remote, owner, tombstone, outbox durevole |
 | Sync | `auto_sync.dart`, `cloud_sync.dart` | Mutazioni idempotenti, delta per cursor, verifica capability, 409 e 426 |
 | API | Spring Boot Java 21/Spring Security, `services/api` | OAuth Google, task/note/liste, sync autorizzata per utente |
-| Server | PostgreSQL 17 + Flyway **V1–V11 nel repo**; Compose/Coolify | Stato cloud condiviso, versioni, migrazioni additive |
+| Server | PostgreSQL 17 + Flyway **V1–V12 nel repo**; Compose/Coolify | Stato cloud condiviso, versioni, migrazioni additive |
 
 ## Modello e migrazioni
 

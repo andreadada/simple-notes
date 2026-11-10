@@ -1,6 +1,6 @@
 # P2 — Sincronizzazione automatica conservativa dei modelli utente
 
-**10 novembre 2026 — [PR #65](https://github.com/andreadada/simple-notes/pull/65) in verifica.** Nessun deploy, prova hardware o nuova migrazione. [Stato canonico](CURRENT-STATUS.md) · [Matrice di consegna](P2-DELIVERY-MATRIX.md).
+**10 novembre 2026 — [PR #65](https://github.com/andreadada/simple-notes/pull/65) integrata su `main` (merge `ed45d0e`).** Nessun deploy, prova hardware o nuova migrazione. [Stato canonico](CURRENT-STATUS.md) · [Matrice di consegna](P2-DELIVERY-MATRIX.md).
 
 ## Scopo
 

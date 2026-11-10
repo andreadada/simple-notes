@@ -1,12 +1,12 @@
 # Simple Notes — Progetto e roadmap
 
-> **Stato codice 10/11/2026:** [PR #64](https://github.com/andreadada/simple-notes/pull/64) **merged** `5ae2bd3` (allegati S3 alle note, Flyway V14 opt-in), [PR #63](https://github.com/andreadada/simple-notes/pull/63) merged `b9dd67a` (modelli cloud manuali). Backend e Compose CI PR #64 verdi sul branch; analisi e test Flutter PR #64 verdi, build native e CI post-merge ancora da verificare. Flyway **V14 solo nel repository**, VPS **V10 attestata al 03/11**; nessun deploy, storage S3 live, restore o E2E hardware. [Stato canonico](docs/CURRENT-STATUS.md).
+> **Stato codice 10/11/2026:** [PR #65](https://github.com/andreadada/simple-notes/pull/65) merged `ed45d0e` (auto-sync modelli foreground V13), [PR #64](https://github.com/andreadada/simple-notes/pull/64) merged `5ae2bd3` (allegati S3 V14 opt-in). CI Flutter/Backend/Compose PR #64 e Markdown verdi; CI Flutter PR #65 post-merge in corso. **V14 nel repository**, VPS **V10 attestata al 03/11**; nessun deploy o E2E reale. [Stato canonico](docs/CURRENT-STATUS.md).
 
 <!-- CURRENT-STATUS-REF -->
 
 **Obiettivo:** Windows 11 + Android offline-first, Google OAuth, Flutter/Forui/Drift + Spring Boot/PostgreSQL su Coolify. Regole UX in [design.md](design.md); deploy sicuro in [P1-RELEASE-BATCH.md](docs/P1-RELEASE-BATCH.md). Le checklist sotto includono traguardi storici: `[x]` significa **codice verificato nella CI o prova specifica**, non distribuzione sul VPS.
 
-## Gate corrente (P2 PR #64 integrata, VPS e test hardware ancora aperti)
+## Gate corrente (P2 PR #65 integrata, VPS e test hardware ancora aperti)
 
 - [x] P1.7 Android con scheduler inexact, ledger, opt-in e CI verde (PR #6). [ ] Prova fisica Android app chiusa/reboot e controllo permessi; [x] codice packaging MSIX + promemoria Windows integrato (PR #7, CI verde); [ ] test fisici MSIX/identità/dati e firma pubblica.
 - [x] Flyway V10 verificata nella VPS reale il 03/11/2026, 0 migrazioni fallite; [ ] health/capability strict ancora aperti.
@@ -133,7 +133,7 @@
 - [x] P2.1 Import/export JSON non distruttivo (PR #20, 152 test e CI verde). [x] Subscription ICS HTTPS manuale integrata in P2.3C (PR #24); refresh solo su richiesta, cache offline, nessun OAuth.
 - [ ] Collegamento Google Calendar/Outlook con consenso separato.
 - [ ] Liste condivise, ruoli, assegnazioni e audit.
-- [ ] **Catalogo modelli personali:** trasferimento manuale con CAS/JWT V13 [PR #63](https://github.com/andreadada/simple-notes/pull/63) integrata e **sincronizzazione foreground conservativa** in [PR #65](https://github.com/andreadada/simple-notes/pull/65) **in verifica**; restano CI finale PR #65, deploy backend e E2E device. [Specifica](docs/P2-AUTO-TEMPLATE-CATALOG.md).
+- [ ] **Catalogo modelli personali:** trasferimento manuale con CAS/JWT V13 [PR #63](https://github.com/andreadada/simple-notes/pull/63) integrata e **sincronizzazione foreground conservativa** in [PR #65](https://github.com/andreadada/simple-notes/pull/65) **integrata in `main`**; restano CI finale PR #65, deploy backend e E2E device. [Specifica](docs/P2-AUTO-TEMPLATE-CATALOG.md).
 - [ ] **Allegati S3 per note:** implementazione backend V14 e client Forui in [PR #64](https://github.com/andreadada/simple-notes/pull/64) **integrata su `main`**; restano configurazione bucket privata, lifecycle, garbage collection note eliminate, scansione file, offline upload e test fisici. [Contratto](docs/P2-NOTE-ATTACHMENTS.md).
 - [x] Widget Android di navigazione, template personali e analytics locali (PR #56/#57; collaudo fisico del widget da eseguire).
 - [ ] Automazioni (parziale): notifiche PR #59, azioni locali PR #60 e catalogo cloud manuale PR #61 integrati; sync automatica foreground conservativa PR #62 **integrata**. Restano scheduler server/temporale, dedup distribuita degli eventi e collaudi. [Specifica](docs/P2-AUTO-ACTION-CATALOG.md).

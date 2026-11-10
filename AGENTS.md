@@ -1,6 +1,6 @@
 # AGENTS.md — Istruzioni operative per agenti AI
 
-> **Stato codice 10/11/2026:** [PR #64](https://github.com/andreadada/simple-notes/pull/64) **merged** `5ae2bd3` (allegati S3 alle note, Flyway V14 opt-in), [PR #63](https://github.com/andreadada/simple-notes/pull/63) merged `b9dd67a` (modelli cloud manuali). Backend e Compose CI PR #64 verdi sul branch; analisi e test Flutter PR #64 verdi, build native e CI post-merge ancora da verificare. Flyway **V14 solo nel repository**, VPS **V10 attestata al 03/11**; nessun deploy, storage S3 live, restore o E2E hardware. [Stato canonico](docs/CURRENT-STATUS.md).
+> **Stato codice 10/11/2026:** [PR #65](https://github.com/andreadada/simple-notes/pull/65) merged `ed45d0e` (auto-sync modelli foreground V13), [PR #64](https://github.com/andreadada/simple-notes/pull/64) merged `5ae2bd3` (allegati S3 V14 opt-in). CI Flutter/Backend/Compose PR #64 e Markdown verdi; CI Flutter PR #65 post-merge in corso. **V14 nel repository**, VPS **V10 attestata al 03/11**; nessun deploy o E2E reale. [Stato canonico](docs/CURRENT-STATUS.md).
 
 <!-- CURRENT-STATUS-REF -->
 
@@ -255,6 +255,6 @@ Gli ICS esportati contengono dati personali e sono generati solo su richiesta; n
 
 Gli allegati sono separati da note/SQLite/outbox: GET/list, begin, PUT firmato 5min senza JWT app, HEAD+COPY in chiave permanente, download GET temporaneo e delete esplicito; FK owner/nota e check per soft-delete sempre obbligatori. Mai loggare URL presigned o segreti S3, mai concedere ACL bucket pubbliche. Storage disattivato di default: non inizializzare credenziali in CI o VPS. V14 integrata su `main` con PR #64; **nessun deploy o bucket reale configurato**. [Specifica](docs/P2-NOTE-ATTACHMENTS.md).
 
-## P2 — Autoreconciliazione modelli (PR #65 in verifica)
+## P2 — Autoreconciliazione modelli (PR #65 integrata)
 
 Il catalogo V13 dei modelli personali si sincronizza in foreground solo dopo sync cloud task riuscita, con tre-way checkpoint account-scoped (catalogo + versione). Mai indovinare una risoluzione di conflitto: due modifiche offline divergenti richiedono Pubblica/Scarica con consenso; Cloud PUT CAS, no reset silenziosi dei dati locali/checkpoint. Schermata Modelli visibile = editor lock; sospendere trasferimenti e riprendere quando esce. Nessuna modifica task/outbox né nuova migrazione. [Contratto](docs/P2-AUTO-TEMPLATE-CATALOG.md).

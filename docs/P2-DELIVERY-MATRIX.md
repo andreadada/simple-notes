@@ -2,7 +2,7 @@
 
 Aggiornato 10 novembre 2026. **CI verde non equivale a deploy Coolify o collaudo su dispositivi reali.**
 
-**Ottavo incremento P2 in verifica:** [PR #63](https://github.com/andreadada/simple-notes/pull/63), catalogo manuale cloud dei modelli owner-scoped con CAS e V13. Backend/test e comandi Forui; **CI, merge, deploy ed E2E ancora da verificare.** [Contratto](P2-CLOUD-TEMPLATES.md).
+**Ottavo incremento P2 integrato nel codice (`b9dd67a`):** [PR #63](https://github.com/andreadada/simple-notes/pull/63), catalogo manuale cloud dei modelli owner-scoped con CAS e V13. Backend/test e comandi Forui; **Merge eseguito; CI finale in corso, deploy ed E2E ancora da verificare.** [Contratto](P2-CLOUD-TEMPLATES.md).
 
 **Settimo incremento P2 integrato in `main` (`766860c`):** [PR #62](https://github.com/andreadada/simple-notes/pull/62), sync foreground conservativa catalogo regole con checkpoint owner-scoped, revisione CAS, auto-upload/pull solo senza conflitti, stato Forui e pausa editor. **Merge verificato; CI dell'ultimo head ancora in corso**, nessun deploy o scheduler server. [Specifica](P2-AUTO-ACTION-CATALOG.md).
 
@@ -32,8 +32,8 @@ La roadmap P2 include funzioni implementate, estensioni non ancora realizzate e 
 | Timeline/Gantt | Vista pianificazione a 14 giorni con blocchi e milestone civili | Nessun drag-and-drop cross-device |
 | Filtri avanzati | Tag, ricerca, priorità, scadenze e ordinamento | Locali/offline, nessun nuovo endpoint |
 | Statistiche | Totali, completate, arretrate, priorità, prossimi 7 giorni, tempo e liste | Fotografia dello stato, non cronologia |
-| Modelli attività | Cinque preset + CRUD di modelli utente, owner-scoped locali, nuovi task tramite outbox e backup .snb compatibile | Definizioni personalizzate non sincronizzate fra dispositivi |
-| Catalogo cloud modelli (PR #63 in verifica) | Pubblica/Scarica definizioni con JWT, CAS e conferma, senza task/outbox | Manuale, V13 solo nel codice PR; nessuna sync automatica né deploy |
+| Modelli attività | Cinque preset + CRUD di modelli utente, owner-scoped locali, nuovi task tramite outbox e backup .snb compatibile | Nessuna sync automatica: trasferimento manuale cloud disponibile con V13 |
+| Catalogo cloud modelli (PR #63 integrata) | Pubblica/Scarica definizioni con JWT, CAS e conferma, senza task/outbox | Manuale, V13 nel repository su `main`; nessuna sync automatica né deploy |
 | Trasferimento modelli JSON | Import/export manuale definizioni con copia additiva e conferma, nessun task/outbox creato | Non cifrato, non sostituisce la sync; prove fisiche rinviate |
 | Sync automatica regole (PR #62 integrata) | Riconciliazione foreground con baseline per account, upload/download CAS e protezione modifiche offline | Non background server, conflitti richiedono conferma esplicita |
 | Catalogo regole cloud (PR #61 integrata) | GET/PUT owner JWT, CAS 409, catalogo versionato, scambio manuale con conferma; 399 test Flutter e backend CI verdi | V12 non applicata in VPS; nessuna sync automatica, dedup distribuita o motore server |

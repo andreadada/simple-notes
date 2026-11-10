@@ -133,7 +133,7 @@
 - [x] P2.1 Import/export JSON non distruttivo (PR #20, 152 test e CI verde). [x] Subscription ICS HTTPS manuale integrata in P2.3C (PR #24); refresh solo su richiesta, cache offline, nessun OAuth.
 - [ ] Collegamento Google Calendar/Outlook con consenso separato.
 - [ ] Liste condivise, ruoli, assegnazioni e audit.
-- [ ] **Catalogo cloud modelli personali:** scambio manuale con CAS/JWT e Flyway V13 su [PR #63](https://github.com/andreadada/simple-notes/pull/63) in verifica; nessuna sync automatica, deploy o E2E device. [Specifica](docs/P2-CLOUD-TEMPLATES.md).
+- [ ] **Catalogo cloud modelli personali:** scambio manuale con CAS/JWT e Flyway V13 in [PR #63](https://github.com/andreadada/simple-notes/pull/63) integrata su `main`, CI finale da verificare; nessuna sync automatica, deploy o E2E device. [Specifica](docs/P2-CLOUD-TEMPLATES.md).
 - [ ] Allegati con storage S3 compatibile.
 - [x] Widget Android di navigazione, template personali e analytics locali (PR #56/#57; collaudo fisico del widget da eseguire).
 - [ ] Automazioni (parziale): notifiche PR #59, azioni locali PR #60 e catalogo cloud manuale PR #61 integrati; sync automatica foreground conservativa PR #62 **integrata**. Restano scheduler server/temporale, dedup distribuita degli eventi e collaudi. [Specifica](docs/P2-AUTO-ACTION-CATALOG.md).

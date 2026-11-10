@@ -1,6 +1,6 @@
 # Simple Notes
 
-> **Stato verificato 09/11/2026:** [PR #60](https://github.com/andreadada/simple-notes/pull/60) merged (`e051162`), automazioni locali di azione sui task aggiunte ai promemoria PR #59. [Flutter CI #42714514197](https://github.com/andreadada/simple-notes/actions/runs/42714514197) **success** (392 test, analisi, Android JDK17/21, Windows EXE/MSIX/recovery); [Markdown #42714514223](https://github.com/andreadada/simple-notes/actions/runs/42714514223) **success**. Flutter `0.31.0+33`, Flyway V11 nel repo, VPS V10 attestata il 03/11. Nessun deploy o E2E fisico; automazioni server, OAuth provider, ACL, S3 e restore live restano aperti. [Stato canonico](docs/CURRENT-STATUS.md).
+> **Stato verificato 10/11/2026:** [PR #61](https://github.com/andreadada/simple-notes/pull/61) merged `bf16cba`, catalogo cloud versionato per le regole task, con scambio manuale e CAS. [Flutter CI #42821851199](https://github.com/andreadada/simple-notes/actions/runs/42821851199) **success** (399 test Flutter, build Windows/Android), [Backend CI #42821851073](https://github.com/andreadada/simple-notes/actions/runs/42821851073) **success** (PostgreSQL 17), [Markdown CI #42821851207](https://github.com/andreadada/simple-notes/actions/runs/42821851207) **success**. Flutter `0.31.0+33`; V12 nel repository, **VPS V10 attestata il 03/11**, nessun deploy o test fisico. Restano scheduler server, sync automatica, OAuth provider, ACL, S3 e restore live. [Stato canonico](docs/CURRENT-STATUS.md).
 
 App offline-first per **Windows 11 e Android** dedicata ad attività, note e pianificazione. Flutter/Forui con Drift SQLite locale, Google OAuth e sincronizzazione con Spring Boot/PostgreSQL su Coolify.
 
@@ -27,7 +27,7 @@ App offline-first per **Windows 11 e Android** dedicata ad attività, note e pia
 - [Stato canonico e prossimi gate](docs/CURRENT-STATUS.md), [guida operativa](docs/OPERATIONS.md), [Kanban P1.9](docs/P1-KANBAN.md), [Pomodoro P1.10](docs/P1-POMODORO.md), [Habit Tracker P1.11](docs/P1-HABITS.md), [Countdown P1.12](docs/P1-COUNTDOWNS.md), [P1.13 Weekly Habit](docs/P1-WEEKLY-HABITS.md)
 - [Automazioni promemoria P2 (integrate PR #59)](docs/P2-REMINDER-AUTOMATIONS.md)
 - [Azioni automatiche task P2 (integrate PR #60)](docs/P2-TASK-ACTIONS.md)
-- [Catalogo cloud automazioni task P2 (PR #61 in verifica)](docs/P2-CLOUD-ACTION-CATALOG.md)
+- [Catalogo cloud automazioni task P2 (PR #61 integrata)](docs/P2-CLOUD-ACTION-CATALOG.md)
 - [Roadmap P0–P3](project.md), [regole per agenti](AGENTS.md), [design](design.md), [trasferimento modelli P2](docs/P2-TEMPLATE-TRANSFER.md)
 - [Handoff e cronologia](docs/HANDOFF.md)
 - [Architettura](docs/architecture.md), [API](docs/api.md), [sync](docs/sync.md)

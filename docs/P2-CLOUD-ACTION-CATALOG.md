@@ -1,6 +1,6 @@
 # P2 — Catalogo cloud delle regole task (PR #61)
 
-**10 novembre 2026 — [PR #61](https://github.com/andreadada/simple-notes/pull/61) in verifica; non ancora integrata o deployata.** [Stato attuale](CURRENT-STATUS.md).
+**10 novembre 2026 — [PR #61](https://github.com/andreadada/simple-notes/pull/61) integrata su `main` (`bf16cba`), non deployata.** [Flutter CI #42821851199](https://github.com/andreadada/simple-notes/actions/runs/42821851199) **success** (399 test e build Windows/Android), [Backend CI #42821851073](https://github.com/andreadada/simple-notes/actions/runs/42821851073) **success** (test backend PostgreSQL 17), [Markdown CI #42821851207](https://github.com/andreadada/simple-notes/actions/runs/42821851207) **success**. [Stato attuale](CURRENT-STATUS.md).
 
 ## Obiettivo e sicurezza
 

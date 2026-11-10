@@ -4,6 +4,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../data/models.dart';
 import '../data/task_action_automations.dart';
+import '../data/task_action_cloud_api.dart';
 import 'notes_dialogs.dart';
 import 'notes_theme.dart';
 
@@ -12,10 +13,17 @@ import 'notes_theme.dart';
 class TaskActionAutomationsPanel extends StatefulWidget {
   const TaskActionAutomationsPanel({
     super.key, required this.ownerId, required this.lists,
+    this.cloudApiBaseUrl = '', this.cloudTokenProvider,
+    this.cloudOwnerGuard, this.cloudApi,
   });
 
   final String? ownerId;
   final List<LocalTaskList> lists;
+  final String cloudApiBaseUrl;
+  final Future<String> Function()? cloudTokenProvider;
+  final Future<bool> Function(String owner)? cloudOwnerGuard;
+  /// Injectable in widget tests. The caller retains client ownership.
+  final TaskActionCloudApi? cloudApi;
 
   @override
   State<TaskActionAutomationsPanel> createState() =>
@@ -28,6 +36,7 @@ class _TaskActionAutomationsPanelState
   SharedPreferences? _prefs;
   bool _loading = true;
   bool _saving = false;
+  bool _cloudBusy = false;
   String? _error;
 
   @override
@@ -44,6 +53,7 @@ class _TaskActionAutomationsPanelState
     _prefs = null;
     _loading = true;
     _saving = false;
+    _cloudBusy = false;
     _error = null;
     _load();
   }
@@ -80,7 +90,7 @@ class _TaskActionAutomationsPanelState
   }
 
   Future<void> _save(TaskActionLibrary next) async {
-    if (_loading || _saving || _error != null || _prefs == null ||
+    if (_loading || _saving || _cloudBusy || _error != null || _prefs == null ||
         widget.ownerId == null) {
       return;
     }
@@ -101,8 +111,146 @@ class _TaskActionAutomationsPanelState
     }
   }
 
+
+  bool get _cloudAvailable => widget.ownerId != null &&
+      widget.cloudOwnerGuard != null &&
+      (widget.cloudApi != null ||
+       (widget.cloudTokenProvider != null &&
+        widget.cloudApiBaseUrl.isNotEmpty));
+
+  Future<bool> _verifiedOwner(String owner) async {
+    if (!mounted || widget.ownerId != owner ||
+        widget.cloudOwnerGuard == null) {
+      return false;
+    }
+    final permitted = await widget.cloudOwnerGuard!(owner);
+    return permitted && mounted && widget.ownerId == owner;
+  }
+
+  Future<bool> _confirmCloud({
+    required String title, required String message,
+    required String action,
+  }) async {
+    final confirmed = await showFDialog<bool>(
+      context: context,
+      builder: (ctx, style, animation) => NotesDialog(
+        style: style, animation: animation,
+        title: Text(title),
+        body: Text(message),
+        actions: [
+          FButton(variant: FButtonVariant.ghost,
+            onPress: () => Navigator.pop(ctx, false),
+            child: const Text('Annulla')),
+          FButton(
+            key: const Key('action-cloud-confirm'),
+            onPress: () => Navigator.pop(ctx, true),
+            child: Text(action)),
+        ],
+      ),
+    );
+    return confirmed == true;
+  }
+
+  Future<void> _exchangeCloud({required bool upload}) async {
+    if (!_cloudAvailable || _cloudBusy || _saving || _loading ||
+        _error != null || _prefs == null) {
+      return;
+    }
+    final owner = widget.ownerId!;
+    if (!await _verifiedOwner(owner)) {
+      _message('Account Google e archivio locale non corrispondono.');
+      return;
+    }
+    setState(() => _cloudBusy = true);
+    final api = widget.cloudApi ?? TaskActionCloudApi(
+      baseUrl: widget.cloudApiBaseUrl,
+      tokenProvider: widget.cloudTokenProvider!,
+    );
+    try {
+      final source = _library.serialize();
+      final current = await const TaskActionStore().load(_prefs!, owner);
+      if (current.serialize() != source || !await _verifiedOwner(owner)) {
+        _message('Il catalogo locale è cambiato: operazione annullata.');
+        return;
+      }
+      final remote = await api.read();
+      if (!await _verifiedOwner(owner)) return;
+      if (remote.library.serialize() == source) {
+        _message('Le regole sono già identiche sui due dispositivi.');
+        return;
+      }
+      if (upload) {
+        final accepted = await _confirmCloud(
+          title: 'Pubblica regole sul cloud',
+          message: 'Pubblicare ${_library.rules.length} regole per '
+              'questo account? Sul cloud ci sono '
+              '${remote.library.rules.length} regole (versione '
+              '${remote.version}). Saranno sostituite solo se '
+              'nessun altro dispositivo ha modificato quella versione. '
+              'I task esistenti non vengono toccati.',
+          action: 'Pubblica',
+        );
+        if (!accepted || !await _verifiedOwner(owner)) return;
+        final latest = await const TaskActionStore().load(_prefs!, owner);
+        if (latest.serialize() != source ||
+            _library.serialize() != source) {
+          _message('Le regole locali sono cambiate. Riprova.');
+          return;
+        }
+        final saved = await api.replace(
+          expectedVersion: remote.version, library: latest);
+        if (!await _verifiedOwner(owner)) return;
+        _message('Pubblicate ${saved.library.rules.length} regole '
+            '(versione ${saved.version}).');
+      } else {
+        if (remote.version == 0) {
+          _message('Non ci sono regole pubblicate sul cloud.');
+          return;
+        }
+        final accepted = await _confirmCloud(
+          title: 'Scarica regole cloud',
+          message: 'Sostituire le ${_library.rules.length} regole '
+              'locali con le ${remote.library.rules.length} regole '
+              'del cloud (versione ${remote.version})? '
+              'Le attività non cambiano. I cambiamenti locali '
+              'non pubblicati andranno persi.',
+          action: 'Sostituisci regole',
+        );
+        if (!accepted || !await _verifiedOwner(owner)) return;
+        final latest = await const TaskActionStore().load(_prefs!, owner);
+        if (latest.serialize() != source ||
+            _library.serialize() != source) {
+          _message('Le regole locali sono cambiate. Riprova.');
+          return;
+        }
+        await const TaskActionStore().save(
+          _prefs!, owner, remote.library);
+        if (!await _verifiedOwner(owner)) return;
+        setState(() => _library = remote.library);
+        _message('Regole cloud scaricate su questo dispositivo.');
+      }
+    } on TaskActionCloudConflict {
+      _message('Il cloud è cambiato su un altro dispositivo. '
+          'Nessuna regola è stata sovrascritta. '
+          'Scarica o riprova dopo aver confrontato le regole.');
+    } on TaskActionCloudUnavailable {
+      _message('Il server non supporta ancora il catalogo automazioni '
+          '(deploy V12 richiesto). Nessun dato modificato.');
+    } on FormatException {
+      _message('Catalogo cloud non compatibile: nessun dato sovrascritto.');
+    } catch (_) {
+      _message('Scambio cloud non riuscito. '
+          'Le regole locali sono state conservate.');
+    } finally {
+      if (widget.cloudApi == null) api.close();
+      if (mounted && owner == widget.ownerId) {
+        setState(() => _cloudBusy = false);
+      }
+    }
+  }
+
   Future<void> _edit([TaskActionRule? original]) async {
-    if (_loading || _saving || _error != null || widget.ownerId == null) {
+    if (_loading || _saving || _cloudBusy || _error != null || widget.ownerId == null) {
       return;
     }
     final owner = widget.ownerId;
@@ -272,7 +420,7 @@ class _TaskActionAutomationsPanelState
   }
 
   Future<void> _remove(TaskActionRule rule) async {
-    if (_loading || _saving || _error != null) return;
+    if (_loading || _saving || _cloudBusy || _error != null) return;
     final owner = widget.ownerId;
     final accepted = await showFDialog<bool>(
       context: context,
@@ -311,7 +459,8 @@ class _TaskActionAutomationsPanelState
   @override
   Widget build(BuildContext context) {
     final colors = NotesPalette.of(context);
-    final editable = !_loading && !_saving && _error == null &&
+    final editable = !_loading && !_saving && !_cloudBusy &&
+        _error == null &&
         widget.ownerId != null;
     return Column(
       key: const Key('task-action-automations-panel'),
@@ -388,6 +537,36 @@ class _TaskActionAutomationsPanelState
               ],
             )),
           ),
+        if (_cloudAvailable) ...[
+          const SizedBox(height: 22),
+          const Divider(height: 1),
+          const SizedBox(height: 16),
+          Text('Regole cloud per questo account', style: TextStyle(
+            fontWeight: FontWeight.w600, color: colors.foreground)),
+          const SizedBox(height: 6),
+          Text('Trasferimento esplicito con controllo di versione. '
+              'Le regole rimangono locali finché non le pubblichi '
+              'o scarichi. Nessun task viene modificato.',
+            style: TextStyle(color: colors.secondaryText, fontSize: 12)),
+          const SizedBox(height: 12),
+          Wrap(spacing: 8, runSpacing: 8, children: [
+            FButton(
+              key: const Key('action-cloud-upload'),
+              variant: FButtonVariant.outline,
+              mainAxisSize: MainAxisSize.min,
+              onPress: editable ? () => _exchangeCloud(upload: true) : null,
+              child: const Text('Pubblica sul cloud')),
+            FButton(
+              key: const Key('action-cloud-download'),
+              variant: FButtonVariant.outline,
+              mainAxisSize: MainAxisSize.min,
+              onPress: editable ? () => _exchangeCloud(upload: false) : null,
+              child: const Text('Scarica dal cloud')),
+          ]),
+          if (_cloudBusy) const Padding(
+            padding: EdgeInsets.only(top: 10),
+            child: LinearProgressIndicator()),
+        ],
         const SizedBox(height: 10),
         Text('Le ricorrenze avanzano senza attivare il trigger '
             '“completato”. I task ricevuti dal cloud, importati o già '

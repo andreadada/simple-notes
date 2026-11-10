@@ -82,7 +82,7 @@ class TaskActionCloudApi {
               const {'localhost', '127.0.0.1', '10.0.2.2'}
                   .contains(uri.host))) ||
         uri.userInfo.isNotEmpty) {
-      throw const StateError('Endpoint cloud non sicuro.');
+      throw StateError('Endpoint cloud non sicuro.');
     }
     final token = await tokenProvider();
     if (token.isEmpty) throw StateError('Sessione cloud non disponibile.');

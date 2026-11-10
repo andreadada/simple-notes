@@ -4,6 +4,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../data/reminder_automations.dart';
 import '../data/models.dart';
+import '../data/task_action_cloud_api.dart';
 import 'task_action_automations_panel.dart';
 import 'notes_dialogs.dart';
 import 'notes_theme.dart';
@@ -14,6 +15,8 @@ class ReminderAutomationsBoard extends StatefulWidget {
     super.key,
     required this.ownerId,
     required this.lists,
+    this.cloudApiBaseUrl = '', this.cloudTokenProvider,
+    this.cloudOwnerGuard, this.cloudApi,
     required this.supported,
     required this.notificationsEnabled,
     required this.onToggleNotifications,
@@ -22,6 +25,10 @@ class ReminderAutomationsBoard extends StatefulWidget {
 
   final String? ownerId;
   final List<LocalTaskList> lists;
+  final String cloudApiBaseUrl;
+  final Future<String> Function()? cloudTokenProvider;
+  final Future<bool> Function(String)? cloudOwnerGuard;
+  final TaskActionCloudApi? cloudApi;
   final bool supported;
   final bool notificationsEnabled;
   final Future<void> Function() onToggleNotifications;
@@ -325,6 +332,10 @@ class _ReminderAutomationsBoardState extends State<ReminderAutomationsBoard> {
           key: ValueKey('task-actions-owner-${widget.ownerId ?? 'guest'}'),
           ownerId: widget.ownerId,
           lists: widget.lists,
+          cloudApiBaseUrl: widget.cloudApiBaseUrl,
+          cloudTokenProvider: widget.cloudTokenProvider,
+          cloudOwnerGuard: widget.cloudOwnerGuard,
+          cloudApi: widget.cloudApi,
         ),
       ],
     );

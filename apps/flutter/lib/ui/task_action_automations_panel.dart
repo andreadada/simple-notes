@@ -565,9 +565,11 @@ class _TaskActionAutomationsPanelState
               onPress: editable ? () => _exchangeCloud(upload: false) : null,
               child: const Text('Scarica dal cloud')),
           ]),
-          if (_cloudBusy) const Padding(
-            padding: EdgeInsets.only(top: 10),
-            child: LinearProgressIndicator()),
+          if (_cloudBusy) Text(
+            'Scambio cloud in corso o in attesa di conferma…',
+            key: const Key('action-cloud-busy'),
+            style: TextStyle(color: colors.secondaryText, fontSize: 12),
+          ),
         ],
         const SizedBox(height: 10),
         Text('Le ricorrenze avanzano senza attivare il trigger '

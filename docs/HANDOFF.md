@@ -4,6 +4,9 @@
 
 <!-- CURRENT-STATUS-REF -->
 
+> **Batch in verifica (10/11/2026):** [PR #62](https://github.com/andreadada/simple-notes/pull/62), auto-sync foreground delle regole con checkpoint per owner, CAS, conflitti fail-closed, UI Forui e test offline. Nessun deploy o server scheduler; [contratto](P2-AUTO-ACTION-CATALOG.md).
+
+
 > **Integrata (10/11/2026):** [PR #61](https://github.com/andreadada/simple-notes/pull/61) merged `bf16cba`, backend e Flutter CI verdi (399 test), catalogo cloud owner-scoped con GET/PUT CAS, Flyway V12, client Forui manuale. **Solo codice**: nessun deploy o test fisico. [Contratto](P2-CLOUD-ACTION-CATALOG.md).
 
 

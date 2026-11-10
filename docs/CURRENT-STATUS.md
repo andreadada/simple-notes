@@ -20,6 +20,10 @@
 | Backend nel repository | Spring Boot/PostgreSQL 17, Flyway **V11**; client Drift/SQLite **V8** | VPS attestata solo a Flyway **V10 (03/11/2026)**; backend V11/capability non verificati sulla VPS |
 | Test reali | VPS V10 verificata il 03/11; Google Windows connesso e pending 0 nel report disponibile | Android E2E, API strict, V11 e restore live ancora aperti |
 
+## Incremento P2 — sincronizzazione automatica regole (PR #62 in verifica, 10/11/2026)
+
+- [PR #62](https://github.com/andreadada/simple-notes/pull/62): riconciliazione foreground a tre vie con checkpoint per owner e revisione remota CAS. Upload/download automatici soltanto se univoci; su divergenza offline mostra conflitto e mantiene entrambi i cataloghi. UI Forui sospende l'automatismo mentre è aperto l'editor; nessuna nuova migrazione, modifica task o deploy. **CI e merge da verificare.** [Specifica](P2-AUTO-ACTION-CATALOG.md).
+
 ## Incremento P2 — catalogo cloud regole task (PR #61 integrata, 10/11/2026)
 
 - [PR #61](https://github.com/andreadada/simple-notes/pull/61) **merged** (`bf16cba`): catalogo owner-scoped con GET/PUT JWT, CAS, Flyway V12 additiva, scambio manuale Forui Pubblica/Scarica e protezione 404/409. [Flutter CI #42821851199](https://github.com/andreadada/simple-notes/actions/runs/42821851199) **success** (399 test Flutter, Windows/Android), [Backend CI #42821851073](https://github.com/andreadada/simple-notes/actions/runs/42821851073) **success** (PostgreSQL 17 e build backend), [Markdown CI #42821851207](https://github.com/andreadada/simple-notes/actions/runs/42821851207) **success**. Nessun server job, deploy, migrazione live o test hardware. VPS Flyway V10 attestata al 03/11; **V11/V12 solo nel repo**. [Contratto](P2-CLOUD-ACTION-CATALOG.md).

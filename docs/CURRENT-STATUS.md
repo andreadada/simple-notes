@@ -22,6 +22,10 @@
 | Backend nel repository | Spring Boot/PostgreSQL 17, Flyway **V12**; client Drift/SQLite **V8** | VPS attestata solo a Flyway **V10 (03/11/2026)**; migrazioni V11/V12, API e capability nuove non verificate sulla VPS |
 | Test reali | VPS V10 verificata il 03/11; Google Windows connesso e pending 0 nel report disponibile | Android E2E, API strict, V11 e restore live ancora aperti |
 
+## Incremento P2 — catalogo cloud modelli (PR #63 in verifica)
+
+**Incremento P2 in verifica (10/11/2026):** [PR #63](https://github.com/andreadada/simple-notes/pull/63) aggiunge la possibilità di **trasferire manualmente** modelli personali con API JWT `GET/PUT /api/v1/templates/catalog`, controllo CAS, Flyway V13 additiva e conferme Forui. Non è sincronizzazione automatica e non modifica task/outbox. Nessun deploy: VPS attestata Flyway V10 (03/11). CI e merge da verificare. [Contratto](P2-CLOUD-TEMPLATES.md).
+
 ## Incremento P2 — sincronizzazione automatica regole (PR #62 integrata, 10/11/2026)
 
 - [PR #62](https://github.com/andreadada/simple-notes/pull/62): riconciliazione foreground a tre vie con checkpoint per owner e revisione remota CAS. Upload/download automatici soltanto se univoci; su divergenza offline mostra conflitto e mantiene entrambi i cataloghi. UI Forui sospende l'automatismo mentre è aperto l'editor; nessuna nuova migrazione, modifica task o deploy. **Merge `766860c` confermato; CI dell'ultimo head ancora da completare.** Aggiunti controlli per rollback cloud e revisione stale durante Scarica. [Specifica](P2-AUTO-ACTION-CATALOG.md).

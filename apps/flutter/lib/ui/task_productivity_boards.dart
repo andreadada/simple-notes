@@ -10,6 +10,7 @@ import '../data/portable_template_archive.dart';
 import '../data/task_insights.dart';
 import '../data/task_templates.dart';
 import '../data/user_task_templates.dart';
+import '../data/user_template_cloud_api.dart';
 import 'notes_dialogs.dart';
 import 'notes_theme.dart';
 
@@ -120,11 +121,20 @@ class TaskTemplatesBoard extends StatefulWidget {
     required this.onCreate,
     required this.ownerId,
     this.busy = false,
+    this.cloudApiBaseUrl = '',
+    this.cloudTokenProvider,
+    this.cloudOwnerGuard,
+    this.cloudApi,
   });
 
   final Future<void> Function(TaskTemplate) onCreate;
   final String? ownerId;
   final bool busy;
+  final String cloudApiBaseUrl;
+  final Future<String> Function()? cloudTokenProvider;
+  final Future<bool> Function(String)? cloudOwnerGuard;
+  /// Injectable in tests. The widget never closes a caller-owned client.
+  final UserTemplateCloudApi? cloudApi;
 
   @override
   State<TaskTemplatesBoard> createState() => _TaskTemplatesBoardState();
@@ -189,6 +199,14 @@ class _TaskTemplatesBoardState extends State<TaskTemplatesBoard> {
     final owner = widget.ownerId;
     setState(() => _saving = true);
     try {
+      final saved = await const UserTaskTemplateStore().load(_prefs!, owner);
+      if (saved.serialize() != _library.serialize()) {
+        if (mounted && owner == widget.ownerId) {
+          setState(() => _library = saved);
+          _showError('Modelli aggiornati altrove: nessun dato sovrascritto.');
+        }
+        return;
+      }
       await const UserTaskTemplateStore().save(_prefs!, owner, next);
       if (!mounted || widget.ownerId != owner) return;
       setState(() => _library = next);
@@ -199,6 +217,135 @@ class _TaskTemplatesBoardState extends State<TaskTemplatesBoard> {
     }
   }
 
+
+  bool get _cloudAvailable => widget.ownerId != null &&
+      widget.cloudOwnerGuard != null &&
+      (widget.cloudApi != null ||
+          (widget.cloudTokenProvider != null &&
+              widget.cloudApiBaseUrl.isNotEmpty));
+
+  Future<bool> _verifiedOwner(String owner) async {
+    if (!mounted || widget.ownerId != owner ||
+        widget.cloudOwnerGuard == null) {
+      return false;
+    }
+    final valid = await widget.cloudOwnerGuard!(owner);
+    return valid && mounted && widget.ownerId == owner;
+  }
+
+  Future<void> _transferCloud({required bool publish}) async {
+    if (!_cloudAvailable || _saving || _loading ||
+        _loadError != null || _prefs == null) {
+      return;
+    }
+    final owner = widget.ownerId!;
+    final initial = _library.serialize();
+    // Lock local editor/import/export while a network request or
+    // confirmation dialog is outstanding.
+    setState(() => _saving = true);
+    final api = widget.cloudApi ?? UserTemplateCloudApi(
+      baseUrl: widget.cloudApiBaseUrl,
+      tokenProvider: widget.cloudTokenProvider!,
+    );
+    try {
+      if (!await _verifiedOwner(owner)) {
+        _showError('Account e archivio locale non corrispondono.');
+        return;
+      }
+      const store = UserTaskTemplateStore();
+      final current = await store.load(_prefs!, owner);
+      if (current.serialize() != initial || !await _verifiedOwner(owner)) {
+        _showError('Modelli locali cambiati: operazione annullata.');
+        return;
+      }
+      final remote = await api.read();
+      if (!await _verifiedOwner(owner)) return;
+      if (remote.library.serialize() == initial) {
+        _showError('Modelli già identici: nessuna modifica richiesta.');
+        return;
+      }
+      if (!mounted) return;
+      if (!publish && remote.version == 0) {
+        _showError('Nessun modello pubblicato sul cloud.');
+        return;
+      }
+      final confirmed = await showFDialog<bool>(
+        context: context,
+        builder: (ctx, style, animation) => NotesDialog(
+          style: style, animation: animation,
+          title: Text(publish
+              ? 'Pubblica modelli sul cloud'
+              : 'Scarica modelli dal cloud'),
+          body: Text(publish
+              ? 'Sostituire i ${remote.library.templates.length} modelli cloud '
+                '(revisione ${remote.version}) con '
+                '${_library.templates.length} modelli locali? '
+                'La revisione verrà controllata per non sovrascrivere '
+                'modifiche concorrenti. Nessun task sarà modificato.'
+              : 'Sostituire ${_library.templates.length} modelli locali '
+                'con ${remote.library.templates.length} modelli del cloud '
+                '(revisione ${remote.version})? Le modifiche non pubblicate '
+                'andranno perse; i task esistenti restano invariati.'),
+          actions: [
+            FButton(
+              variant: FButtonVariant.ghost,
+              onPress: () => Navigator.pop(ctx, false),
+              child: const Text('Annulla')),
+            FButton(
+              key: const Key('confirm-template-cloud'),
+              onPress: () => Navigator.pop(ctx, true),
+              child: Text(publish ? 'Pubblica' : 'Sostituisci')),
+          ],
+        ),
+      );
+      if (confirmed != true || !await _verifiedOwner(owner)) return;
+      final fresh = await store.load(_prefs!, owner);
+      if (fresh.serialize() != initial ||
+          _library.serialize() != initial) {
+        _showError('Modelli modificati durante la conferma. Riprova.');
+        return;
+      }
+      if (publish) {
+        final accepted = await api.replace(
+          expectedVersion: remote.version, library: fresh);
+        if (!await _verifiedOwner(owner)) return;
+        if (accepted.version <= remote.version ||
+            accepted.library.serialize() != initial) {
+          throw const FormatException('Risposta cloud incoerente.');
+        }
+        _showError('Modelli pubblicati (revisione ${accepted.version}).');
+      } else {
+        // A GET after consent rejects a version superseded while the user
+        // read the dialog; downloads have no server-side CAS of their own.
+        final latest = await api.read();
+        if (!await _verifiedOwner(owner)) return;
+        if (latest.version != remote.version ||
+            latest.library.serialize() != remote.library.serialize()) {
+          _showError('Cloud cambiato durante la conferma: '
+              'modelli locali conservati.');
+          return;
+        }
+        await store.save(_prefs!, owner, latest.library);
+        if (!mounted || widget.ownerId != owner) return;
+        setState(() => _library = latest.library);
+        _showError('Modelli cloud scaricati sul dispositivo.');
+      }
+    } on UserTemplateCloudConflict {
+      _showError('Conflitto cloud (409): nessun dato sovrascritto.');
+    } on UserTemplateCloudUnavailable {
+      _showError('Il server non supporta ancora il catalogo modelli V13.');
+    } on FormatException {
+      _showError('Catalogo non compatibile: nessun dato sostituito.');
+    } catch (_) {
+      _showError('Scambio modelli non riuscito. '
+          'Controlla rete, account o disponibilità API.');
+    } finally {
+      if (widget.cloudApi == null) api.close();
+      if (mounted && widget.ownerId == owner) {
+        setState(() => _saving = false);
+      }
+    }
+  }
 
   Future<void> _exportTemplates() async {
     if (_loading || _saving || _loadError != null) return;
@@ -418,9 +565,10 @@ class _TaskTemplatesBoardState extends State<TaskTemplatesBoard> {
         )),
         const SizedBox(height: 6),
         Text('Ogni modello crea una nuova attività sincronizzabile. '
-            'I modelli personali restano su questo dispositivo e sono '
-            'inclusi nel backup cifrato del profilo. Puoi trasferirli '
-            'manualmente in JSON non cifrato: non è sincronizzazione.',
+            'I modelli personali sono salvati localmente e inclusi '
+            'nel backup cifrato. Il trasferimento cloud è manuale, '
+            'con conferma e controllo della revisione; non crea task. '
+            'Puoi anche esportare/importare un file JSON non cifrato.',
           style: TextStyle(fontSize: 12, color: colors.secondaryText)),
         const SizedBox(height: 14),
         Wrap(spacing: 8, runSpacing: 8,
@@ -446,6 +594,22 @@ class _TaskTemplatesBoardState extends State<TaskTemplatesBoard> {
               onPress: _loading || _saving || _loadError != null
                   ? null : _importTemplates,
               child: const Text('Importa modelli')),
+            if (_cloudAvailable) ...[
+              FButton(
+                key: const Key('publish-custom-templates'),
+                variant: FButtonVariant.outline,
+                mainAxisSize: MainAxisSize.min,
+                onPress: _loading || _saving || _loadError != null
+                    ? null : () => _transferCloud(publish: true),
+                child: const Text('Pubblica cloud')),
+              FButton(
+                key: const Key('download-custom-templates'),
+                variant: FButtonVariant.outline,
+                mainAxisSize: MainAxisSize.min,
+                onPress: _loading || _saving || _loadError != null
+                    ? null : () => _transferCloud(publish: false),
+                child: const Text('Scarica cloud')),
+            ],
             if (_loading) const SizedBox(width: 16, height: 16,
               child: CircularProgressIndicator(strokeWidth: 2)),
           ],

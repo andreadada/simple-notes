@@ -332,3 +332,7 @@ Il nuovo endpoint autenticato /api/v1/automations/task-actions richiede **Flyway
 ## P2 — Regole task auto-sync foreground (PR #62 integrata)
 
 Inizia soltanto con account autenticato, boundOwnerId locale coerente, restore-sync gate aperto e app in primo piano. Usa il catalogo API V12 già integrato nel repository, ma **non risulta deployata sulla VPS** (V10 attestata il 03/11). Una risposta 404/426 lascia le regole locali intatte; errori di rete, checkpoint malformati o 409 non bloccano la normale sync di note/task/liste. I conflitti di regole si risolvono manualmente con conferma. Nessun processo automatico Android a app chiusa; nessun job server, migrazione aggiuntiva o restore live. [Contratto](P2-AUTO-ACTION-CATALOG.md).
+
+## P2 — Catalogo modelli cloud (PR #63 in verifica)
+
+Il client Forui effettua soltanto trasferimenti espliciti Pubblica/Scarica, non sync automatica. Il nuovo endpoint richiede Flyway **V13** sul backend: 404 sulla VPS non aggiornata non deve azzerare i modelli. PUT con revisione `expectedVersion` e 409 per concorrenza; Scarica ricontrolla la revisione dopo il dialog. Non avviare automaticamente Coolify. Il post-deploy, se autorizzato, ha il gate **read-only** `infra/release-v13-readiness.sh` con DB_CONTAINER e JWT effimero in variabili di ambiente, senza stamparlo. [Contratto](P2-CLOUD-TEMPLATES.md).

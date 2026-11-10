@@ -2083,6 +2083,13 @@ Ctrl+/ · Questo elenco'''),
               key: ValueKey('template-owner-${cloud.userId ?? 'guest'}'),
               ownerId: cloud.userId,
               busy: _templateBusy,
+              cloudApiBaseUrl: CloudConfig.apiBaseUrl,
+              cloudTokenProvider: () =>
+                  ref.read(cloudAuthProvider.notifier).validAccessToken(),
+              cloudOwnerGuard: (owner) async =>
+                  ref.read(cloudAuthProvider).authenticated &&
+                  ref.read(cloudAuthProvider).userId == owner &&
+                  await ref.read(databaseProvider).setting('boundOwnerId') == owner,
               onCreate: (template) async {
                 if (_templateBusy) return;
                 setState(() => _templateBusy = true);

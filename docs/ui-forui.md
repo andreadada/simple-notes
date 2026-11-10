@@ -210,3 +210,7 @@ Il pannello Forui delle automazioni task contiene due azioni distinte per trasfe
 ## P2 — Stato automatico e risoluzione conflitti (PR #62 integrata)
 
 La sezione Forui delle regole task mostra il risultato della sincronizzazione foreground: allineata, caricata/pubblicata, non disponibile, non valida o in conflitto. Il pannello blocca la riconciliazione automatica mentre è aperto; la chiusura riprogramma il controllo. I comandi Pubblica/Scarica con conferma restano disponibili per scegliere esplicitamente una versione in presenza di divergenze offline. Non considerare un conflitto come risolto da un merge arbitrario. [Specifica](P2-AUTO-ACTION-CATALOG.md).
+
+## P2 — Modelli personali cloud (PR #63 in verifica)
+
+I comandi **Pubblica cloud** e **Scarica cloud** sono nel flusso Modelli, senza navigazione aggiuntiva. Usare `NotesDialog` Forui con quantità e revisione, testo esplicito su sostituzione distruttiva del solo catalogo locale; disabilitare i comandi durante richieste o conferma. 404, 409, owner mismatch e revisione GET superata lasciano invariati i dati. [Specifica](P2-CLOUD-TEMPLATES.md).

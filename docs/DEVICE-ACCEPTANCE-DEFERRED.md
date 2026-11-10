@@ -100,3 +100,7 @@ Dopo un deploy **autorizzato** con Flyway V12, provare su Windows e Android con 
 ## P2 — Sync automatica regole task (PR #62): collaudo differito
 
 A deploy V12 **esplicitamente autorizzato**, creare regole Windows offline e verificarne il trasferimento Android a ripresa/riapertura dell'app; provare due modifiche diverse sulla stessa base con conflitto non distruttivo, rollback di revisione cloud, nuovo PUT durante il dialog Scarica (deve rifiutare lo snapshot superato), annullamento e risoluzione manuale Pubblica/Scarica, account switch durante GET, 404/409, connessione persa e preferenze checkpoint corrotte. Verificare che nessun task e nessuna outbox siano modificati solo dalla sincronizzazione delle definizioni. Confermare la pausa mentre il pannello è aperto; Android a processo chiuso non sincronizza. Non attestato alcun test fisico o deploy. [Specifica](P2-AUTO-ACTION-CATALOG.md).
+
+## P2 — Catalogo modelli V13 (PR #63): test fisici rinviati
+
+Solo dopo deploy V13 autorizzato: verificare Windows/Android sullo stesso account, Pubblica e Scarica, conferma/annullamento, sostituzione e ID preservati, conflitto concorrente 409, versione cambiata durante il dialog, 404 backend vecchio, offline, cambio account/logout, limiti 50 modelli/128 KiB, e nessuna nuova operazione task/outbox. Nessun test fisico eseguito in PR. [Contratto](P2-CLOUD-TEMPLATES.md).

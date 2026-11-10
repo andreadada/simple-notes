@@ -250,3 +250,7 @@ Con account Google autenticato e archivio SQLite coerente, Strumenti → Automaz
 ## P2 — Riconciliazione automatica regole task (PR #62 integrata)
 
 AutoSyncHost, durante il normale ciclo di sync foreground (accesso/ripresa/riconnessione/modifiche/periodico), richiama TaskActionCatalogMirror: confronto per owner di baseline cloud e cataloghi locale/remoto, CAS per upload e pull per download se solo un ramo diverge. Se due dispositivi modificano le regole offline viene mostrato un conflitto, mai last-writer-wins. L'editor sospende lo scambio fino alla chiusura. Nessun nuovo endpoint o migrazione; la VPS va aggiornata prima di usare V12. [Contratto](../../docs/P2-AUTO-ACTION-CATALOG.md).
+
+## P2 — Trasferimento cloud modelli (PR #63 in verifica)
+
+`TaskTemplatesBoard` offre Pubblica/Scarica manuali con Forui usando `UserTemplateCloudApi` via HTTPS/JWT e `GET/PUT /api/v1/templates/catalog` (Flyway V13 in PR). CAS 409, backend non migrato 404 e cambio owner bloccano le scritture senza modificare task/outbox. Scarica ripete GET dopo il consenso e rifiuta dati remoti superati. Backup `.snb` e JSON manuali restano separati. La funzionalità richiede deploy V13 autorizzato e test device. [Specifica](../../docs/P2-CLOUD-TEMPLATES.md).

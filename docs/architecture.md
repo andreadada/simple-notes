@@ -130,3 +130,7 @@ Le regole di azione continuano a essere eseguite **solo nel LocalStore**. Un ser
 ## P2 — Auto-sync delle definizioni task (PR #62 integrata)
 
 Il client Flutter riconcilia in foreground la preferenza TaskActionStore e il catalogo cloud V12 con un checkpoint locale TaskActionMirrorAnchor contenente revisione e catalogo confermati. Se solo uno dei due cataloghi differisce dal checkpoint, scarica oppure pubblica con CAS; divergenze su entrambe le copie richiedono esplicita risoluzione da UI. La nuova logica non crea task, non avvia job server e non scrive la outbox. Le sessioni del pannello Automazioni sospendono la riconciliazione per non sovrapporsi alle modifiche dell'utente. [Contratto](P2-AUTO-ACTION-CATALOG.md).
+
+## P2 — Catalogo cloud dei modelli (PR #63 in verifica)
+
+`UserTemplateCatalogController/Service` persiste definizioni in `user_template_catalog` Flyway V13, con JWT owner e advisory lock PostgreSQL per PUT CAS. La schermata Flutter `TaskTemplatesBoard` usa `UserTemplateCloudApi` su comando esplicito, mantiene i modelli offline in SharedPreferences e richiede conferma per sostituirli con quelli remoti. Il flusso non passa da `/sync`, non crea task e non modifica la coda outbox. [Contratto](P2-CLOUD-TEMPLATES.md).

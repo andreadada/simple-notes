@@ -4,6 +4,9 @@
 
 <!-- CURRENT-STATUS-REF -->
 
+> **In verifica 10/11/2026:** [PR #63](https://github.com/andreadada/simple-notes/pull/63) — catalogo cloud manuale modelli personali, Flyway V13 additiva, JWT/CAS, Forui e test. Nessun deploy, restore live o sync automatica. [Contratto](P2-CLOUD-TEMPLATES.md).
+
+
 > **Batch integrato (10/11/2026, merge `766860c`):** [PR #62](https://github.com/andreadada/simple-notes/pull/62), auto-sync foreground delle regole con checkpoint per owner, CAS, conflitti fail-closed, UI Forui e test offline. CI completa ultimo head ancora da verificare. Nessun deploy o server scheduler; [contratto](P2-AUTO-ACTION-CATALOG.md).
 
 

@@ -255,6 +255,6 @@ AutoSyncHost, durante il normale ciclo di sync foreground (accesso/ripresa/ricon
 
 `TaskTemplatesBoard` offre Pubblica/Scarica manuali con Forui usando `UserTemplateCloudApi` via HTTPS/JWT e `GET/PUT /api/v1/templates/catalog` (Flyway V13 nel repository). CAS 409, backend non migrato 404 e cambio owner bloccano le scritture senza modificare task/outbox. Scarica ripete GET dopo il consenso e rifiuta dati remoti superati. Backup `.snb` e JSON manuali restano separati. La funzionalità richiede deploy V13 autorizzato e test device. [Specifica](../../docs/P2-CLOUD-TEMPLATES.md).
 
-## P2 — Allegati note con storage S3 (PR #64 in verifica)
+## P2 — Allegati note con storage S3 (PR #64 integrata)
 
 `NoteAttachmentsPanel` apre un dialog Forui sulla nota autenticata; `NoteAttachmentApi` esegue GET/list, POST/begin, PUT binario direttamente a URL temporaneo S3 (senza bearer), POST/complete dopo verifica sul backend, GET/download e DELETE. File picker nativo supporta PDF/PNG/JPEG/TXT entro 10 MiB, niente cache o outbox per allegati. Per usare la funzionalità serve che la nota abbia completato la sync e che il backend abbia Flyway V14 e bucket privato configurato (default OFF). Il collaudo fisico è differito. [Contratto](../../docs/P2-NOTE-ATTACHMENTS.md).

@@ -1,6 +1,6 @@
 # Guida operativa — Simple Notes
 
-> **Stato codice 10/11/2026:** [PR #63](https://github.com/andreadada/simple-notes/pull/63) merged `b9dd67a` (catalogo modelli manuale V13) e [PR #62](https://github.com/andreadada/simple-notes/pull/62) merged `766860c` (auto-sync foreground regole task). Migrazioni Flyway **V13 nel repository**, VPS **V10 attestata il 03/11**: nessun deploy, restore live o E2E hardware. Backend/Compose/Markdown CI della PR #63 verdi; Flutter CI dell'ultimo codice ancora da completare. [Stato canonico](CURRENT-STATUS.md).
+> **Stato codice 10/11/2026:** [PR #64](https://github.com/andreadada/simple-notes/pull/64) merged `5ae2bd3` (allegati privati S3 per note, Flyway V14 opt-in). Backend/Compose/Markdown CI e Flutter analyze/test verdi; build native Flutter post-merge ancora da verificare. Codice Flyway **V14 nel repository**, VPS **V10 attestata al 03/11**: nessun deploy, bucket S3 live, restore o E2E hardware. [Stato canonico](CURRENT-STATUS.md).
 
 **Fonte operativa** per checkout Windows, CI, Coolify, Android e Windows ZIP/MSIX. Lo stato canonico aggiornato è in [CURRENT-STATUS.md](CURRENT-STATUS.md); le versioni precedenti qui riportate costituiscono cronologia, non conferme di deploy.
 
@@ -337,6 +337,6 @@ Inizia soltanto con account autenticato, boundOwnerId locale coerente, restore-s
 
 Il client Forui effettua soltanto trasferimenti espliciti Pubblica/Scarica, non sync automatica. Il nuovo endpoint richiede Flyway **V13** sul backend: 404 sulla VPS non aggiornata non deve azzerare i modelli. PUT con revisione `expectedVersion` e 409 per concorrenza; Scarica ricontrolla la revisione dopo il dialog. Non avviare automaticamente Coolify. Il post-deploy, se autorizzato, ha il gate **read-only** `infra/release-v13-readiness.sh` con DB_CONTAINER e JWT effimero in variabili di ambiente, senza stamparlo. [Contratto](P2-CLOUD-TEMPLATES.md).
 
-## P2 — Allegati note in S3 (PR #64 in verifica, V14 solo nel branch)
+## P2 — Allegati note in S3 (PR #64 integrata, V14 nel repository)
 
 Non abilitare upload cloud in produzione finché non esistono un bucket privato e una policy che consenta solo gli oggetti `staging/` e `files/`, un lifecycle per i `staging/` e un piano backup dei file. La VM VPS attualmente attestata a Flyway V10 **non espone** questi endpoint. Il codice V14 è opt-in (`APP_ATTACHMENTS_ENABLED=false` default), non avvia automaticamente S3, né una migrazione manuale. Se un futuro deploy viene autorizzato, `infra/release-v14-readiness.sh` verifica **solo in lettura** la versione Flyway esatta, health/JWT e capability `attachmentStorageEnabled=true`. Il gate non verifica bucket policy, PUT/GET reali, retention, scansione contenuti, cleanup su soft-delete o dispositivi fisici. [Contratto completo](P2-NOTE-ATTACHMENTS.md).

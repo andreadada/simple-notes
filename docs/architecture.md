@@ -1,7 +1,7 @@
 # Simple Notes — Architettura applicativa
 
 <!-- CURRENT-STATUS-REF -->
-> **Stato codice 10/11/2026:** [PR #63](https://github.com/andreadada/simple-notes/pull/63) merged `b9dd67a` (catalogo modelli manuale V13) e [PR #62](https://github.com/andreadada/simple-notes/pull/62) merged `766860c` (auto-sync foreground regole task). Migrazioni Flyway **V13 nel repository**, VPS **V10 attestata il 03/11**: nessun deploy, restore live o E2E hardware. Backend/Compose/Markdown CI della PR #63 verdi; Flutter CI dell'ultimo codice ancora da completare. [Stato canonico](CURRENT-STATUS.md).
+> **Stato codice 10/11/2026:** [PR #64](https://github.com/andreadada/simple-notes/pull/64) merged `5ae2bd3` (allegati privati S3 per note, Flyway V14 opt-in). Backend/Compose/Markdown CI e Flutter analyze/test verdi; build native Flutter post-merge ancora da verificare. Codice Flyway **V14 nel repository**, VPS **V10 attestata al 03/11**: nessun deploy, bucket S3 live, restore o E2E hardware. [Stato canonico](CURRENT-STATUS.md).
 
 > **Cronologia (stato del 02/11 o 31/10/2026):** R1 gate server-first integrato su `main` ([PR #26](https://github.com/andreadada/simple-notes/pull/26), commit [`f19ee8b0`](https://github.com/andreadada/simple-notes/commit/f19ee8b0a5bea2cb2c2231d85b3e8ad10a5233a7); [Compose CI](https://github.com/andreadada/simple-notes/actions/runs/41523319857) **success** con PostgreSQL 17 sintetico, [Markdown](https://github.com/andreadada/simple-notes/actions/runs/41523319860) **success**). Flutter resta `0.29.0+31` e 191 test già attestati. **VPS reale V10, health/capability live, backup recente e collaudo hardware non verificati**; ultimo stato VPS attestato V8. Nessun deploy o intervento su dati. [Stato](CURRENT-STATUS.md) · [R1](RELEASE-V10-READINESS.md).
 
@@ -13,7 +13,7 @@
 | Persistenza client | Drift/SQLite schema **V8**, `app_database.dart`, `local_store.dart` | Offline-first, revisioni remote, owner, tombstone, outbox durevole |
 | Sync | `auto_sync.dart`, `cloud_sync.dart` | Mutazioni idempotenti, delta per cursor, verifica capability, 409 e 426 |
 | API | Spring Boot Java 21/Spring Security, `services/api` | OAuth Google, task/note/liste, sync autorizzata per utente |
-| Server | PostgreSQL 17 + Flyway **V1–V13 nel repo**; Compose/Coolify | Stato cloud condiviso, versioni, migrazioni additive |
+| Server | PostgreSQL 17 + Flyway **V1–V14 nel repo**; Compose/Coolify | Stato cloud condiviso, versioni, migrazioni additive |
 
 ## Modello e migrazioni
 
@@ -135,6 +135,6 @@ Il client Flutter riconcilia in foreground la preferenza TaskActionStore e il ca
 
 `UserTemplateCatalogController/Service` persiste definizioni in `user_template_catalog` Flyway V13, con JWT owner e advisory lock PostgreSQL per PUT CAS. La schermata Flutter `TaskTemplatesBoard` usa `UserTemplateCloudApi` su comando esplicito, mantiene i modelli offline in SharedPreferences e richiede conferma per sostituirli con quelli remoti. Il flusso non passa da `/sync`, non crea task e non modifica la coda outbox. [Contratto](P2-CLOUD-TEMPLATES.md).
 
-## P2 — Allegati S3 esterni alla sync delle note (PR #64 in verifica)
+## P2 — Allegati S3 esterni alla sync delle note (PR #64 integrata)
 
 Il backend aggiunge `NoteAttachmentController/Service` e tabella `note_attachment` Flyway V14 con owner/nota e stato PENDING/READY. `AttachmentObjectStore` isola storage S3 compatibile da test/HTTP. Con backend non configurato, nessun client o signer S3 viene inizializzato e lo store risponde 503. Gli URL firmati PUT/GET sono temporanei; il server valida il file con HEAD e lo copia da `staging/` a `files/` prima di renderlo visibile. Il client Flutter sceglie un file nativo nella schermata Note, lo invia direttamente al bucket e conferma il commit: non modifica la normale outbox SQLite, backup `.snb` o modulo note. Nessuna coda per allegati offline, né garbage collection automatico di oggetti di note eliminate. [Dettagli](P2-NOTE-ATTACHMENTS.md).

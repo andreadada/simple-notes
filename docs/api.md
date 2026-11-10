@@ -1,7 +1,7 @@
 # Simple Notes API v1
 
 <!-- CURRENT-STATUS-REF -->
-> **Stato codice 10/11/2026:** [PR #63](https://github.com/andreadada/simple-notes/pull/63) merged `b9dd67a` (catalogo modelli manuale V13) e [PR #62](https://github.com/andreadada/simple-notes/pull/62) merged `766860c` (auto-sync foreground regole task). Migrazioni Flyway **V13 nel repository**, VPS **V10 attestata il 03/11**: nessun deploy, restore live o E2E hardware. Backend/Compose/Markdown CI della PR #63 verdi; Flutter CI dell'ultimo codice ancora da completare. [Stato canonico](CURRENT-STATUS.md).
+> **Stato codice 10/11/2026:** [PR #64](https://github.com/andreadada/simple-notes/pull/64) merged `5ae2bd3` (allegati privati S3 per note, Flyway V14 opt-in). Backend/Compose/Markdown CI e Flutter analyze/test verdi; build native Flutter post-merge ancora da verificare. Codice Flyway **V14 nel repository**, VPS **V10 attestata al 03/11**: nessun deploy, bucket S3 live, restore o E2E hardware. [Stato canonico](CURRENT-STATUS.md).
 
 
 ## Auth
@@ -196,6 +196,6 @@ Non si introducono nuovi endpoint oltre a GET e PUT /api/v1/automations/task-act
 
 `GET /api/v1/templates/catalog` JWT: `{"version":0,"catalog":{"schema":1,"templates":[]}}` se nessun catalogo pubblicato; altrimenti revisione e definizioni. `PUT /api/v1/templates/catalog`: `{"expectedVersion":0,"catalog":{"schema":1,"templates":[...]}}` con CAS e revisione incrementata. HTTP 409 se revisione vecchia, 400 per catalogo non valido, 401 senza JWT. Max 50 modelli, 128 KiB per record. Nessuna scrittura a task, note, `sync_change` o `sync_operation`. Endpoint nuovo rispetto a Flyway V12: non disponibile nella VPS finché V13 non viene effettivamente distribuita. [Contratto](P2-CLOUD-TEMPLATES.md).
 
-## P2 — API allegati delle note (PR #64 in verifica)
+## P2 — API allegati delle note (PR #64 integrata)
 
 Tutte le chiamate a `/api/v1/notes/{noteId}/attachments` richiedono JWT e owner di una nota ancora attiva. **GET** elenco READY (solo metadata), **POST** `{name,contentType,sizeBytes}` con risposta HTTP 201 `{id,uploadUrl,headers,expiresAt}`; PUT diretto all'URL firmato per 5min senza JWT dell'app, **POST /{id}/complete** con verifica S3 HEAD + COPY di un oggetto validato, **GET /{id}/download** con URL di lettura 5min, **DELETE /{id}** con rimozione del file. V14 additiva, limite 10MiB/file, 100 attivi e 200MiB per account. MIME PDF, PNG, JPEG, TXT. 404 per nota inesistente/di altro account/nel cestino; 503 quando S3 disabilitato; 409 per quota o HEAD incongruente. Nuove capability JWT `attachmentSchema=1` e `attachmentStorageEnabled` booleano. Non passa da `/sync`, non crea task e non altera note/sync ledger. [Specifica e gate](P2-NOTE-ATTACHMENTS.md).

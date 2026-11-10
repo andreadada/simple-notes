@@ -1,7 +1,7 @@
 # Delta Sync v1 — protocollo e storia degli incrementi
 
 <!-- CURRENT-STATUS-REF -->
-> **Stato codice 10/11/2026:** [PR #63](https://github.com/andreadada/simple-notes/pull/63) merged `b9dd67a` (catalogo modelli manuale V13) e [PR #62](https://github.com/andreadada/simple-notes/pull/62) merged `766860c` (auto-sync foreground regole task). Migrazioni Flyway **V13 nel repository**, VPS **V10 attestata il 03/11**: nessun deploy, restore live o E2E hardware. Backend/Compose/Markdown CI della PR #63 verdi; Flutter CI dell'ultimo codice ancora da completare. [Stato canonico](CURRENT-STATUS.md).
+> **Stato codice 10/11/2026:** [PR #64](https://github.com/andreadada/simple-notes/pull/64) merged `5ae2bd3` (allegati privati S3 per note, Flyway V14 opt-in). Backend/Compose/Markdown CI e Flutter analyze/test verdi; build native Flutter post-merge ancora da verificare. Codice Flyway **V14 nel repository**, VPS **V10 attestata al 03/11**: nessun deploy, bucket S3 live, restore o E2E hardware. [Stato canonico](CURRENT-STATUS.md).
 
 
 ## Ultima versione di un elemento / risoluzione conflitto (P0)
@@ -182,6 +182,6 @@ Il catalogo JSON owner-scoped non viene inserito nel registro sync_change dei ta
 
 Dopo la normale sync Delta Sync, il client confronta local catalog, checkpoint v1 per owner (versione+contenuto), e catalogo cloud V12. Soltanto un ramo cambiato autorizza upload CAS o download; se entrambi divergono, nessuna modifica automatica e richiesta risoluzione manuale Pubblica/Scarica. Questo canale non modifica cursori, task, note o outbox e non interferisce con la loro sync se il backend è vecchio, offline o restituisce 409. [Contratto](P2-AUTO-ACTION-CATALOG.md).
 
-## P2 — Allegati note fuori dal canale /sync (PR #64 in verifica)
+## P2 — Allegati note fuori dal canale /sync (PR #64 integrata)
 
 La nuova API degli allegati S3 è distinta dal sync outbox: gli allegati non diventano `sync_change` o `sync_operation`, non sono importati dai backup locali, e non vengono presi in carico dal motore offline. La nota deve già esistere lato backend con stesso owner. Begin/PUT/HEAD+COPY/Complete e signed GET sono azioni esplicite online; i retry non devono rieseguire automaticamente operazioni su un altro account. 503 backend non configurato e 404 nota non sincronizzata sono fail-closed. [Specifica](P2-NOTE-ATTACHMENTS.md).

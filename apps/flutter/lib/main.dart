@@ -18,6 +18,8 @@ import 'ui/inline_editable_title.dart';
 import 'ui/inline_editable_body.dart';
 import 'ui/inline_quick_add.dart';
 import 'ui/notes_dialogs.dart';
+import 'ui/note_attachments_panel.dart';
+import 'data/note_attachment_api.dart';
 import 'ui/task_due_editor.dart';
 import 'ui/calendar_board.dart';
 import 'ui/eisenhower_board.dart';
@@ -2236,6 +2238,48 @@ Ctrl+/ · Questo elenco'''),
                                 }
                               },
                               child: const Icon(Icons.open_in_new, size: 18),
+                            ),
+                          if (cloud.authenticated && cloud.userId != null)
+                            FButton.icon(
+                              key: Key('attachments-note-${note.id}'),
+                              variant: FButtonVariant.ghost,
+                              onPress: () async {
+                                final api = NoteAttachmentApi(
+                                  baseUrl: CloudConfig.apiBaseUrl,
+                                  tokenProvider: () => ref.read(
+                                    cloudAuthProvider.notifier).validAccessToken(),
+                                );
+                                try {
+                                  await showFDialog<void>(
+                                    context: context,
+                                    builder: (ctx, style, animation) => NotesDialog(
+                                      style: style,
+                                      animation: animation,
+                                      title: Text('Allegati · ${note.title.isEmpty ? 'Nota' : note.title}'),
+                                      body: NoteAttachmentsPanel(
+                                        key: Key('attachments-panel-${note.id}'),
+                                        ownerId: cloud.userId!,
+                                        noteId: note.id,
+                                        api: api,
+                                        ownerMatches: (owner) async =>
+                                            ref.read(cloudAuthProvider).authenticated &&
+                                            ref.read(cloudAuthProvider).userId == owner &&
+                                            await ref.read(databaseProvider)
+                                                .setting('boundOwnerId') == owner,
+                                      ),
+                                      actions: [
+                                        FButton(
+                                          variant: FButtonVariant.ghost,
+                                          onPress: () => Navigator.pop(ctx),
+                                          child: const Text('Chiudi')),
+                                      ],
+                                    ),
+                                  );
+                                } finally {
+                                  api.close();
+                                }
+                              },
+                              child: const Icon(Icons.attach_file, size: 18),
                             ),
                           FButton.icon(
                             key: Key('delete-note-${note.id}'),

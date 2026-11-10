@@ -138,3 +138,7 @@ Il client Flutter riconcilia in foreground la preferenza TaskActionStore e il ca
 ## P2 — Allegati S3 esterni alla sync delle note (PR #64 integrata)
 
 Il backend aggiunge `NoteAttachmentController/Service` e tabella `note_attachment` Flyway V14 con owner/nota e stato PENDING/READY. `AttachmentObjectStore` isola storage S3 compatibile da test/HTTP. Con backend non configurato, nessun client o signer S3 viene inizializzato e lo store risponde 503. Gli URL firmati PUT/GET sono temporanei; il server valida il file con HEAD e lo copia da `staging/` a `files/` prima di renderlo visibile. Il client Flutter sceglie un file nativo nella schermata Note, lo invia direttamente al bucket e conferma il commit: non modifica la normale outbox SQLite, backup `.snb` o modulo note. Nessuna coda per allegati offline, né garbage collection automatico di oggetti di note eliminate. [Dettagli](P2-NOTE-ATTACHMENTS.md).
+
+## P2 — Modelli cloud auto-sync (PR #65 in verifica)
+
+Il client Flutter aggiunge `UserTemplateCatalogMirror` / `UserTemplateMirrorAnchor`: checkpoint owner-scoped in SharedPreferences, sincronizzazione foreground tramite `AutoSyncHost` e GET/PUT V13 già esistenti; il backend non cambia e Flyway rimane **V14 nel codice**. Si verifica account boundOwnerId, restore gate e stato cloud task prima di riconciliare. Nessun nuovo server scheduler, OAuth, allegato, Drift schema o outbox. [Contratto](P2-AUTO-TEMPLATE-CATALOG.md).

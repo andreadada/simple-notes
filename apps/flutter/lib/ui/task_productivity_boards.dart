@@ -11,6 +11,7 @@ import '../data/task_insights.dart';
 import '../data/task_templates.dart';
 import '../data/user_task_templates.dart';
 import '../data/user_template_cloud_api.dart';
+import '../data/user_template_catalog_mirror.dart';
 import 'notes_dialogs.dart';
 import 'notes_theme.dart';
 
@@ -125,6 +126,9 @@ class TaskTemplatesBoard extends StatefulWidget {
     this.cloudTokenProvider,
     this.cloudOwnerGuard,
     this.cloudApi,
+    this.onTemplatesChanged,
+    this.onEditorVisible,
+    this.autoSyncLabel,
   });
 
   final Future<void> Function(TaskTemplate) onCreate;
@@ -135,6 +139,9 @@ class TaskTemplatesBoard extends StatefulWidget {
   final Future<bool> Function(String)? cloudOwnerGuard;
   /// Injectable in tests. The widget never closes a caller-owned client.
   final UserTemplateCloudApi? cloudApi;
+  final VoidCallback? onTemplatesChanged;
+  final ValueChanged<bool>? onEditorVisible;
+  final String? autoSyncLabel;
 
   @override
   State<TaskTemplatesBoard> createState() => _TaskTemplatesBoardState();
@@ -151,6 +158,16 @@ class _TaskTemplatesBoardState extends State<TaskTemplatesBoard> {
   void initState() {
     super.initState();
     _load();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) widget.onEditorVisible?.call(true);
+    });
+  }
+
+  @override
+  void dispose() {
+    final notify = widget.onEditorVisible;
+    WidgetsBinding.instance.addPostFrameCallback((_) => notify?.call(false));
+    super.dispose();
   }
 
   @override
@@ -210,6 +227,7 @@ class _TaskTemplatesBoardState extends State<TaskTemplatesBoard> {
       await const UserTaskTemplateStore().save(_prefs!, owner, next);
       if (!mounted || widget.ownerId != owner) return;
       setState(() => _library = next);
+      widget.onTemplatesChanged?.call();
     } catch (_) {
       _showError('Modello non salvato. I dati precedenti sono invariati.');
     } finally {
@@ -313,6 +331,10 @@ class _TaskTemplatesBoardState extends State<TaskTemplatesBoard> {
             accepted.library.serialize() != initial) {
           throw const FormatException('Risposta cloud incoerente.');
         }
+        await const UserTemplateCatalogMirror().acknowledgeManual(
+          preferences: _prefs!, owner: owner, snapshot: accepted);
+        if (!await _verifiedOwner(owner)) return;
+        widget.onTemplatesChanged?.call();
         _showError('Modelli pubblicati (revisione ${accepted.version}).');
       } else {
         // A GET after consent rejects a version superseded while the user
@@ -326,8 +348,12 @@ class _TaskTemplatesBoardState extends State<TaskTemplatesBoard> {
           return;
         }
         await store.save(_prefs!, owner, latest.library);
+        if (!await _verifiedOwner(owner)) return;
+        await const UserTemplateCatalogMirror().acknowledgeManual(
+          preferences: _prefs!, owner: owner, snapshot: latest);
         if (!mounted || widget.ownerId != owner) return;
         setState(() => _library = latest.library);
+        widget.onTemplatesChanged?.call();
         _showError('Modelli cloud scaricati sul dispositivo.');
       }
     } on UserTemplateCloudConflict {
@@ -428,6 +454,7 @@ class _TaskTemplatesBoardState extends State<TaskTemplatesBoard> {
       await const UserTaskTemplateStore().save(_prefs!, owner, combined);
       if (!mounted || widget.ownerId != owner) return;
       setState(() => _library = combined);
+      widget.onTemplatesChanged?.call();
       _showError('Modelli importati come nuove copie locali.');
     } on FormatException catch (error) {
       _showError(error.message);
@@ -566,7 +593,7 @@ class _TaskTemplatesBoardState extends State<TaskTemplatesBoard> {
         const SizedBox(height: 6),
         Text('Ogni modello crea una nuova attività sincronizzabile. '
             'I modelli personali sono salvati localmente e inclusi '
-            'nel backup cifrato. Il trasferimento cloud è manuale, '
+            'nel backup cifrato. La sincronizzazione cloud è automatica in primo piano '
             'con conferma e controllo della revisione; non crea task. '
             'Puoi anche esportare/importare un file JSON non cifrato.',
           style: TextStyle(fontSize: 12, color: colors.secondaryText)),
@@ -620,6 +647,13 @@ class _TaskTemplatesBoardState extends State<TaskTemplatesBoard> {
               key: const Key('custom-template-load-error'),
               style: const TextStyle(color: Colors.orangeAccent))),
         const SizedBox(height: 14),
+        if (widget.autoSyncLabel != null) ...[
+          const SizedBox(height: 8),
+          Text(widget.autoSyncLabel!,
+            key: const Key('template-auto-sync-status'),
+            style: TextStyle(color: NotesPalette.of(context).secondaryText)),
+          const SizedBox(height: 8),
+        ],
         for (final template in all)
           Padding(
             padding: const EdgeInsets.only(bottom: 12),

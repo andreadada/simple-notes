@@ -30,6 +30,7 @@ App offline-first per **Windows 11 e Android** dedicata ad attività, note e pia
 - [Catalogo cloud automazioni task P2 (PR #61 integrata)](docs/P2-CLOUD-ACTION-CATALOG.md)
 - [Sincronizzazione automatica regole P2 (PR #62 integrata)](docs/P2-AUTO-ACTION-CATALOG.md)
 - [Catalogo cloud modelli P2 (PR #63 integrata)](docs/P2-CLOUD-TEMPLATES.md)
+- [Sincronizzazione automatica conservativa modelli (PR #65 in verifica)](docs/P2-AUTO-TEMPLATE-CATALOG.md)
 - [Allegati privati S3 per note (PR #64 integrata)](docs/P2-NOTE-ATTACHMENTS.md)
 - [Roadmap P0–P3](project.md), [regole per agenti](AGENTS.md), [design](design.md), [trasferimento modelli P2](docs/P2-TEMPLATE-TRANSFER.md)
 - [Indice completo dei documenti Markdown](docs/README.md)

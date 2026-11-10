@@ -8,6 +8,7 @@ import 'package:http/testing.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:simple_notes/data/user_task_templates.dart';
 import 'package:simple_notes/data/user_template_cloud_api.dart';
+import 'package:simple_notes/data/user_template_catalog_mirror.dart';
 import 'package:simple_notes/ui/notes_theme.dart';
 import 'package:simple_notes/ui/task_productivity_boards.dart';
 
@@ -67,6 +68,9 @@ void main() {
     expect(reads, 2);
     expect((await const UserTaskTemplateStore().load(prefs, 'account-a'))
         .serialize(), remote.serialize());
+    final anchor = UserTemplateMirrorAnchor.read(prefs, 'account-a')!;
+    expect(anchor.version, 4);
+    expect(anchor.catalog.serialize(), remote.serialize());
   });
 
   testWidgets('download never overwrites if revision changes during consent',
@@ -139,5 +143,6 @@ void main() {
     expect(writes, 1);
     expect((await const UserTaskTemplateStore().load(prefs, 'account-a'))
         .serialize(), local.serialize());
+    expect(UserTemplateMirrorAnchor.read(prefs, 'account-a'), isNull);
   });
 }

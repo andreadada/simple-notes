@@ -22,3 +22,7 @@ La schermata Forui **Modelli** offre *Pubblica cloud* e *Scarica cloud* soltanto
 - **VPS attestata Flyway V10 il 03/11/2026**. Questa PR non effettua deploy, migration live, restore o test fisici.
 
 Restano aperti per P2: provider OAuth Calendar/Outlook, ACL liste condivise, allegati S3, scheduler server e dedup multi-device, restore live e collaudo hardware. [Matrice](P2-DELIVERY-MATRIX.md) · [Collaudi](DEVICE-ACCEPTANCE-DEFERRED.md) · [JSON manuale](P2-TEMPLATE-TRANSFER.md).
+
+## Estensione in verifica — sincronizzazione automatica foreground PR #65
+
+La PR #63 aggiunge soltanto lo scambio manuale. [PR #65](https://github.com/andreadada/simple-notes/pull/65) implementa la riconciliazione automatica conservativa in primo piano con checkpoint, CAS e gestione esplicita dei conflitti; nessun background Android né deploy. [Contratto](P2-AUTO-TEMPLATE-CATALOG.md).

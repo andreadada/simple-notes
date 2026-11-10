@@ -61,6 +61,7 @@ import 'auth/cloud_auth.dart';
 import 'sync/cloud_sync.dart';
 import 'sync/auto_sync.dart';
 import 'sync/task_action_rule_auto_sync.dart';
+import 'sync/user_template_auto_sync.dart';
 import 'sync/restore_sync_gate.dart';
 import 'data/restore_startup_probe_io.dart'
     if (dart.library.html) 'data/restore_startup_probe_stub.dart'
@@ -2085,6 +2086,17 @@ Ctrl+/ · Questo elenco'''),
               key: ValueKey('template-owner-${cloud.userId ?? 'guest'}'),
               ownerId: cloud.userId,
               busy: _templateBusy,
+              autoSyncLabel: ref.watch(userTemplateAutoSyncStateProvider).ownerId == cloud.userId
+                  ? ref.watch(userTemplateAutoSyncStateProvider).label : null,
+              onTemplatesChanged: () {
+                ref.read(userTemplateAutoSyncStateProvider.notifier).state =
+                    const UserTemplateAutoSyncState();
+                ref.read(userTemplatesEditRevisionProvider.notifier).state++;
+              },
+              onEditorVisible: (visible) {
+                if (!mounted) return;
+                ref.read(userTemplatesEditorVisibleProvider.notifier).state = visible;
+              },
               cloudApiBaseUrl: CloudConfig.apiBaseUrl,
               cloudTokenProvider: () =>
                   ref.read(cloudAuthProvider.notifier).validAccessToken(),

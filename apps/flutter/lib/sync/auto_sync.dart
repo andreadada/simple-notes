@@ -3,12 +3,17 @@ import 'dart:async';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../auth/cloud_auth.dart';
+import '../data/app_database.dart';
+import '../data/task_action_catalog_mirror.dart';
+import '../data/task_action_cloud_api.dart';
 import '../data/local_store.dart';
 import '../ui/reminder_controller.dart';
 import 'cloud_sync.dart';
 import 'restore_sync_gate.dart';
+import 'task_action_rule_auto_sync.dart';
 
 /// Foreground-only auto-sync: offline edits remain in the persistent SQLite
 /// outbox. This widget never claims to sync while Android has closed the app.
@@ -136,6 +141,9 @@ class _AutoSyncHostState extends ConsumerState<AutoSyncHost>
         });
       } else {
         _failures = 0;
+        // Catalog definitions are a separate CAS channel. A missing V12
+        // endpoint or failed rule sync must never block normal task sync.
+        await _reconcileTaskActionRules(cloud.userId!);
       }
     } finally {
       _inFlight = false;
@@ -146,22 +154,99 @@ class _AutoSyncHostState extends ConsumerState<AutoSyncHost>
     }
   }
 
+
+  Future<void> _reconcileTaskActionRules(String owner) async {
+    if (!mounted || !_active ||
+        ref.read(taskActionEditorVisibleProvider) ||
+        !ref.read(restoreSyncGateProvider).canSync ||
+        !CloudConfig.enabled) {
+      return;
+    }
+
+    Future<bool> ownerGuard(String candidate) async {
+      if (!mounted || !_active || candidate != owner ||
+          !ref.read(restoreSyncGateProvider).canSync ||
+          ref.read(taskActionEditorVisibleProvider)) {
+        return false;
+      }
+      final session = ref.read(cloudAuthProvider);
+      if (!session.authenticated || session.userId != candidate) return false;
+      return await ref.read(databaseProvider).setting('boundOwnerId') ==
+          candidate;
+    }
+
+    if (!await ownerGuard(owner)) return;
+    final api = TaskActionCloudApi(
+      baseUrl: CloudConfig.apiBaseUrl,
+      tokenProvider: () =>
+          ref.read(cloudAuthProvider.notifier).validAccessToken(),
+    );
+    try {
+      final preferences = await SharedPreferences.getInstance();
+      if (!await ownerGuard(owner)) return;
+      final result = await const TaskActionCatalogMirror().synchronize(
+        preferences: preferences,
+        owner: owner,
+        api: api,
+        ownerMatches: ownerGuard,
+      );
+      if (!mounted || ref.read(cloudAuthProvider).userId != owner) return;
+      final phase = switch (result) {
+        TaskActionMirrorResult.unchanged ||
+        TaskActionMirrorResult.initialized =>
+          TaskActionAutoSyncPhase.aligned,
+        TaskActionMirrorResult.uploaded => TaskActionAutoSyncPhase.uploaded,
+        TaskActionMirrorResult.downloaded => TaskActionAutoSyncPhase.downloaded,
+        TaskActionMirrorResult.conflict => TaskActionAutoSyncPhase.conflict,
+        TaskActionMirrorResult.skipped => TaskActionAutoSyncPhase.paused,
+      };
+      ref.read(taskActionAutoSyncStateProvider.notifier).state =
+          TaskActionAutoSyncState(ownerId: owner, phase: phase);
+    } on TaskActionCloudConflict {
+      _setRuleStatus(owner, TaskActionAutoSyncPhase.conflict);
+    } on TaskActionCloudUnavailable {
+      _setRuleStatus(owner, TaskActionAutoSyncPhase.unavailable);
+    } on FormatException {
+      _setRuleStatus(owner, TaskActionAutoSyncPhase.invalid);
+    } catch (_) {
+      _setRuleStatus(owner, TaskActionAutoSyncPhase.offline);
+    } finally {
+      api.close();
+    }
+  }
+
+  void _setRuleStatus(String owner, TaskActionAutoSyncPhase phase) {
+    if (!mounted || ref.read(cloudAuthProvider).userId != owner) return;
+    ref.read(taskActionAutoSyncStateProvider.notifier).state =
+        TaskActionAutoSyncState(ownerId: owner, phase: phase);
+  }
+
   @override
   Widget build(BuildContext context) {
     ref.listen<CloudSession>(cloudAuthProvider, (previous, next) {
-      if (next.authenticated && !(previous?.authenticated ?? false)) {
+      if (next.authenticated &&
+          (!(previous?.authenticated ?? false) ||
+           previous?.userId != next.userId)) {
         _failures = 0;
         _retry?.cancel();
         _retry = null;
         _schedule(delay: Duration.zero);
         ref.read(reminderControllerProvider.notifier).reconcile();
       } else if (!next.authenticated) {
+        ref.read(taskActionAutoSyncStateProvider.notifier).state =
+            const TaskActionAutoSyncState();
         _debounce?.cancel();
         _retry?.cancel();
         _retry = null;
         _failures = 0;
         _queued = false;
       }
+    });
+    ref.listen<int>(taskActionRulesEditRevisionProvider, (previous, next) {
+      _schedule();
+    });
+    ref.listen<bool>(taskActionEditorVisibleProvider, (previous, next) {
+      if (!next) _schedule(delay: const Duration(milliseconds: 400));
     });
     ref.listen<int>(localMutationRevisionProvider, (previous, next) {
       _schedule();

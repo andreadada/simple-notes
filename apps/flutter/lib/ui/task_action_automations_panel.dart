@@ -236,8 +236,14 @@ class _TaskActionAutomationsPanelState
         final saved = await api.replace(
           expectedVersion: remote.version, library: latest);
         if (!await _verifiedOwner(owner)) return;
-        await const TaskActionCatalogMirror().acknowledgeManual(
-          preferences: _prefs!, owner: owner, snapshot: saved);
+        try {
+          await const TaskActionCatalogMirror().acknowledgeManual(
+            preferences: _prefs!, owner: owner, snapshot: saved);
+        } catch (_) {
+          _message('Regole pubblicate sul cloud, ma checkpoint locale '
+              'non aggiornato. Il prossimo controllo confronterà i cataloghi.');
+          return;
+        }
         if (!await _verifiedOwner(owner)) return;
         widget.onRuleCatalogChanged?.call();
         _message('Pubblicate ${saved.library.rules.length} regole '
@@ -266,11 +272,19 @@ class _TaskActionAutomationsPanelState
         await const TaskActionStore().save(
           _prefs!, owner, remote.library);
         if (!await _verifiedOwner(owner)) return;
-        await const TaskActionCatalogMirror().acknowledgeManual(
-          preferences: _prefs!, owner: owner, snapshot: remote);
-        if (!await _verifiedOwner(owner)) return;
+        // Reflect the successful local write even if saving the secondary
+        // checkpoint fails; never display a stale rule catalog afterwards.
         setState(() => _library = remote.library);
         widget.onRuleCatalogChanged?.call();
+        try {
+          await const TaskActionCatalogMirror().acknowledgeManual(
+            preferences: _prefs!, owner: owner, snapshot: remote);
+        } catch (_) {
+          _message('Regole scaricate sul dispositivo, ma checkpoint '
+              'non aggiornato. Il prossimo controllo confronterà i cataloghi.');
+          return;
+        }
+        if (!await _verifiedOwner(owner)) return;
         _message('Regole cloud scaricate su questo dispositivo.');
       }
     } on TaskActionCloudConflict {

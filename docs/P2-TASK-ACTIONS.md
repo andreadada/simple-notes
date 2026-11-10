@@ -22,3 +22,7 @@ Ogni regola definisce un evento locale (creazione o completamento), un filtro fa
 I file task_action_automations_test.dart, task_action_store_integration_test.dart, task_action_automations_widget_test.dart e user_template_backup_test.dart coprono regole, persistenza, owner, outbox, editor Forui, cifratura/retrocompatibilità e archivi malformati. Ciò non sostituisce prove su dispositivi reali.
 
 **Restano aperti:** scheduling remoto, cataloghi sincronizzati tra device, deduplica multi-device, trigger temporali, filtri avanzati e tutto il resto della P2. [Matrice](P2-DELIVERY-MATRIX.md) · [Collaudo differito](DEVICE-ACCEPTANCE-DEFERRED.md).
+
+## Estensione successiva — catalogo cloud con CAS (PR #61 in verifica)
+
+La PR #61 introduce **pubblicazione e recupero manuali** delle definizioni tramite endpoint JWT owner-scoped versionato; non modifica il trigger locale o il metodo di applicazione sul task, e non abilita esecuzione server o sync continua. [Contratto dedicato](P2-CLOUD-ACTION-CATALOG.md).

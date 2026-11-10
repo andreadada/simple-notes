@@ -6,7 +6,7 @@
 
 **Obiettivo:** Windows 11 + Android offline-first, Google OAuth, Flutter/Forui/Drift + Spring Boot/PostgreSQL su Coolify. Regole UX in [design.md](design.md); deploy sicuro in [P1-RELEASE-BATCH.md](docs/P1-RELEASE-BATCH.md). Le checklist sotto includono traguardi storici: `[x]` significa **codice verificato nella CI o prova specifica**, non distribuzione sul VPS.
 
-## Gate corrente (P2 PR #60 integrata; automazioni distribuite, hardware e deploy ancora aperti)
+## Gate corrente (P2 PR #60 integrata; catalogo cloud PR #61 in verifica, hardware e deploy ancora aperti)
 
 - [x] P1.7 Android con scheduler inexact, ledger, opt-in e CI verde (PR #6). [ ] Prova fisica Android app chiusa/reboot e controllo permessi; [x] codice packaging MSIX + promemoria Windows integrato (PR #7, CI verde); [ ] test fisici MSIX/identità/dati e firma pubblica.
 - [x] Flyway V10 verificata nella VPS reale il 03/11/2026, 0 migrazioni fallite; [ ] health/capability strict ancora aperti.
@@ -135,7 +135,7 @@
 - [ ] Liste condivise, ruoli, assegnazioni e audit.
 - [ ] Allegati con storage S3 compatibile.
 - [x] Widget Android di navigazione, template personali e analytics locali (PR #56/#57; collaudo fisico del widget da eseguire).
-- [ ] Automazioni (parziale): notifiche locali PR #59 e azioni task locali PR #60 **integrate**, CI verde (392 test); restano scheduler server/temporale, dedup multi-device, regole sincronizzate e prove OS. [Specifica](docs/P2-TASK-ACTIONS.md).
+- [ ] Automazioni (parziale): notifiche PR #59 e azioni task PR #60 integrate; catalogo cloud con CAS e trasferimento esplicito PR #61 in verifica. Restano job server/temporali, sync automatica e dedup multi-device. [Specifiche](docs/P2-CLOUD-ACTION-CATALOG.md).
 - [ ] Test manuali del widget e del trasferimento modelli JSON tra Windows e Android.
 - [ ] Backup verificato, installer Windows e release Android.
 
@@ -195,6 +195,7 @@ Dettagli e matrice: [docs/ui-design-audit.md](docs/ui-design-audit.md). Aggiorna
 - Tutti i nuovi moduli devono avere error states, migrazioni e test minimi.
 
 ## Edit Timespan
+- 2026-11-10 | feat(p2-cloud-task-actions) | [PR #61](https://github.com/andreadada/simple-notes/pull/61) in verifica: catalogo cloud JWT per owner, Flyway V12, CAS revisioni, trasferimento esplicito Pubblica/Scarica Forui con conferma, test Postgres/Flutter. Nessun job server, deploy o restore live. [Contratto](docs/P2-CLOUD-ACTION-CATALOG.md).
 - 2026-11-09 | merge(p2-task-actions) | [PR #60](https://github.com/andreadada/simple-notes/pull/60) merged `e051162`: trigger locali crea/completa, filtro titolo, priorità/tag/lista, editor Forui, singolo upsert/outbox, backup opzionale. [Flutter CI #42714514197](https://github.com/andreadada/simple-notes/actions/runs/42714514197) PASS (392 test, build Windows/Android), [Markdown #42714514223](https://github.com/andreadada/simple-notes/actions/runs/42714514223) PASS. Nessun job server, deploy o restore live. [Contratto](docs/P2-TASK-ACTIONS.md).
 - 2026-11-09 | merge(p2-reminder-automations) | [PR #59](https://github.com/andreadada/simple-notes/pull/59) merged `aa17094`: regole locali owner-scoped, editor Forui, dedup ledger, backup .snb opzionale. [Flutter CI #42701809601](https://github.com/andreadada/simple-notes/actions/runs/42701809601) PASS (377 test, build Windows/Android), [Markdown #42701809467](https://github.com/andreadada/simple-notes/actions/runs/42701809467) PASS. No migrazione, deploy, restore o cloud jobs. [Contratto](docs/P2-REMINDER-AUTOMATIONS.md).
 - 2026-11-09 | merge(p2-template-transfer) | [PR #58](https://github.com/andreadada/simple-notes/pull/58) integrata su main (`e926a5a`): JSON manuale dei modelli personali, ID nuovi, conferma Forui, test e doc allineate. [Flutter CI #42688444850](https://github.com/andreadada/simple-notes/actions/runs/42688444850) success 369 test e build Windows/Android; [Markdown #42688444618](https://github.com/andreadada/simple-notes/actions/runs/42688444618) success. Nessun deploy, restore live o collaudo hardware.

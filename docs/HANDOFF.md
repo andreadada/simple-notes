@@ -4,6 +4,9 @@
 
 <!-- CURRENT-STATUS-REF -->
 
+> **In verifica (10/11/2026):** [PR #61](https://github.com/andreadada/simple-notes/pull/61), catalogo cloud owner-scoped con API GET/PUT CAS, Flyway V12 additiva, client Flutter e scambio manuale confermato. Nessun deploy; [contratto](P2-CLOUD-ACTION-CATALOG.md).
+
+
 > **Quinto incremento P2 integrato (09/11/2026):** [PR #60](https://github.com/andreadada/simple-notes/pull/60) merged `e051162`, [Flutter CI #42714514197](https://github.com/andreadada/simple-notes/actions/runs/42714514197) verde (392 test e build Android/Windows); azioni task locali crea/completa, editor Forui, owner guard, un upsert/outbox e archivio `.snb` opzionale. Nessun job server, deploy o hardware test. [Specifica](P2-TASK-ACTIONS.md).
 
 

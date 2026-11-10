@@ -1,6 +1,6 @@
 # Stato corrente — Simple Notes
 
-**Aggiornato 9 novembre 2026.** Questo documento prevale sulla cronologia. **Codice/CI, deploy Coolify, installazione e collaudo fisico sono stati distinti.**
+**Aggiornato 10 novembre 2026.** Questo documento prevale sulla cronologia. **Codice/CI, deploy Coolify, installazione e collaudo fisico sono stati distinti.**
 
 | Area | Stato verificato | Gate ancora aperti |
 |---|---|---|
@@ -19,6 +19,10 @@
 | Gate R1 (codice) | [PR #26](https://github.com/andreadada/simple-notes/pull/26) merged; [Compose CI #41523319857](https://github.com/andreadada/simple-notes/actions/runs/41523319857) success (V6 rifiutata, V10 incompleta rifiutata, V10 sintetica accettata), [Markdown #41523319860](https://github.com/andreadada/simple-notes/actions/runs/41523319860) success | **Non certifica Flyway V10 reale, health e API autenticata in VPS** |
 | Backend nel repository | Spring Boot/PostgreSQL 17, Flyway **V11**; client Drift/SQLite **V8** | VPS attestata solo a Flyway **V10 (03/11/2026)**; backend V11/capability non verificati sulla VPS |
 | Test reali | VPS V10 verificata il 03/11; Google Windows connesso e pending 0 nel report disponibile | Android E2E, API strict, V11 e restore live ancora aperti |
+
+## Incremento P2 — catalogo cloud regole task (PR #61 in verifica, 10/11/2026)
+
+- [PR #61](https://github.com/andreadada/simple-notes/pull/61): API JWT per catalogo owner-scoped con versione CAS e Flyway V12 additiva, scambio manuale Forui Pubblica/Scarica con conferma e protezione 404/409; test server e Flutter. **Ancora in verifica, non integrata o deployata.** Flyway VPS attestata V10 (03/11); nessuna applicazione V11/V12. [Specifica](P2-CLOUD-ACTION-CATALOG.md).
 
 ## Incremento P2 — automazioni task locali (PR #60 integrata, 09/11/2026)
 

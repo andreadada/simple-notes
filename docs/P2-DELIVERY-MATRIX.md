@@ -1,6 +1,8 @@
 # P2 — Matrice di consegna e criteri di chiusura
 
-Aggiornato 9 novembre 2026. **CI verde non equivale a deploy Coolify o collaudo su dispositivi reali.**
+Aggiornato 10 novembre 2026. **CI verde non equivale a deploy Coolify o collaudo su dispositivi reali.**
+
+**Sesto incremento P2 in verifica:** [PR #61](https://github.com/andreadada/simple-notes/pull/61), catalogo cloud per owner con revisione CAS, API JWT, Flyway V12, comandi Forui espliciti Pubblica/Scarica e protezione contro sovrascritture. Non è ancora merged/deployata; non è sync automatica né esecuzione server. [Contratto](P2-CLOUD-ACTION-CATALOG.md).
 
 **Quinto incremento P2 integrato:** [PR #60](https://github.com/andreadada/simple-notes/pull/60) merged (`e051162`), [Flutter CI #42714514197](https://github.com/andreadada/simple-notes/actions/runs/42714514197) **success** (392 test, analisi, Android JDK17/21, Windows EXE/MSIX e recovery), [Markdown #42714514223](https://github.com/andreadada/simple-notes/actions/runs/42714514223) **success**. Azioni task locali crea/completa con filtro titolo e priorità/tag/lista, un solo upsert/outbox. Non è uno scheduler server. [Contratto](P2-TASK-ACTIONS.md).
 
@@ -28,6 +30,7 @@ La roadmap P2 include funzioni implementate, estensioni non ancora realizzate e 
 | Statistiche | Totali, completate, arretrate, priorità, prossimi 7 giorni, tempo e liste | Fotografia dello stato, non cronologia |
 | Modelli attività | Cinque preset + CRUD di modelli utente, owner-scoped locali, nuovi task tramite outbox e backup .snb compatibile | Definizioni personalizzate non sincronizzate fra dispositivi |
 | Trasferimento modelli JSON | Import/export manuale definizioni con copia additiva e conferma, nessun task/outbox creato | Non cifrato, non sostituisce la sync; prove fisiche rinviate |
+| Catalogo regole cloud (PR #61 in verifica) | GET/PUT owner JWT, CAS 409, preferenza remota versionata e scambio manuale confermato | V12 non applicata in VPS, nessuna sync automatica o motore server; CI/merge da verificare |
 | Azioni task locali (PR #60 integrata) | Evento manuale crea/completa, filtro titolo, priorità/tag/lista, editor Forui, backup opzionale; 392 test e build native verdi | No scheduler server, cataloghi non sincronizzati, E2E fisici differiti |
 | Regole promemoria locali (PR #59 integrata) | Tipi due/block, anticipo e priorità, editor Forui, dedup ledger e backup opzionale | Solo OS notifiche e quando l'app aggiorna il piano; non sono automazioni server generali |
 
@@ -42,7 +45,7 @@ Le statistiche sono calcolate sui dati locali senza telemetria. I modelli produc
 | Liste condivise | ACL multiowner, ruoli, assegnazioni, audit server, migrazioni, protezioni accesso e UI |
 | Allegati S3 | Bucket e policy, endpoint signed URL, quote, verifiche file e flussi offline |
 | Widget Android | Widget nativo Oggi/Inbox/Nuova attività compilato (Java 17/21); launcher/cold-start/logout su dispositivo fisico non verificati |
-| Automazioni configurabili | **Parziale:** notifiche locali PR #59 e azioni task locali PR #60 integrate; restano scheduler server, dedup multi-device, regole sincronizzate e delivery affidabile |
+| Automazioni configurabili | **Parziale:** notifiche PR #59 e azioni locali PR #60 integrate; catalogo cloud manuale PR #61 in verifica. Restano scheduler server, dedup multi-device, sync automatica delle regole e delivery affidabile |
 | Release | VPS V11, OAuth Android, upgrade Windows, firma, backup/offsite, E2E Windows↔Android e controlli reali |
 
 ## Criteri per dichiarare P2 completata

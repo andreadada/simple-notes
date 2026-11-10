@@ -2,6 +2,8 @@
 
 **Aggiornato 10 novembre 2026.** Questo documento prevale sulla cronologia. **Codice/CI, deploy Coolify, installazione e collaudo fisico sono stati distinti.**
 
+**Audit Markdown del 10/11/2026:** ricontrollati tutti i **65 file `.md`** del repository (**59 in `docs/`**, indice incluso, e 6 distribuiti nei package/radice). Normalizzate intestazioni P0/P1 e runbook T3/T4, corrette diciture PR #62 e migrazioni Flyway V12 nel codice, aggiunto [indice completo](README.md); controlli link relativi [Markdown CI #42854337893](https://github.com/andreadada/simple-notes/actions/runs/42854337893) **success** dopo il merge. Le modifiche documentali successive mantengono la stessa rete di link. La CI Flutter della PR #62 su `main` [#42854004235](https://github.com/andreadada/simple-notes/actions/runs/42854004235) è **ancora in esecuzione**: non dichiarare quel commit completamente testato.
+
 | Area | Stato verificato | Gate ancora aperti |
 |---|---|---|
 | `main` | **P0–P2.4B2W e batch P2 #56–#62 integrati**, Flutter `0.31.0+33`. [PR #62](https://github.com/andreadada/simple-notes/pull/62) merged `766860c`: auto-sync conservativa foreground regole task, CAS e conflitti espliciti; backend Flyway V12 nel repository. La [CI di PR #61](https://github.com/andreadada/simple-notes/actions/runs/42821851199) è verde (399 test e build), ma il gate completo sul nuovo codice PR #62 è **ancora in esecuzione**. | **P2 incompleta:** scheduler server e promemoria multi-device, OAuth Calendar/Outlook, ACL, S3, restore live, E2E hardware. **Nessun deploy**: VPS Flyway V10 attestata al 03/11, V11/V12 solo nel repository |

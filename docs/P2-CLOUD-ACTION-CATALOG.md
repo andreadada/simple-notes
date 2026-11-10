@@ -31,6 +31,6 @@ Il batch rende **trasferibili con controllo di versione** le definizioni delle r
 
 Consulta [Matrice P2](P2-DELIVERY-MATRIX.md) e [Collaudo differito](DEVICE-ACCEPTANCE-DEFERRED.md).
 
-## Estensione successiva: sincronizzazione foreground conservativa (PR #62 in verifica)
+## Estensione successiva: sincronizzazione foreground conservativa (PR #62 integrata)
 
 Il nuovo [contratto P2-AUTO-ACTION-CATALOG](P2-AUTO-ACTION-CATALOG.md) prevede riconciliazione automatica **solo client in primo piano**, con checkpoint per owner, CAS e conflitti non distruttivi. I comandi Pubblica/Scarica restano il modo esplicito per decidere in caso di cataloghi modificati offline su entrambi i dispositivi. Non aggiunge esecuzione server, job di pianificazione né migrazioni oltre V12.

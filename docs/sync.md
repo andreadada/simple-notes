@@ -1,7 +1,7 @@
 # Delta Sync v1 — protocollo e storia degli incrementi
 
 <!-- CURRENT-STATUS-REF -->
-> **Stato verificato 10/11/2026:** [PR #61](https://github.com/andreadada/simple-notes/pull/61) integrata `bf16cba`: definizioni regole task cloud con JWT, CAS e Flyway V12. [Flutter CI #42821851199](https://github.com/andreadada/simple-notes/actions/runs/42821851199) **success** (399 test, Windows EXE/MSIX/recovery e Android JDK17/21); [Backend CI #42821851073](https://github.com/andreadada/simple-notes/actions/runs/42821851073) **success** (Spring/PostgreSQL 17), [Markdown #42821851207](https://github.com/andreadada/simple-notes/actions/runs/42821851207) **success**. Flutter `0.31.0+33`; V12 nel repo, VPS V10 attestata al 03/11. Nessun deploy, migrazione su dati reali, restore live o collaudo hardware. Scheduler server, sync automatica regole e resto P2 ancora aperti. [Stato canonico](CURRENT-STATUS.md).
+> **Stato verificato 10/11/2026:** [PR #61](https://github.com/andreadada/simple-notes/pull/61) integrata `bf16cba`: definizioni regole task cloud con JWT, CAS e Flyway V12. [Flutter CI #42821851199](https://github.com/andreadada/simple-notes/actions/runs/42821851199) **success** (399 test, Windows EXE/MSIX/recovery e Android JDK17/21); [Backend CI #42821851073](https://github.com/andreadada/simple-notes/actions/runs/42821851073) **success** (Spring/PostgreSQL 17), [Markdown #42821851207](https://github.com/andreadada/simple-notes/actions/runs/42821851207) **success**. Flutter `0.31.0+33`; V12 nel repo, VPS V10 attestata al 03/11. Nessun deploy, migrazione su dati reali, restore live o collaudo hardware. Scheduler server, notifiche multi-device e resto P2 ancora aperti. [Stato canonico](CURRENT-STATUS.md).
 
 
 ## Ultima versione di un elemento / risoluzione conflitto (P0)
@@ -178,6 +178,6 @@ La [PR #60](https://github.com/andreadada/simple-notes/pull/60) integra azioni t
 
 Il catalogo JSON owner-scoped non viene inserito nel registro sync_change dei task e non entra nella outbox SQLite. I comandi Forui **Pubblica sul cloud** e **Scarica dal cloud** richiedono un'azione esplicita e verificano account/archivio locale; il PUT usa expectedVersion, quindi in caso di 409 non può cancellare una revisione remota concorrente. Le definizioni non si trasferiscono automaticamente via polling di Delta Sync e il server non modifica né ricalcola attività. [Contratto](P2-CLOUD-ACTION-CATALOG.md).
 
-## P2 — Riconciliazione foreground delle regole (PR #62 in verifica)
+## P2 — Riconciliazione foreground delle regole (PR #62 integrata)
 
 Dopo la normale sync Delta Sync, il client confronta local catalog, checkpoint v1 per owner (versione+contenuto), e catalogo cloud V12. Soltanto un ramo cambiato autorizza upload CAS o download; se entrambi divergono, nessuna modifica automatica e richiesta risoluzione manuale Pubblica/Scarica. Questo canale non modifica cursori, task, note o outbox e non interferisce con la loro sync se il backend è vecchio, offline o restituisce 409. [Contratto](P2-AUTO-ACTION-CATALOG.md).

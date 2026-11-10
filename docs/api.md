@@ -1,7 +1,7 @@
 # Simple Notes API v1
 
 <!-- CURRENT-STATUS-REF -->
-> **Stato verificato 10/11/2026:** [PR #61](https://github.com/andreadada/simple-notes/pull/61) integrata `bf16cba`: definizioni regole task cloud con JWT, CAS e Flyway V12. [Flutter CI #42821851199](https://github.com/andreadada/simple-notes/actions/runs/42821851199) **success** (399 test, Windows EXE/MSIX/recovery e Android JDK17/21); [Backend CI #42821851073](https://github.com/andreadada/simple-notes/actions/runs/42821851073) **success** (Spring/PostgreSQL 17), [Markdown #42821851207](https://github.com/andreadada/simple-notes/actions/runs/42821851207) **success**. Flutter `0.31.0+33`; V12 nel repo, VPS V10 attestata al 03/11. Nessun deploy, migrazione su dati reali, restore live o collaudo hardware. Scheduler server, sync automatica regole e resto P2 ancora aperti. [Stato canonico](CURRENT-STATUS.md).
+> **Stato verificato 10/11/2026:** [PR #61](https://github.com/andreadada/simple-notes/pull/61) integrata `bf16cba`: definizioni regole task cloud con JWT, CAS e Flyway V12. [Flutter CI #42821851199](https://github.com/andreadada/simple-notes/actions/runs/42821851199) **success** (399 test, Windows EXE/MSIX/recovery e Android JDK17/21); [Backend CI #42821851073](https://github.com/andreadada/simple-notes/actions/runs/42821851073) **success** (Spring/PostgreSQL 17), [Markdown #42821851207](https://github.com/andreadada/simple-notes/actions/runs/42821851207) **success**. Flutter `0.31.0+33`; V12 nel repo, VPS V10 attestata al 03/11. Nessun deploy, migrazione su dati reali, restore live o collaudo hardware. Scheduler server, notifiche multi-device e resto P2 ancora aperti. [Stato canonico](CURRENT-STATUS.md).
 
 
 ## Auth
@@ -188,6 +188,6 @@ L'endpoint autenticato `GET /api/v1/capabilities` aggiunge il campo numerico `sy
 
 **GET /api/v1/automations/task-actions** (JWT account) restituisce una versione 0 e un catalogo schema 1 con regole vuote in assenza di dati, oppure la revisione e il catalogo pubblicato dell'utente autenticato. **PUT /api/v1/automations/task-actions** riceve expectedVersion e catalog; l'update usa lock owner e compare-and-swap sul valore corrente. HTTP 200 = nuova versione, 400 = payload non valido, 409 = revisione obsoleta senza scrittura, 401 = autenticazione mancante. Il backend precedente può rispondere 404. Sono validate lunghezza UTF-8, schema 1, ID univoci e tutte le opzioni delle regole. API di **definizioni**, non di esecuzione; nessuna scrittura task e nessuna emissione sync_change. Richiede Flyway V12. [Contratto](P2-CLOUD-ACTION-CATALOG.md).
 
-## P2 — Client foreground sulle API catalogo (PR #62 in verifica)
+## P2 — Client foreground sulle API catalogo (PR #62 integrata)
 
 Non si introducono nuovi endpoint oltre a GET e PUT /api/v1/automations/task-actions della V12. La riconciliazione automatica invia PUT solo quando il confronto con il checkpoint per owner indica un'unica modifica locale e il cloud non è cambiato. Sempre CAS expectedVersion; 409/404/426 non autorizzano retry distruttivi né la sostituzione del catalogo. Il motore resta nel client quando l'app è in primo piano; nessuna azione task viene eseguita dal server. [Contratto](P2-AUTO-ACTION-CATALOG.md).

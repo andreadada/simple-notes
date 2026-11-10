@@ -1,6 +1,6 @@
 # P1.5 — Pianificazione rapida e filtri calendario
 
-> **Stato corrente 09/11/2026:** P0/P1 integrati nel codice; [PR #58](https://github.com/andreadada/simple-notes/pull/58) merged, 369 test Flutter e build Windows/Android verificate nel branch. Flyway V11 nel codice, VPS V10 attestata; P2, deploy e collaudi fisici ancora aperti. [Stato canonico](CURRENT-STATUS.md).
+> **Stato di riferimento (10/11/2026):** P0/P1 integrati nel codice. Il repository contiene Flyway V12 e le successive funzionalità P2; per PR, CI e limiti aggiornati prevale [CURRENT-STATUS](CURRENT-STATUS.md). La VPS risulta attestata a Flyway V10 il 03/11/2026; deploy delle migrazioni successive e collaudi hardware non sono attestati. Le sezioni seguenti possono riportare snapshot storici.
 
 > **Cronologia al 31/10/2026:** P2.2 ICS read-only integrata su `main` ([PR #21](https://github.com/andreadada/simple-notes/pull/21), Flutter `0.25.0+27`, CI Flutter/Markdown verde: 162 test, Windows EXE/MSIX, Android JDK17/21). Test fisici e deploy cumulativo non attestati. Backend repo Flyway V10, VPS ultima attestazione V8; nessun deploy/reset. [Stato](CURRENT-STATUS.md) · [ICS](P2-ICS.md).
 

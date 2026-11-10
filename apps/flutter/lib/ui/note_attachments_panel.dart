@@ -155,6 +155,7 @@ class _NoteAttachmentsPanelState extends State<NoteAttachmentsPanel> {
 
   Future<void> _delete(NoteAttachment file) async {
     if (_busy || !await _owned()) return;
+    if (!mounted) return;
     final confirmed = await showFDialog<bool>(
       context: context,
       builder: (ctx, style, animation) => NotesDialog(

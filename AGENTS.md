@@ -250,3 +250,7 @@ Il batch di chiusura funzionale combina timeline, filtri, statistiche e modelli 
 ## Vincolo P2 — ICS, modelli e launcher widget (09/11/2026)
 
 Gli ICS esportati contengono dati personali e sono generati solo su richiesta; non esporre token/syncCursor/owner né inventare ore o durata per date-only. Un modello personalizzato è locale e owner-scoped: validare prima di salvare, preservare l'archivio corrotto, aggiungere task tramite SQLite+outbox senza riciclare UUID. Il backup .snb v1 può avere l'opzionale templates ma deve continuare a leggere backup storici senza tale chiave; invalidare contenuti futuri sconosciuti. Il widget Android non deve mostrare dati, salvare token o aggirare startup-gate/sync; espone solo navigazioni autorizzate. [Specifica](docs/P2-LOCAL-INTEGRATIONS.md).
+
+## P2 — Allegati privati S3 (PR #64 in verifica)
+
+Gli allegati sono separati da note/SQLite/outbox: GET/list, begin, PUT firmato 5min senza JWT app, HEAD+COPY in chiave permanente, download GET temporaneo e delete esplicito; FK owner/nota e check per soft-delete sempre obbligatori. Mai loggare URL presigned o segreti S3, mai concedere ACL bucket pubbliche. Storage disattivato di default: non inizializzare credenziali in CI o VPS. V14 solo nel branch PR #64 fino a merge; **nessun deploy**. [Specifica](docs/P2-NOTE-ATTACHMENTS.md).

@@ -247,6 +247,6 @@ Da Strumenti → Automazioni, regole locali per creare/completare task e modific
 
 Con account Google autenticato e archivio SQLite coerente, Strumenti → Automazioni permette lo scambio manuale delle regole task tramite TaskActionCloudApi. Il cloud memorizza le sole definizioni, con CAS sulla revisione e conferma esplicita prima di sostituire; 404 su backend precedente e 409 per modifica concorrente sono fail-closed. Flyway V12 è nel codice, non sulla VPS. Il trasferimento non modifica la coda sync né applica regole ai task esistenti. [Contratto](../../docs/P2-CLOUD-ACTION-CATALOG.md).
 
-## P2 — Riconciliazione automatica regole task (PR #62 in verifica)
+## P2 — Riconciliazione automatica regole task (PR #62 integrata)
 
 AutoSyncHost, durante il normale ciclo di sync foreground (accesso/ripresa/riconnessione/modifiche/periodico), richiama TaskActionCatalogMirror: confronto per owner di baseline cloud e cataloghi locale/remoto, CAS per upload e pull per download se solo un ramo diverge. Se due dispositivi modificano le regole offline viene mostrato un conflitto, mai last-writer-wins. L'editor sospende lo scambio fino alla chiusura. Nessun nuovo endpoint o migrazione; la VPS va aggiornata prima di usare V12. [Contratto](../../docs/P2-AUTO-ACTION-CATALOG.md).

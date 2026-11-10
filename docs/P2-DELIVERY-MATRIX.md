@@ -2,7 +2,7 @@
 
 Aggiornato 10 novembre 2026. **CI verde non equivale a deploy Coolify o collaudo su dispositivi reali.**
 
-**Settimo incremento P2 in verifica:** [PR #62](https://github.com/andreadada/simple-notes/pull/62), sync foreground conservativa catalogo regole con checkpoint owner-scoped, revisione CAS, auto-upload/pull solo senza conflitti, stato Forui e pausa editor. **CI/merge da verificare**, nessun deploy o scheduler server. [Specifica](P2-AUTO-ACTION-CATALOG.md).
+**Settimo incremento P2 integrato in `main` (`766860c`):** [PR #62](https://github.com/andreadada/simple-notes/pull/62), sync foreground conservativa catalogo regole con checkpoint owner-scoped, revisione CAS, auto-upload/pull solo senza conflitti, stato Forui e pausa editor. **Merge verificato; CI dell'ultimo head ancora in corso**, nessun deploy o scheduler server. [Specifica](P2-AUTO-ACTION-CATALOG.md).
 
 **Sesto incremento P2 integrato:** [PR #61](https://github.com/andreadada/simple-notes/pull/61) merged `bf16cba`, [Flutter CI #42821851199](https://github.com/andreadada/simple-notes/actions/runs/42821851199) **success** (399 test Flutter, Android JDK17/21, Windows EXE/MSIX/recovery), [Backend CI #42821851073](https://github.com/andreadada/simple-notes/actions/runs/42821851073) **success** (PostgreSQL 17 e bootJar), [Markdown CI #42821851207](https://github.com/andreadada/simple-notes/actions/runs/42821851207) **success**. Catalogo cloud JWT per owner con CAS, Flyway V12 additiva, scambio esplicito Pubblica/Scarica. **Non deployata** (VPS V10 attestata), né sync automatica o esecuzione server. [Contratto](P2-CLOUD-ACTION-CATALOG.md).
 
@@ -32,7 +32,7 @@ La roadmap P2 include funzioni implementate, estensioni non ancora realizzate e 
 | Statistiche | Totali, completate, arretrate, priorità, prossimi 7 giorni, tempo e liste | Fotografia dello stato, non cronologia |
 | Modelli attività | Cinque preset + CRUD di modelli utente, owner-scoped locali, nuovi task tramite outbox e backup .snb compatibile | Definizioni personalizzate non sincronizzate fra dispositivi |
 | Trasferimento modelli JSON | Import/export manuale definizioni con copia additiva e conferma, nessun task/outbox creato | Non cifrato, non sostituisce la sync; prove fisiche rinviate |
-| Sync automatica regole (PR #62 in verifica) | Riconciliazione foreground con baseline per account, upload/download CAS e protezione modifiche offline | Non merge verificato, non background server, conflitti richiedono conferma esplicita |
+| Sync automatica regole (PR #62 integrata) | Riconciliazione foreground con baseline per account, upload/download CAS e protezione modifiche offline | Non background server, conflitti richiedono conferma esplicita |
 | Catalogo regole cloud (PR #61 integrata) | GET/PUT owner JWT, CAS 409, catalogo versionato, scambio manuale con conferma; 399 test Flutter e backend CI verdi | V12 non applicata in VPS; nessuna sync automatica, dedup distribuita o motore server |
 | Azioni task locali (PR #60 integrata) | Evento manuale crea/completa, filtro titolo, priorità/tag/lista, editor Forui, backup opzionale; 392 test e build native verdi | No scheduler server, cataloghi non sincronizzati, E2E fisici differiti |
 | Regole promemoria locali (PR #59 integrata) | Tipi due/block, anticipo e priorità, editor Forui, dedup ledger e backup opzionale | Solo OS notifiche e quando l'app aggiorna il piano; non sono automazioni server generali |
@@ -48,7 +48,7 @@ Le statistiche sono calcolate sui dati locali senza telemetria. I modelli produc
 | Liste condivise | ACL multiowner, ruoli, assegnazioni, audit server, migrazioni, protezioni accesso e UI |
 | Allegati S3 | Bucket e policy, endpoint signed URL, quote, verifiche file e flussi offline |
 | Widget Android | Widget nativo Oggi/Inbox/Nuova attività compilato (Java 17/21); launcher/cold-start/logout su dispositivo fisico non verificati |
-| Automazioni configurabili | **Parziale:** notifiche PR #59, azioni locali PR #60, catalogo cloud PR #61 integrati; sync conservativa foreground PR #62 in verifica. Restano scheduler server, dedup multi-device, gestione manuale dei conflitti, delivery affidabile. |
+| Automazioni configurabili | **Parziale:** notifiche PR #59, azioni locali PR #60, catalogo cloud PR #61 integrati; sync conservativa foreground PR #62 integrata. Restano scheduler server, dedup multi-device, gestione manuale dei conflitti, delivery affidabile. |
 | Release | VPS V11, OAuth Android, upgrade Windows, firma, backup/offsite, E2E Windows↔Android e controlli reali |
 
 ## Criteri per dichiarare P2 completata

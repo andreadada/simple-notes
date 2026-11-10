@@ -1,6 +1,6 @@
 # P2 — Sync automatica conservativa delle regole task
 
-**10 novembre 2026 — [PR #62](https://github.com/andreadada/simple-notes/pull/62) in verifica. Non dichiarare merge/CI finché non sono confermati.** [Stato canonico](CURRENT-STATUS.md).
+**10 novembre 2026 — [PR #62](https://github.com/andreadada/simple-notes/pull/62) integrata in `main` (merge `766860c`). La CI completa dell'ultimo head è in corso: non dichiarare tutti i gate verdi prima della conclusione.** [Stato canonico](CURRENT-STATUS.md).
 
 ## Funzionamento
 

@@ -1,12 +1,12 @@
 # Simple Notes — Progetto e roadmap
 
-> **Stato verificato 10/11/2026:** [PR #61](https://github.com/andreadada/simple-notes/pull/61) **merged** (`bf16cba`), catalogo cloud automazioni owner-scoped con Flyway V12 additiva, GET/PUT con CAS e comandi Forui Pubblica/Scarica. [Flutter CI #42821851199](https://github.com/andreadada/simple-notes/actions/runs/42821851199) **success** (399 test, analisi, Windows EXE/MSIX/recovery e Android JDK17/21), [Backend CI #42821851073](https://github.com/andreadada/simple-notes/actions/runs/42821851073) **success** (test PostgreSQL 17 e bootJar), [Markdown CI #42821851207](https://github.com/andreadada/simple-notes/actions/runs/42821851207) **success**. Flutter `0.31.0+33`; Flyway V12 nel repository, **VPS V10 attestata al 03/11**. Nessun deploy, migrazione live, restore o test hardware. Restano scheduler server, sync automatica regole, OAuth provider, ACL, S3 e restore live. [Stato canonico](docs/CURRENT-STATUS.md).
+> **Stato codice al 10/11/2026:** [PR #62](https://github.com/andreadada/simple-notes/pull/62) **integrata** (`766860c`). Sync foreground delle definizioni task con checkpoint/CAS e risoluzione manuale dei conflitti, Flyway V12 nel repository, Flutter `0.31.0+33`. La CI completa sul commit finale è ancora in corso; nessuna migrazione VPS o collaudo fisico eseguito (V10 attestata il 03/11). Restano automazioni server, reminder multi-device, OAuth provider, ACL, S3 e restore live. [Stato canonico](docs/CURRENT-STATUS.md).
 
 <!-- CURRENT-STATUS-REF -->
 
 **Obiettivo:** Windows 11 + Android offline-first, Google OAuth, Flutter/Forui/Drift + Spring Boot/PostgreSQL su Coolify. Regole UX in [design.md](design.md); deploy sicuro in [P1-RELEASE-BATCH.md](docs/P1-RELEASE-BATCH.md). Le checklist sotto includono traguardi storici: `[x]` significa **codice verificato nella CI o prova specifica**, non distribuzione sul VPS.
 
-## Gate corrente (P2 PR #61 integrata; sync auto PR #62 in verifica, hardware e deploy ancora aperti)
+## Gate corrente (P2 PR #61 integrata; sync auto PR #62 integrata, hardware e deploy ancora aperti)
 
 - [x] P1.7 Android con scheduler inexact, ledger, opt-in e CI verde (PR #6). [ ] Prova fisica Android app chiusa/reboot e controllo permessi; [x] codice packaging MSIX + promemoria Windows integrato (PR #7, CI verde); [ ] test fisici MSIX/identità/dati e firma pubblica.
 - [x] Flyway V10 verificata nella VPS reale il 03/11/2026, 0 migrazioni fallite; [ ] health/capability strict ancora aperti.
@@ -135,7 +135,7 @@
 - [ ] Liste condivise, ruoli, assegnazioni e audit.
 - [ ] Allegati con storage S3 compatibile.
 - [x] Widget Android di navigazione, template personali e analytics locali (PR #56/#57; collaudo fisico del widget da eseguire).
-- [ ] Automazioni (parziale): notifiche PR #59, azioni locali PR #60 e catalogo cloud manuale PR #61 integrati; sync automatica foreground conservativa PR #62 **in verifica**. Restano scheduler server/temporale, dedup distribuita degli eventi e collaudi. [Specifica](docs/P2-AUTO-ACTION-CATALOG.md).
+- [ ] Automazioni (parziale): notifiche PR #59, azioni locali PR #60 e catalogo cloud manuale PR #61 integrati; sync automatica foreground conservativa PR #62 **integrata**. Restano scheduler server/temporale, dedup distribuita degli eventi e collaudi. [Specifica](docs/P2-AUTO-ACTION-CATALOG.md).
 - [ ] Test manuali del widget e del trasferimento modelli JSON tra Windows e Android.
 - [ ] Backup verificato, installer Windows e release Android.
 
@@ -195,7 +195,7 @@ Dettagli e matrice: [docs/ui-design-audit.md](docs/ui-design-audit.md). Aggiorna
 - Tutti i nuovi moduli devono avere error states, migrazioni e test minimi.
 
 ## Edit Timespan
-- 2026-11-10 | feat(p2-auto-action-catalog) | [PR #62](https://github.com/andreadada/simple-notes/pull/62) in verifica: sync foreground delle regole owner-scoped con checkpoint v1, CAS, auto-push/pull e blocco conflitti; pausa editor Forui, test offline; nessuna modifica al backend/V12 o deploy. [Specifica](docs/P2-AUTO-ACTION-CATALOG.md).
+- 2026-11-10 | feat(p2-auto-action-catalog) | [PR #62](https://github.com/andreadada/simple-notes/pull/62) merged `766860c`: sync foreground delle regole owner-scoped con checkpoint v1, CAS, auto-push/pull e blocco conflitti; pausa editor Forui, test offline; nessuna modifica al backend/V12 o deploy. [Specifica](docs/P2-AUTO-ACTION-CATALOG.md).
 - 2026-11-10 | merge(p2-cloud-task-actions) | [PR #61](https://github.com/andreadada/simple-notes/pull/61) merged `bf16cba`: catalogo cloud JWT per owner, Flyway V12, CAS, trasferimento esplicito Forui. [Flutter CI #42821851199](https://github.com/andreadada/simple-notes/actions/runs/42821851199) PASS (399 test, Windows/Android), [Backend CI #42821851073](https://github.com/andreadada/simple-notes/actions/runs/42821851073) PASS (PostgreSQL 17/backend), [Markdown CI #42821851207](https://github.com/andreadada/simple-notes/actions/runs/42821851207) PASS. Nessun job server, deploy, migrazione live o restore. [Contratto](docs/P2-CLOUD-ACTION-CATALOG.md).
 - 2026-11-09 | merge(p2-task-actions) | [PR #60](https://github.com/andreadada/simple-notes/pull/60) merged `e051162`: trigger locali crea/completa, filtro titolo, priorità/tag/lista, editor Forui, singolo upsert/outbox, backup opzionale. [Flutter CI #42714514197](https://github.com/andreadada/simple-notes/actions/runs/42714514197) PASS (392 test, build Windows/Android), [Markdown #42714514223](https://github.com/andreadada/simple-notes/actions/runs/42714514223) PASS. Nessun job server, deploy o restore live. [Contratto](docs/P2-TASK-ACTIONS.md).
 - 2026-11-09 | merge(p2-reminder-automations) | [PR #59](https://github.com/andreadada/simple-notes/pull/59) merged `aa17094`: regole locali owner-scoped, editor Forui, dedup ledger, backup .snb opzionale. [Flutter CI #42701809601](https://github.com/andreadada/simple-notes/actions/runs/42701809601) PASS (377 test, build Windows/Android), [Markdown #42701809467](https://github.com/andreadada/simple-notes/actions/runs/42701809467) PASS. No migrazione, deploy, restore o cloud jobs. [Contratto](docs/P2-REMINDER-AUTOMATIONS.md).

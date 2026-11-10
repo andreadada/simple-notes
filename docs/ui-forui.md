@@ -219,6 +219,6 @@ I comandi **Pubblica cloud** e **Scarica cloud** sono nel flusso Modelli, senza 
 
 La card nota mantiene titolo e corpo **inline**. Un'icona graffetta apre un `NotesDialog` con elenco file e azioni **Aggiungi**, **Apri**, **Elimina**. La cancellazione richiede un secondo dialog Forui esplicito; i file non si incorporano come testo o dati base64 nella nota. In assenza di login, pulsante nascosto; se S3 non configurato, 503 con messaggio non distruttivo. Il dialog non interrompe la sync task/note né crea un nuovo editor. [Contratto](P2-NOTE-ATTACHMENTS.md).
 
-## P2 — Indicatore sync per i modelli personali (PR #65 in verifica)
+## P2 — Indicatore sync per i modelli personali (PR #65 integrata)
 
 La schermata Strumenti → Modelli conserva pulsanti Pubblica/Scarica con dialog Forui di consenso e editor inline. Mostra un testo di stato del sync catalogo (allineato, conflitto, offline, pausa editor, API V13 non disponibile). Mentre la schermata è visibile, nessun download può cambiarne la libreria sotto i controlli di modifica; quando l'utente esce, la riconciliazione riprende. [Specifica](P2-AUTO-TEMPLATE-CATALOG.md).

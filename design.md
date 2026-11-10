@@ -347,6 +347,6 @@ La schermata Modelli mostra **Pubblica cloud** e **Scarica cloud** accanto a Imp
 
 L'azione allegati usa una graffetta discreta per ogni nota, non richiede menu ridondanti e non crea un campo "Rinomina". Contenuto e titolo della nota restano direttamente editabili. Il dialog segue i componenti Forui, mostra filename/dimensione e azioni contestuali, e chiede consenso prima di eliminare un file cloud. Nessun border decorativo attorno alle card; rete/account errati non fanno sparire dati locali. [Dettagli](docs/P2-NOTE-ATTACHMENTS.md).
 
-## P2 — Sincronizzazione dei modelli, UX (PR #65 in verifica)
+## P2 — Sincronizzazione dei modelli, UX (PR #65 integrata)
 
 I modelli editabili non devono essere sostituiti dal cloud mentre l'editor è aperto. Mostrare lo stato di sincronizzazione come testo discreto nella stessa schermata e conservare i pulsanti Pubblica/Scarica con consenso in caso di conflitto. Nessun modale automatico invasivo o campo aggiuntivo per rinominare. Le due copie offline devono sopravvivere al conflitto fino a scelta manuale. [Specifica](docs/P2-AUTO-TEMPLATE-CATALOG.md).

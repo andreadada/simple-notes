@@ -186,6 +186,6 @@ Dopo la normale sync Delta Sync, il client confronta local catalog, checkpoint v
 
 La nuova API degli allegati S3 è distinta dal sync outbox: gli allegati non diventano `sync_change` o `sync_operation`, non sono importati dai backup locali, e non vengono presi in carico dal motore offline. La nota deve già esistere lato backend con stesso owner. Begin/PUT/HEAD+COPY/Complete e signed GET sono azioni esplicite online; i retry non devono rieseguire automaticamente operazioni su un altro account. 503 backend non configurato e 404 nota non sincronizzata sono fail-closed. [Specifica](P2-NOTE-ATTACHMENTS.md).
 
-## P2 — Sync automatica definizioni modello (PR #65 in verifica)
+## P2 — Sync automatica definizioni modello (PR #65 integrata)
 
 `AutoSyncHost` tenta il catalogo V13 **separatamente** dalla coda SQLite, dopo una sync task sana e solo foreground, con checkpoint versione/catalogo locale per owner. La validazione delle revisioni CAS e il three-way match evitano reupload superflui, merge impliciti e perdita di cancellazioni offline. Pausa quando è aperto l'editor Modelli. I task creati da modelli restano normali task/outbox; la sincronizzazione delle **definizioni** non ne crea o elimina alcuno. [Contratto](P2-AUTO-TEMPLATE-CATALOG.md).

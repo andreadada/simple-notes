@@ -134,7 +134,7 @@
 - [ ] Collegamento Google Calendar/Outlook con consenso separato.
 - [ ] Liste condivise, ruoli, assegnazioni e audit.
 - [ ] **Catalogo cloud modelli personali:** scambio manuale con CAS/JWT e Flyway V13 in [PR #63](https://github.com/andreadada/simple-notes/pull/63) integrata su `main`, CI finale da verificare; nessuna sync automatica, deploy o E2E device. [Specifica](docs/P2-CLOUD-TEMPLATES.md).
-- [ ] Allegati con storage S3 compatibile.
+- [ ] **Allegati S3 per note:** implementazione backend V14 e client Forui in [PR #64](https://github.com/andreadada/simple-notes/pull/64) **in verifica**; restano configurazione bucket privata, lifecycle, garbage collection note eliminate, scansione file, offline upload e test fisici. [Contratto](docs/P2-NOTE-ATTACHMENTS.md).
 - [x] Widget Android di navigazione, template personali e analytics locali (PR #56/#57; collaudo fisico del widget da eseguire).
 - [ ] Automazioni (parziale): notifiche PR #59, azioni locali PR #60 e catalogo cloud manuale PR #61 integrati; sync automatica foreground conservativa PR #62 **integrata**. Restano scheduler server/temporale, dedup distribuita degli eventi e collaudi. [Specifica](docs/P2-AUTO-ACTION-CATALOG.md).
 - [ ] Test manuali del widget e del trasferimento modelli JSON tra Windows e Android.

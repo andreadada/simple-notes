@@ -104,3 +104,7 @@ A deploy V12 **esplicitamente autorizzato**, creare regole Windows offline e ver
 ## P2 — Catalogo modelli V13 (PR #63): test fisici rinviati
 
 Solo dopo deploy V13 autorizzato: verificare Windows/Android sullo stesso account, Pubblica e Scarica, conferma/annullamento, sostituzione e ID preservati, conflitto concorrente 409, versione cambiata durante il dialog, 404 backend vecchio, offline, cambio account/logout, limiti 50 modelli/128 KiB, e nessuna nuova operazione task/outbox. Nessun test fisico eseguito in PR. [Contratto](P2-CLOUD-TEMPLATES.md).
+
+## P2 — Allegati S3, controlli hardware differiti (PR #64)
+
+Solo dopo deploy autorizzato Flyway V14 e bucket privato: verificare picker Android/Windows (PDF/PNG/JPEG/TXT), file esatti 1 byte e 10MiB, file >10MiB senza read/upload, annullamento, rete interrotta fra begin/PUT/complete, 409 quota o HEAD mismatch, URL PUT/GET scaduti, 404 nota locale non ancora sincronizzata, cambio account/logout, nota nel cestino, file deletion con conferma e reinstallazione con recupero cloud. Verificare che nessun file o URL firmato compaia in .snb/outbox/log. Validare lifecycle staging, deny public access, backup bucket e cleanup degli orfani. Nessuna prova di dispositivo reale certificata dalla CI. [Specifiche](P2-NOTE-ATTACHMENTS.md).

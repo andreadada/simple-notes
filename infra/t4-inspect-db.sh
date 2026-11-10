@@ -5,12 +5,12 @@ set -euo pipefail
 # Run ON the VPS using the explicitly inspected Simple Notes container.
 : "${DB_CONTAINER:?Set DB_CONTAINER to the Simple Notes PostgreSQL container}"
 EXPECTED_POSTGRES_DB="${EXPECTED_POSTGRES_DB:-simplenotes}"
-# Optional exact-version gate for cumulative V10–V13 releases.
+# Optional exact-version gate for cumulative V10–V14 releases.
 # Empty keeps historical T4 inspections backward-compatible/read-only.
 REQUIRE_FLYWAY_VERSION="${REQUIRE_FLYWAY_VERSION:-}"
 if [[ -n "$REQUIRE_FLYWAY_VERSION" &&
-      ! "$REQUIRE_FLYWAY_VERSION" =~ ^([1-9]|1[0-3])$ ]]; then
-  echo "REFUSED: REQUIRE_FLYWAY_VERSION must be an integer from 1 to 13" >&2
+      ! "$REQUIRE_FLYWAY_VERSION" =~ ^([1-9]|1[0-4])$ ]]; then
+  echo "REFUSED: REQUIRE_FLYWAY_VERSION must be an integer from 1 to 14" >&2
   exit 2
 fi
 command -v docker >/dev/null || { echo "docker is required" >&2; exit 2; }
@@ -39,7 +39,7 @@ names="$(query "SELECT COUNT(*) FROM pg_catalog.pg_class c JOIN pg_catalog.pg_na
 failed="$(query "SELECT COUNT(*) FROM public.flyway_schema_history WHERE NOT success")"
 [[ "$failed" == "0" ]] || { echo "REFUSED: Flyway history has failed migrations" >&2; exit 2; }
 latest="$(query "SELECT COALESCE((SELECT version FROM public.flyway_schema_history WHERE success AND version IS NOT NULL ORDER BY installed_rank DESC LIMIT 1),'unknown')")"
-[[ "$latest" =~ ^[0-9]+$ && "$latest" -ge 1 && "$latest" -le 13 ]] || {
+[[ "$latest" =~ ^[0-9]+$ && "$latest" -ge 1 && "$latest" -le 14 ]] || {
   echo "REFUSED: unknown, unsupported or unexpected Flyway version" >&2; exit 2
 }
 due_columns="$(query "SELECT COUNT(*) FROM information_schema.columns WHERE table_schema='public' AND table_name='task' AND column_name IN ('due_kind','due_date','due_time','due_timezone','due_offset_seconds')")"
@@ -117,6 +117,19 @@ for schema in "12:task_action_catalog" "13:user_template_catalog"; do
   fi
 done
 
+# V14: separate owner-scoped attachment metadata, schema additive.
+attachment_table="$(query "SELECT COUNT(*) FROM information_schema.tables WHERE table_schema='public' AND table_name='note_attachment' AND table_type='BASE TABLE'")"
+attachment_columns="$(query "SELECT COUNT(*) FROM information_schema.columns WHERE table_schema='public' AND table_name='note_attachment' AND column_name IN ('id','owner_id','note_id','object_key','file_name','content_type','size_bytes','state','created_at','pending_expires_at')")"
+if [[ "$latest" -ge 14 ]]; then
+  [[ "$attachment_table" == "1" && "$attachment_columns" == "10" ]] || {
+    echo "REFUSED: Flyway V14 attachment schema incomplete" >&2; exit 2
+  }
+else
+  [[ "$attachment_table" == "0" && "$attachment_columns" == "0" ]] || {
+    echo "REFUSED: attachment schema present without V14 history" >&2; exit 2
+  }
+fi
+
 if [[ -n "$REQUIRE_FLYWAY_VERSION" &&
       "$latest" != "$REQUIRE_FLYWAY_VERSION" ]]; then
   echo "REFUSED: expected Flyway V$REQUIRE_FLYWAY_VERSION, found V$latest" >&2
@@ -127,7 +140,7 @@ printf 'T4_SOURCE_INSPECTION=PASS\n'
 printf 'DB_NAME=%s\nPOSTGRES_MAJOR=%s\nFLYWAY_LATEST=%s\n' \
   "$actual_db" "$major" "$latest"
 printf 'DUE_COLUMNS=%s\nBLOCK_COLUMNS=%s\nBLOCKS_JSON_COLUMNS=%s\nRECURRENCE_COLUMNS=%s\nFAILED_MIGRATIONS=0\n' "$due_columns" "$block_columns" "$blocks_json_columns" "$recurrence_columns"
-printf 'FINGERPRINT_COLUMNS=%s\n' "$fingerprint_columns"
+printf 'FINGERPRINT_COLUMNS=%s\nATTACHMENT_COLUMNS=%s\n' "$fingerprint_columns" "$attachment_columns"
 if [[ -n "$REQUIRE_FLYWAY_VERSION" ]]; then
   printf 'FLYWAY_REQUIREMENT=PASS (V%s)\n' "$REQUIRE_FLYWAY_VERSION"
 fi

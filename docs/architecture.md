@@ -134,3 +134,7 @@ Il client Flutter riconcilia in foreground la preferenza TaskActionStore e il ca
 ## P2 — Catalogo cloud dei modelli (PR #63 integrata)
 
 `UserTemplateCatalogController/Service` persiste definizioni in `user_template_catalog` Flyway V13, con JWT owner e advisory lock PostgreSQL per PUT CAS. La schermata Flutter `TaskTemplatesBoard` usa `UserTemplateCloudApi` su comando esplicito, mantiene i modelli offline in SharedPreferences e richiede conferma per sostituirli con quelli remoti. Il flusso non passa da `/sync`, non crea task e non modifica la coda outbox. [Contratto](P2-CLOUD-TEMPLATES.md).
+
+## P2 — Allegati S3 esterni alla sync delle note (PR #64 in verifica)
+
+Il backend aggiunge `NoteAttachmentController/Service` e tabella `note_attachment` Flyway V14 con owner/nota e stato PENDING/READY. `AttachmentObjectStore` isola storage S3 compatibile da test/HTTP. Con backend non configurato, nessun client o signer S3 viene inizializzato e lo store risponde 503. Gli URL firmati PUT/GET sono temporanei; il server valida il file con HEAD e lo copia da `staging/` a `files/` prima di renderlo visibile. Il client Flutter sceglie un file nativo nella schermata Note, lo invia direttamente al bucket e conferma il commit: non modifica la normale outbox SQLite, backup `.snb` o modulo note. Nessuna coda per allegati offline, né garbage collection automatico di oggetti di note eliminate. [Dettagli](P2-NOTE-ATTACHMENTS.md).

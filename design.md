@@ -342,3 +342,7 @@ Il pannello Forui delle azioni task mostra in testo semplice lo stato sincronizz
 ## P2 — Modelli personali nel cloud (PR #63 integrata)
 
 La schermata Modelli mostra **Pubblica cloud** e **Scarica cloud** accanto a Importa/Esporta. Le modifiche restano locali finché l'utente non sceglie l'operazione. Usare il `NotesDialog` Forui con quantità/revisione e conferma esplicita, senza un nuovo modal di rinomina. 404/409, account errato e revisione superata lasciano invariati i modelli e i task. [Contratto](docs/P2-CLOUD-TEMPLATES.md).
+
+## P2 — Allegati nelle note (PR #64 in verifica)
+
+L'azione allegati usa una graffetta discreta per ogni nota, non richiede menu ridondanti e non crea un campo "Rinomina". Contenuto e titolo della nota restano direttamente editabili. Il dialog segue i componenti Forui, mostra filename/dimensione e azioni contestuali, e chiede consenso prima di eliminare un file cloud. Nessun border decorativo attorno alle card; rete/account errati non fanno sparire dati locali. [Dettagli](docs/P2-NOTE-ATTACHMENTS.md).

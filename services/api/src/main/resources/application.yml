@@ -29,3 +29,9 @@ app:
   jwt:
     issuer: simple-notes-api
     secret-base64: ${APP_JWT_SECRET_BASE64:}
+
+  attachments:
+    enabled: ${APP_ATTACHMENTS_ENABLED:false}
+    bucket: ${APP_ATTACHMENTS_BUCKET:}
+    region: ${APP_ATTACHMENTS_REGION:eu-central-1}
+    endpoint: ${APP_ATTACHMENTS_ENDPOINT:}

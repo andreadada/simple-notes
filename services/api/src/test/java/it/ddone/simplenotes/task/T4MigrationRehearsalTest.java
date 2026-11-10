@@ -104,7 +104,7 @@ class T4MigrationRehearsalTest {
                 postgres.getPassword()).load();
             migrated.migrate();
             migrated.validate();
-            assertEquals("13", migrated.info().current().getVersion().toString());
+            assertEquals("14", migrated.info().current().getVersion().toString());
 
             try (Connection db = DriverManager.getConnection(
                     postgres.getJdbcUrl(), postgres.getUsername(),
@@ -121,6 +121,13 @@ class T4MigrationRehearsalTest {
                 // no historical tasks, notes or outbox rows are migrated.
                 try (PreparedStatement ps = db.prepareStatement(
                     "SELECT COUNT(*) FROM user_template_catalog");
+                     ResultSet rs = ps.executeQuery()) {
+                    assertTrue(rs.next());
+                    assertEquals(0, rs.getLong(1));
+                }
+                // V14 only adds attachment metadata; all existing data is preserved.
+                try (PreparedStatement ps = db.prepareStatement(
+                    "SELECT COUNT(*) FROM note_attachment");
                      ResultSet rs = ps.executeQuery()) {
                     assertTrue(rs.next());
                     assertEquals(0, rs.getLong(1));

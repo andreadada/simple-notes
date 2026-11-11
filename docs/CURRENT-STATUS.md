@@ -1,6 +1,6 @@
 # Stato corrente — Simple Notes
 
-> **Stato aggiornato 11/11/2026:** [PR #69](https://github.com/andreadada/simple-notes/pull/69) backend condivisione VIEWER/Flyway V16 e [PR #70](https://github.com/andreadada/simple-notes/pull/70) sezione Forui Condivise **integrate in `main`**, CI dei branch verdi. [PR #71](https://github.com/andreadada/simple-notes/pull/71) hardening account switching in verifica. **VPS attestata V10 il 03/11**: nessun deploy V11–V16, restore live o E2E dispositivi. [Specifica](P2-LIST-SHARING.md).
+> **Stato aggiornato 11/11/2026:** [PR #69](https://github.com/andreadada/simple-notes/pull/69) backend condivisione VIEWER/Flyway V16 e [PR #70](https://github.com/andreadada/simple-notes/pull/70) sezione Forui Condivise **integrate in `main`**, CI dei branch verdi. [PR #71](https://github.com/andreadada/simple-notes/pull/71) hardening account switching integrata. **VPS attestata V10 il 03/11**: nessun deploy V11–V16, restore live o E2E dispositivi. [Specifica](P2-LIST-SHARING.md).
 
 
 
@@ -14,7 +14,7 @@
 
 | Area | Stato verificato | Gate ancora aperti |
 |---|---|---|
-| `main` | **P0–P1 e incrementi P2 #56–#70 integrati**; Flutter `0.31.0+33`, Drift V8, backend **Flyway V16 nel repository**, UI VIEWER Forui. CI PR #69 Backend/Compose/Markdown e PR #70 Flutter verdi; PR #71 hardening account in revisione. | **P2 aperta**: EDITOR/sync multi-owner, Google/Outlook OAuth, scheduler notifiche server, restore live, S3 reale/retention, test device. **VPS ultima attestazione Flyway V10 (03/11)**, nessun deploy V11–V16 attestato |
+| `main` | **P0–P1 e incrementi P2 #56–#71 integrati**; Flutter `0.31.0+33`, Drift V8, backend **Flyway V16 nel repository**, UI VIEWER Forui, protezione richieste tardive PR #71 e Flutter CI fissata a 3.47.9. CI PR #69 Backend/Compose/Markdown e PR #70 Flutter verdi; PR #71 hardening account integrata (CI nativa post-merge da verificare). | **P2 aperta**: EDITOR/sync multi-owner, Google/Outlook OAuth, scheduler notifiche server, restore live, S3 reale/retention, test device. **VPS ultima attestazione Flyway V10 (03/11)**, nessun deploy V11–V16 attestato |
 | P1.18 integrata (storico) | [PR #19](https://github.com/andreadada/simple-notes/pull/19) merged, Flutter **`0.23.0+25`**, temi chiaro/scuro/sistema, preferenza locale e Sticky | CI verde; test visivi e su dispositivi fisici ancora aperti |
 | CI P2.4B1 | [Flutter #41636993011](https://github.com/andreadada/simple-notes/actions/runs/41636993011) **success**: 204 test, Windows EXE/MSIX, Android JDK17/21; [Markdown #41636993004](https://github.com/andreadada/simple-notes/actions/runs/41636993004) **success** | Nessun restore live, prova picker/share o Windows↔Android su dispositivi reali |
 | CI P2.4A | [Flutter #41562133925](https://github.com/andreadada/simple-notes/actions/runs/41562133925) **success**: 198 test, Windows EXE/MSIX, Android JDK17/21; [Markdown #41561797719](https://github.com/andreadada/simple-notes/actions/runs/41561797719) **success** | Collaudo CSV nativo e Windows↔Android rinviati |
@@ -324,3 +324,7 @@ Integrato su `main` con PR #56: Timeline/Gantt a 14 giorni, filtri avanzati per 
 ## Incremento P2 integrato — Calendario esportabile, modelli utente e widget Android (09/11/2026)
 
 Integrazione PR #57 su `main`: esportazione manuale eventi in ICS, modello utente CRUD per account/dispositivo con chiave hashed e backup .snb retrocompatibile, widget launcher Android senza dati privati. Quattro nuove suite di test dedicate. CI Flutter/Windows/Android e Markdown superate; merge completato. Nessun deploy, modifica alla VPS, migrazione o restore live. [Dettagli](P2-LOCAL-INTEGRATIONS.md).
+
+## Stabilità build Flutter (11/11/2026)
+
+La [PR #71](https://github.com/andreadada/simple-notes/pull/71) blocca `subosito/flutter-action` a **Flutter 3.47.9** nei job analyze/test, Android e Windows. La scelta ripristina una toolchain che aveva prodotto con successo l'eseguibile Windows nella PR #70; una successiva esecuzione con Flutter 3.50.0 aveva fallito in `nativeapi 0.5.10` (`Isolate.create`). Il pin **non** rende compatibile l'app con Flutter 3.50.0: per aggiornare servono una dipendenza compatibile e nuovi test. CI e deploy restano evidenze distinte.

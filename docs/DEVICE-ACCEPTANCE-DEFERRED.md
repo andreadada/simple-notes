@@ -124,3 +124,7 @@ Dopo un rollout esplicitamente autorizzato, con **due account di prova**, verifi
 ## P2 Condivise — switching account (11/11)
 
 Su Windows e Android, dopo deploy autorizzato e con due account fittizi, simulare richieste lente dell'account Alice durante logout/login Bob. Controllare che liste, token e messaggi del primo account non appaiano nel secondo; ripetere con una conferma di revoca aperta. La PR #71 include un test widget sintetico, non un collaudo reale. [Specifica](P2-LIST-SHARING.md).
+
+## Flutter SDK pin per test successivi (11/11)
+
+Per riprodurre la build Windows di GitHub Actions usare Flutter **3.47.9**, non lo stable più recente senza verificarne la compatibilità. Nel run con 3.50.0 la dipendenza transitiva `nativeapi 0.5.10` falliva con `Isolate.create` non disponibile. Aggiornare SDK e dipendenze insieme dopo test EXE/MSIX e APK. [Stato](CURRENT-STATUS.md).

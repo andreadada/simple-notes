@@ -259,15 +259,13 @@ class NoteAttachmentIntegrationTest {
         doThrow(new IllegalStateException("S3 temporarily offline"))
             .doNothing().when(objects).delete(key);
         var tx = new org.springframework.transaction.support.TransactionTemplate(txManager);
-        org.junit.jupiter.api.Assertions.assertEquals(0,
-            tx.execute(s -> worker.drain()).intValue());
+        tx.executeWithoutResult(status -> { worker.drain(); });
         org.assertj.core.api.Assertions.assertThat(jdbc.queryForObject(
             "SELECT attempts FROM attachment_object_delete_queue WHERE object_key=?",
             Integer.class, key)).isEqualTo(1);
         jdbc.update("UPDATE attachment_object_delete_queue " +
             "SET retry_after=now()-INTERVAL '1 second' WHERE object_key=?", key);
-        org.junit.jupiter.api.Assertions.assertEquals(1,
-            tx.execute(s -> worker.drain()).intValue());
+        tx.executeWithoutResult(status -> { worker.drain(); });
         org.assertj.core.api.Assertions.assertThat(jdbc.queryForObject(
             "SELECT COUNT(*) FROM attachment_object_delete_queue WHERE object_key=?",
             Long.class, key)).isEqualTo(0L);

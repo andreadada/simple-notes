@@ -89,6 +89,8 @@ class NoteAttachmentIntegrationTest {
                 java.util.Map.of("Content-Type", "application/pdf")));
         when(objects.inspect(anyString())).thenReturn(
             new AttachmentObjectStore.Metadata(1024L, "application/pdf", "\"etag-1\""));
+        when(objects.readPrefix(anyString(), eq("\"etag-1\""), eq(512)))
+            .thenReturn("%PDF-1.7".getBytes(java.nio.charset.StandardCharsets.US_ASCII));
         when(objects.presignGet(anyString())).thenReturn(
             "https://s3.example/files/read");
 
@@ -180,4 +182,62 @@ class NoteAttachmentIntegrationTest {
             .contentType(MediaType.APPLICATION_JSON).content(REQUEST))
             .andExpect(status().isNotFound());
     }
+    @Test
+    void spoofedPdfIsNeverPromotedOrListed() throws Exception {
+        var alice = user();
+        var note = note(alice);
+        var url = route(note.id);
+        var authorization = auth(alice.id);
+        when(objects.presignPut(anyString(), eq("application/pdf"), eq(1024L)))
+            .thenReturn(new AttachmentObjectStore.Ticket(
+                "https://s3.example/staging/upload", java.util.Map.of()));
+        when(objects.inspect(anyString())).thenReturn(
+            new AttachmentObjectStore.Metadata(1024L, "application/pdf", "\"etag-3\""));
+        when(objects.readPrefix(anyString(), eq("\"etag-3\""), eq(512)))
+            .thenReturn("<html><script>x</script></html>"
+                .getBytes(java.nio.charset.StandardCharsets.US_ASCII));
+        var response = mvc.perform(post(url).header("Authorization", authorization)
+            .contentType(MediaType.APPLICATION_JSON).content(REQUEST))
+            .andExpect(status().isCreated()).andReturn().getResponse()
+            .getContentAsString();
+        var id = UUID.fromString(json.readTree(response).path("id").asText());
+        mvc.perform(post(url + "/" + id + "/complete")
+            .header("Authorization", authorization))
+            .andExpect(status().isConflict());
+        mvc.perform(get(url).header("Authorization", authorization))
+            .andExpect(jsonPath("$.length()").value(0));
+        verify(objects, never()).promote(anyString(), anyString(),
+            anyString(), anyString());
+    }
+
+    @Test
+    void stalePendingMetadataIsPrunedWithoutDeletingS3Objects() {
+        var owner = user();
+        var note = note(owner);
+        var stale = new it.ddone.simplenotes.attachment.NoteAttachmentEntity(
+            owner.id, note.id, "old.pdf", "application/pdf", 10,
+            Instant.now().minusSeconds(2 * 86400));
+        var fresh = new it.ddone.simplenotes.attachment.NoteAttachmentEntity(
+            owner.id, note.id, "new.pdf", "application/pdf", 10,
+            Instant.now());
+        attachments.saveAndFlush(stale);
+        attachments.saveAndFlush(fresh);
+        var maintenance = new it.ddone.simplenotes.attachment.PendingAttachmentMaintenance(
+            attachments);
+        org.springframework.test.util.ReflectionTestUtils.setField(
+            maintenance, "enabled", true);
+        try {
+            org.assertj.core.api.Assertions.assertThat(maintenance.pruneExpired())
+                .isEqualTo(1);
+            org.assertj.core.api.Assertions.assertThat(
+                attachments.findById(stale.id)).isEmpty();
+            org.assertj.core.api.Assertions.assertThat(
+                attachments.findById(fresh.id)).isPresent();
+            verify(objects, never()).delete(anyString());
+        } finally {
+            org.springframework.test.util.ReflectionTestUtils.setField(
+                maintenance, "enabled", false);
+        }
+    }
+
 }

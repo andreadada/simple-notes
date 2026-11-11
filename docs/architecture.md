@@ -1,7 +1,7 @@
 # Simple Notes — Architettura applicativa
 
 <!-- CURRENT-STATUS-REF -->
-> **Stato operativo 11/11/2026:** PR #66–#67 integrate in `main`; backend Flyway **V15 nel repository**, VPS confermata **V10 il 03/11**. CI backend, Compose e Markdown verdi; deploy, S3 reale e test Windows/Android ancora non attestati. [Stato canonico](CURRENT-STATUS.md).
+> **Stato corrente 11/11/2026:** [PR #69](https://github.com/andreadada/simple-notes/pull/69) backend sharing VIEWER Flyway V16 e [#70](https://github.com/andreadada/simple-notes/pull/70) UI Forui integrate in `main`; CI branch verde. PR #71 verifica risposta ritardata su cambio account. VPS Flyway V10 attestata 03/11, nessun deploy/E2E. [Stato canonico](CURRENT-STATUS.md).
 
 > **Cronologia (stato del 02/11 o 31/10/2026):** R1 gate server-first integrato su `main` ([PR #26](https://github.com/andreadada/simple-notes/pull/26), commit [`f19ee8b0`](https://github.com/andreadada/simple-notes/commit/f19ee8b0a5bea2cb2c2231d85b3e8ad10a5233a7); [Compose CI](https://github.com/andreadada/simple-notes/actions/runs/41523319857) **success** con PostgreSQL 17 sintetico, [Markdown](https://github.com/andreadada/simple-notes/actions/runs/41523319860) **success**). Flutter resta `0.29.0+31` e 191 test già attestati. **VPS reale V10, health/capability live, backup recente e collaudo hardware non verificati**; ultimo stato VPS attestato V8. Nessun deploy o intervento su dati. [Stato](CURRENT-STATUS.md) · [R1](RELEASE-V10-READINESS.md).
 
@@ -13,7 +13,7 @@
 | Persistenza client | Drift/SQLite schema **V8**, `app_database.dart`, `local_store.dart` | Offline-first, revisioni remote, owner, tombstone, outbox durevole |
 | Sync | `auto_sync.dart`, `cloud_sync.dart` | Mutazioni idempotenti, delta per cursor, verifica capability, 409 e 426 |
 | API | Spring Boot Java 21/Spring Security, `services/api` | OAuth Google, task/note/liste, sync autorizzata per utente |
-| Server | PostgreSQL 17 + Flyway **V1–V14 nel repo**; Compose/Coolify | Stato cloud condiviso, versioni, migrazioni additive |
+| Server | PostgreSQL 17 + Flyway **V1–V16 nel repo**; Compose/Coolify | Stato cloud condiviso, versioni, migrazioni additive |
 
 ## Modello e migrazioni
 

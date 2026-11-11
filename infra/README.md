@@ -1,5 +1,7 @@
 # Backend — Coolify
 
+> **P2 11/11/2026:** backend collaborazione VIEWER Flyway V16 [#69](https://github.com/andreadada/simple-notes/pull/69) e UI Forui [#70](https://github.com/andreadada/simple-notes/pull/70) integrate, VPS ultima attestazione V10 il 03/11. **Non è stato eseguito il deploy.** [Readiness V16](../docs/RELEASE-V16-READINESS.md).
+
 > **Incremento V15 integrato in `main`:** outbox per DELETE S3 con retry; [gate read-only](../docs/RELEASE-V15-READINESS.md). Nessuna migrazione reale effettuata.
 
 <!-- CURRENT-STATUS-REF -->

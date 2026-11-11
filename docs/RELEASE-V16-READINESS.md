@@ -1,6 +1,6 @@
 # P2 — Readiness Flyway V16, liste condivise read-only
 
-**11 novembre 2026, in revisione.** La VPS risulta attestata a **Flyway V10 il 03/11/2026**. Nessun deploy, migrazione, account di produzione, dato reale o collegamento di condivisione è stato creato.
+**11 novembre 2026, codice integrato su `main` (PR #69), non distribuito.** La VPS risulta attestata a **Flyway V10 il 03/11/2026**. Nessun deploy, migrazione, account di produzione, dato reale o collegamento di condivisione è stato creato.
 
 ## Gate read-only dopo rollout esplicitamente autorizzato
 

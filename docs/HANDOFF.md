@@ -1,5 +1,7 @@
 # Simple Notes — Passaggio di consegne (handoff)
 
+> **11/11/2026, stato principale:** backend VIEWER [#69](https://github.com/andreadada/simple-notes/pull/69) e Forui [#70](https://github.com/andreadada/simple-notes/pull/70) integrati. PR #71 hardening sessione in revisione. VPS Flyway V10 attestata 03/11, repo V16, nessun deploy o collaudo. [Stato](CURRENT-STATUS.md).
+
 > **Stato codice 10/11/2026:** [PR #63](https://github.com/andreadada/simple-notes/pull/63) merged `b9dd67a` (catalogo modelli manuale V13) e [PR #62](https://github.com/andreadada/simple-notes/pull/62) merged `766860c` (auto-sync foreground regole task). Migrazioni Flyway **V13 nel repository**, VPS **V10 attestata il 03/11**: nessun deploy, restore live o E2E hardware. Backend/Compose/Markdown CI della PR #63 verdi; Flutter CI dell'ultimo codice ancora da completare. [Stato canonico](CURRENT-STATUS.md).
 
 <!-- CURRENT-STATUS-REF -->
@@ -523,10 +525,14 @@ Con V14 invariata, aggiunti un range GET condizionato a ETag e controllo firme P
 
 Outbox nel medesimo commit della rimozione dei metadata READY. Worker S3 idempotente con SKIP LOCKED, max 25/ciclo e retry 5 minuti. Non cancella gli allegati delle note in cestino né esegue deploy. [Runbook V15](RELEASE-V15-READINESS.md).
 
-## 11/11/2026 — V16 condivisione VIEWER delle liste (in revisione)
+## 11/11/2026 — V16 condivisione VIEWER delle liste (PR #69 integrata)
 
 API Spring JWT con token invito monouso (SHA-256 nel DB), esplicita accettazione e revoca, snapshot solo della lista accettata in pagine da 50, ruolo `VIEWER`. Flyway V16 additiva, test Testcontainers di isolamento e lifecycle, gate read-only V16. Nessuna UI Flutter né EDITOR o sync cross-owner, nessun deploy. [Specifica](P2-LIST-SHARING.md) · [Stato](CURRENT-STATUS.md).
 
-## 11/11/2026 — UI Forui condivisione VIEWER (in revisione)
+## 11/11/2026 — UI Forui condivisione VIEWER (PR #70 integrata)
 
 Sezione Condivise sotto Strumenti, API HTTP dedicata, JWT confinato all'origine con redirect disabilitati, token monouso solo in POST JSON e copia su azione, verifica owner/account, lettura paginata delle liste ricevute. Nessuna scrittura a SQLite/outbox e nessuna modalità EDITOR. Backend PR #69 integrata; verificare Flutter CI/merge prima di dichiarare il client pronto. [Specifica](P2-LIST-SHARING.md).
+
+## 11/11/2026 — hardening cross-account (PR #71 in verifica)
+
+Tutte le risposte HTTP del pannello Condivise ora devono essere ricontrollate rispetto a ownerId e generazione della richiesta. Cambio account invalida richieste pendenti; test widget simula risposte Alice/Bob fuori ordine. Nessun deploy o modifica ai dati reali. [Contratto](P2-LIST-SHARING.md).

@@ -1,10 +1,10 @@
 # P2 — Condivisione delle liste, prima fase in sola lettura (Flyway V16)
 
-**11 novembre 2026 — incremento in revisione.** [Stato canonico](CURRENT-STATUS.md) · [Matrice P2](P2-DELIVERY-MATRIX.md) · [Readiness V16](RELEASE-V16-READINESS.md).
+**11 novembre 2026 — [PR #69](https://github.com/andreadada/simple-notes/pull/69) backend e [PR #70](https://github.com/andreadada/simple-notes/pull/70) Flutter integrate su `main`, nessun deploy.** [Stato canonico](CURRENT-STATUS.md) · [Matrice P2](P2-DELIVERY-MATRIX.md) · [Readiness V16](RELEASE-V16-READINESS.md).
 
 ## Obiettivo e perimetro
 
-Una lista di attività già sincronizzata può essere condivisa con un'altra persona autenticata, ma solo dopo consenso esplicito. Questa è una **fondazione backend**, non ancora la collaborazione completa della P2: non contiene UI Flutter di invito/accettazione, email automatiche, editing multiutente, notifiche push o condivisione di note.
+Una lista di attività già sincronizzata può essere condivisa con un'altra persona autenticata, ma solo dopo consenso esplicito. La fase VIEWER comprende anche la schermata Flutter **Condivise**, ma non include email automatiche, editing multiutente, notifiche push o condivisione di note.
 
 Ogni lista conserva **un unico proprietario**. Il proprietario può creare e revocare inviti, vedere e rimuovere collaboratori; il destinatario può accettare una chiave una volta, leggere le liste ricevute e abbandonarle. Ruolo unico **VIEWER** (sola lettura): il futuro EDITOR richiederà nuove autorizzazioni, gestione di conflitti e protocollo di sync. **Non** è supportata una modifica di task dal dispositivo del collaboratore.
 
@@ -39,8 +39,8 @@ Il filtro di ogni snapshot usa **sia owner_id sia list_id**, e scarta task soft-
 
 Backend PostgreSQL 17 Testcontainers: JWT necessario, owner-only, token non salvato in chiaro, una sola accettazione, scadenza/revoca, limiti, isolamento fra liste, snapshot paginato, separazione dal normale `/sync`, eliminazione membership. Rehearsal migrazione V6→V16 senza perdita dei record precedenti. Il successo CI **non prova** UI Windows/Android, inoltro token, compatibilità API della VPS, attacchi di rate limiting, inviti phishing e concorrenza live.
 
-Rimangono per P2: UI Forui e passaggio token, eventuali inviti legati a destinatario, ruolo editor, condivisione write-through con consenso/versioni e sync multi-account, alert/reminder condivisi, protezione anti-abuso e collaudo su dispositivi reali.
+Rimangono per P2: eventuali inviti legati a destinatario, ruolo EDITOR, condivisione write-through con consenso/versioni e sync multi-account, alert/reminder condivisi, protezione anti-abuso e collaudo su dispositivi reali.
 
-## Client Flutter/Forui — incremento successivo in revisione
+## Client Flutter/Forui — PR #70 integrata
 
-La sezione **STRUMENTI → Condivise** su Windows/Android rende accessibile la fase VIEWER: codice da incollare in input Forui, token visualizzato solo dopo creazione, comando Copia esplicito, elenco liste ricevute, anteprima task paginata in sola lettura, revoca di inviti/collaboratori e uscita. La UI controlla `boundOwnerId` e l'account Google prima e dopo le richieste, non usa redirects HTTP e non trasferisce alcuna risposta al database locale o all'outbox. A server V10 non disponibile mostra errore esplicito senza alterare il profilo. Il codice è **in revisione**, non va dichiarato rilasciato prima di CI e deploy.
+La sezione **STRUMENTI → Condivise** su Windows/Android rende accessibile la fase VIEWER: codice da incollare in input Forui, token visualizzato solo dopo creazione, comando Copia esplicito, elenco liste ricevute, anteprima task paginata in sola lettura, revoca di inviti/collaboratori e uscita. La UI controlla `boundOwnerId` e l'account Google prima e dopo le richieste, non usa redirects HTTP e non trasferisce alcuna risposta al database locale o all'outbox. A server V10 non disponibile mostra errore esplicito senza alterare il profilo. Il client è integrato e la CI Flutter del branch è verde; **non è stato distribuito sulla VPS né collaudato sui dispositivi reali**. La PR #71 aggiunge test contro risposte tardive dopo un cambio account.

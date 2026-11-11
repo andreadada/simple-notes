@@ -1,6 +1,6 @@
 # P2 — Matrice di consegna e criteri di chiusura
 
-Aggiornato 11 novembre 2026. **CI verde non equivale a deploy Coolify o collaudo su dispositivi reali.**
+Aggiornato 11 novembre 2026. **PR #69/#70 integrate, PR #71 in verifica; CI verde non equivale a deploy Coolify o collaudo su dispositivi reali.**
 
 **Decimo incremento P2 integrato su `main` (`ed45d0e`):** [PR #65](https://github.com/andreadada/simple-notes/pull/65), sync foreground dei modelli utente V13 con checkpoint per account, CAS, risoluzione conflitti manuale e editor lock. Nessuna migrazione o modifiche alla outbox; **Merge e Flutter CI complete** ([run #42887921742](https://github.com/andreadada/simple-notes/actions/runs/42887921742): analyze/test, Windows e Android JDK17/21). [Contratto](P2-AUTO-TEMPLATE-CATALOG.md).
 
@@ -78,10 +78,10 @@ Le statistiche sono calcolate sui dati locali senza telemetria. I modelli produc
 
 Inserimento della chiave privata in outbox PostgreSQL e rimozione dei metadata READY nel medesimo commit, poi worker multiistanza con `SKIP LOCKED`, max 25 oggetti per ciclo e retry 5 minuti. Non cancella automaticamente gli allegati delle note nel cestino; V15 integrata in `main` con CI Backend/Compose/Markdown verdi; deploy ancora da verificare. [Contratto](P2-NOTE-ATTACHMENTS.md) · [Readiness](RELEASE-V15-READINESS.md).
 
-## Incremento V16 in revisione — fondamenta collaborazione liste
+## Incremento V16 integrato — fondamenta collaborazione liste (PR #69)
 
-Una nuova API Spring JWT separata da `/sync` gestisce condivisione **VIEWER** delle liste tramite inviti casuali di 256 bit, token hashati e monouso, scadenza a sette giorni, revoca e accettazione esplicita. La vista di sola lettura espone unicamente task della lista e proprietario previsti dalla membership, massimo 50 elementi per pagina. Due tabelle additive Flyway V16 e capability `sharingReadSchema:1`. **Non contiene ancora UI Flutter, editing EDITOR, notifiche o sync multi-owner**; non segnare collaborazione P2 conclusa. Codice/CI in verifica; nessun deploy. [Specifica](P2-LIST-SHARING.md) · [Gate V16](RELEASE-V16-READINESS.md).
+Una nuova API Spring JWT separata da `/sync` gestisce condivisione **VIEWER** delle liste tramite inviti casuali di 256 bit, token hashati e monouso, scadenza a sette giorni, revoca e accettazione esplicita. La vista di sola lettura espone unicamente task della lista e proprietario previsti dalla membership, massimo 50 elementi per pagina. Due tabelle additive Flyway V16 e capability `sharingReadSchema:1`. **La UI Flutter VIEWER è stata aggiunta dalla PR #70; non comprende editing EDITOR, notifiche o sync multi-owner**; non segnare collaborazione P2 conclusa. Backend integrato con CI verde; nessun deploy. [Specifica](P2-LIST-SHARING.md) · [Gate V16](RELEASE-V16-READINESS.md).
 
-### UI collaborazione VIEWER (in revisione 11/11)
+### UI collaborazione VIEWER (PR #70 integrata su `main`)
 
-Dopo backend [PR #69](https://github.com/andreadada/simple-notes/pull/69) integrato con CI verde, il client Flutter aggiunge sezione Forui **Condivise** e API HTTP JWT per creare/copiare token, accettare, consultare pagine di task, gestire/revocare inviti e membership. **Nessuna sync cross-account, modifica di task ricevuti, storage offline o condivisione EDITOR**. Anche a CI completata sarà necessario aggiornare il backend (V16) e verificare su dispositivi di prova. [Contratto](P2-LIST-SHARING.md).
+Dopo backend [PR #69](https://github.com/andreadada/simple-notes/pull/69) integrato con CI verde, il client Flutter aggiunge sezione Forui **Condivise** e API HTTP JWT per creare/copiare token, accettare, consultare pagine di task, gestire/revocare inviti e membership. **Nessuna sync cross-account, modifica di task ricevuti, storage offline o condivisione EDITOR**. Per usarla occorre ancora distribuire il backend (V16) e verificare su dispositivi di prova. [Contratto](P2-LIST-SHARING.md).

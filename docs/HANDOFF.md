@@ -1,6 +1,6 @@
 # Simple Notes — Passaggio di consegne (handoff)
 
-> **11/11/2026, stato principale:** backend VIEWER [#69](https://github.com/andreadada/simple-notes/pull/69) e Forui [#70](https://github.com/andreadada/simple-notes/pull/70) integrati. PR #71 hardening sessione in revisione. VPS Flyway V10 attestata 03/11, repo V16, nessun deploy o collaudo. [Stato](CURRENT-STATUS.md).
+> **11/11/2026, stato principale:** backend VIEWER [#69](https://github.com/andreadada/simple-notes/pull/69) e Forui [#70](https://github.com/andreadada/simple-notes/pull/70) integrati. PR #71 hardening sessione integrata. VPS Flyway V10 attestata 03/11, repo V16, nessun deploy o collaudo. [Stato](CURRENT-STATUS.md).
 
 > **Stato codice 10/11/2026:** [PR #63](https://github.com/andreadada/simple-notes/pull/63) merged `b9dd67a` (catalogo modelli manuale V13) e [PR #62](https://github.com/andreadada/simple-notes/pull/62) merged `766860c` (auto-sync foreground regole task). Migrazioni Flyway **V13 nel repository**, VPS **V10 attestata il 03/11**: nessun deploy, restore live o E2E hardware. Backend/Compose/Markdown CI della PR #63 verdi; Flutter CI dell'ultimo codice ancora da completare. [Stato canonico](CURRENT-STATUS.md).
 
@@ -533,6 +533,10 @@ API Spring JWT con token invito monouso (SHA-256 nel DB), esplicita accettazione
 
 Sezione Condivise sotto Strumenti, API HTTP dedicata, JWT confinato all'origine con redirect disabilitati, token monouso solo in POST JSON e copia su azione, verifica owner/account, lettura paginata delle liste ricevute. Nessuna scrittura a SQLite/outbox e nessuna modalità EDITOR. Backend PR #69 integrata; verificare Flutter CI/merge prima di dichiarare il client pronto. [Specifica](P2-LIST-SHARING.md).
 
-## 11/11/2026 — hardening cross-account (PR #71 in verifica)
+## 11/11/2026 — hardening cross-account (PR #71 integrata)
 
 Tutte le risposte HTTP del pannello Condivise ora devono essere ricontrollate rispetto a ownerId e generazione della richiesta. Cambio account invalida richieste pendenti; test widget simula risposte Alice/Bob fuori ordine. Nessun deploy o modifica ai dati reali. [Contratto](P2-LIST-SHARING.md).
+
+## 11/11/2026 — Flutter CI riproducibile
+
+La PR #71 imposta Flutter **3.47.9** in tutti e tre i job di `.github/workflows/flutter-ci.yml`. Il run Windows con `stable` **3.50.0** aveva fallito su `nativeapi 0.5.10`: riferimento `Isolate.create` mancante; il build precedente con **3.47.9** era superato. Questo è un pin temporaneo, non una correzione upstream. Quando si aggiorna Flutter, verificare prima nativeapi su Windows con build EXE/MSIX reale. Nessun deploy o aggiornamento del client installato.

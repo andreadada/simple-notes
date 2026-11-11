@@ -1,6 +1,6 @@
 # P2 — Matrice di consegna e criteri di chiusura
 
-Aggiornato 11 novembre 2026. **PR #69/#70 integrate, PR #71 in verifica; CI verde non equivale a deploy Coolify o collaudo su dispositivi reali.**
+Aggiornato 11 novembre 2026. **PR #69/#70 integrate, PR #71 integrata (CI nativa post-merge da verificare); CI verde non equivale a deploy Coolify o collaudo su dispositivi reali.**
 
 **Decimo incremento P2 integrato su `main` (`ed45d0e`):** [PR #65](https://github.com/andreadada/simple-notes/pull/65), sync foreground dei modelli utente V13 con checkpoint per account, CAS, risoluzione conflitti manuale e editor lock. Nessuna migrazione o modifiche alla outbox; **Merge e Flutter CI complete** ([run #42887921742](https://github.com/andreadada/simple-notes/actions/runs/42887921742): analyze/test, Windows e Android JDK17/21). [Contratto](P2-AUTO-TEMPLATE-CATALOG.md).
 

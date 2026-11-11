@@ -1,7 +1,7 @@
 # Simple Notes — UI e design system Forui
 
 <!-- CURRENT-STATUS-REF -->
-> **Stato 11/11/2026:** [PR #69](https://github.com/andreadada/simple-notes/pull/69) backend V16 e [PR #70](https://github.com/andreadada/simple-notes/pull/70) schermata Condivise Forui integrate, CI branch verde. Hardening PR #71 in revisione. VPS V10 attestata, nessun deploy o test hardware. [Stato](CURRENT-STATUS.md).
+> **Stato 11/11/2026:** [PR #69](https://github.com/andreadada/simple-notes/pull/69) backend V16 e [PR #70](https://github.com/andreadada/simple-notes/pull/70) schermata Condivise Forui integrate, CI branch verde. Hardening PR #71 integrata (protezione cambio account). VPS V10 attestata, nessun deploy o test hardware. [Stato](CURRENT-STATUS.md).
 
 > **Cronologia (stato del 02/11 o 31/10/2026):** P2.3D gestione fonti ICS integrata su `main` ([PR #25](https://github.com/andreadada/simple-notes/pull/25), Flutter `0.29.0+31`; [CI Flutter](https://github.com/andreadada/simple-notes/actions/runs/41471546808) success: **191 test**, Windows EXE/MSIX, Android JDK17/21; [Markdown](https://github.com/andreadada/simple-notes/actions/runs/41471546568) success). Nessun deploy, reset, installazione o test hardware. Backend Flyway V10 in repo, VPS ultima attestazione V8. [Stato](CURRENT-STATUS.md) · [Gestione ICS](P2-ICS-SOURCE-MANAGEMENT.md).
 

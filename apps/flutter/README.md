@@ -1,6 +1,6 @@
 # Flutter client — P0 e P1
 
-> **Stato 11/11/2026:** UI VIEWER Condivise [PR #70](https://github.com/andreadada/simple-notes/pull/70) integrata su `main`, backend ACL Flyway V16 [#69](https://github.com/andreadada/simple-notes/pull/69) integrato; Flutter CI branch verde. PR #71 verifica cambio account. VPS ultima attestazione V10 (03/11), **nessun deploy**. [Stato canonico](../../docs/CURRENT-STATUS.md).
+> **Stato 11/11/2026:** UI VIEWER Condivise [PR #70](https://github.com/andreadada/simple-notes/pull/70) integrata su `main`, backend ACL Flyway V16 [#69](https://github.com/andreadada/simple-notes/pull/69) integrato; Flutter CI branch verde. PR #71 integrata: risposte HTTP associate all'account iniziale e scartate dopo un cambio Google. VPS ultima attestazione V10 (03/11), **nessun deploy**. [Stato canonico](../../docs/CURRENT-STATUS.md).
 
 <!-- CURRENT-STATUS-REF -->
 
@@ -266,3 +266,7 @@ AutoSyncHost, durante il normale ciclo di sync foreground (accesso/ripresa/ricon
 ## P2 — Sezione Condivise (PR #70 integrata, 11/11/2026)
 
 Nuova sezione Forui sotto **STRUMENTI**: creare un invito monouso per una lista personale già sincronizzata, copiare il codice solo su azione esplicita, incollare un codice ricevuto, elencare le liste ricevute, vedere task in sola lettura e caricare pagine successive, gestire/revocare collaboratori e inviti, abbandonare una lista ricevuta. Chiamate HTTPS/JWT su API V16 con redirects disabilitati e controllo owner prima/dopo rete. I task ricevuti **non entrano** in Drift, outbox, backup .snb o scheduler dei promemoria; UI non mostra EDITOR. Test del contratto HTTP coprono JWT, token solo in POST body, URL sicuri, 404/409/503 e dati non validi. Non attiva nessuna funzionalità sulla VPS V10 prima di un rilascio autorizzato. [Specifica](../../docs/P2-LIST-SHARING.md).
+
+## SDK Flutter CI fissata (11/11/2026)
+
+Il workflow usa **Flutter 3.47.9** per analisi/test, Android e Windows. Il runner che aveva aggiornato automaticamente a Flutter 3.50.0 ha riscontrato un errore compilando la dipendenza transitoria `nativeapi 0.5.10` (`Isolate.create`); il precedente workflow Windows con 3.47.9 aveva prodotto EXE/MSIX correttamente. **Usare Flutter 3.47.9 anche per build locali riproducibili** finché non si verifica un aggiornamento compatibile della dipendenza. Non pubblicare package di sviluppo non firmati.

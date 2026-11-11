@@ -522,3 +522,7 @@ Con V14 invariata, aggiunti un range GET condizionato a ETag e controllo firme P
 ## 11/11/2026 — Cancellazione durevole S3 V15 (in revisione)
 
 Outbox nel medesimo commit della rimozione dei metadata READY. Worker S3 idempotente con SKIP LOCKED, max 25/ciclo e retry 5 minuti. Non cancella gli allegati delle note in cestino né esegue deploy. [Runbook V15](RELEASE-V15-READINESS.md).
+
+## 11/11/2026 — V16 condivisione VIEWER delle liste (in revisione)
+
+API Spring JWT con token invito monouso (SHA-256 nel DB), esplicita accettazione e revoca, snapshot solo della lista accettata in pagine da 50, ruolo `VIEWER`. Flyway V16 additiva, test Testcontainers di isolamento e lifecycle, gate read-only V16. Nessuna UI Flutter né EDITOR o sync cross-owner, nessun deploy. [Specifica](P2-LIST-SHARING.md) · [Stato](CURRENT-STATUS.md).

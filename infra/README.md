@@ -212,3 +212,7 @@ La migrazione additiva `V13__user_template_catalog.sql` crea il catalogo persona
 ## P2 — S3 e Flyway V14 per allegati note (PR #64 integrata)
 
 Il codice introduce la tabella additiva `note_attachment` e l'object store solo quando `APP_ATTACHMENTS_ENABLED=true`; con default false nessuna credenziale AWS viene caricata. Richiede `APP_ATTACHMENTS_BUCKET`, `APP_ATTACHMENTS_REGION`, eventuale `APP_ATTACHMENTS_ENDPOINT=https://...`, e credenziali dell'SDK gestite in **segreti Coolify** (mai in file o chat). Imporre bucket privato, policy ristretta `staging/*`/`files/*`, lifecycle di eliminazione su staging, backup e cleanup degli orfani. Il futuro `bash infra/release-v14-readiness.sh` con DB_CONTAINER e JWT short-lived verifica **solo in lettura** Flyway V14, capabilities e storage enabled. Non crea bucket, non prova PUT/GET reali e non certifica permessi S3. [Specifica](../docs/P2-NOTE-ATTACHMENTS.md).
+
+## P2 V16 — condivisione VIEWER, gate separato
+
+La migrazione Flyway V16 aggiunge tabelle di inviti e membership senza cambiare gli owner dei task o la sync. Il nuovo [runbook V16](../docs/RELEASE-V16-READINESS.md) è **solo read-only dopo un deploy autorizzato**; non chiedere di lanciare migrazioni, non creare token o account di test sulla VPS per verificare il codice. [Specifica](../docs/P2-LIST-SHARING.md).

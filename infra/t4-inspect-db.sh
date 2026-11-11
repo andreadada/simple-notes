@@ -5,12 +5,12 @@ set -euo pipefail
 # Run ON the VPS using the explicitly inspected Simple Notes container.
 : "${DB_CONTAINER:?Set DB_CONTAINER to the Simple Notes PostgreSQL container}"
 EXPECTED_POSTGRES_DB="${EXPECTED_POSTGRES_DB:-simplenotes}"
-# Optional exact-version gate for cumulative V10–V15 releases.
+# Optional exact-version gate for cumulative V10–V16 releases.
 # Empty keeps historical T4 inspections backward-compatible/read-only.
 REQUIRE_FLYWAY_VERSION="${REQUIRE_FLYWAY_VERSION:-}"
 if [[ -n "$REQUIRE_FLYWAY_VERSION" &&
-      ! "$REQUIRE_FLYWAY_VERSION" =~ ^([1-9]|1[0-5])$ ]]; then
-  echo "REFUSED: REQUIRE_FLYWAY_VERSION must be an integer from 1 to 15" >&2
+      ! "$REQUIRE_FLYWAY_VERSION" =~ ^([1-9]|1[0-6])$ ]]; then
+  echo "REFUSED: REQUIRE_FLYWAY_VERSION must be an integer from 1 to 16" >&2
   exit 2
 fi
 command -v docker >/dev/null || { echo "docker is required" >&2; exit 2; }
@@ -39,7 +39,7 @@ names="$(query "SELECT COUNT(*) FROM pg_catalog.pg_class c JOIN pg_catalog.pg_na
 failed="$(query "SELECT COUNT(*) FROM public.flyway_schema_history WHERE NOT success")"
 [[ "$failed" == "0" ]] || { echo "REFUSED: Flyway history has failed migrations" >&2; exit 2; }
 latest="$(query "SELECT COALESCE((SELECT version FROM public.flyway_schema_history WHERE success AND version IS NOT NULL ORDER BY installed_rank DESC LIMIT 1),'unknown')")"
-[[ "$latest" =~ ^[0-9]+$ && "$latest" -ge 1 && "$latest" -le 15 ]] || {
+[[ "$latest" =~ ^[0-9]+$ && "$latest" -ge 1 && "$latest" -le 16 ]] || {
   echo "REFUSED: unknown, unsupported or unexpected Flyway version" >&2; exit 2
 }
 due_columns="$(query "SELECT COUNT(*) FROM information_schema.columns WHERE table_schema='public' AND table_name='task' AND column_name IN ('due_kind','due_date','due_time','due_timezone','due_offset_seconds')")"
@@ -141,6 +141,24 @@ if [[ "$latest" -ge 15 ]]; then
 else
   [[ "$delete_queue_table" == "0" && "$delete_queue_columns" == "0" ]] || {
     echo "REFUSED: deletion queue present without V15 history" >&2; exit 2
+  }
+fi
+
+
+# Flyway V16: read-only collaboration metadata (no change to sync ledger).
+sharing_invitation_table="$(query "SELECT COUNT(*) FROM information_schema.tables WHERE table_schema='public' AND table_name='list_share_invitation' AND table_type='BASE TABLE'")"
+sharing_invitation_columns="$(query "SELECT COUNT(*) FROM information_schema.columns WHERE table_schema='public' AND table_name='list_share_invitation' AND column_name IN ('id','owner_id','list_id','token_hash','created_at','expires_at','revoked_at','redeemed_by','redeemed_at')")"
+sharing_member_table="$(query "SELECT COUNT(*) FROM information_schema.tables WHERE table_schema='public' AND table_name='list_share_member' AND table_type='BASE TABLE'")"
+sharing_member_columns="$(query "SELECT COUNT(*) FROM information_schema.columns WHERE table_schema='public' AND table_name='list_share_member' AND column_name IN ('list_id','owner_id','member_id','role','accepted_at')")"
+if [[ "$latest" -ge 16 ]]; then
+  [[ "$sharing_invitation_table" == "1" && "$sharing_invitation_columns" == "9" &&
+     "$sharing_member_table" == "1" && "$sharing_member_columns" == "5" ]] || {
+    echo "REFUSED: V16 sharing schema incomplete" >&2; exit 2
+  }
+else
+  [[ "$sharing_invitation_table" == "0" && "$sharing_invitation_columns" == "0" &&
+     "$sharing_member_table" == "0" && "$sharing_member_columns" == "0" ]] || {
+    echo "REFUSED: V16 sharing tables exist without Flyway history" >&2; exit 2
   }
 fi
 

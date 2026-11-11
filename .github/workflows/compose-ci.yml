@@ -14,6 +14,7 @@ on:
       - infra/release-readiness.sh
       - infra/release-v11-readiness.sh
       - infra/release-v15-readiness.sh
+      - infra/release-v16-readiness.sh
       - .github/workflows/compose-ci.yml
   pull_request:
     paths:
@@ -29,6 +30,7 @@ on:
       - infra/release-readiness.sh
       - infra/release-v11-readiness.sh
       - infra/release-v15-readiness.sh
+      - infra/release-v16-readiness.sh
   workflow_dispatch:
 
 concurrency:
@@ -43,7 +45,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Validate backup script syntax (no Docker operations)
-        run: bash -n infra/backup-postgres.sh infra/verify-restore.sh infra/t4-preflight.sh infra/t4-check-api.sh infra/t4-inspect-db.sh infra/release-readiness.sh infra/release-v11-readiness.sh infra/release-v15-readiness.sh
+        run: bash -n infra/backup-postgres.sh infra/verify-restore.sh infra/t4-preflight.sh infra/t4-check-api.sh infra/t4-inspect-db.sh infra/release-readiness.sh infra/release-v11-readiness.sh infra/release-v15-readiness.sh infra/release-v16-readiness.sh
       - name: Unit-test strict release capability contract offline
         run: python3 -m unittest discover -s infra -p 'test_release_capabilities.py' -v
       - name: Validate build Compose without runtime secrets

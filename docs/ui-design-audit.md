@@ -1,7 +1,7 @@
 # Audit applicazione di design.md — UI condivisa Flutter
 
 <!-- CURRENT-STATUS-REF -->
-> **Stato codice 10/11/2026:** [PR #64](https://github.com/andreadada/simple-notes/pull/64) merged `5ae2bd3`: allegati note privati S3 opt-in, Flyway V14 nel repository; backend e test Flutter verdi, build native post-merge in verifica. VPS V10 attestata al 03/11, nessun deploy o collaudo hardware. [Stato canonico](CURRENT-STATUS.md).
+> **Stato corrente 11/11/2026:** PR #66/#67 integrate; Flyway V15 solo nel repository, VPS V10 attestata il 03/11. Collaudi hardware e deploy ancora aperti. Gli incrementi precedenti descritti sotto sono cronologia; prevale [CURRENT-STATUS](CURRENT-STATUS.md).
 
 > **Cronologia (stato del 02/11 o 31/10/2026):** P2.3D gestione fonti ICS integrata su `main` ([PR #25](https://github.com/andreadada/simple-notes/pull/25), Flutter `0.29.0+31`; [CI Flutter](https://github.com/andreadada/simple-notes/actions/runs/41471546808) success: **191 test**, Windows EXE/MSIX, Android JDK17/21; [Markdown](https://github.com/andreadada/simple-notes/actions/runs/41471546568) success). Nessun deploy, reset, installazione o test hardware. Backend Flyway V10 in repo, VPS ultima attestazione V8. [Stato](CURRENT-STATUS.md) · [Gestione ICS](P2-ICS-SOURCE-MANAGEMENT.md).
 

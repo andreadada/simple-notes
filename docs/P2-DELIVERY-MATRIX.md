@@ -1,8 +1,8 @@
 # P2 — Matrice di consegna e criteri di chiusura
 
-Aggiornato 10 novembre 2026. **CI verde non equivale a deploy Coolify o collaudo su dispositivi reali.**
+Aggiornato 11 novembre 2026. **CI verde non equivale a deploy Coolify o collaudo su dispositivi reali.**
 
-**Decimo incremento P2 integrato su `main` (`ed45d0e`):** [PR #65](https://github.com/andreadada/simple-notes/pull/65), sync foreground dei modelli utente V13 con checkpoint per account, CAS, risoluzione conflitti manuale e editor lock. Nessuna migrazione o modifiche alla outbox; **Merge verificato, CI Flutter sull'ultimo commit main [#42887921742](https://github.com/andreadada/simple-notes/actions/runs/42887921742) **success** (analyze/test, Windows, Android JDK17/21).**. [Contratto](P2-AUTO-TEMPLATE-CATALOG.md).
+**Decimo incremento P2 integrato su `main` (`ed45d0e`):** [PR #65](https://github.com/andreadada/simple-notes/pull/65), sync foreground dei modelli utente V13 con checkpoint per account, CAS, risoluzione conflitti manuale e editor lock. Nessuna migrazione o modifiche alla outbox; **Merge e Flutter CI complete** ([run #42887921742](https://github.com/andreadada/simple-notes/actions/runs/42887921742): analyze/test, Windows e Android JDK17/21). [Contratto](P2-AUTO-TEMPLATE-CATALOG.md).
 
 **Nono incremento P2 integrato su `main` (`5ae2bd3`):** [PR #64](https://github.com/andreadada/simple-notes/pull/64) porta API allegati JWT per note con presigned URL PUT/GET, HEAD/COPY e delete, V14 additiva, UI Forui e test. Bucket non configurato; **nessun deploy o rilascio**, backend CI e Flutter analyze/test verdi; build native e post-merge verdi. [Contratto](P2-NOTE-ATTACHMENTS.md).
 
@@ -56,7 +56,7 @@ Le statistiche sono calcolate sui dati locali senza telemetria. I modelli produc
 | Allegati S3 | **Parziale in PR #64**: API owner-scoped V14, signed URL PUT/GET, quote, verifica HEAD/COPY, picker/CRUD Forui | Restano bucket/lifecycle reali, file scan, cancellazione oggetti di note eliminate, coda offline, E2E fisiche |
 | Widget Android | Widget nativo Oggi/Inbox/Nuova attività compilato (Java 17/21); launcher/cold-start/logout su dispositivo fisico non verificati |
 | Automazioni configurabili | **Parziale:** notifiche PR #59, azioni locali PR #60, catalogo cloud PR #61 integrati; sync conservativa foreground PR #62 integrata. Restano scheduler server, dedup multi-device, gestione manuale dei conflitti, delivery affidabile. |
-| Release | VPS V11–V14 (V14 solo nel codice), OAuth Android, upgrade Windows, firma, backup/offsite, E2E Windows↔Android e controlli reali |
+| Release | VPS V11–V15 (V15 solo nel codice), OAuth Android, upgrade Windows, firma, backup/offsite, E2E Windows↔Android e controlli reali |
 
 ## Criteri per dichiarare P2 completata
 
@@ -74,6 +74,6 @@ Le statistiche sono calcolate sui dati locali senza telemetria. I modelli produc
 - Widget Android launcher: apri Oggi, Inbox, nuova attività via MainActivity/MethodChannel, senza memorizzare/esporre contenuti. Non è un widget che mostra task, né prova hardware completata.
 - Resta **non implementato nel batch #57**: collegamento OAuth automatico Google/Outlook, collaborazione ACL, allegati S3, automazioni configurabili e restore live. La successiva PR #59 copre soltanto regole di notifica locali. Il collaudo fisico del widget Android resta **non eseguito**. [Contratto](P2-LOCAL-INTEGRATIONS.md).
 
-## Incremento V15 — cancellazione fisica S3 affidabile (in revisione)
+## Incremento V15 — cancellazione fisica S3 affidabile (PR #67 integrata)
 
-Inserimento della chiave privata in outbox PostgreSQL e rimozione dei metadata READY nel medesimo commit, poi worker multiistanza con `SKIP LOCKED`, max 25 oggetti per ciclo e retry 5 minuti. Non cancella automaticamente gli allegati delle note nel cestino; V15, CI e deploy da verificare separatamente. [Contratto](P2-NOTE-ATTACHMENTS.md) · [Readiness](RELEASE-V15-READINESS.md).
+Inserimento della chiave privata in outbox PostgreSQL e rimozione dei metadata READY nel medesimo commit, poi worker multiistanza con `SKIP LOCKED`, max 25 oggetti per ciclo e retry 5 minuti. Non cancella automaticamente gli allegati delle note nel cestino; V15 integrata in `main` con CI Backend/Compose/Markdown verdi; deploy ancora da verificare. [Contratto](P2-NOTE-ATTACHMENTS.md) · [Readiness](RELEASE-V15-READINESS.md).

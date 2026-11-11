@@ -526,3 +526,7 @@ Outbox nel medesimo commit della rimozione dei metadata READY. Worker S3 idempot
 ## 11/11/2026 — V16 condivisione VIEWER delle liste (in revisione)
 
 API Spring JWT con token invito monouso (SHA-256 nel DB), esplicita accettazione e revoca, snapshot solo della lista accettata in pagine da 50, ruolo `VIEWER`. Flyway V16 additiva, test Testcontainers di isolamento e lifecycle, gate read-only V16. Nessuna UI Flutter né EDITOR o sync cross-owner, nessun deploy. [Specifica](P2-LIST-SHARING.md) · [Stato](CURRENT-STATUS.md).
+
+## 11/11/2026 — UI Forui condivisione VIEWER (in revisione)
+
+Sezione Condivise sotto Strumenti, API HTTP dedicata, JWT confinato all'origine con redirect disabilitati, token monouso solo in POST JSON e copia su azione, verifica owner/account, lettura paginata delle liste ricevute. Nessuna scrittura a SQLite/outbox e nessuna modalità EDITOR. Backend PR #69 integrata; verificare Flutter CI/merge prima di dichiarare il client pronto. [Specifica](P2-LIST-SHARING.md).

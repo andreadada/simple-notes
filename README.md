@@ -1,5 +1,7 @@
 # Simple Notes
 
+> **11/11/2026 — Flutter collaborazione in revisione:** dopo [PR #69](https://github.com/andreadada/simple-notes/pull/69) (backend ACL V16 integrato), una nuova schermata Forui **Condivise** permette l'invio di token monouso, l'accettazione, la revoca e la consultazione read-only. Client e test in CI; nessun deploy, VPS ancora V10. [Specifica](docs/P2-LIST-SHARING.md).
+
 > **P2, 11/11/2026 — V16 in revisione:** condivisione di liste in **sola lettura** con inviti monouso e ACL per account. Backend e test in verifica; la UI di collaborazione e il ruolo EDITOR non sono ancora disponibili. Nessuna migrazione VPS V10. [Specifica](docs/P2-LIST-SHARING.md).
 
 > **Stato verificato 11/11/2026:** [PR #66](https://github.com/andreadada/simple-notes/pull/66) e [#67](https://github.com/andreadada/simple-notes/pull/67) integrate su `main`, backend/Compose/Markdown CI verdi. Il repository contiene Flyway **V15** (coda DELETE S3), la VPS è attestata **V10 al 03/11**. Nessun deploy o collaudo hardware. [Readiness V15](docs/RELEASE-V15-READINESS.md).

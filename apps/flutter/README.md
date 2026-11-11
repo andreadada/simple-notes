@@ -262,3 +262,7 @@ AutoSyncHost, durante il normale ciclo di sync foreground (accesso/ripresa/ricon
 ## P2 — Modelli personali in sync foreground (PR #65 integrata)
 
 `UserTemplateCatalogMirror` confronta preferenza template, cloud V13 e checkpoint per owner. `AutoSyncHost` richiama la riconciliazione a seguito della sync task e nei risvegli foreground, usando `userTemplatesEditorVisibleProvider` per sospendere il download mentre l'editor è visibile; quando l'utente conferma Pubblica/Scarica, l'anchor viene aggiornato con la versione riconosciuta. `UserTemplateAutoSyncState` espone una stringa di stato nel pannello Forui. I modelli rimangono definizioni: task/outbox non cambiano per la riconciliazione. [Specifica](../../docs/P2-AUTO-TEMPLATE-CATALOG.md).
+
+## P2 — Sezione Condivise (in revisione 11/11/2026)
+
+Nuova sezione Forui sotto **STRUMENTI**: creare un invito monouso per una lista personale già sincronizzata, copiare il codice solo su azione esplicita, incollare un codice ricevuto, elencare le liste ricevute, vedere task in sola lettura e caricare pagine successive, gestire/revocare collaboratori e inviti, abbandonare una lista ricevuta. Chiamate HTTPS/JWT su API V16 con redirects disabilitati e controllo owner prima/dopo rete. I task ricevuti **non entrano** in Drift, outbox, backup .snb o scheduler dei promemoria; UI non mostra EDITOR. Test del contratto HTTP coprono JWT, token solo in POST body, URL sicuri, 404/409/503 e dati non validi. Non attiva nessuna funzionalità sulla VPS V10 prima di un rilascio autorizzato. [Specifica](../../docs/P2-LIST-SHARING.md).

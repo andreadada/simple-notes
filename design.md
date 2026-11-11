@@ -1,5 +1,7 @@
 # Simple Notes — Design & Product Specification
 
+> **11/11/2026 — Flutter collaborazione in revisione:** dopo [PR #69](https://github.com/andreadada/simple-notes/pull/69) (backend ACL V16 integrato), una nuova schermata Forui **Condivise** permette l'invio di token monouso, l'accettazione, la revoca e la consultazione read-only. Client e test in CI; nessun deploy, VPS ancora V10. [Specifica](docs/P2-LIST-SHARING.md).
+
 > **Stato operativo 11/11/2026:** PR #66–#67 integrate in `main`; backend Flyway **V15 nel repository**, VPS confermata **V10 il 03/11**. CI backend, Compose e Markdown verdi; deploy, S3 reale e test Windows/Android ancora non attestati. [Stato canonico](docs/CURRENT-STATUS.md).
 
 <!-- CURRENT-STATUS-REF -->

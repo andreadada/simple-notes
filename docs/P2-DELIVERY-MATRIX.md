@@ -81,3 +81,7 @@ Inserimento della chiave privata in outbox PostgreSQL e rimozione dei metadata R
 ## Incremento V16 in revisione — fondamenta collaborazione liste
 
 Una nuova API Spring JWT separata da `/sync` gestisce condivisione **VIEWER** delle liste tramite inviti casuali di 256 bit, token hashati e monouso, scadenza a sette giorni, revoca e accettazione esplicita. La vista di sola lettura espone unicamente task della lista e proprietario previsti dalla membership, massimo 50 elementi per pagina. Due tabelle additive Flyway V16 e capability `sharingReadSchema:1`. **Non contiene ancora UI Flutter, editing EDITOR, notifiche o sync multi-owner**; non segnare collaborazione P2 conclusa. Codice/CI in verifica; nessun deploy. [Specifica](P2-LIST-SHARING.md) · [Gate V16](RELEASE-V16-READINESS.md).
+
+### UI collaborazione VIEWER (in revisione 11/11)
+
+Dopo backend [PR #69](https://github.com/andreadada/simple-notes/pull/69) integrato con CI verde, il client Flutter aggiunge sezione Forui **Condivise** e API HTTP JWT per creare/copiare token, accettare, consultare pagine di task, gestire/revocare inviti e membership. **Nessuna sync cross-account, modifica di task ricevuti, storage offline o condivisione EDITOR**. Anche a CI completata sarà necessario aggiornare il backend (V16) e verificare su dispositivi di prova. [Contratto](P2-LIST-SHARING.md).

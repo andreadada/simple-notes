@@ -1,6 +1,8 @@
 # Stato corrente — Simple Notes
 
-> **11/11/2026, incremento V16 in revisione:** API backend di condivisione **read-only** con inviti one-time, accettazione e revoca ACL per liste, paginazione e Flyway V16. Non è collaborazione completa: UI Flutter/editor multiutente non sviluppati. Lo stato `main` della PR #68 resta l'ultimo merge verificato; nessuna migrazione sulla VPS V10. [Specifica](P2-LIST-SHARING.md) · [Readiness](RELEASE-V16-READINESS.md).
+> **Nuovo incremento Flutter in revisione (11/11):** sezione Condivise con gestione inviti/membri, copia token e task ricevuti in sola lettura. Test HTTP e build native da verificare; nessun deploy. [Specifica](P2-LIST-SHARING.md).
+
+> **11/11/2026, backend V16 integrato con [PR #69](https://github.com/andreadada/simple-notes/pull/69), commit `d399252`:** API backend di condivisione **read-only** con inviti one-time, accettazione e revoca ACL per liste, paginazione e Flyway V16. Il client Forui è in revisione. Non è collaborazione completa: UI Flutter/editor multiutente non sviluppati. La CI Backend/Compose/Markdown della PR #69 è verde; nessuna migrazione sulla VPS V10. [Specifica](P2-LIST-SHARING.md) · [Readiness](RELEASE-V16-READINESS.md).
 
 
 > **11/11/2026, main `66d7c80`:** [PR #66](https://github.com/andreadada/simple-notes/pull/66) e [PR #67](https://github.com/andreadada/simple-notes/pull/67) integrate, con Backend/Compose/Markdown CI superate ([Backend](https://github.com/andreadada/simple-notes/actions/runs/43069087553), [Compose](https://github.com/andreadada/simple-notes/actions/runs/43069087531), [Markdown](https://github.com/andreadada/simple-notes/actions/runs/43069087637)). Backend Flyway **V15 nel codice**, VPS **V10 attestata il 03/11**, nessun deploy o dispositivo E2E. [Readiness V15](RELEASE-V15-READINESS.md).

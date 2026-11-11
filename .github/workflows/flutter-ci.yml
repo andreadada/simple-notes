@@ -30,6 +30,9 @@ jobs:
       - uses: subosito/flutter-action@v2
         with:
           channel: stable
+          # Pinned: 3.50.0 currently breaks nativeapi 0.5.10 Windows build.
+          # Keep all 3 jobs on the last verified SDK until dependency is fixed.
+          flutter-version: '3.47.9'
           cache: true
       - name: Validate production reset script syntax only
         run: bash -n infra/reset-test-workspace.sh
@@ -81,6 +84,9 @@ jobs:
       - uses: subosito/flutter-action@v2
         with:
           channel: stable
+          # Pinned: 3.50.0 currently breaks nativeapi 0.5.10 Windows build.
+          # Keep all 3 jobs on the last verified SDK until dependency is fixed.
+          flutter-version: '3.47.9'
           cache: true
       - name: Generate Android scaffold
         working-directory: apps/flutter
@@ -114,6 +120,9 @@ jobs:
       - uses: subosito/flutter-action@v2
         with:
           channel: stable
+          # Pinned: 3.50.0 currently breaks nativeapi 0.5.10 Windows build.
+          # Keep all 3 jobs on the last verified SDK until dependency is fixed.
+          flutter-version: '3.47.9'
       - name: Validate T4.2 build tool (no personal credentials)
         shell: pwsh
         run: |

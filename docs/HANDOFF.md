@@ -518,3 +518,7 @@ Il client Flutter prova riconciliazione conservativa foreground delle definizion
 ## 11/11/2026 — Hardening allegati P2 (codice in revisione)
 
 Con V14 invariata, aggiunti un range GET condizionato a ETag e controllo firme PNG/JPEG/PDF/TXT prima della promozione S3, con HTTP 409 su mismatch e test; manutenzione schedulata dei soli metadata PENDING scaduti da oltre 24 ore, mai cancellazione degli oggetti S3 o di READY. Rimangono obbligatori lifecycle privato sul bucket, antivirus esterno, deploy e test di dispositivi. Vedere [P2-NOTE-ATTACHMENTS](P2-NOTE-ATTACHMENTS.md).
+
+## 11/11/2026 — Cancellazione durevole S3 V15 (in revisione)
+
+Outbox nel medesimo commit della rimozione dei metadata READY. Worker S3 idempotente con SKIP LOCKED, max 25/ciclo e retry 5 minuti. Non cancella gli allegati delle note in cestino né esegue deploy. [Runbook V15](RELEASE-V15-READINESS.md).

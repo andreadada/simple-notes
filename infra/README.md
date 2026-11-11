@@ -1,5 +1,7 @@
 # Backend — Coolify
 
+> **11/11/2026:** V15 in revisione con coda DELETE S3 e [gate read-only V15](../docs/RELEASE-V15-READINESS.md); nessun deploy, VPS attestata V10.
+
 <!-- CURRENT-STATUS-REF -->
 > **Stato codice 10/11/2026:** [PR #64](https://github.com/andreadada/simple-notes/pull/64) merged `5ae2bd3`: Flyway V14 per allegati privati S3 opt-in, backend e test Flutter verdi, build native post-merge ancora da verificare. VPS Flyway **V10 attestata il 03/11**; nessun deploy o bucket configurato. [Stato canonico](../docs/CURRENT-STATUS.md).
 

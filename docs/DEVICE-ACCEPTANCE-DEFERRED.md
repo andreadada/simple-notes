@@ -112,3 +112,7 @@ Solo dopo deploy autorizzato Flyway V14 e bucket privato: verificare picker Andr
 ## P2 — Auto-sync modelli Windows/Android (PR #65)
 
 Su due installazioni loggate sullo stesso owner: creare/modificare/eliminare modelli su A, uscire dal pannello, verificare pubblicazione V13; su B avviare o tornare foreground per download. Eseguire divergenze offline e verificare che l'UI segnali conflitto senza eliminare copie; provare risoluzione manuale Pubblica/Scarica, rientro in pannello Modelli, account switch, backend V10 senza endpoint, riavvio, JSON corrotto, .snb precedente e Task/outbox invariati. Solo al termine verificare assenza di doppie pubblicazioni. Nessun collaudo device eseguito dalla CI. [Contratto](P2-AUTO-TEMPLATE-CATALOG.md).
+
+## P2 V15 — cancellazione S3: prove fisiche differite
+
+Dopo deploy autorizzato in un bucket privato di prova: eliminazione READY e verifica della coda, interruzione S3 e retry, crash fra DELETE e commit, due istanze concorrenti, scadenza URL firmati già emessi, controllo owner, isolamento e quota. Nessuna verifica reale è attestata dalla sola CI. [Gate V15](RELEASE-V15-READINESS.md).

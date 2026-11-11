@@ -21,13 +21,16 @@ public class NoteAttachmentService {
     private final NoteRepository notes;
     private final AttachmentObjectStore objects;
     private final SyncService sync;
+    private final AttachmentDeletionQueue deletionQueue;
 
     public NoteAttachmentService(NoteAttachmentRepository attachments,
-            NoteRepository notes, AttachmentObjectStore objects, SyncService sync) {
+            NoteRepository notes, AttachmentObjectStore objects, SyncService sync,
+            AttachmentDeletionQueue deletionQueue) {
         this.attachments = attachments;
         this.notes = notes;
         this.objects = objects;
         this.sync = sync;
+        this.deletionQueue = deletionQueue;
     }
 
     private void ownedNote(UUID owner, UUID note) {
@@ -119,9 +122,12 @@ public class NoteAttachmentService {
         ownedNote(owner, note);
         var attachment = find(owner, note, id);
         if ("READY".equals(attachment.state)) {
-            objects.delete(attachment.objectKey);
+            // Queue in the SAME database transaction as metadata removal.
+            // Never delete S3 before the database commit: a rollback must
+            // leave a readable object rather than a broken READY record.
+            deletionQueue.enqueue(owner, attachment.objectKey);
         }
-        attachments.delete(attachment);
+        attachments.deleteAndFlush(attachment);
     }
 
     private NoteAttachmentEntity find(UUID owner, UUID note, UUID id) {

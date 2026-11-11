@@ -5,12 +5,12 @@ set -euo pipefail
 # Run ON the VPS using the explicitly inspected Simple Notes container.
 : "${DB_CONTAINER:?Set DB_CONTAINER to the Simple Notes PostgreSQL container}"
 EXPECTED_POSTGRES_DB="${EXPECTED_POSTGRES_DB:-simplenotes}"
-# Optional exact-version gate for cumulative V10–V14 releases.
+# Optional exact-version gate for cumulative V10–V15 releases.
 # Empty keeps historical T4 inspections backward-compatible/read-only.
 REQUIRE_FLYWAY_VERSION="${REQUIRE_FLYWAY_VERSION:-}"
 if [[ -n "$REQUIRE_FLYWAY_VERSION" &&
-      ! "$REQUIRE_FLYWAY_VERSION" =~ ^([1-9]|1[0-4])$ ]]; then
-  echo "REFUSED: REQUIRE_FLYWAY_VERSION must be an integer from 1 to 14" >&2
+      ! "$REQUIRE_FLYWAY_VERSION" =~ ^([1-9]|1[0-5])$ ]]; then
+  echo "REFUSED: REQUIRE_FLYWAY_VERSION must be an integer from 1 to 15" >&2
   exit 2
 fi
 command -v docker >/dev/null || { echo "docker is required" >&2; exit 2; }
@@ -39,7 +39,7 @@ names="$(query "SELECT COUNT(*) FROM pg_catalog.pg_class c JOIN pg_catalog.pg_na
 failed="$(query "SELECT COUNT(*) FROM public.flyway_schema_history WHERE NOT success")"
 [[ "$failed" == "0" ]] || { echo "REFUSED: Flyway history has failed migrations" >&2; exit 2; }
 latest="$(query "SELECT COALESCE((SELECT version FROM public.flyway_schema_history WHERE success AND version IS NOT NULL ORDER BY installed_rank DESC LIMIT 1),'unknown')")"
-[[ "$latest" =~ ^[0-9]+$ && "$latest" -ge 1 && "$latest" -le 14 ]] || {
+[[ "$latest" =~ ^[0-9]+$ && "$latest" -ge 1 && "$latest" -le 15 ]] || {
   echo "REFUSED: unknown, unsupported or unexpected Flyway version" >&2; exit 2
 }
 due_columns="$(query "SELECT COUNT(*) FROM information_schema.columns WHERE table_schema='public' AND table_name='task' AND column_name IN ('due_kind','due_date','due_time','due_timezone','due_offset_seconds')")"
@@ -130,6 +130,20 @@ else
   }
 fi
 
+
+# Flyway V15 adds a durable deletion outbox; no real rows are read.
+delete_queue_table="$(query "SELECT COUNT(*) FROM information_schema.tables WHERE table_schema='public' AND table_name='attachment_object_delete_queue' AND table_type='BASE TABLE'")"
+delete_queue_columns="$(query "SELECT COUNT(*) FROM information_schema.columns WHERE table_schema='public' AND table_name='attachment_object_delete_queue' AND column_name IN ('object_key','owner_id','queued_at','retry_after','attempts')")"
+if [[ "$latest" -ge 15 ]]; then
+  [[ "$delete_queue_table" == "1" && "$delete_queue_columns" == "5" ]] || {
+    echo "REFUSED: Flyway V15 attachment deletion queue incomplete" >&2; exit 2
+  }
+else
+  [[ "$delete_queue_table" == "0" && "$delete_queue_columns" == "0" ]] || {
+    echo "REFUSED: deletion queue present without V15 history" >&2; exit 2
+  }
+fi
+
 if [[ -n "$REQUIRE_FLYWAY_VERSION" &&
       "$latest" != "$REQUIRE_FLYWAY_VERSION" ]]; then
   echo "REFUSED: expected Flyway V$REQUIRE_FLYWAY_VERSION, found V$latest" >&2
@@ -140,7 +154,7 @@ printf 'T4_SOURCE_INSPECTION=PASS\n'
 printf 'DB_NAME=%s\nPOSTGRES_MAJOR=%s\nFLYWAY_LATEST=%s\n' \
   "$actual_db" "$major" "$latest"
 printf 'DUE_COLUMNS=%s\nBLOCK_COLUMNS=%s\nBLOCKS_JSON_COLUMNS=%s\nRECURRENCE_COLUMNS=%s\nFAILED_MIGRATIONS=0\n' "$due_columns" "$block_columns" "$blocks_json_columns" "$recurrence_columns"
-printf 'FINGERPRINT_COLUMNS=%s\nATTACHMENT_COLUMNS=%s\n' "$fingerprint_columns" "$attachment_columns"
+printf 'FINGERPRINT_COLUMNS=%s\nATTACHMENT_COLUMNS=%s\nDELETE_QUEUE_COLUMNS=%s\n' "$fingerprint_columns" "$attachment_columns" "$delete_queue_columns"
 if [[ -n "$REQUIRE_FLYWAY_VERSION" ]]; then
   printf 'FLYWAY_REQUIREMENT=PASS (V%s)\n' "$REQUIRE_FLYWAY_VERSION"
 fi

@@ -73,3 +73,7 @@ Le statistiche sono calcolate sui dati locali senza telemetria. I modelli produc
 - Modelli utente in SharedPreferences per owner: CRUD e definizioni backup compatibili con vecchi archivi .snb v1; applicazione del modello come task SQLite/outbox. Definizioni locali al dispositivo, non condivise in cloud.
 - Widget Android launcher: apri Oggi, Inbox, nuova attività via MainActivity/MethodChannel, senza memorizzare/esporre contenuti. Non è un widget che mostra task, né prova hardware completata.
 - Resta **non implementato nel batch #57**: collegamento OAuth automatico Google/Outlook, collaborazione ACL, allegati S3, automazioni configurabili e restore live. La successiva PR #59 copre soltanto regole di notifica locali. Il collaudo fisico del widget Android resta **non eseguito**. [Contratto](P2-LOCAL-INTEGRATIONS.md).
+
+## Incremento V15 — cancellazione fisica S3 affidabile (in revisione)
+
+Inserimento della chiave privata in outbox PostgreSQL e rimozione dei metadata READY nel medesimo commit, poi worker multiistanza con `SKIP LOCKED`, max 25 oggetti per ciclo e retry 5 minuti. Non cancella automaticamente gli allegati delle note nel cestino; V15, CI e deploy da verificare separatamente. [Contratto](P2-NOTE-ATTACHMENTS.md) · [Readiness](RELEASE-V15-READINESS.md).

@@ -104,7 +104,7 @@ class T4MigrationRehearsalTest {
                 postgres.getPassword()).load();
             migrated.migrate();
             migrated.validate();
-            assertEquals("14", migrated.info().current().getVersion().toString());
+            assertEquals("15", migrated.info().current().getVersion().toString());
 
             try (Connection db = DriverManager.getConnection(
                     postgres.getJdbcUrl(), postgres.getUsername(),
@@ -125,7 +125,14 @@ class T4MigrationRehearsalTest {
                     assertTrue(rs.next());
                     assertEquals(0, rs.getLong(1));
                 }
-                // V14 only adds attachment metadata; all existing data is preserved.
+                // V14/V15 add attachment metadata and a durable deletion queue,
+                // preserving all existing app data.
+                try (PreparedStatement pending = db.prepareStatement(
+                    "SELECT COUNT(*) FROM attachment_object_delete_queue");
+                        ResultSet rows = pending.executeQuery()) {
+                    assertTrue(rows.next());
+                    assertEquals(0, rows.getLong(1));
+                }
                 try (PreparedStatement ps = db.prepareStatement(
                     "SELECT COUNT(*) FROM note_attachment");
                      ResultSet rs = ps.executeQuery()) {

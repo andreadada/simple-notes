@@ -1,6 +1,6 @@
 # Indice documentazione — Simple Notes
 
-**Aggiornato: 10 novembre 2026.** Punto di accesso ai documenti Markdown del progetto. Copertura: 61 documenti in `docs/` (escluso questo indice), oltre ai Markdown dei package e della radice.
+**Aggiornato: 10 novembre 2026.** Punto di accesso ai documenti Markdown del progetto. Copertura: 62 documenti in `docs/` (escluso questo indice), oltre ai Markdown dei package e della radice.
 
 Lo **stato canonico** è [CURRENT-STATUS.md](CURRENT-STATUS.md): verificare sempre separatamente **codice integrato**, **CI**, **migrazione/deploy VPS** e **test fisici**. Le righe storiche dei vecchi runbook non costituiscono autorizzazione a un deploy. L'ultima attestazione della VPS riguarda **Flyway V10 al 3 novembre 2026**, mentre il repository contiene **V14**. La PR #62 (integrata in `main`) introduce riconciliazione delle definizioni delle automazioni *solo foreground*, non un job backend.
 

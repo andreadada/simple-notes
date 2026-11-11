@@ -1,6 +1,6 @@
 # T4 — Rilascio controllato Simple Notes (Coolify/PostgreSQL)
 
-> **Stato attuale (10/11/2026):** P0/P1 integrati; PR #62 integrata in `main` (sync foreground delle definizioni delle azioni task con CAS e conflitti non distruttivi). Repository con Flyway **V12**, VPS attestata a **V10 (03/11/2026)**; nessun deploy, restore live o collaudo fisico recente. Consultare [CURRENT-STATUS](CURRENT-STATUS.md) per la CI più recente; gli step sottostanti mantengono anche istruzioni storiche.
+> **Stato attuale 11/11/2026:** Flyway V15 è nel repository dopo PR #66/#67; la VPS è attestata soltanto a V10 dal 03/11. Questo file contiene istruzioni storiche, non un permesso di migrazione. Per il rollout futuro usare [RELEASE-V15-READINESS](RELEASE-V15-READINESS.md) dopo una decisione esplicita e lo [stato corrente](CURRENT-STATUS.md).
 
 > **Cronologia al 31/10/2026:** P2.2 ICS read-only integrata su `main` ([PR #21](https://github.com/andreadada/simple-notes/pull/21), Flutter `0.25.0+27`, CI Flutter/Markdown verde: 162 test, Windows EXE/MSIX, Android JDK17/21). Test fisici e deploy cumulativo non attestati. Backend repo Flyway V10, VPS ultima attestazione V8; nessun deploy/reset. [Stato](CURRENT-STATUS.md) · [ICS](P2-ICS.md).
 

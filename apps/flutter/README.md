@@ -1,6 +1,6 @@
 # Flutter client — P0 e P1
 
-> **Stato verificato 10/11/2026:** [PR #61](https://github.com/andreadada/simple-notes/pull/61) integrata `bf16cba`: definizioni regole task cloud con JWT, CAS e Flyway V13 nel repository (VPS attestata V10). [Flutter CI #42821851199](https://github.com/andreadada/simple-notes/actions/runs/42821851199) **success** (399 test, Windows EXE/MSIX/recovery e Android JDK17/21); [Backend CI #42821851073](https://github.com/andreadada/simple-notes/actions/runs/42821851073) **success** (Spring/PostgreSQL 17), [Markdown #42821851207](https://github.com/andreadada/simple-notes/actions/runs/42821851207) **success**. Flutter `0.31.0+33`; V13 nel repo, VPS V10 attestata al 03/11. Nessun deploy, migrazione su dati reali, restore live o collaudo hardware. Scheduler server, sync automatica regole e resto P2 ancora aperti. [Stato canonico](../../docs/CURRENT-STATUS.md).
+> **Stato operativo 11/11/2026:** PR #66–#67 integrate in `main`; backend Flyway **V15 nel repository**, VPS confermata **V10 il 03/11**. CI backend, Compose e Markdown verdi; deploy, S3 reale e test Windows/Android ancora non attestati. [Stato canonico](../../docs/CURRENT-STATUS.md).
 
 <!-- CURRENT-STATUS-REF -->
 

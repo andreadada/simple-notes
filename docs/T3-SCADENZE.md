@@ -1,6 +1,6 @@
 # T3 — Scadenze Forui, fusi IANA e calendario civile
 
-> **Stato attuale (10/11/2026):** P0/P1 integrati; PR #62 integrata in `main` (sync foreground delle definizioni delle azioni task con CAS e conflitti non distruttivi). Repository con Flyway **V12**, VPS attestata a **V10 (03/11/2026)**; nessun deploy, restore live o collaudo fisico recente. Consultare [CURRENT-STATUS](CURRENT-STATUS.md) per la CI più recente; gli step sottostanti mantengono anche istruzioni storiche.
+> **Stato corrente 11/11/2026:** PR #66/#67 integrate; Flyway V15 solo nel repository, VPS V10 attestata il 03/11. Collaudi hardware e deploy ancora aperti. Gli incrementi precedenti descritti sotto sono cronologia; prevale [CURRENT-STATUS](CURRENT-STATUS.md).
 
 > **Cronologia al 31/10/2026:** P2.2 ICS read-only integrata su `main` ([PR #21](https://github.com/andreadada/simple-notes/pull/21), Flutter `0.25.0+27`, CI Flutter/Markdown verde: 162 test, Windows EXE/MSIX, Android JDK17/21). Test fisici e deploy cumulativo non attestati. Backend repo Flyway V10, VPS ultima attestazione V8; nessun deploy/reset. [Stato](CURRENT-STATUS.md) · [ICS](P2-ICS.md).
 

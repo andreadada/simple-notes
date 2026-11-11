@@ -69,6 +69,6 @@ Il codice backend ora aggiunge due protezioni **senza nuova migrazione**:
 
 Questo controllo delle firme è una difesa parziale, **non** un antivirus, una scansione completa di PDF/JPEG o una garanzia contro file poliglotti. Non abilita il servizio senza bucket verificato né risolve automaticamente cleanup READY, coda di upload offline, backup/lifecycle live o test sui dispositivi. La CI/backend e il deploy vanno sempre verificati separatamente nello [stato canonico](CURRENT-STATUS.md).
 
-## Eliminazione durevole — Flyway V15 (in revisione, 11/11/2026)
+## Eliminazione durevole — Flyway V15 (integrata PR #67, 11/11/2026)
 
 Il DELETE esplicito di READY registra la chiave privata in `attachment_object_delete_queue` nella stessa transazione che elimina i metadata, evitando un oggetto irraggiungibile se il commit applicativo fallisce dopo la cancellazione S3. HTTP 204 significa **cancellazione logica e accodamento**, non conferma fisica del provider. Worker con lock `FOR UPDATE SKIP LOCKED`, 25 chiavi per ciclo, retry a 5 minuti in caso di errore; attivo solo se `APP_ATTACHMENTS_ENABLED=true`. URL GET precedentemente firmati possono restare validi fino alla loro scadenza (5 minuti). Nessun delete automatico delle note in cestino o degli staging. [Gate V15](RELEASE-V15-READINESS.md).

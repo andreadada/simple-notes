@@ -1,6 +1,6 @@
 # P2 — Collaborazione EDITOR, versione 17
 
-**11 novembre 2026 — backend [PR #74](https://github.com/andreadada/simple-notes/pull/74) integrato, UI Flutter in revisione.** [Matrice P2](P2-DELIVERY-MATRIX.md) · [Condivisione VIEWER](P2-LIST-SHARING.md) · [Readiness V17](RELEASE-V17-READINESS.md).
+**11 novembre 2026 — backend [PR #74](https://github.com/andreadada/simple-notes/pull/74) e UI Flutter [PR #75](https://github.com/andreadada/simple-notes/pull/75) integrate nel repository. Nessun deploy.** [Matrice P2](P2-DELIVERY-MATRIX.md) · [Condivisione VIEWER](P2-LIST-SHARING.md) · [Readiness V17](RELEASE-V17-READINESS.md).
 
 ## Autorizzazioni e perimetro
 
@@ -14,7 +14,7 @@ Un membro EDITOR può modificare esclusivamente **titolo, descrizione, completam
 |---|---|
 | `PUT /api/v1/sharing/lists/{listId}/members/{memberId}/role` | Proprietario soltanto, body `{"role":"EDITOR"}` o `{"role":"VIEWER"}`; ritorna `{id,displayName,acceptedAt,role}` |
 | `PATCH /api/v1/sharing/lists/{listId}/tasks/{taskId}` | EDITOR soltanto, modifica selettiva con `expectedVersion` obbligatoria. Ritorna `{version,changeId}` |
-| `GET /api/v1/sharing/lists/{id}` | La risposta esistente presenta il ruolo aggiornato di ciascuna lista |
+| `GET /api/v1/sharing/lists` | La risposta esistente presenta il ruolo aggiornato di ciascuna lista |
 | `GET /api/v1/sharing/lists/{id}/snapshot` | `readOnly:false` solo per membri EDITOR, `readOnly:true` per VIEWER; include la versione del task |
 | `GET /api/v1/sharing/lists/{id}/members` | Ora restituisce il ruolo per ciascun collaboratore |
 
@@ -39,8 +39,8 @@ La nuova Flyway **V17** amplia il vincolo `role IN ('VIEWER','EDITOR')` e crea i
 
 ## Limiti ancora aperti
 
-Un incremento Flutter successivo aggiunge la UI EDITOR su `Condivise` (in revisione), senza introdurre sincronizzazione offline del collaboratore. Il backend non implementa merge automatici multi-account, editing offline del collaboratore, websocket/push immediato, inviti destinatario-specifici o sincronizzazione dei contenuti condivisi nel Drift dell'ospite. È un protocollo online con CAS esplicito, audit e **refresh manuale** in caso di conflitto. La CI non certifica deploy reale, VPS, ruoli/utenti di produzione, test fisici, né restore live.
+La UI Flutter EDITOR è integrata nella sezione `Condivise`, senza introdurre sincronizzazione offline del collaboratore. Il backend non implementa merge automatici multi-account, editing offline del collaboratore, websocket/push immediato, inviti destinatario-specifici o sincronizzazione dei contenuti condivisi nel Drift dell'ospite. È un protocollo online con CAS esplicito, audit e **refresh manuale** in caso di conflitto. La CI non certifica deploy reale, VPS, ruoli/utenti di produzione, test fisici, né restore live.
 
-## UI Flutter — online e inline, incremento in revisione
+## UI Flutter — online e inline, PR #75 integrata
 
 L'account owner da **Gestisci accessi** vede il ruolo di ciascun membro e può usare **Consenti modifiche / Rendi lettore** dopo conferma esplicita Forui. Chi riceve una lista EDITOR vede `readOnly:false` nella snapshot server e può aprire un editor **inline**, senza dialog di rinomina, per titolo e descrizione; completamento e priorità sono comandi diretti. Ogni scrittura usa la versione del task visualizzata, attende conferma server e poi scarica di nuovo la snapshot. Con **HTTP 409** mostra un conflitto chiaro e un pulsante **Aggiorna**, senza tentativi automatici né overwrite. Nessuna scrittura nei task personali o nell'outbox SQLite dell'ospite; token JWT e controlli account restano legati all'identità che ha iniziato la richiesta.

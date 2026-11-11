@@ -1,6 +1,6 @@
 # P2 — Readiness Flyway V17, collaboration EDITOR
 
-**11/11/2026.** Il repository introduce **V17** (audit e ruolo EDITOR). La VPS è attestata a **Flyway V10 al 03/11**; nessuna migrazione o promozione di membri è stata eseguita in produzione.
+**11/11/2026.** La PR #74 ha integrato su `main` **V17** (audit e ruolo EDITOR). La VPS è attestata a **Flyway V10 al 03/11**; nessuna migrazione o promozione di membri è stata eseguita in produzione.
 
 ## Gate post-deploy strettamente read-only
 

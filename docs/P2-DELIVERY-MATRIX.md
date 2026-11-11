@@ -1,6 +1,6 @@
 # P2 — Matrice di consegna e criteri di chiusura
 
-Aggiornato 11 novembre 2026. **PR #69/#70 integrate, PR #71 integrata (CI nativa post-merge da verificare); CI verde non equivale a deploy Coolify o collaudo su dispositivi reali.**
+Aggiornato 11 novembre 2026. **PR #74 (backend EDITOR V17) e #75 (Flutter Forui EDITOR) integrate in `main`. CI Backend/Compose/Markdown #74 verdi e Flutter analyze/widget #75 superati; native/post-merge in verifica. CI verde non equivale a deploy Coolify o collaudo fisico.**
 
 **Decimo incremento P2 integrato su `main` (`ed45d0e`):** [PR #65](https://github.com/andreadada/simple-notes/pull/65), sync foreground dei modelli utente V13 con checkpoint per account, CAS, risoluzione conflitti manuale e editor lock. Nessuna migrazione o modifiche alla outbox; **Merge e Flutter CI complete** ([run #42887921742](https://github.com/andreadada/simple-notes/actions/runs/42887921742): analyze/test, Windows e Android JDK17/21). [Contratto](P2-AUTO-TEMPLATE-CATALOG.md).
 
@@ -84,12 +84,12 @@ Una nuova API Spring JWT separata da `/sync` gestisce condivisione **VIEWER** de
 
 ### UI collaborazione VIEWER (PR #70 integrata su `main`)
 
-Dopo backend [PR #69](https://github.com/andreadada/simple-notes/pull/69) integrato con CI verde, il client Flutter aggiunge sezione Forui **Condivise** e API HTTP JWT per creare/copiare token, accettare, consultare pagine di task, gestire/revocare inviti e membership. **Nessuna sync cross-account, modifica di task ricevuti, storage offline o condivisione EDITOR**. Per usarla occorre ancora distribuire il backend (V16) e verificare su dispositivi di prova. [Contratto](P2-LIST-SHARING.md).
+Dopo backend [PR #69](https://github.com/andreadada/simple-notes/pull/69) integrato con CI verde, il client Flutter aggiunge sezione Forui **Condivise** e API HTTP JWT per creare/copiare token, accettare, consultare pagine di task, gestire/revocare inviti e membership. **La PR #75 aggiunge modifiche EDITOR online; nessuna sync offline cross-account o storage guest**. Per usarla occorre ancora distribuire il backend (V16) e verificare su dispositivi di prova. [Contratto](P2-LIST-SHARING.md).
 
 ## Incremento EDITOR Flyway V17 — backend integrato (PR #74) (11/11/2026)
 
-Promozione/demozione **solo owner** dei membri già accettati; patch online **solo titolo, descrizione, completamento, priorità** con CAS per-versione e controllo della membership dopo lock owner. L'operazione passa dal `SyncService.apply` canonico del proprietario, senza scrivere nel ledger dell'ospite; audit immutabile annota attore, campi e changeId senza contenuti privati. V17 additiva amplia il ruolo e aggiunge `list_share_audit`; capability `sharingEditorSchema:1`. **Flutter EDITOR in revisione; mancano merge automatico, notifiche e sync offline multi-owner**. Backend CI e merge verdi, nessun deploy. [Specifica](P2-LIST-EDITOR.md) · [Readiness](RELEASE-V17-READINESS.md).
+Promozione/demozione **solo owner** dei membri già accettati; patch online **solo titolo, descrizione, completamento, priorità** con CAS per-versione e controllo della membership dopo lock owner. L'operazione passa dal `SyncService.apply` canonico del proprietario, senza scrivere nel ledger dell'ospite; audit immutabile annota attore, campi e changeId senza contenuti privati. V17 additiva amplia il ruolo e aggiunge `list_share_audit`; capability `sharingEditorSchema:1`. **Flutter EDITOR integrata con PR #75; mancano merge automatico, notifiche e sync offline multi-owner**. Backend CI e merge verdi, nessun deploy. [Specifica](P2-LIST-EDITOR.md) · [Readiness](RELEASE-V17-READINESS.md).
 
-### Client Forui EDITOR (in revisione 11/11)
+### Client Forui EDITOR (PR #75 integrata, 11/11)
 
-Nuova vista di lista ricevuta con indicazione EDITOR, campi titolo/descrizione modificabili **inline** su selezione del task, comandi di completamento e priorità e salvataggio via PATCH HTTPS/JWT con versione prevista. Gestione esplicita owner-only dei ruoli in Forui con conferma di elevazione; 409 richiede refresh manuale, nessun retry distruttivo. Non si inseriscono task ospiti in Drift/outbox o backup del proprietario. Test API/widget in verifica, nessun deploy. [Specifica](P2-LIST-EDITOR.md).
+Nuova vista di lista ricevuta con indicazione EDITOR, campi titolo/descrizione modificabili **inline** su selezione del task, comandi di completamento e priorità e salvataggio via PATCH HTTPS/JWT con versione prevista. Gestione esplicita owner-only dei ruoli in Forui con conferma di elevazione; 409 richiede refresh manuale, nessun retry distruttivo. Non si inseriscono task ospiti in Drift/outbox o backup del proprietario. Test API e widget superati; build native e post-merge da verificare, nessun deploy. [Specifica](P2-LIST-EDITOR.md).

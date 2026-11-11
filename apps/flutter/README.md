@@ -1,5 +1,7 @@
 # Flutter client — P0 e P1
 
+> **P2 11/11/2026:** [PR #74](https://github.com/andreadada/simple-notes/pull/74) backend `EDITOR` con Flyway **V17** e [PR #75](https://github.com/andreadada/simple-notes/pull/75) client Forui inline **integrate in `main`**. Backend/Compose/Markdown CI e analisi/test widget Flutter verdi; build native e CI post-merge in verifica. **Nessun deploy**: VPS ultima attestazione Flyway **V10 (03/11)**. Collaboration online-only, non sync offline multi-owner. [Contratto](../../docs/P2-LIST-EDITOR.md).
+
 > **Stato 11/11/2026:** UI VIEWER Condivise [PR #70](https://github.com/andreadada/simple-notes/pull/70) integrata su `main`, backend ACL Flyway V16 [#69](https://github.com/andreadada/simple-notes/pull/69) integrato; Flutter CI branch verde. PR #71 integrata: risposte HTTP associate all'account iniziale e scartate dopo un cambio Google. VPS ultima attestazione V10 (03/11), **nessun deploy**. [Stato canonico](../../docs/CURRENT-STATUS.md).
 
 <!-- CURRENT-STATUS-REF -->
@@ -271,6 +273,6 @@ Nuova sezione Forui sotto **STRUMENTI**: creare un invito monouso per una lista 
 
 Il workflow usa **Flutter 3.47.9** per analisi/test, Android e Windows. Il runner che aveva aggiornato automaticamente a Flutter 3.50.0 ha riscontrato un errore compilando la dipendenza transitoria `nativeapi 0.5.10` (`Isolate.create`); il precedente workflow Windows con 3.47.9 aveva prodotto EXE/MSIX correttamente. **Usare Flutter 3.47.9 anche per build locali riproducibili** finché non si verifica un aggiornamento compatibile della dipendenza. Non pubblicare package di sviluppo non firmati.
 
-## P2 — EDITOR Condivise (in revisione 11/11/2026)
+## P2 — EDITOR Condivise (PR #75 integrata, 11/11/2026)
 
 La pagina Strumenti → Condivise riconosce ruoli `VIEWER` e `EDITOR`. I membri EDITOR possono cambiare titolo e descrizione tramite input Forui **inline** (nessun rename modal), completamento e priorità con comandi mirati; `PATCH` online condizionale al `version` server e refresh snapshot dopo successo. Il 409 non è ritentato; per risolvere premere **Aggiorna** e riesaminare il task. Il proprietario gestisce promozioni/demozioni con conferma. Test HTTP e widget. La UI non sincronizza i task ricevuti in Drift, outbox o backup. Backend V17 su VPS **non** ancora distribuito; ultima attestazione V10 al 03/11. [Contratto](../../docs/P2-LIST-EDITOR.md).

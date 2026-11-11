@@ -1,7 +1,7 @@
 # Delta Sync v1 — protocollo e storia degli incrementi
 
 <!-- CURRENT-STATUS-REF -->
-> **Stato operativo 11/11/2026:** PR #66–#67 integrate in `main`; backend Flyway **V15 nel repository**, VPS confermata **V10 il 03/11**. CI backend, Compose e Markdown verdi; deploy, S3 reale e test Windows/Android ancora non attestati. [Stato canonico](CURRENT-STATUS.md).
+> **Stato 11/11/2026:** backend sharing **Flyway V17** [PR #74](https://github.com/andreadada/simple-notes/pull/74) e UI Forui EDITOR [PR #75](https://github.com/andreadada/simple-notes/pull/75) integrate; CI backend e Flutter analyze/widget superate. Native/post-merge in verifica; VPS ultima attestazione V10 al 03/11, nessun deploy. [Stato](CURRENT-STATUS.md).
 
 
 ## Ultima versione di un elemento / risoluzione conflitto (P0)
@@ -189,3 +189,7 @@ La nuova API degli allegati S3 è distinta dal sync outbox: gli allegati non div
 ## P2 — Sync automatica definizioni modello (PR #65 integrata)
 
 `AutoSyncHost` tenta il catalogo V13 **separatamente** dalla coda SQLite, dopo una sync task sana e solo foreground, con checkpoint versione/catalogo locale per owner. La validazione delle revisioni CAS e il three-way match evitano reupload superflui, merge impliciti e perdita di cancellazioni offline. Pausa quando è aperto l'editor Modelli. I task creati da modelli restano normali task/outbox; la sincronizzazione delle **definizioni** non ne crea o elimina alcuno. [Contratto](P2-AUTO-TEMPLATE-CATALOG.md).
+
+## P2 — EDITOR V17 online, nessuna nuova outbox guest (PR #74/#75)
+
+Il collaboratore EDITOR autenticato usa solo `PATCH /api/v1/sharing/lists/{listId}/tasks/{taskId}`, con `expectedVersion`: il servizio controlla la membership, il task del proprietario e il ledger canonico, poi usa `SyncService.apply(owner,...)` con versione CAS e audit attore. Il cursor guest, le note e gli altri task del proprietario non diventano visibili. Dopo salvataggio il client ricarica la snapshot; se il server risponde 409, richiede aggiornamento e risoluzione manuale. La collaborazione non è una sync offline bidirezionale cross-owner. [Specifica](P2-LIST-EDITOR.md).

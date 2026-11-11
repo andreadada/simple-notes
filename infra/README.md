@@ -5,7 +5,7 @@
 > **Incremento V15 integrato in `main`:** outbox per DELETE S3 con retry; [gate read-only](../docs/RELEASE-V15-READINESS.md). Nessuna migrazione reale effettuata.
 
 <!-- CURRENT-STATUS-REF -->
-> **Stato operativo 11/11/2026:** PR #66–#67 integrate in `main`; backend Flyway **V15 nel repository**, VPS confermata **V10 il 03/11**. CI backend, Compose e Markdown verdi; deploy, S3 reale e test Windows/Android ancora non attestati. [Stato canonico](../docs/CURRENT-STATUS.md).
+> **Stato 11/11/2026:** backend sharing **Flyway V17** [PR #74](https://github.com/andreadada/simple-notes/pull/74) e UI Forui EDITOR [PR #75](https://github.com/andreadada/simple-notes/pull/75) integrate; CI backend e Flutter analyze/widget superate. Native/post-merge in verifica; VPS ultima attestazione V10 al 03/11, nessun deploy. [Stato](../docs/CURRENT-STATUS.md).
 
 
 ## Cronologia — rilascio 0.7.0+9 (superato da P1.6)
@@ -219,6 +219,6 @@ Il codice introduce la tabella additiva `note_attachment` e l'object store solo 
 
 La migrazione Flyway V16 aggiunge tabelle di inviti e membership senza cambiare gli owner dei task o la sync. Il nuovo [runbook V16](../docs/RELEASE-V16-READINESS.md) è **solo read-only dopo un deploy autorizzato**; non chiedere di lanciare migrazioni, non creare token o account di test sulla VPS per verificare il codice. [Specifica](../docs/P2-LIST-SHARING.md).
 
-## P2 V17 — gate collaboratori EDITOR (solo lettura)
+## P2 V17 — gate collaboratori EDITOR (solo lettura, PR #74 integrata)
 
-Il codice backend in revisione aggiunge ruolo EDITOR e audit senza alterare il proprietario delle attività. Dopo un **eventuale rollout autorizzato** usare [RELEASE-V17-READINESS](../docs/RELEASE-V17-READINESS.md) per verificare la struttura e le capability, non per creare account o permessi reali. La VPS è attestata Flyway V10 al 03/11.
+Il codice backend integrato su `main` aggiunge ruolo EDITOR e audit senza alterare il proprietario delle attività. Dopo un **eventuale rollout autorizzato** usare [RELEASE-V17-READINESS](../docs/RELEASE-V17-READINESS.md) per verificare la struttura e le capability, non per creare account o permessi reali. La VPS è attestata Flyway V10 al 03/11.

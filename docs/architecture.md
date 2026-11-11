@@ -142,3 +142,7 @@ Il backend aggiunge `NoteAttachmentController/Service` e tabella `note_attachmen
 ## P2 — Modelli cloud auto-sync (PR #65 integrata)
 
 Il client Flutter aggiunge `UserTemplateCatalogMirror` / `UserTemplateMirrorAnchor`: checkpoint owner-scoped in SharedPreferences, sincronizzazione foreground tramite `AutoSyncHost` e GET/PUT V13 già esistenti; il backend non cambia e Flyway rimane **V14 nel codice**. Si verifica account boundOwnerId, restore gate e stato cloud task prima di riconciliare. Nessun nuovo server scheduler, OAuth, allegato, Drift schema o outbox. [Contratto](P2-AUTO-TEMPLATE-CATALOG.md).
+
+## P2 — ACL per liste, Flyway V16 (in revisione)
+
+La nuova componente `sharing/ListSharingService` usa due tabelle PostgreSQL per inviti e membership delle sole liste task: token casuali e hash, accettazione con lock transazionali, ruolo `VIEWER` e lettura paginata. Non modifica gli owner dei record, non scrive su `sync_change` e non fa usare `/sync/apply` al collaboratore. La snapshot SELECT filtra per `task.owner_id`, `task.list_id` e membership accettata, proteggendo le liste private. Future modalità EDITOR richiederanno nuovi permessi, sincronizzazione e gestione conflitti cross-account separati. [Specifica](P2-LIST-SHARING.md).

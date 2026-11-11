@@ -104,7 +104,7 @@ class T4MigrationRehearsalTest {
                 postgres.getPassword()).load();
             migrated.migrate();
             migrated.validate();
-            assertEquals("15", migrated.info().current().getVersion().toString());
+            assertEquals("16", migrated.info().current().getVersion().toString());
 
             try (Connection db = DriverManager.getConnection(
                     postgres.getJdbcUrl(), postgres.getUsername(),
@@ -124,6 +124,19 @@ class T4MigrationRehearsalTest {
                      ResultSet rs = ps.executeQuery()) {
                     assertTrue(rs.next());
                     assertEquals(0, rs.getLong(1));
+                }
+                // V14/V15/V16 add attachments and read-only sharing metadata.
+                try (PreparedStatement shared = db.prepareStatement(
+                    "SELECT COUNT(*) FROM list_share_member");
+                     ResultSet rows = shared.executeQuery()) {
+                    assertTrue(rows.next());
+                    assertEquals(0, rows.getLong(1));
+                }
+                try (PreparedStatement invitations = db.prepareStatement(
+                    "SELECT COUNT(*) FROM list_share_invitation");
+                     ResultSet rows = invitations.executeQuery()) {
+                    assertTrue(rows.next());
+                    assertEquals(0, rows.getLong(1));
                 }
                 // V14/V15 add attachment metadata and a durable deletion queue,
                 // preserving all existing app data.

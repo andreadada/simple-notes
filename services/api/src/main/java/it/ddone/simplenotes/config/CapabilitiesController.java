@@ -13,15 +13,16 @@ public class CapabilitiesController {
 
     @GetMapping("/api/v1/capabilities")
     public Map<String, Object> capabilities() {
-        return Map.of("taskDueSchema", 1,
-            "taskDueKinds", new String[]{"none", "date", "datetime", "legacy"},
-            "requiresExplicitDueForModernTasks", true,
-            "noteRestoreSchema", 1,
-            "timeBlockSchema", 1,
-            "timeBlocksSchema", 1,
-            "recurrenceSchema", 1,
-            "syncOperationFingerprintSchema", 1,
-            "attachmentSchema", 1,
-            "attachmentStorageEnabled", attachmentsEnabled);
+        return Map.ofEntries(Map.entry("taskDueSchema", 1),
+            Map.entry("taskDueKinds", new String[]{"none", "date", "datetime", "legacy"}),
+            Map.entry("requiresExplicitDueForModernTasks", true),
+            Map.entry("noteRestoreSchema", 1),
+            Map.entry("timeBlockSchema", 1),
+            Map.entry("timeBlocksSchema", 1),
+            Map.entry("recurrenceSchema", 1),
+            Map.entry("syncOperationFingerprintSchema", 1),
+            Map.entry("attachmentSchema", 1),
+            Map.entry("attachmentStorageEnabled", attachmentsEnabled),
+            Map.entry("sharingReadSchema", 1));
     }
 }

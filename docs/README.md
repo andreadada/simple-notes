@@ -1,8 +1,8 @@
 # Indice documentazione — Simple Notes
 
-**Aggiornato: 10 novembre 2026.** Punto di accesso ai documenti Markdown del progetto. Copertura: 62 documenti in `docs/` (escluso questo indice), oltre ai Markdown dei package e della radice.
+**Aggiornato: 11 novembre 2026.** Punto di accesso ai documenti Markdown del progetto. Copertura: 64 documenti in `docs/` (escluso questo indice), oltre ai Markdown dei package e della radice.
 
-Lo **stato canonico** è [CURRENT-STATUS.md](CURRENT-STATUS.md): verificare sempre separatamente **codice integrato**, **CI**, **migrazione/deploy VPS** e **test fisici**. Le righe storiche dei vecchi runbook non costituiscono autorizzazione a un deploy. L'ultima attestazione della VPS riguarda **Flyway V10 al 3 novembre 2026**, mentre il repository contiene **V14**. La PR #62 (integrata in `main`) introduce riconciliazione delle definizioni delle automazioni *solo foreground*, non un job backend.
+Lo **stato canonico** è [CURRENT-STATUS.md](CURRENT-STATUS.md): verificare sempre separatamente **codice integrato**, **CI**, **migrazione/deploy VPS** e **test fisici**. Le righe storiche dei vecchi runbook non costituiscono autorizzazione a un deploy. L'ultima attestazione della VPS riguarda **Flyway V10 al 3 novembre 2026**, mentre il repository contiene **V16 in revisione**. La PR #62 (integrata in `main`) introduce riconciliazione delle definizioni delle automazioni *solo foreground*, non un job backend.
 
 ## Accessi principali
 
@@ -62,6 +62,7 @@ Lo **stato canonico** è [CURRENT-STATUS.md](CURRENT-STATUS.md): verificare semp
 - [P2-CLOUD-ACTION-CATALOG](./P2-CLOUD-ACTION-CATALOG.md)
 - [P2-CLOUD-TEMPLATES](./P2-CLOUD-TEMPLATES.md)
 - [P2-NOTE-ATTACHMENTS](./P2-NOTE-ATTACHMENTS.md)
+- [P2-LIST-SHARING](./P2-LIST-SHARING.md)
 - [P2-AUTO-TEMPLATE-CATALOG](./P2-AUTO-TEMPLATE-CATALOG.md)
 - [P2-CSV-EXPORT](./P2-CSV-EXPORT.md)
 - [P2-DELIVERY-MATRIX](./P2-DELIVERY-MATRIX.md)
@@ -85,6 +86,7 @@ Lo **stato canonico** è [CURRENT-STATUS.md](CURRENT-STATUS.md): verificare semp
 - [RELEASE-V10-READINESS](./RELEASE-V10-READINESS.md)
 - [RELEASE-V11-READINESS](./RELEASE-V11-READINESS.md)
 - [RELEASE-V15-READINESS](./RELEASE-V15-READINESS.md)
+- [RELEASE-V16-READINESS](./RELEASE-V16-READINESS.md)
 - [RESET-TEST-DATA](./RESET-TEST-DATA.md)
 - [android-troubleshooting](./android-troubleshooting.md)
 

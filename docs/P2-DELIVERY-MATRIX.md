@@ -77,3 +77,7 @@ Le statistiche sono calcolate sui dati locali senza telemetria. I modelli produc
 ## Incremento V15 — cancellazione fisica S3 affidabile (PR #67 integrata)
 
 Inserimento della chiave privata in outbox PostgreSQL e rimozione dei metadata READY nel medesimo commit, poi worker multiistanza con `SKIP LOCKED`, max 25 oggetti per ciclo e retry 5 minuti. Non cancella automaticamente gli allegati delle note nel cestino; V15 integrata in `main` con CI Backend/Compose/Markdown verdi; deploy ancora da verificare. [Contratto](P2-NOTE-ATTACHMENTS.md) · [Readiness](RELEASE-V15-READINESS.md).
+
+## Incremento V16 in revisione — fondamenta collaborazione liste
+
+Una nuova API Spring JWT separata da `/sync` gestisce condivisione **VIEWER** delle liste tramite inviti casuali di 256 bit, token hashati e monouso, scadenza a sette giorni, revoca e accettazione esplicita. La vista di sola lettura espone unicamente task della lista e proprietario previsti dalla membership, massimo 50 elementi per pagina. Due tabelle additive Flyway V16 e capability `sharingReadSchema:1`. **Non contiene ancora UI Flutter, editing EDITOR, notifiche o sync multi-owner**; non segnare collaborazione P2 conclusa. Codice/CI in verifica; nessun deploy. [Specifica](P2-LIST-SHARING.md) · [Gate V16](RELEASE-V16-READINESS.md).

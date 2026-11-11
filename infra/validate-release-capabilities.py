@@ -43,6 +43,11 @@ def run() -> None:
         if attachment == "1":
             if not has_version_one("attachmentSchema") or obj.get("attachmentStorageEnabled") is not True:
                 refuse()
+        sharing = os.environ.get("REQUIRE_SHARING_READ_SCHEMA", "0")
+        if sharing not in ("0", "1"):
+            refuse()
+        if sharing == "1" and not has_version_one("sharingReadSchema"):
+            refuse()
         strict = os.environ.get("REQUIRE_FULL_SCHEMA", "0")
         time_block = os.environ.get("REQUIRE_TIME_BLOCK_SCHEMA", "0")
         if strict not in ("0", "1") or time_block not in ("0", "1"):

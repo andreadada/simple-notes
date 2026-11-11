@@ -116,3 +116,7 @@ Su due installazioni loggate sullo stesso owner: creare/modificare/eliminare mod
 ## P2 V15 — cancellazione S3: prove fisiche differite
 
 Dopo deploy autorizzato in un bucket privato di prova: eliminazione READY e verifica della coda, interruzione S3 e retry, crash fra DELETE e commit, due istanze concorrenti, scadenza URL firmati già emessi, controllo owner, isolamento e quota. Nessuna verifica reale è attestata dalla sola CI. [Gate V15](RELEASE-V15-READINESS.md).
+
+## P2 V16 — collaborazione VIEWER (test post-deploy rinviati)
+
+Dopo un rollout esplicitamente autorizzato, con **due account di prova**, verificare: segreto mostrato una sola volta; nessun token nei log o in GET; 7 giorni di TTL e revoca; impossibilità di auto-accettazione; accettazione univoca; lista e task privati mai visibili al collaboratore; owner che revoca la membership; link scaduto; perdita di rete e riconnessione. Nessuna UI Flutter per inviti disponibile in questo incremento. Non modificare dati o account reali per validarlo. [Specifica](P2-LIST-SHARING.md) · [Readiness](RELEASE-V16-READINESS.md).

@@ -19,6 +19,7 @@ import 'ui/inline_editable_body.dart';
 import 'ui/inline_quick_add.dart';
 import 'ui/notes_dialogs.dart';
 import 'ui/note_attachments_panel.dart';
+import 'ui/list_sharing_board.dart';
 import 'data/note_attachment_api.dart';
 import 'ui/task_due_editor.dart';
 import 'ui/calendar_board.dart';
@@ -152,7 +153,7 @@ class _SimpleNotesAppState extends State<SimpleNotesApp> {
       );
 }
 
-enum Section { today, next7, inbox, everything, completed, calendar, timeline, analytics, templates, automations, eisenhower, kanban, pomodoro, habits, countdowns, notes, trash }
+enum Section { today, next7, inbox, everything, completed, calendar, timeline, analytics, templates, automations, shared, eisenhower, kanban, pomodoro, habits, countdowns, notes, trash }
 
 extension SectionLabel on Section {
   String get label => switch (this) {
@@ -166,6 +167,7 @@ extension SectionLabel on Section {
         Section.analytics => 'Statistiche',
         Section.templates => 'Modelli',
         Section.automations => 'Automazioni',
+        Section.shared => 'Condivise',
         Section.eisenhower => 'Matrice Eisenhower',
         Section.kanban => 'Kanban',
         Section.pomodoro => 'Pomodoro',
@@ -185,6 +187,7 @@ extension SectionLabel on Section {
         Section.analytics => Icons.insights_outlined,
         Section.templates => Icons.library_add_outlined,
         Section.automations => Icons.rule_outlined,
+        Section.shared => Icons.people_outline,
         Section.eisenhower => Icons.grid_view_outlined,
         Section.kanban => Icons.view_kanban_outlined,
         Section.pomodoro => Icons.timer_outlined,
@@ -215,7 +218,7 @@ class _NotesHomeState extends ConsumerState<NotesHome> {
 
   bool get _taskListMode => !const <Section>{
     Section.calendar, Section.timeline, Section.analytics, Section.templates,
-    Section.automations, Section.eisenhower, Section.kanban, Section.pomodoro, Section.habits,
+    Section.automations, Section.shared, Section.eisenhower, Section.kanban, Section.pomodoro, Section.habits,
     Section.countdowns, Section.notes, Section.trash,
   }.contains(section);
   final newTask = TextEditingController();
@@ -1327,7 +1330,7 @@ Ctrl+/ · Questo elenco'''),
           Section.completed => t.completed,
           Section.inbox => !t.completed && t.listId == null,
           Section.everything => !t.completed,
-          Section.calendar || Section.timeline || Section.analytics || Section.templates || Section.automations || Section.eisenhower || Section.kanban || Section.pomodoro || Section.habits || Section.countdowns || Section.notes || Section.trash => false,
+          Section.calendar || Section.timeline || Section.analytics || Section.templates || Section.automations || Section.shared || Section.eisenhower || Section.kanban || Section.pomodoro || Section.habits || Section.countdowns || Section.notes || Section.trash => false,
         }).toList()..sort((a, b) => a.createdAt.compareTo(b.createdAt));
   }
 
@@ -1667,7 +1670,7 @@ Ctrl+/ · Questo elenco'''),
                 s != Section.pomodoro && s != Section.habits &&
                 s != Section.countdowns && s != Section.timeline &&
                 s != Section.analytics && s != Section.templates &&
-                s != Section.automations))
+                s != Section.automations && s != Section.shared))
               FSidebarItem(
                 key: Key('nav-${s.name}'),
                 selected: section == s,
@@ -1722,7 +1725,7 @@ Ctrl+/ · Questo elenco'''),
           children: [
             for (final s in const <Section>[
               Section.timeline, Section.analytics, Section.templates,
-              Section.automations,
+              Section.automations, Section.shared,
             ])
               FSidebarItem(
                 key: Key('nav-${s.name}'),
@@ -2048,6 +2051,35 @@ Ctrl+/ · Questo elenco'''),
           else if (section == Section.analytics)
             Expanded(child: TaskAnalyticsBoard(
               tasks: data.tasks, lists: data.lists,
+            ))
+          else if (section == Section.shared)
+            Expanded(child: ListSharingBoard(
+              key: ValueKey('sharing-owner-${cloud.userId ?? 'guest'}'),
+              ownerId: cloud.userId,
+              ownedLists: data.lists,
+              baseUrl: CloudConfig.apiBaseUrl,
+              tokenProvider: () async {
+                final expectedOwner = cloud.userId;
+                if (expectedOwner == null ||
+                    ref.read(cloudAuthProvider).userId != expectedOwner ||
+                    !ref.read(restoreSyncGateProvider).canSync ||
+                    await ref.read(databaseProvider).setting('boundOwnerId')
+                        != expectedOwner) {
+                  throw StateError('Account cloud non coerente');
+                }
+                final token = await ref.read(cloudAuthProvider.notifier)
+                    .validAccessToken();
+                if (ref.read(cloudAuthProvider).userId != expectedOwner) {
+                  throw StateError('Account cambiato');
+                }
+                return token;
+              },
+              ownerMatches: (owner) async =>
+                  ref.read(cloudAuthProvider).authenticated &&
+                  ref.read(cloudAuthProvider).userId == owner &&
+                  ref.read(restoreSyncGateProvider).canSync &&
+                  await ref.read(databaseProvider).setting('boundOwnerId') ==
+                      owner,
             ))
           else if (section == Section.automations)
             Expanded(child: ReminderAutomationsBoard(

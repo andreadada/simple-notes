@@ -40,3 +40,7 @@ Il filtro di ogni snapshot usa **sia owner_id sia list_id**, e scarta task soft-
 Backend PostgreSQL 17 Testcontainers: JWT necessario, owner-only, token non salvato in chiaro, una sola accettazione, scadenza/revoca, limiti, isolamento fra liste, snapshot paginato, separazione dal normale `/sync`, eliminazione membership. Rehearsal migrazione V6→V16 senza perdita dei record precedenti. Il successo CI **non prova** UI Windows/Android, inoltro token, compatibilità API della VPS, attacchi di rate limiting, inviti phishing e concorrenza live.
 
 Rimangono per P2: UI Forui e passaggio token, eventuali inviti legati a destinatario, ruolo editor, condivisione write-through con consenso/versioni e sync multi-account, alert/reminder condivisi, protezione anti-abuso e collaudo su dispositivi reali.
+
+## Client Flutter/Forui — incremento successivo in revisione
+
+La sezione **STRUMENTI → Condivise** su Windows/Android rende accessibile la fase VIEWER: codice da incollare in input Forui, token visualizzato solo dopo creazione, comando Copia esplicito, elenco liste ricevute, anteprima task paginata in sola lettura, revoca di inviti/collaboratori e uscita. La UI controlla `boundOwnerId` e l'account Google prima e dopo le richieste, non usa redirects HTTP e non trasferisce alcuna risposta al database locale o all'outbox. A server V10 non disponibile mostra errore esplicito senza alterare il profilo. Il codice è **in revisione**, non va dichiarato rilasciato prima di CI e deploy.

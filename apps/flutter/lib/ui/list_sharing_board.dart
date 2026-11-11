@@ -238,7 +238,9 @@ class _ListSharingBoardState extends State<ListSharingBoard> {
   Future<void> _leave(SharedTaskList list) async {
     if (!await _confirm('Abbandona lista',
         'Non vedrai più le attività di "${list.title}". '
-        'Le attività del proprietario non saranno modificate.')) return;
+        'Le attività del proprietario non saranno modificate.')) {
+      return;
+    }
     await _run(() async {
       await _api.leave(list.id);
       if (!await _accountValid()) return;
@@ -253,7 +255,9 @@ class _ListSharingBoardState extends State<ListSharingBoard> {
 
   Future<void> _removeMember(String listId, ListShareMember member) async {
     if (!await _confirm('Revoca accesso',
-        'Rimuovere il collaboratore dalla lista?')) return;
+        'Rimuovere il collaboratore dalla lista?')) {
+      return;
+    }
     await _run(() async {
       await _api.revokeMember(listId, member.id);
       if (!await _accountValid()) return;

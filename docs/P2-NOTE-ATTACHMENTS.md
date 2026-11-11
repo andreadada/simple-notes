@@ -60,3 +60,11 @@ Non includere URL presigned in log, screenshot, report o backup: sono token di a
 - Se la nota viene spostata nel cestino, l'autorizzazione all'elenco e al download impedisce nuove URL. La cancellazione fisica degli oggetti relativi a note eliminate richiede un job dedicato e una retention definita.
 
 Restano P2 generali: Google Calendar/Outlook OAuth, liste condivise/ACL, scheduler server e promemoria multi-device, restore live verificato e collaudi release. [Operazioni](OPERATIONS.md) · [Test dispositivi](DEVICE-ACCEPTANCE-DEFERRED.md).
+
+## Hardening successivo — controllo contenuto e manutenzione PENDING (11/11/2026)
+
+Il codice backend ora aggiunge due protezioni **senza nuova migrazione**: 
+- Dopo `HEAD` che conferma dimensione/MIME/ETag, esegue un `GET Range` di massimo 512 byte **condizionato a quello stesso ETag**. Prima del `COPY If-Match` confronta le firme PNG/JPEG/PDF; per i TXT rifiuta caratteri binari di controllo e intestazioni ovvie di documenti attivi (HTML/SVG/XML/script). MIME dichiarato e firma non coerente producono HTTP **409**, senza pubblicazione `READY`.
+- Un job Spring schedulato, attivo solo quando `APP_ATTACHMENTS_ENABLED=true`, elimina **solo metadata PENDING** scaduti da oltre 24 ore, massimo 200 righe per esecuzione, con intervallo di default di un'ora. Non tocca READY, note nel cestino, SQLite/outbox e **non elimina alcun oggetto S3**. La cancellazione di `staging/*` rimane affidata alla policy lifecycle privata del bucket.
+
+Questo controllo delle firme è una difesa parziale, **non** un antivirus, una scansione completa di PDF/JPEG o una garanzia contro file poliglotti. Non abilita il servizio senza bucket verificato né risolve automaticamente cleanup READY, coda di upload offline, backup/lifecycle live o test sui dispositivi. La CI/backend e il deploy vanno sempre verificati separatamente nello [stato canonico](CURRENT-STATUS.md).

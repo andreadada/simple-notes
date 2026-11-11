@@ -90,6 +90,10 @@ public class NoteAttachmentService {
             throw new ResponseStatusException(
                 HttpStatus.CONFLICT, "Attachment size/type mismatch");
         }
+        // A signed upload URL can send arbitrary bytes regardless of its MIME
+        // header. Verify a conditional range GET before the ETag-guarded COPY.
+        AttachmentContentSafety.requireSupported(attachment.contentType,
+            objects.readPrefix(attachment.objectKey, actual.etag(), 512));
         String readyKey = "files/" + owner + "/" + attachment.id;
         objects.promote(attachment.objectKey, readyKey,
             attachment.contentType, actual.etag());

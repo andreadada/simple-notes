@@ -3,6 +3,7 @@ package it.ddone.simplenotes.attachment;
 import java.time.Instant;
 import java.util.*;
 import org.springframework.data.jpa.repository.*;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.query.Param;
 
 public interface NoteAttachmentRepository
@@ -11,6 +12,8 @@ public interface NoteAttachmentRepository
         UUID ownerId, UUID noteId, String state);
     Optional<NoteAttachmentEntity> findByIdAndOwnerIdAndNoteId(
         UUID id, UUID owner, UUID note);
+    List<NoteAttachmentEntity> findByStateAndPendingExpiresAtBeforeOrderByPendingExpiresAtAsc(
+        String state, Instant cutoff, Pageable pageable);
     @Query("select count(a) from NoteAttachmentEntity a where a.ownerId = :owner " +
         "and (a.state = 'READY' or a.pendingExpiresAt > :now)")
     long activeCount(@Param("owner") UUID owner, @Param("now") Instant now);

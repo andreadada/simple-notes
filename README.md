@@ -1,6 +1,6 @@
 # Simple Notes
 
-> **Stato codice 10/11/2026:** [PR #65](https://github.com/andreadada/simple-notes/pull/65) merged `ed45d0e` (auto-sync modelli foreground V13), [PR #64](https://github.com/andreadada/simple-notes/pull/64) merged `5ae2bd3` (allegati S3 V14 opt-in). CI Flutter/Backend/Compose PR #64 e Markdown verdi; CI Flutter PR #65 post-merge in corso. **V14 nel repository**, VPS **V10 attestata al 03/11**; nessun deploy o E2E reale. [Stato canonico](docs/CURRENT-STATUS.md).
+> **Stato codice 10/11/2026:** [PR #65](https://github.com/andreadada/simple-notes/pull/65) merged `ed45d0e` (auto-sync modelli foreground V13), [PR #64](https://github.com/andreadada/simple-notes/pull/64) merged `5ae2bd3` (allegati S3 V14 opt-in). CI Flutter/Backend/Compose PR #64 e Markdown verdi; CI Flutter sull'ultimo commit main [#42887921742](https://github.com/andreadada/simple-notes/actions/runs/42887921742) **success** (analyze/test, Windows, Android JDK17/21).. **V14 nel repository**, VPS **V10 attestata al 03/11**; nessun deploy o E2E reale. [Stato canonico](docs/CURRENT-STATUS.md).
 
 App offline-first per **Windows 11 e Android** dedicata ad attività, note e pianificazione. Flutter/Forui con Drift SQLite locale, Google OAuth e sincronizzazione con Spring Boot/PostgreSQL su Coolify.
 

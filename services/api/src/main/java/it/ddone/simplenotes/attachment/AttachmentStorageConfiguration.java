@@ -53,6 +53,9 @@ public class AttachmentStorageConfiguration {
             throw unavailable();
         }
         public Metadata inspect(String key) { throw unavailable(); }
+        public byte[] readPrefix(String key, String expectedEtag, int maxBytes) {
+            throw unavailable();
+        }
         public void promote(String source, String destination,
                 String type, String expectedEtag) {
             throw unavailable();
@@ -113,6 +116,25 @@ public class AttachmentStorageConfiguration {
                 if (error.statusCode() == 404) {
                     throw new ResponseStatusException(HttpStatus.CONFLICT,
                         "Attachment upload not found");
+                }
+                throw error;
+            }
+        }
+
+        @Override public byte[] readPrefix(String key, String expectedEtag,
+                int maxBytes) {
+            if (maxBytes < 1 || maxBytes > 1024 ||
+                    expectedEtag == null || expectedEtag.isBlank()) {
+                throw new IllegalArgumentException("Invalid attachment inspection");
+            }
+            try {
+                return client.getObjectAsBytes(GetObjectRequest.builder()
+                    .bucket(bucket).key(key).ifMatch(expectedEtag)
+                    .range("bytes=0-" + (maxBytes - 1)).build()).asByteArray();
+            } catch (S3Exception error) {
+                if (error.statusCode() == 412 || error.statusCode() == 404) {
+                    throw new ResponseStatusException(HttpStatus.CONFLICT,
+                        "Attachment changed or disappeared during inspection");
                 }
                 throw error;
             }

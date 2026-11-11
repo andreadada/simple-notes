@@ -514,3 +514,7 @@ Il branch feat/p2-custom-templates-calendar-export-android-widget aggiunge Porta
 ## 10/11/2026 — PR #65 modelli V13 auto-sync (integrata)
 
 Il client Flutter prova riconciliazione conservativa foreground delle definizioni personalizzate dopo sync task, con checkpoint SHA-256 owner e CAS. Aggiunta pausa editor Modelli e visibilità stato, oltre all'aggiornamento checkpoint quando Pubblica/Scarica è confermato; nessuna nuova Flyway, nessun deploy, collaudo Windows/Android ancora da verificare. [PR #65](https://github.com/andreadada/simple-notes/pull/65) · [Specifica](P2-AUTO-TEMPLATE-CATALOG.md).
+
+## 11/11/2026 — Hardening allegati P2 (codice in revisione)
+
+Con V14 invariata, aggiunti un range GET condizionato a ETag e controllo firme PNG/JPEG/PDF/TXT prima della promozione S3, con HTTP 409 su mismatch e test; manutenzione schedulata dei soli metadata PENDING scaduti da oltre 24 ore, mai cancellazione degli oggetti S3 o di READY. Rimangono obbligatori lifecycle privato sul bucket, antivirus esterno, deploy e test di dispositivi. Vedere [P2-NOTE-ATTACHMENTS](P2-NOTE-ATTACHMENTS.md).

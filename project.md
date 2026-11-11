@@ -1,12 +1,14 @@
 # Simple Notes — Progetto e roadmap
 
-> **Stato codice 10/11/2026:** [PR #65](https://github.com/andreadada/simple-notes/pull/65) merged `ed45d0e` (auto-sync modelli foreground V13), [PR #64](https://github.com/andreadada/simple-notes/pull/64) merged `5ae2bd3` (allegati S3 V14 opt-in). CI Flutter/Backend/Compose PR #64 e Markdown verdi; CI Flutter PR #65 post-merge in corso. **V14 nel repository**, VPS **V10 attestata al 03/11**; nessun deploy o E2E reale. [Stato canonico](docs/CURRENT-STATUS.md).
+> **Stato codice 10/11/2026:** [PR #65](https://github.com/andreadada/simple-notes/pull/65) merged `ed45d0e` (auto-sync modelli foreground V13), [PR #64](https://github.com/andreadada/simple-notes/pull/64) merged `5ae2bd3` (allegati S3 V14 opt-in). CI Flutter/Backend/Compose PR #64 e Markdown verdi; CI Flutter sull'ultimo commit main [#42887921742](https://github.com/andreadada/simple-notes/actions/runs/42887921742) **success** (analyze/test, Windows, Android JDK17/21).. **V14 nel repository**, VPS **V10 attestata al 03/11**; nessun deploy o E2E reale. [Stato canonico](docs/CURRENT-STATUS.md).
 
 <!-- CURRENT-STATUS-REF -->
 
 **Obiettivo:** Windows 11 + Android offline-first, Google OAuth, Flutter/Forui/Drift + Spring Boot/PostgreSQL su Coolify. Regole UX in [design.md](design.md); deploy sicuro in [P1-RELEASE-BATCH.md](docs/P1-RELEASE-BATCH.md). Le checklist sotto includono traguardi storici: `[x]` significa **codice verificato nella CI o prova specifica**, non distribuzione sul VPS.
 
 ## Gate corrente (P2 PR #65 integrata, VPS e test hardware ancora aperti)
+
+**11/11 — incremento allegati in revisione:** verifica firme oggetti S3 con GET condizionato ETag prima di pubblicare e pulizia metadata PENDING >24h; nessuna nuova migrazione, nessun delete di oggetti S3 o READY. CI e merge da verificare; [contratto](docs/P2-NOTE-ATTACHMENTS.md).
 
 - [x] P1.7 Android con scheduler inexact, ledger, opt-in e CI verde (PR #6). [ ] Prova fisica Android app chiusa/reboot e controllo permessi; [x] codice packaging MSIX + promemoria Windows integrato (PR #7, CI verde); [ ] test fisici MSIX/identità/dati e firma pubblica.
 - [x] Flyway V10 verificata nella VPS reale il 03/11/2026, 0 migrazioni fallite; [ ] health/capability strict ancora aperti.

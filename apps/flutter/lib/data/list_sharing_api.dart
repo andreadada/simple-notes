@@ -13,17 +13,23 @@ class SharedTaskPreview {
   const SharedTaskPreview({
     required this.id, required this.title,
     required this.description, required this.completed,
+    required this.version, required this.priority,
   });
   final String id;
   final String title;
   final String? description;
   final bool completed;
+  final int version;
+  final int priority;
 
   factory SharedTaskPreview.parse(Object? value) {
     if (value is! Map<String, dynamic> ||
         value['id'] is! String || value['title'] is! String ||
         (value['description'] != null && value['description'] is! String) ||
-        (value['completedAt'] != null && value['completedAt'] is! String)) {
+        (value['completedAt'] != null && value['completedAt'] is! String) ||
+        value['version'] is! int || (value['version'] as int) < 0 ||
+        value['priority'] is! int || (value['priority'] as int) < 0 ||
+        (value['priority'] as int) > 3) {
       throw const FormatException('Attività condivisa non valida.');
     }
     return SharedTaskPreview(
@@ -31,6 +37,8 @@ class SharedTaskPreview {
       title: value['title'] as String,
       description: value['description'] as String?,
       completed: value['completedAt'] != null,
+      version: value['version'] as int,
+      priority: value['priority'] as int,
     );
   }
 }
@@ -46,30 +54,31 @@ class SharedTaskList {
   factory SharedTaskList.parse(Object? value) {
     if (value is! Map<String, dynamic> ||
         value['id'] is! String || value['title'] is! String ||
-        value['role'] != 'VIEWER' ||
+        !const {'VIEWER', 'EDITOR'}.contains(value['role']) ||
         (value['title'] as String).length > 255) {
       throw const FormatException('Lista condivisa non valida.');
     }
     return SharedTaskList(
       id: value['id'] as String, title: value['title'] as String,
-      role: 'VIEWER');
+      role: value['role'] as String);
   }
 }
 
 class SharedSnapshot {
   const SharedSnapshot({
     required this.listId, required this.title,
-    required this.tasks, this.nextOffset,
+    required this.tasks, required this.readOnly, this.nextOffset,
   });
   final String listId;
   final String title;
+  final bool readOnly;
   final List<SharedTaskPreview> tasks;
   final int? nextOffset;
 
   factory SharedSnapshot.parse(Object? value) {
     if (value is! Map<String, dynamic> ||
         value['listId'] is! String || value['title'] is! String ||
-        value['readOnly'] != true || value['tasks'] is! List ||
+        value['readOnly'] is! bool || value['tasks'] is! List ||
         (value['tasks'] as List).length > 50 ||
         (value['nextOffset'] != null &&
             (value['nextOffset'] is! int ||
@@ -80,6 +89,7 @@ class SharedSnapshot {
     return SharedSnapshot(
       listId: value['listId'] as String,
       title: value['title'] as String,
+      readOnly: value['readOnly'] as bool,
       tasks: (value['tasks'] as List)
           .map(SharedTaskPreview.parse).toList(growable: false),
       nextOffset: value['nextOffset'] as int?,
@@ -110,17 +120,22 @@ class ListShareInvitation {
 }
 
 class ListShareMember {
-  const ListShareMember({required this.id, this.displayName});
+  const ListShareMember({required this.id, this.displayName,
+      required this.role});
   final String id;
   final String? displayName;
+  final String role;
   factory ListShareMember.parse(Object? value) {
     if (value is! Map<String, dynamic> ||
         value['id'] is! String ||
-        (value['displayName'] != null && value['displayName'] is! String)) {
+        (value['displayName'] != null && value['displayName'] is! String) ||
+        (value['role'] != null &&
+            !const {'VIEWER', 'EDITOR'}.contains(value['role']))) {
       throw const FormatException('Collaboratore non valido.');
     }
     return ListShareMember(id: value['id'] as String,
-        displayName: value['displayName'] as String?);
+        displayName: value['displayName'] as String?,
+        role: value['role'] as String? ?? 'VIEWER');
   }
 }
 
@@ -248,6 +263,56 @@ class ListSharingApi {
   Future<void> revokeMember(String listId,String memberId) async {
     await _call('DELETE','/lists/${Uri.encodeComponent(listId)}/members/'
         '${Uri.encodeComponent(memberId)}');
+  }
+
+  /// Owner-only role change. A token never carries EDITOR permission.
+  Future<ListShareMember> changeRole(String listId, String memberId,
+      String role) async {
+    if (!const {'VIEWER', 'EDITOR'}.contains(role)) {
+      throw const FormatException('Ruolo non valido.');
+    }
+    return ListShareMember.parse(_body(await _call('PUT',
+      '/lists/${Uri.encodeComponent(listId)}/members/'
+      '${Uri.encodeComponent(memberId)}/role',
+      payload: {'role': role})));
+  }
+
+  /// Online CAS update; 409 must be surfaced to the user, never retried
+  /// silently. Only the four owner-approved editable task attributes pass.
+  Future<int> editTask(String listId, String taskId, {
+    required int expectedVersion, String? title, String? description,
+    bool? completed, int? priority,
+  }) async {
+    if (expectedVersion < 0 || (title == null && description == null &&
+        completed == null && priority == null)) {
+      throw const FormatException('Nessuna modifica valida al task.');
+    }
+    if (title != null && (title.trim().isEmpty || title.length > 1024)) {
+      throw const FormatException('Titolo non valido.');
+    }
+    if (description != null && description.length > 20000) {
+      throw const FormatException('Descrizione troppo lunga.');
+    }
+    if (priority != null && (priority < 0 || priority > 3)) {
+      throw const FormatException('Priorità non valida.');
+    }
+    final response = _body(await _call('PATCH',
+      '/lists/${Uri.encodeComponent(listId)}/tasks/'
+      '${Uri.encodeComponent(taskId)}',
+      payload: {
+        'expectedVersion': expectedVersion,
+        if (title != null) 'title': title.trim(),
+        if (description != null) 'description': description,
+        if (completed != null) 'completed': completed,
+        if (priority != null) 'priority': priority,
+      }));
+    if (response is! Map<String, dynamic> ||
+        response['version'] is! int || (response['version'] as int) < 0 ||
+        response['changeId'] is! int ||
+        (response['changeId'] as int) < 1) {
+      throw const FormatException('Risposta modifica non valida.');
+    }
+    return response['version'] as int;
   }
 
   Future<void> revokeInvitation(String listId,String invitationId) async {

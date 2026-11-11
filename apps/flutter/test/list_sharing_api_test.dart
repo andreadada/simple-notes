@@ -46,7 +46,8 @@ void main() {
           'listId':listId,'title':'Squadra','readOnly':true,
           'nextOffset':null,'tasks':[
             {'id':memberId,'title':'Preparare report',
-              'description':'Dettagli','completedAt':null},
+              'description':'Dettagli','completedAt':null,
+              'version':3,'priority':1},
           ],
         }),200);
       }
@@ -102,17 +103,109 @@ void main() {
     await expectLater(api.snapshot(listId,offset:10001),throwsFormatException);
   });
 
+  test('EDITOR role, version CAS and role updates use dedicated JWT routes',
+      () async {
+    final calls = <String>[];
+    final client = MockClient((request) async {
+      expect(request.url.scheme,'https');
+      expect(request.url.host,'api.example');
+      expect(request.headers['Authorization'],'Bearer TEST-JWT');
+      expect(request.followRedirects,isFalse);
+      calls.add('${request.method} ${request.url.path}');
+      if (request.method == 'PUT') {
+        expect(request.url.path,
+          '/api/v1/sharing/lists/$listId/members/$memberId/role');
+        expect(jsonDecode(request.body), {'role':'EDITOR'});
+        return http.Response(jsonEncode({
+          'id':memberId,'displayName':'Collaboratore','role':'EDITOR',
+        }),200);
+      }
+      if (request.method == 'PATCH') {
+        expect(request.url.path,
+          '/api/v1/sharing/lists/$listId/tasks/$memberId');
+        expect(request.url.queryParameters,isEmpty);
+        final body=jsonDecode(request.body);
+        expect(body['expectedVersion'],4);
+        expect(body['title'],'Titolo aggiornato');
+        expect(body['completed'],true);
+        expect(body.containsKey('listId'),isFalse);
+        expect(body.containsKey('ownerId'),isFalse);
+        return http.Response(jsonEncode({'version':5,'changeId':133}),200);
+      }
+      return http.Response('',404);
+    });
+    final api=ListSharingApi(
+      baseUrl:'https://api.example',tokenProvider:() async =>'TEST-JWT',
+      client:client);
+    final changed=await api.changeRole(listId,memberId,'EDITOR');
+    expect(changed.role,'EDITOR');
+    final next=await api.editTask(listId,memberId,
+      expectedVersion:4,title:'Titolo aggiornato',completed:true);
+    expect(next,5);
+    expect(calls,[
+      'PUT /api/v1/sharing/lists/$listId/members/$memberId/role',
+      'PATCH /api/v1/sharing/lists/$listId/tasks/$memberId',
+    ]);
+    final preview=SharedTaskPreview.parse({
+      'id':memberId,'title':'Titolo aggiornato',
+      'description':'Dettagli','completedAt':null,
+      'version':5,'priority':3,
+    });
+    expect(preview.version,5);
+    expect(preview.priority,3);
+    final snap=SharedSnapshot.parse({
+      'listId':listId,'title':'Squadra','readOnly':false,
+      'nextOffset':null,'tasks':[{
+        'id':memberId,'title':'Titolo aggiornato',
+        'description':'Dettagli','completedAt':null,
+        'version':5,'priority':3,
+      }],
+    });
+    expect(snap.readOnly,isFalse);
+    expect(snap.tasks.single.version,5);
+    expect(SharedTaskList.parse({
+      'id':listId,'title':'Squadra','role':'EDITOR',
+    }).role,'EDITOR');
+  });
+
+  test('EDITOR rejects bad edits locally and surfaces 409 without retry',
+      () async {
+    var requests=0;
+    final api=ListSharingApi(
+      baseUrl:'https://api.example',tokenProvider:() async =>'token',
+      client:MockClient((request) async {
+        requests++;
+        return http.Response('',409);
+      }));
+    await expectLater(api.editTask(listId,memberId,
+      expectedVersion:-1,title:'X'),throwsFormatException);
+    await expectLater(api.editTask(listId,memberId,
+      expectedVersion:1),throwsFormatException);
+    await expectLater(api.editTask(listId,memberId,
+      expectedVersion:1,title:'  '),throwsFormatException);
+    await expectLater(api.editTask(listId,memberId,
+      expectedVersion:1,priority:8),throwsFormatException);
+    await expectLater(api.changeRole(listId,memberId,'ADMIN'),
+      throwsFormatException);
+    expect(requests,0);
+    await expectLater(api.editTask(listId,memberId,
+      expectedVersion:5,completed:true),
+      throwsA(isA<ListSharingHttpException>().having(
+        (e)=>e.status,'status',409)));
+    expect(requests,1);
+  });
+
   test('validation rejects malformed snapshots and unsafe API addresses',
       () async {
     expect(()=>SharedSnapshot.parse({
-      'listId':listId,'title':'X','readOnly':false,'tasks':[],
+      'listId':listId,'title':'X','readOnly':'not-a-bool','tasks':[],
     }),throwsFormatException);
     expect(()=>SharedSnapshot.parse({
       'listId':listId,'title':'X','readOnly':true,
       'tasks':List.generate(51,(_)=>{}),
     }),throwsFormatException);
     expect(()=>SharedTaskList.parse({
-      'id':listId,'title':'X','role':'EDITOR',
+      'id':listId,'title':'X','role':'ADMIN',
     }),throwsFormatException);
     expect(()=>ListShareInvitation.parse({
       'id':inviteId,'token':'short','expiresAt':'2026-11-18T12:00:00Z',

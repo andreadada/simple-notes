@@ -544,3 +544,7 @@ La PR #71 imposta Flutter **3.47.9** in tutti e tre i job di `.github/workflows/
 ## 11/11/2026 — Backend EDITOR (Flyway V17 in revisione)
 
 Owner promuove/revoca su API ruoli, collaboratori EDITOR possono modificare soltanto quattro campi del task attraverso SyncService owner e version CAS. Nessun bypass della sync ledger; l'audit salva solo ID e nomi dei campi. Test Testcontainers e read-only gate V17; nessun deploy, nessun client EDITOR. [Specifica](P2-LIST-EDITOR.md).
+
+## 11/11/2026 — Client EDITOR Forui (in revisione)
+
+Sezione Condivise: ruoli dei membri e conferma esplicita prima della promozione, titolo/descrizione modificati inline sul task ricevuto, completamento/priorità via PATCH CAS, su 409 solo refresh manuale. Nessun movimento di dati nel profilo locale: credenziali cloud confinante all'owner corrente, backend V17 già integrato con PR #74. Test HTTP/widget e CI native in verifica. [Specifica](P2-LIST-EDITOR.md).

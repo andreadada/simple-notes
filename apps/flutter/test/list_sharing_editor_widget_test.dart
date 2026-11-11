@@ -65,14 +65,25 @@ void main() {
     await tester.tap(open);
     await tester.pumpAndSettle();
     final edit=find.byKey(const Key('share-edit-$taskId'));
+    // The snapshot is below the invitation cards on a 600px test window.
+    // Scroll the real list viewport before tapping; a finder can exist even
+    // when its center is still outside the viewport.
+    await tester.drag(find.byKey(const Key('list-sharing-board')),
+        const Offset(0,-250));
+    await tester.pumpAndSettle();
     await tester.ensureVisible(edit);
+    await tester.pumpAndSettle();
     await tester.tap(edit);
     await tester.pumpAndSettle();
     expect(find.byKey(const Key('share-edit-title')),findsOneWidget);
     await tester.enterText(find.byKey(const Key('share-edit-title')),
       'Titolo condiviso');
     final save=find.byKey(const Key('share-save-task'));
+    await tester.drag(find.byKey(const Key('list-sharing-board')),
+        const Offset(0,-250));
+    await tester.pumpAndSettle();
     await tester.ensureVisible(save);
+    await tester.pumpAndSettle();
     await tester.tap(save);
     await tester.pumpAndSettle();
     expect(edits,1);

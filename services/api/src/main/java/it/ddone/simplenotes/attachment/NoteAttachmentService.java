@@ -127,7 +127,8 @@ public class NoteAttachmentService {
             // leave a readable object rather than a broken READY record.
             deletionQueue.enqueue(owner, attachment.objectKey);
         }
-        attachments.deleteAndFlush(attachment);
+        attachments.delete(attachment);
+        attachments.flush();
     }
 
     private NoteAttachmentEntity find(UUID owner, UUID note, UUID id) {

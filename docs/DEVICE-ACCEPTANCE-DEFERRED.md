@@ -120,3 +120,7 @@ Dopo deploy autorizzato in un bucket privato di prova: eliminazione READY e veri
 ## P2 V16 — collaborazione VIEWER (test post-deploy rinviati)
 
 Dopo un rollout esplicitamente autorizzato, con **due account di prova**, verificare: segreto mostrato una sola volta; nessun token nei log o in GET; 7 giorni di TTL e revoca; impossibilità di auto-accettazione; accettazione univoca; lista e task privati mai visibili al collaboratore; owner che revoca la membership; link scaduto; perdita di rete e riconnessione. Nessuna UI Flutter per inviti disponibile in questo incremento. Non modificare dati o account reali per validarlo. [Specifica](P2-LIST-SHARING.md) · [Readiness](RELEASE-V16-READINESS.md).
+
+## P2 Condivise — switching account (11/11)
+
+Su Windows e Android, dopo deploy autorizzato e con due account fittizi, simulare richieste lente dell'account Alice durante logout/login Bob. Controllare che liste, token e messaggi del primo account non appaiano nel secondo; ripetere con una conferma di revoca aperta. La PR #71 include un test widget sintetico, non un collaudo reale. [Specifica](P2-LIST-SHARING.md).

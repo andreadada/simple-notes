@@ -1,7 +1,7 @@
 # Simple Notes API v1
 
 <!-- CURRENT-STATUS-REF -->
-> **Stato operativo 11/11/2026:** PR #66–#67 integrate in `main`; backend Flyway **V15 nel repository**, VPS confermata **V10 il 03/11**. CI backend, Compose e Markdown verdi; deploy, S3 reale e test Windows/Android ancora non attestati. [Stato canonico](CURRENT-STATUS.md).
+> **Stato corrente 11/11/2026:** [PR #69](https://github.com/andreadada/simple-notes/pull/69) backend sharing VIEWER Flyway V16 e [#70](https://github.com/andreadada/simple-notes/pull/70) UI Forui integrate in `main`; CI branch verde. PR #71 verifica risposta ritardata su cambio account. VPS Flyway V10 attestata 03/11, nessun deploy/E2E. [Stato canonico](CURRENT-STATUS.md).
 
 
 ## Auth

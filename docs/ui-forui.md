@@ -1,7 +1,7 @@
 # Simple Notes — UI e design system Forui
 
 <!-- CURRENT-STATUS-REF -->
-> **Stato corrente 11/11/2026:** PR #66/#67 integrate; Flyway V15 solo nel repository, VPS V10 attestata il 03/11. Collaudi hardware e deploy ancora aperti. Gli incrementi precedenti descritti sotto sono cronologia; prevale [CURRENT-STATUS](CURRENT-STATUS.md).
+> **Stato 11/11/2026:** [PR #69](https://github.com/andreadada/simple-notes/pull/69) backend V16 e [PR #70](https://github.com/andreadada/simple-notes/pull/70) schermata Condivise Forui integrate, CI branch verde. Hardening PR #71 in revisione. VPS V10 attestata, nessun deploy o test hardware. [Stato](CURRENT-STATUS.md).
 
 > **Cronologia (stato del 02/11 o 31/10/2026):** P2.3D gestione fonti ICS integrata su `main` ([PR #25](https://github.com/andreadada/simple-notes/pull/25), Flutter `0.29.0+31`; [CI Flutter](https://github.com/andreadada/simple-notes/actions/runs/41471546808) success: **191 test**, Windows EXE/MSIX, Android JDK17/21; [Markdown](https://github.com/andreadada/simple-notes/actions/runs/41471546568) success). Nessun deploy, reset, installazione o test hardware. Backend Flyway V10 in repo, VPS ultima attestazione V8. [Stato](CURRENT-STATUS.md) · [Gestione ICS](P2-ICS-SOURCE-MANAGEMENT.md).
 
@@ -223,6 +223,6 @@ La card nota mantiene titolo e corpo **inline**. Un'icona graffetta apre un `Not
 
 La schermata Strumenti → Modelli conserva pulsanti Pubblica/Scarica con dialog Forui di consenso e editor inline. Mostra un testo di stato del sync catalogo (allineato, conflitto, offline, pausa editor, API V13 non disponibile). Mentre la schermata è visibile, nessun download può cambiarne la libreria sotto i controlli di modifica; quando l'utente esce, la riconciliazione riprende. [Specifica](P2-AUTO-TEMPLATE-CATALOG.md).
 
-## P2 — Condivise (UI Flutter in revisione 11/11/2026)
+## P2 — Condivise (PR #70 integrata, 11/11/2026)
 
 Nella sezione **STRUMENTI → Condivise** i controlli Forui gestiscono inviti privati (campo incolla, pulsanti Crea/Copia/Gestisci), liste ricevute e anteprima task in sola lettura. Conferma tramite NotesDialog per rimuovere membri o abbandonare liste, niente nuova modale per editare attributi già visibili. Token visualizzato una sola volta, non in analytics o storage persistente. L'account Google e boundOwnerId vengono confrontati intorno a ogni richiesta; nessun task condiviso viene copiato nell'archivio offline personale. [Specifica](P2-LIST-SHARING.md).

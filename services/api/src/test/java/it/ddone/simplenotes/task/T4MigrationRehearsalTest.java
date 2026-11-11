@@ -104,7 +104,7 @@ class T4MigrationRehearsalTest {
                 postgres.getPassword()).load();
             migrated.migrate();
             migrated.validate();
-            assertEquals("16", migrated.info().current().getVersion().toString());
+            assertEquals("17", migrated.info().current().getVersion().toString());
 
             try (Connection db = DriverManager.getConnection(
                     postgres.getJdbcUrl(), postgres.getUsername(),
@@ -124,6 +124,14 @@ class T4MigrationRehearsalTest {
                      ResultSet rs = ps.executeQuery()) {
                     assertTrue(rs.next());
                     assertEquals(0, rs.getLong(1));
+                }
+                // V14–V17 add attachments and sharing without rewriting
+                // historical task, note, account, or sync rows.
+                try (PreparedStatement audit = db.prepareStatement(
+                    "SELECT COUNT(*) FROM list_share_audit");
+                     ResultSet rows = audit.executeQuery()) {
+                    assertTrue(rows.next());
+                    assertEquals(0, rows.getLong(1));
                 }
                 // V14/V15/V16 add attachments and read-only sharing metadata.
                 try (PreparedStatement shared = db.prepareStatement(

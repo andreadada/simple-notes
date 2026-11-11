@@ -128,3 +128,7 @@ Su Windows e Android, dopo deploy autorizzato e con due account fittizi, simular
 ## Flutter SDK pin per test successivi (11/11)
 
 Per riprodurre la build Windows di GitHub Actions usare Flutter **3.47.9**, non lo stable più recente senza verificarne la compatibilità. Nel run con 3.50.0 la dipendenza transitiva `nativeapi 0.5.10` falliva con `Isolate.create` non disponibile. Aggiornare SDK e dipendenze insieme dopo test EXE/MSIX e APK. [Stato](CURRENT-STATUS.md).
+
+## P2 V17 — EDITOR (prove differite)
+
+Su due account fittizi e dispositivi di prova dopo deploy autorizzato: VIEWER sempre read-only, promozione soltanto proprietario, edit cross-owner con CAS, collisione owner/editor 409 e refresh, riconciliazione owner su Windows/Android, revoca durante edit, task fuori lista, audit senza testo, scadenze/ricorrenze e note inalterate. Nessun esperimento con dati personali live. [Specifica](P2-LIST-EDITOR.md) · [Readiness](RELEASE-V17-READINESS.md).

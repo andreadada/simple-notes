@@ -18,10 +18,14 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/v1/sharing")
 public class ListSharingController {
     public record Accept(@NotBlank String token) {}
+    public record RoleChange(@NotBlank String role) {}
 
     private final ListSharingService sharing;
-    public ListSharingController(ListSharingService sharing) {
+    private final ListSharingEditService edits;
+    public ListSharingController(ListSharingService sharing,
+            ListSharingEditService edits) {
         this.sharing = sharing;
+        this.edits = edits;
     }
 
     private UUID account(Jwt jwt) { return UUID.fromString(jwt.getSubject()); }
@@ -76,6 +80,22 @@ public class ListSharingController {
     public void removeMember(@AuthenticationPrincipal Jwt jwt,
             @PathVariable UUID listId, @PathVariable UUID memberId) {
         sharing.removeMember(account(jwt), listId, memberId);
+    }
+
+    @PutMapping("/lists/{listId}/members/{memberId}/role")
+    public ListSharingService.Member setRole(@AuthenticationPrincipal Jwt jwt,
+            @PathVariable UUID listId, @PathVariable UUID memberId,
+            @Valid @RequestBody RoleChange input) {
+        return sharing.setMemberRole(account(jwt), listId, memberId,
+            input.role());
+    }
+
+    @PatchMapping("/lists/{listId}/tasks/{taskId}")
+    public ListSharingEditService.EditedTask editTask(
+            @AuthenticationPrincipal Jwt jwt, @PathVariable UUID listId,
+            @PathVariable UUID taskId,
+            @Valid @RequestBody ListSharingEditService.EditTask input) {
+        return edits.edit(account(jwt), listId, taskId, input);
     }
 
     @DeleteMapping("/lists/{listId}/membership")

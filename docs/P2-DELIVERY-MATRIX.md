@@ -85,3 +85,7 @@ Una nuova API Spring JWT separata da `/sync` gestisce condivisione **VIEWER** de
 ### UI collaborazione VIEWER (PR #70 integrata su `main`)
 
 Dopo backend [PR #69](https://github.com/andreadada/simple-notes/pull/69) integrato con CI verde, il client Flutter aggiunge sezione Forui **Condivise** e API HTTP JWT per creare/copiare token, accettare, consultare pagine di task, gestire/revocare inviti e membership. **Nessuna sync cross-account, modifica di task ricevuti, storage offline o condivisione EDITOR**. Per usarla occorre ancora distribuire il backend (V16) e verificare su dispositivi di prova. [Contratto](P2-LIST-SHARING.md).
+
+## Incremento EDITOR Flyway V17 — backend in revisione (11/11/2026)
+
+Promozione/demozione **solo owner** dei membri già accettati; patch online **solo titolo, descrizione, completamento, priorità** con CAS per-versione e controllo della membership dopo lock owner. L'operazione passa dal `SyncService.apply` canonico del proprietario, senza scrivere nel ledger dell'ospite; audit immutabile annota attore, campi e changeId senza contenuti privati. V17 additiva amplia il ruolo e aggiunge `list_share_audit`; capability `sharingEditorSchema:1`. **Mancano UI Flutter EDITOR, merge automatico, notifiche e sync offline multi-owner**. CI/merge in verifica, nessun deploy. [Specifica](P2-LIST-EDITOR.md) · [Readiness](RELEASE-V17-READINESS.md).

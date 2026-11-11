@@ -1,5 +1,7 @@
 # Simple Notes
 
+> **11/11/2026 — backend EDITOR V17 in revisione:** promozione/revoca ruoli solo owner, modifica CAS dei campi consentiti tramite ledger canonico proprietario e audit content-free. Nessun client EDITOR ancora; CI/merge da verificare. VPS attestata V10 (03/11), nessun deploy. [Contratto](docs/P2-LIST-EDITOR.md) · [Gate](docs/RELEASE-V17-READINESS.md).
+
 > **Stato P2 · 11/11/2026:** [PR #69](https://github.com/andreadada/simple-notes/pull/69) (sharing VIEWER, Flyway V16) e [PR #70](https://github.com/andreadada/simple-notes/pull/70) (Flutter Condivise) sono integrate in `main` con CI di branch verdi. [PR #71](https://github.com/andreadada/simple-notes/pull/71) aggiunge protezione cambio account (integrata). **VPS attestata V10 al 03/11, nessun deploy né test reali.** CI Flutter fissata a **3.47.9**: il nuovo stable 3.50.0 rompe `nativeapi 0.5.10` su Windows. [Stato canonico](docs/CURRENT-STATUS.md).
 
 

@@ -48,6 +48,14 @@ def run() -> None:
             refuse()
         if sharing == "1" and not has_version_one("sharingReadSchema"):
             refuse()
+        editor = os.environ.get("REQUIRE_SHARING_EDITOR_SCHEMA", "0")
+        if editor not in ("0", "1"):
+            refuse()
+        if editor == "1" and (
+            not has_version_one("sharingReadSchema")
+            or not has_version_one("sharingEditorSchema")
+        ):
+            refuse()
         strict = os.environ.get("REQUIRE_FULL_SCHEMA", "0")
         time_block = os.environ.get("REQUIRE_TIME_BLOCK_SCHEMA", "0")
         if strict not in ("0", "1") or time_block not in ("0", "1"):

@@ -1,5 +1,7 @@
 # Stato corrente — Simple Notes
 
+> **11/11/2026 — backend EDITOR V17 in revisione:** promozione/revoca ruoli solo owner, modifica CAS dei campi consentiti tramite ledger canonico proprietario e audit content-free. Nessun client EDITOR ancora; CI/merge da verificare. VPS attestata V10 (03/11), nessun deploy. [Contratto](P2-LIST-EDITOR.md) · [Gate](RELEASE-V17-READINESS.md).
+
 > **Stato aggiornato 11/11/2026:** [PR #69](https://github.com/andreadada/simple-notes/pull/69) backend condivisione VIEWER/Flyway V16 e [PR #70](https://github.com/andreadada/simple-notes/pull/70) sezione Forui Condivise **integrate in `main`**, CI dei branch verdi. [PR #71](https://github.com/andreadada/simple-notes/pull/71) hardening account switching integrata. **VPS attestata V10 il 03/11**: nessun deploy V11–V16, restore live o E2E dispositivi. [Specifica](P2-LIST-SHARING.md).
 
 

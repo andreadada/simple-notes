@@ -218,3 +218,7 @@ Il codice introduce la tabella additiva `note_attachment` e l'object store solo 
 ## P2 V16 — condivisione VIEWER, gate separato
 
 La migrazione Flyway V16 aggiunge tabelle di inviti e membership senza cambiare gli owner dei task o la sync. Il nuovo [runbook V16](../docs/RELEASE-V16-READINESS.md) è **solo read-only dopo un deploy autorizzato**; non chiedere di lanciare migrazioni, non creare token o account di test sulla VPS per verificare il codice. [Specifica](../docs/P2-LIST-SHARING.md).
+
+## P2 V17 — gate collaboratori EDITOR (solo lettura)
+
+Il codice backend in revisione aggiunge ruolo EDITOR e audit senza alterare il proprietario delle attività. Dopo un **eventuale rollout autorizzato** usare [RELEASE-V17-READINESS](../docs/RELEASE-V17-READINESS.md) per verificare la struttura e le capability, non per creare account o permessi reali. La VPS è attestata Flyway V10 al 03/11.

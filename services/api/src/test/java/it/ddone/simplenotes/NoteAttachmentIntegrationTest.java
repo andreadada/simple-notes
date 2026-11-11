@@ -2,6 +2,7 @@ package it.ddone.simplenotes;
 
 import it.ddone.simplenotes.attachment.AttachmentObjectStore;
 import it.ddone.simplenotes.attachment.NoteAttachmentRepository;
+import it.ddone.simplenotes.attachment.AttachmentDeletionQueue;
 import it.ddone.simplenotes.note.NoteEntity;
 import it.ddone.simplenotes.note.NoteRepository;
 import it.ddone.simplenotes.user.AppUser;
@@ -51,6 +52,9 @@ class NoteAttachmentIntegrationTest {
     @Autowired AppUserRepository users;
     @Autowired NoteRepository notes;
     @Autowired NoteAttachmentRepository attachments;
+    @Autowired AttachmentDeletionQueue deletionQueue;
+    @Autowired org.springframework.jdbc.core.JdbcTemplate jdbc;
+    @Autowired org.springframework.transaction.PlatformTransactionManager txManager;
     @Autowired JwtEncoder encoder;
     @Autowired ObjectMapper json;
     @MockitoBean AttachmentObjectStore objects;
@@ -135,6 +139,10 @@ class NoteAttachmentIntegrationTest {
         mvc.perform(delete(url + "/" + id)
             .header("Authorization", auth(alice.id)))
             .andExpect(status().isNoContent());
+        verify(objects, never()).delete(anyString());
+        org.assertj.core.api.Assertions.assertThat(jdbc.queryForObject(
+            "SELECT COUNT(*) FROM attachment_object_delete_queue " +
+            "WHERE owner_id = ?", Long.class, alice.id)).isEqualTo(1L);
         mvc.perform(get(url).header("Authorization", auth(alice.id)))
             .andExpect(jsonPath("$.length()").value(0));
         mvc.perform(get("/api/v1/sync/changes")
@@ -238,6 +246,30 @@ class NoteAttachmentIntegrationTest {
             org.springframework.test.util.ReflectionTestUtils.setField(
                 maintenance, "enabled", false);
         }
+    }
+
+    @Test
+    void durableDeleteQueueRetriesAfterObjectStoreFailure() {
+        var owner = user();
+        String key = "files/" + owner.id + "/" + UUID.randomUUID();
+        deletionQueue.enqueue(owner.id, key);
+        var worker = new AttachmentDeletionQueue(jdbc, objects);
+        org.springframework.test.util.ReflectionTestUtils.setField(
+            worker, "enabled", true);
+        doThrow(new IllegalStateException("S3 temporarily offline"))
+            .doNothing().when(objects).delete(key);
+        var tx = new org.springframework.transaction.support.TransactionTemplate(txManager);
+        tx.executeWithoutResult(status -> { worker.drain(); });
+        org.assertj.core.api.Assertions.assertThat(jdbc.queryForObject(
+            "SELECT attempts FROM attachment_object_delete_queue WHERE object_key=?",
+            Integer.class, key)).isEqualTo(1);
+        jdbc.update("UPDATE attachment_object_delete_queue " +
+            "SET retry_after=now()-INTERVAL '1 second' WHERE object_key=?", key);
+        tx.executeWithoutResult(status -> { worker.drain(); });
+        org.assertj.core.api.Assertions.assertThat(jdbc.queryForObject(
+            "SELECT COUNT(*) FROM attachment_object_delete_queue WHERE object_key=?",
+            Long.class, key)).isEqualTo(0L);
+        verify(objects, times(2)).delete(key);
     }
 
 }

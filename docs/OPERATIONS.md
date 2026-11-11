@@ -1,5 +1,7 @@
 # Guida operativa — Simple Notes
 
+> **11/11/2026:** per l'incremento V15 della coda oggetti S3, dopo eventuale autorizzazione usare [gate read-only V15](RELEASE-V15-READINESS.md), non il gate storico V14. Nessun deploy autorizzato da questo documento.
+
 > **Stato codice 10/11/2026:** [PR #64](https://github.com/andreadada/simple-notes/pull/64) merged `5ae2bd3` (allegati privati S3 per note, Flyway V14 opt-in). Backend/Compose/Markdown CI e Flutter analyze/test verdi; build native Flutter post-merge ancora da verificare. Codice Flyway **V14 nel repository**, VPS **V10 attestata al 03/11**: nessun deploy, bucket S3 live, restore o E2E hardware. [Stato canonico](CURRENT-STATUS.md).
 
 **Fonte operativa** per checkout Windows, CI, Coolify, Android e Windows ZIP/MSIX. Lo stato canonico aggiornato è in [CURRENT-STATUS.md](CURRENT-STATUS.md); le versioni precedenti qui riportate costituiscono cronologia, non conferme di deploy.

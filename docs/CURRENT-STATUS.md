@@ -1,5 +1,8 @@
 # Stato corrente — Simple Notes
 
+
+> **11/11/2026:** PR #66 integrata con CI backend/Markdown verdi ([PR](https://github.com/andreadada/simple-notes/pull/66)); **V15 in revisione** introduce un'outbox durevole per DELETE S3, non ancora distribuita. [Runbook V15](RELEASE-V15-READINESS.md).
+
 **Aggiornato 11 novembre 2026 (audit su commit 7ee9dce).** Questo documento prevale sulla cronologia. **Codice/CI, deploy Coolify, installazione e collaudo fisico sono stati distinti.**
 
 **Audit Markdown del 10/11/2026:** ricontrollati tutti i **68 file `.md`** del repository (**62 in `docs/`**, indice incluso, e 6 distribuiti nei package/radice). Normalizzate intestazioni P0/P1 e runbook T3/T4, corrette diciture PR #62–#65 e migrazioni Flyway V14 nel codice, aggiunto [indice completo](README.md); controlli link relativi [Markdown CI #42854337893](https://github.com/andreadada/simple-notes/actions/runs/42854337893) **success** dopo il merge. Le modifiche documentali successive mantengono la stessa rete di link. La [CI Flutter della PR #62](https://github.com/andreadada/simple-notes/actions/runs/42854004235) è **success**; la CI Flutter della PR #63 su `main` [#42859684045](https://github.com/andreadada/simple-notes/actions/runs/42859684045) è **success**; PR #64 allegati S3 e PR #65 auto-sync modelli sono integrate su `main`.

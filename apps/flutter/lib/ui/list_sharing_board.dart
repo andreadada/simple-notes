@@ -33,6 +33,9 @@ class ListSharingBoard extends StatefulWidget {
 
 class _ListSharingBoardState extends State<ListSharingBoard> {
   final TextEditingController _code = TextEditingController();
+  final TextEditingController _draftTitle = TextEditingController();
+  final TextEditingController _draftDescription = TextEditingController();
+  String? _editingTaskId;
   late final ListSharingApi _api;
   late final bool _ownsApi;
   List<SharedTaskList> _received = const [];
@@ -67,6 +70,9 @@ class _ListSharingBoardState extends State<ListSharingBoard> {
     _code.clear();
     _received = const [];
     _snapshot = null;
+    _editingTaskId = null;
+    _draftTitle.clear();
+    _draftDescription.clear();
     _issued = null;
     _issuedList = null;
     _managedList = null;
@@ -79,6 +85,8 @@ class _ListSharingBoardState extends State<ListSharingBoard> {
   @override
   void dispose() {
     _code.dispose();
+    _draftTitle.dispose();
+    _draftDescription.dispose();
     if (_ownsApi) _api.close();
     super.dispose();
   }
@@ -212,7 +220,10 @@ class _ListSharingBoardState extends State<ListSharingBoard> {
   Future<void> _open(SharedTaskList list) => _run((owner, epoch) async {
     final snapshot = await _api.snapshot(list.id);
     if (!await _accountValid(owner, epoch)) return;
-    setState(() => _snapshot = snapshot);
+    setState(() {
+      _snapshot = snapshot;
+      _editingTaskId = null;
+    });
   });
 
   Future<void> _more() => _run((owner, epoch) async {
@@ -223,6 +234,7 @@ class _ListSharingBoardState extends State<ListSharingBoard> {
     if (!await _accountValid(owner, epoch) || _snapshot != previous) return;
     setState(() => _snapshot = SharedSnapshot(
       listId: previous.listId, title: page.title,
+      readOnly: page.readOnly,
       tasks: [...previous.tasks, ...page.tasks],
       nextOffset: page.nextOffset,
     ));
@@ -298,6 +310,87 @@ class _ListSharingBoardState extends State<ListSharingBoard> {
       setState(() => _members = refreshed);
     });
   }
+
+  Future<void> _changeRole(String listId, ListShareMember member) async {
+    final actor = widget.ownerId;
+    final generation = _ownerEpoch;
+    if (!await _accountValid(actor, generation)) return;
+    final promote = member.role != 'EDITOR';
+    if (!await _confirm(
+        promote ? 'Consenti modifiche' : 'Rendi solo lettore',
+        promote
+          ? 'Questa persona potrà modificare titolo, descrizione, '
+            'priorità e completamento dei task nella lista condivisa.'
+          : 'Questa persona non potrà più modificare i task.')) {
+      return;
+    }
+    if (!await _accountValid(actor, generation)) return;
+    await _run((owner, epoch) async {
+      await _api.changeRole(listId, member.id,
+          promote ? 'EDITOR' : 'VIEWER');
+      if (!await _accountValid(owner, epoch)) return;
+      final updated = await _api.members(listId);
+      if (!await _accountValid(owner, epoch)) return;
+      setState(() => _members = updated);
+      _message(promote ? 'Collaboratore abilitato alle modifiche.'
+          : 'Collaboratore in sola lettura.');
+    });
+  }
+
+  void _beginEdit(SharedTaskPreview task) {
+    if (_busy || _loading || _snapshot?.readOnly != false) return;
+    setState(() {
+      _editingTaskId = task.id;
+      _draftTitle.text = task.title;
+      _draftDescription.text = task.description ?? '';
+    });
+  }
+
+  Future<void> _reloadSnapshot() => _run((owner, epoch) async {
+    final current = _snapshot;
+    if (current == null) return;
+    final remote = await _api.snapshot(current.listId);
+    if (!await _accountValid(owner, epoch) ||
+        _snapshot?.listId != current.listId) return;
+    setState(() {
+      _snapshot = remote;
+      _editingTaskId = null;
+    });
+  });
+
+  Future<void> _editTask(SharedTaskPreview task, {
+    String? title, String? description, bool? completed, int? priority,
+  }) => _run((owner, epoch) async {
+    final current = _snapshot;
+    if (current == null || current.readOnly ||
+        !current.tasks.any((item) => item.id == task.id &&
+            item.version == task.version)) {
+      throw const FormatException('Aggiorna la lista prima di modificare.');
+    }
+    try {
+      await _api.editTask(current.listId, task.id,
+        expectedVersion: task.version,
+        title: title, description: description,
+        completed: completed, priority: priority);
+    } on ListSharingHttpException catch (error) {
+      if (error.status == 409) {
+        throw const FormatException('Conflitto: il task è stato modificato '
+            'da un altro dispositivo. Aggiorna la lista e riprova.');
+      }
+      rethrow;
+    }
+    if (!await _accountValid(owner, epoch)) return;
+    // Read back the server snapshot. Never optimistically stage a remote
+    // task in Drift or mutate an owner's local /sync cursor.
+    final latest = await _api.snapshot(current.listId);
+    if (!await _accountValid(owner, epoch) ||
+        _snapshot?.listId != current.listId) return;
+    setState(() {
+      _snapshot = latest;
+      _editingTaskId = null;
+    });
+    _message('Modifica condivisa salvata sul server.');
+  });
 
   Future<void> _revokeInvite(String listId, PendingListInvitation invite) async {
     await _run((owner, epoch) async {
@@ -409,16 +502,33 @@ class _ListSharingBoardState extends State<ListSharingBoard> {
                   Text('Collaboratori ${_members.length}',
                     style: const TextStyle(fontWeight: FontWeight.w600)),
                   for (final member in _members)
-                    Row(children: [
-                      Expanded(child: Text(member.displayName ?? 'Collaboratore',
-                        overflow: TextOverflow.ellipsis)),
-                      FButton(
-                        key: Key('share-remove-member-${member.id}'),
-                        variant: FButtonVariant.ghost,
-                        onPress: _busy ? null : () =>
-                            _removeMember(list.id, member),
-                        child: const Text('Rimuovi')),
-                    ]),
+                    Padding(padding: const EdgeInsets.symmetric(vertical: 5),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(member.displayName ?? 'Collaboratore',
+                            overflow: TextOverflow.ellipsis),
+                          Text(member.role == 'EDITOR'
+                              ? 'Può modificare' : 'Sola lettura',
+                            style: TextStyle(color: secondary,fontSize: 12)),
+                          const SizedBox(height: 6),
+                          Wrap(spacing: 8,runSpacing: 8,children: [
+                            FButton(
+                              key: Key('share-role-member-${member.id}'),
+                              variant: FButtonVariant.outline,
+                              onPress: _busy ? null : () =>
+                                  _changeRole(list.id, member),
+                              child: Text(member.role == 'EDITOR'
+                                  ? 'Rendi lettore' : 'Consenti modifiche')),
+                            FButton(
+                              key: Key('share-remove-member-${member.id}'),
+                              variant: FButtonVariant.ghost,
+                              onPress: _busy ? null : () =>
+                                  _removeMember(list.id, member),
+                              child: const Text('Rimuovi')),
+                          ]),
+                        ],
+                      )),
                   const SizedBox(height: 6),
                   Text('Inviti disponibili ${_pending.length}',
                     style: const TextStyle(fontWeight: FontWeight.w600)),
@@ -443,7 +553,8 @@ class _ListSharingBoardState extends State<ListSharingBoard> {
         const SizedBox(height: 12),
         Row(children: [
           Expanded(child: _title('Liste ricevute',
-              'Apri per consultare i task condivisi, senza modificarli.')),
+              'Apri i task ricevuti. Se il proprietario abilita EDITOR, '
+              'puoi modificarne alcuni campi online.')),
           FButton(
             key: const Key('share-refresh'),
             variant: FButtonVariant.ghost,
@@ -462,7 +573,8 @@ class _ListSharingBoardState extends State<ListSharingBoard> {
                 children: [
                   Text(list.title, maxLines:1,overflow:TextOverflow.ellipsis,
                     style: const TextStyle(fontWeight:FontWeight.w600)),
-                  Text('Sola lettura',
+                  Text(list.role == 'EDITOR'
+                      ? 'Puoi modificare' : 'Sola lettura',
                     style: TextStyle(color: secondary,fontSize:12)),
                 ],
               )),
@@ -481,26 +593,97 @@ class _ListSharingBoardState extends State<ListSharingBoard> {
             ]))),
         if (_snapshot != null) ...[
           const SizedBox(height: 16),
-          _title('Anteprima · ${_snapshot!.title}',
-              'Contenuto aggiornato dal server. Nessuna modifica consentita.'),
+          Row(children: [
+            Expanded(child: _title('Anteprima · ${_snapshot!.title}',
+                _snapshot!.readOnly
+                    ? 'Sola lettura. Contenuto aggiornato dal server.'
+                    : 'Editor online. Ogni modifica verifica la versione '
+                      'del task prima del salvataggio.')),
+            FButton(
+              key: const Key('share-reload-snapshot'),
+              variant: FButtonVariant.ghost,
+              onPress: _busy ? null : _reloadSnapshot,
+              child: const Text('Aggiorna')),
+          ]),
           const SizedBox(height: 8),
           for (final task in _snapshot!.tasks)
             Padding(padding: const EdgeInsets.symmetric(vertical: 4),
-              child: FCard(child: Row(children: [
-                Icon(task.completed ? Icons.check_circle_outline :
-                    Icons.radio_button_unchecked, size: 19,
-                  color: task.completed ? Colors.green : secondary),
-                const SizedBox(width: 10),
-                Expanded(child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(task.title),
-                    if (task.description?.isNotEmpty == true)
-                      Text(task.description!,style:TextStyle(
-                        color:secondary,fontSize:12)),
+              child: FCard(child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(children: [
+                    Icon(task.completed ? Icons.check_circle_outline :
+                        Icons.radio_button_unchecked, size: 19,
+                      color: task.completed ? Colors.green : secondary),
+                    const SizedBox(width: 10),
+                    Expanded(child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(task.title),
+                        if (task.description?.isNotEmpty == true)
+                          Text(task.description!,style:TextStyle(
+                            color:secondary,fontSize:12)),
+                      ],
+                    )),
+                  ]),
+                  if (!_snapshot!.readOnly) ...[
+                    const SizedBox(height: 8),
+                    Wrap(spacing: 8,runSpacing: 8,children: [
+                      FButton(
+                        key: Key('share-edit-${task.id}'),
+                        variant: FButtonVariant.outline,
+                        onPress: _busy ? null : () => _beginEdit(task),
+                        child: const Text('Modifica testo')),
+                      FButton(
+                        key: Key('share-toggle-${task.id}'),
+                        variant: FButtonVariant.ghost,
+                        onPress: _busy ? null : () =>
+                            _editTask(task, completed: !task.completed),
+                        child: Text(task.completed
+                            ? 'Segna da fare' : 'Completa')),
+                      FButton(
+                        key: Key('share-priority-${task.id}'),
+                        variant: FButtonVariant.ghost,
+                        onPress: _busy ? null : () => _editTask(task,
+                            priority: (task.priority + 1) % 4),
+                        child: Text('Priorità ${task.priority} → '
+                            '${(task.priority + 1) % 4}')),
+                    ]),
                   ],
-                )),
-              ]))),
+                  if (!_snapshot!.readOnly &&
+                      _editingTaskId == task.id) ...[
+                    const SizedBox(height: 12),
+                    FTextField(
+                      key: const Key('share-edit-title'),
+                      control: FTextFieldControl.managed(
+                          controller: _draftTitle),
+                      label: const Text('Titolo'),
+                      hint: 'Titolo attività'),
+                    const SizedBox(height: 8),
+                    FTextField(
+                      key: const Key('share-edit-description'),
+                      control: FTextFieldControl.managed(
+                          controller: _draftDescription),
+                      label: const Text('Descrizione'),
+                      hint: 'Descrizione (opzionale)'),
+                    const SizedBox(height: 10),
+                    Wrap(spacing: 8,runSpacing: 8,children: [
+                      FButton(
+                        key: const Key('share-save-task'),
+                        onPress: _busy ? null : () => _editTask(task,
+                            title: _draftTitle.text,
+                            description: _draftDescription.text),
+                        child: const Text('Salva')),
+                      FButton(
+                        key: const Key('share-cancel-task'),
+                        variant: FButtonVariant.ghost,
+                        onPress: _busy ? null : () =>
+                            setState(() => _editingTaskId = null),
+                        child: const Text('Annulla')),
+                    ]),
+                  ],
+                ],
+              ))),
           if (_snapshot!.nextOffset != null)
             Align(alignment: Alignment.centerLeft,
               child: FButton(

@@ -1,6 +1,6 @@
 # P2 — Collaborazione EDITOR, versione 17
 
-**11 novembre 2026 — incremento backend in revisione.** [Matrice P2](P2-DELIVERY-MATRIX.md) · [Condivisione VIEWER](P2-LIST-SHARING.md) · [Readiness V17](RELEASE-V17-READINESS.md).
+**11 novembre 2026 — backend [PR #74](https://github.com/andreadada/simple-notes/pull/74) integrato, UI Flutter in revisione.** [Matrice P2](P2-DELIVERY-MATRIX.md) · [Condivisione VIEWER](P2-LIST-SHARING.md) · [Readiness V17](RELEASE-V17-READINESS.md).
 
 ## Autorizzazioni e perimetro
 
@@ -39,4 +39,8 @@ La nuova Flyway **V17** amplia il vincolo `role IN ('VIEWER','EDITOR')` e crea i
 
 ## Limiti ancora aperti
 
-In questo incremento il client Flutter continua a usare la UI precedente finché la modifica EDITOR non viene integrata nel client. Il backend non implementa merge automatici multi-account, editing offline del collaboratore, websocket/push immediato, inviti destinatario-specifici o sincronizzazione dei contenuti condivisi nel Drift dell'ospite. È un protocollo online con CAS esplicito, audit e **refresh manuale** in caso di conflitto. La CI non certifica deploy reale, VPS, ruoli/utenti di produzione, test fisici, né restore live.
+Un incremento Flutter successivo aggiunge la UI EDITOR su `Condivise` (in revisione), senza introdurre sincronizzazione offline del collaboratore. Il backend non implementa merge automatici multi-account, editing offline del collaboratore, websocket/push immediato, inviti destinatario-specifici o sincronizzazione dei contenuti condivisi nel Drift dell'ospite. È un protocollo online con CAS esplicito, audit e **refresh manuale** in caso di conflitto. La CI non certifica deploy reale, VPS, ruoli/utenti di produzione, test fisici, né restore live.
+
+## UI Flutter — online e inline, incremento in revisione
+
+L'account owner da **Gestisci accessi** vede il ruolo di ciascun membro e può usare **Consenti modifiche / Rendi lettore** dopo conferma esplicita Forui. Chi riceve una lista EDITOR vede `readOnly:false` nella snapshot server e può aprire un editor **inline**, senza dialog di rinomina, per titolo e descrizione; completamento e priorità sono comandi diretti. Ogni scrittura usa la versione del task visualizzata, attende conferma server e poi scarica di nuovo la snapshot. Con **HTTP 409** mostra un conflitto chiaro e un pulsante **Aggiorna**, senza tentativi automatici né overwrite. Nessuna scrittura nei task personali o nell'outbox SQLite dell'ospite; token JWT e controlli account restano legati all'identità che ha iniziato la richiesta.

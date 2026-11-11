@@ -270,3 +270,7 @@ Nuova sezione Forui sotto **STRUMENTI**: creare un invito monouso per una lista 
 ## SDK Flutter CI fissata (11/11/2026)
 
 Il workflow usa **Flutter 3.47.9** per analisi/test, Android e Windows. Il runner che aveva aggiornato automaticamente a Flutter 3.50.0 ha riscontrato un errore compilando la dipendenza transitoria `nativeapi 0.5.10` (`Isolate.create`); il precedente workflow Windows con 3.47.9 aveva prodotto EXE/MSIX correttamente. **Usare Flutter 3.47.9 anche per build locali riproducibili** finché non si verifica un aggiornamento compatibile della dipendenza. Non pubblicare package di sviluppo non firmati.
+
+## P2 — EDITOR Condivise (in revisione 11/11/2026)
+
+La pagina Strumenti → Condivise riconosce ruoli `VIEWER` e `EDITOR`. I membri EDITOR possono cambiare titolo e descrizione tramite input Forui **inline** (nessun rename modal), completamento e priorità con comandi mirati; `PATCH` online condizionale al `version` server e refresh snapshot dopo successo. Il 409 non è ritentato; per risolvere premere **Aggiorna** e riesaminare il task. Il proprietario gestisce promozioni/demozioni con conferma. Test HTTP e widget. La UI non sincronizza i task ricevuti in Drift, outbox o backup. Backend V17 su VPS **non** ancora distribuito; ultima attestazione V10 al 03/11. [Contratto](../../docs/P2-LIST-EDITOR.md).

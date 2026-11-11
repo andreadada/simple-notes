@@ -132,3 +132,7 @@ Per riprodurre la build Windows di GitHub Actions usare Flutter **3.47.9**, non 
 ## P2 V17 — EDITOR (prove differite)
 
 Su due account fittizi e dispositivi di prova dopo deploy autorizzato: VIEWER sempre read-only, promozione soltanto proprietario, edit cross-owner con CAS, collisione owner/editor 409 e refresh, riconciliazione owner su Windows/Android, revoca durante edit, task fuori lista, audit senza testo, scadenze/ricorrenze e note inalterate. Nessun esperimento con dati personali live. [Specifica](P2-LIST-EDITOR.md) · [Readiness](RELEASE-V17-READINESS.md).
+
+## P2 EDITOR — client inline Windows/Android (rinviato)
+
+Dopo deploy V17 autorizzato: testare owner che promuove VIEWER, membro che modifica titolo/descrizione inline, priorità/completamento, cambio account durante PATCH, 409 con due dispositivi e refresh manuale, declassamento mentre l'editor è aperto, nessun task del collaboratore copiato nel database locale. Su qualsiasi errore di rete/concorrenza l'editor non deve generare una seconda write automatica. [Contratto](P2-LIST-EDITOR.md).

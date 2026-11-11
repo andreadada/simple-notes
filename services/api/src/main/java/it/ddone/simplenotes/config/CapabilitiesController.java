@@ -23,6 +23,7 @@ public class CapabilitiesController {
             Map.entry("syncOperationFingerprintSchema", 1),
             Map.entry("attachmentSchema", 1),
             Map.entry("attachmentStorageEnabled", attachmentsEnabled),
-            Map.entry("sharingReadSchema", 1));
+            Map.entry("sharingReadSchema", 1),
+            Map.entry("sharingEditorSchema", 1));
     }
 }

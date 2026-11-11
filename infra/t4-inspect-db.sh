@@ -5,12 +5,12 @@ set -euo pipefail
 # Run ON the VPS using the explicitly inspected Simple Notes container.
 : "${DB_CONTAINER:?Set DB_CONTAINER to the Simple Notes PostgreSQL container}"
 EXPECTED_POSTGRES_DB="${EXPECTED_POSTGRES_DB:-simplenotes}"
-# Optional exact-version gate for cumulative V10–V16 releases.
+# Optional exact-version gate for cumulative V10–V17 releases.
 # Empty keeps historical T4 inspections backward-compatible/read-only.
 REQUIRE_FLYWAY_VERSION="${REQUIRE_FLYWAY_VERSION:-}"
 if [[ -n "$REQUIRE_FLYWAY_VERSION" &&
-      ! "$REQUIRE_FLYWAY_VERSION" =~ ^([1-9]|1[0-6])$ ]]; then
-  echo "REFUSED: REQUIRE_FLYWAY_VERSION must be an integer from 1 to 16" >&2
+      ! "$REQUIRE_FLYWAY_VERSION" =~ ^([1-9]|1[0-7])$ ]]; then
+  echo "REFUSED: REQUIRE_FLYWAY_VERSION must be an integer from 1 to 17" >&2
   exit 2
 fi
 command -v docker >/dev/null || { echo "docker is required" >&2; exit 2; }
@@ -39,7 +39,7 @@ names="$(query "SELECT COUNT(*) FROM pg_catalog.pg_class c JOIN pg_catalog.pg_na
 failed="$(query "SELECT COUNT(*) FROM public.flyway_schema_history WHERE NOT success")"
 [[ "$failed" == "0" ]] || { echo "REFUSED: Flyway history has failed migrations" >&2; exit 2; }
 latest="$(query "SELECT COALESCE((SELECT version FROM public.flyway_schema_history WHERE success AND version IS NOT NULL ORDER BY installed_rank DESC LIMIT 1),'unknown')")"
-[[ "$latest" =~ ^[0-9]+$ && "$latest" -ge 1 && "$latest" -le 16 ]] || {
+[[ "$latest" =~ ^[0-9]+$ && "$latest" -ge 1 && "$latest" -le 17 ]] || {
   echo "REFUSED: unknown, unsupported or unexpected Flyway version" >&2; exit 2
 }
 due_columns="$(query "SELECT COUNT(*) FROM information_schema.columns WHERE table_schema='public' AND table_name='task' AND column_name IN ('due_kind','due_date','due_time','due_timezone','due_offset_seconds')")"
@@ -159,6 +159,23 @@ else
   [[ "$sharing_invitation_table" == "0" && "$sharing_invitation_columns" == "0" &&
      "$sharing_member_table" == "0" && "$sharing_member_columns" == "0" ]] || {
     echo "REFUSED: V16 sharing tables exist without Flyway history" >&2; exit 2
+  }
+fi
+
+# V17 extends roles to EDITOR and adds a content-free audit trail.
+sharing_audit_table="$(query "SELECT COUNT(*) FROM information_schema.tables WHERE table_schema='public' AND table_name='list_share_audit' AND table_type='BASE TABLE'")"
+sharing_audit_columns="$(query "SELECT COUNT(*) FROM information_schema.columns WHERE table_schema='public' AND table_name='list_share_audit' AND column_name IN ('id','list_id','owner_id','actor_id','target_member_id','task_id','action','detail','sync_change_id','created_at')")"
+if [[ "$latest" -ge 17 ]]; then
+  [[ "$sharing_audit_table" == "1" && "$sharing_audit_columns" == "10" ]] || {
+    echo "REFUSED: V17 editor audit schema incomplete" >&2; exit 2
+  }
+  role_constraint="$(query "SELECT COUNT(*) FROM pg_constraint WHERE conrelid='public.list_share_member'::regclass AND conname='list_share_member_role_check' AND pg_get_constraintdef(oid) LIKE '%EDITOR%'")"
+  [[ "$role_constraint" == "1" ]] || {
+    echo "REFUSED: V17 EDITOR role constraint missing" >&2; exit 2
+  }
+else
+  [[ "$sharing_audit_table" == "0" && "$sharing_audit_columns" == "0" ]] || {
+    echo "REFUSED: V17 editor audit schema exists before migration" >&2; exit 2
   }
 fi
 

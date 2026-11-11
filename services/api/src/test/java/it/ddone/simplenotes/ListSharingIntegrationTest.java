@@ -5,6 +5,8 @@ import it.ddone.simplenotes.task.TaskEntity;
 import it.ddone.simplenotes.task.TaskListEntity;
 import it.ddone.simplenotes.task.TaskListRepository;
 import it.ddone.simplenotes.task.TaskRepository;
+import it.ddone.simplenotes.sync.SyncController;
+import it.ddone.simplenotes.sync.SyncService;
 import it.ddone.simplenotes.user.AppUser;
 import it.ddone.simplenotes.user.AppUserRepository;
 import java.time.Instant;
@@ -54,6 +56,7 @@ class ListSharingIntegrationTest {
     @Autowired JdbcTemplate jdbc;
     @Autowired JwtEncoder encoder;
     @Autowired ObjectMapper json;
+    @Autowired SyncService sync;
 
     private AppUser user() {
         return users.save(new AppUser("share-" + UUID.randomUUID(),
@@ -265,4 +268,175 @@ class ListSharingIntegrationTest {
             .param("offset","-1"))
             .andExpect(status().isBadRequest());
     }
+    private UUID syncedTask(AppUser owner, TaskListEntity list) {
+        UUID id = UUID.randomUUID();
+        var payload = json.valueToTree(java.util.Map.of(
+            "title", "Original task",
+            "description", "Original description",
+            "listId", list.id.toString(),
+            "priority", 1,
+            "completed", false,
+            "timeBlocks", java.util.List.of(),
+            "recurrence", java.util.Map.of("kind", "none")));
+        sync.apply(owner.id, new SyncController.ApplyRequest(
+            UUID.randomUUID(), id, "task", "upsert", null, payload, null));
+        return id;
+    }
+
+    private long taskVersion(UUID owner, UUID id) {
+        return sync.latest(owner, "task", id).version();
+    }
+
+    private void role(UUID owner, UUID list, UUID member, String value)
+            throws Exception {
+        mvc.perform(put("/api/v1/sharing/lists/" + list +
+                "/members/" + member + "/role")
+            .header("Authorization", auth(owner))
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(json.writeValueAsString(java.util.Map.of("role", value))))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.role").value(value));
+    }
+
+    @Test
+    void editorUpdatesOwnerLedgerWithOptimisticLockAndContentFreeAudit()
+            throws Exception {
+        var alice = user();
+        var bob = user();
+        var eve = user();
+        var shared = list(alice, "Shared");
+        var privateList = list(alice, "Private");
+        UUID taskId = syncedTask(alice, shared);
+        UUID secretId = syncedTask(alice, privateList);
+        accept(bob.id, invite(alice.id, shared.id));
+        String path = "/api/v1/sharing/lists/" + shared.id +
+            "/tasks/" + taskId;
+        long v0 = taskVersion(alice.id, taskId);
+        var patch = java.util.Map.of(
+            "expectedVersion", v0, "title", "Updated by Bob",
+            "description", "Changed details", "completed", true,
+            "priority", 3);
+
+        mvc.perform(patch(path).header("Authorization", auth(bob.id))
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(json.writeValueAsString(patch)))
+            .andExpect(status().isNotFound());
+        role(alice.id, shared.id, bob.id, "EDITOR");
+        mvc.perform(get("/api/v1/sharing/lists/" + shared.id + "/snapshot")
+            .header("Authorization", auth(bob.id)))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.readOnly").value(false));
+        mvc.perform(get("/api/v1/sharing/lists")
+            .header("Authorization", auth(bob.id)))
+            .andExpect(jsonPath("$[0].role").value("EDITOR"));
+        mvc.perform(patch(path).header("Authorization", auth(eve.id))
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(json.writeValueAsString(patch)))
+            .andExpect(status().isNotFound());
+        String result = mvc.perform(patch(path)
+            .header("Authorization", auth(bob.id))
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(json.writeValueAsString(patch)))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.version").isNumber())
+            .andExpect(jsonPath("$.changeId").isNumber())
+            .andReturn().getResponse().getContentAsString();
+        long v1 = json.readTree(result).path("version").longValue();
+        assertThat(v1).isGreaterThan(v0);
+        var canonical = sync.latest(alice.id, "task", taskId);
+        assertThat(canonical.version()).isEqualTo(v1);
+        assertThat(canonical.payload().path("title").asText())
+            .isEqualTo("Updated by Bob");
+        assertThat(canonical.payload().path("description").asText())
+            .isEqualTo("Changed details");
+        assertThat(canonical.payload().path("completed").asBoolean())
+            .isTrue();
+        assertThat(canonical.payload().path("priority").asInt())
+            .isEqualTo(3);
+        assertThat(canonical.payload().path("listId").asText())
+            .isEqualTo(shared.id.toString());
+        assertThat(canonical.payload().path("timeBlocks").isArray())
+            .isTrue();
+        assertThat(sync.latest(alice.id, "task", secretId)
+            .payload().path("title").asText()).isEqualTo("Original task");
+        assertThat(jdbc.queryForObject(
+            "SELECT COUNT(*) FROM list_share_audit WHERE actor_id=? " +
+            "AND action='TASK_EDIT' AND sync_change_id=?",
+            Integer.class, bob.id, canonical.changeId())).isEqualTo(1);
+        assertThat(jdbc.queryForObject(
+            "SELECT detail FROM list_share_audit " +
+            "WHERE actor_id=? AND action='TASK_EDIT'",
+            String.class,bob.id))
+            .isEqualTo("title,description,completed,priority");
+
+        mvc.perform(patch(path).header("Authorization", auth(bob.id))
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(json.writeValueAsString(patch)))
+            .andExpect(status().isConflict());
+        assertThat(taskVersion(alice.id, taskId)).isEqualTo(v1);
+        mvc.perform(get("/api/v1/sync/latest")
+            .param("entityType","task").param("entityId", taskId.toString())
+            .header("Authorization", auth(bob.id)))
+            .andExpect(status().isNotFound());
+
+        role(alice.id, shared.id, bob.id, "VIEWER");
+        mvc.perform(patch(path).header("Authorization", auth(bob.id))
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(json.writeValueAsString(java.util.Map.of(
+                "expectedVersion", v1, "title", "Should not apply"))))
+            .andExpect(status().isNotFound());
+        assertThat(taskVersion(alice.id, taskId)).isEqualTo(v1);
+    }
+
+    @Test
+    void editorCannotModifyOtherListsForbiddenFieldsOrTrashedTasks()
+            throws Exception {
+        var alice=user();
+        var bob=user();
+        var shared=list(alice,"Shared patch");
+        var privateList=list(alice,"Private patch");
+        UUID task=syncedTask(alice,shared);
+        UUID secret=syncedTask(alice,privateList);
+        accept(bob.id,invite(alice.id,shared.id));
+        String path="/api/v1/sharing/lists/"+shared.id+"/tasks/"+task;
+        role(alice.id,shared.id,bob.id,"EDITOR");
+        long v=taskVersion(alice.id,task);
+
+        for (var body : java.util.List.of(
+            java.util.Map.of("expectedVersion",v),
+            java.util.Map.of("expectedVersion",v,"title","  "),
+            java.util.Map.of("expectedVersion",v,"priority",8),
+            java.util.Map.of("expectedVersion",v,"description","x".repeat(20001)),
+            java.util.Map.of("expectedVersion",-1,"title","Bad"),
+            java.util.Map.of("title","Missing expectedVersion"))) {
+            mvc.perform(patch(path).header("Authorization",auth(bob.id))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(json.writeValueAsString(body)))
+                .andExpect(status().isBadRequest());
+        }
+        mvc.perform(patch("/api/v1/sharing/lists/"+shared.id+
+                "/tasks/"+secret)
+            .header("Authorization",auth(bob.id))
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(json.writeValueAsString(java.util.Map.of(
+                "expectedVersion",taskVersion(alice.id,secret),
+                "title","Unauthorized"))))
+            .andExpect(status().isNotFound());
+        mvc.perform(put("/api/v1/sharing/lists/"+shared.id+
+                "/members/"+bob.id+"/role")
+            .header("Authorization",auth(bob.id))
+            .contentType(MediaType.APPLICATION_JSON)
+            .content("{\"role\":\"EDITOR\"}"))
+            .andExpect(status().isNotFound());
+        mvc.perform(put("/api/v1/sharing/lists/"+shared.id+
+                "/members/"+bob.id+"/role")
+            .header("Authorization",auth(alice.id))
+            .contentType(MediaType.APPLICATION_JSON)
+            .content("{\"role\":\"ADMIN\"}"))
+            .andExpect(status().isBadRequest());
+        assertThat(taskVersion(alice.id,task)).isEqualTo(v);
+        assertThat(taskVersion(alice.id,secret)).isEqualTo(
+            sync.latest(alice.id,"task",secret).version());
+    }
+
 }

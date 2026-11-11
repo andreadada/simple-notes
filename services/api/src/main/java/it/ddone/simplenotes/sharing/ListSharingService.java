@@ -27,7 +27,8 @@ public class ListSharingService {
     public record IssuedInvitation(UUID id, String token, Instant expiresAt) {}
     public record PendingInvitation(UUID id, Instant createdAt, Instant expiresAt) {}
     public record SharedList(UUID id, String title, String role, Instant updatedAt) {}
-    public record Member(UUID id, String displayName, Instant acceptedAt) {}
+    public record Member(UUID id, String displayName, Instant acceptedAt,
+        String role) {}
     public record SharedTask(UUID id, String title, String description,
         int priority, Instant dueAt, String dueKind, LocalDate dueDate,
         LocalTime dueTime, String dueTimezone, Integer dueOffsetSeconds,
@@ -37,7 +38,7 @@ public class ListSharingService {
 
     private record Invitation(UUID id, UUID owner, UUID list, Instant expires,
         Instant revoked, UUID redeemed) {}
-    private record ListAccess(UUID owner, String title) {}
+    private record ListAccess(UUID owner, String title, String role) {}
 
     private static final SecureRandom RANDOM = new SecureRandom();
     private static final int PAGE_SIZE = 50;
@@ -202,12 +203,12 @@ public class ListSharingService {
                 "Invalid page offset");
         }
         List<ListAccess> access = jdbc.query(
-            "SELECT l.owner_id,l.title FROM list_share_member m " +
+            "SELECT l.owner_id,l.title,m.role FROM list_share_member m " +
             "JOIN task_list l ON l.id=m.list_id AND l.owner_id=m.owner_id " +
-            "WHERE m.member_id=? AND m.list_id=? AND m.role='VIEWER' " +
+            "WHERE m.member_id=? AND m.list_id=? AND m.role IN ('VIEWER','EDITOR') " +
             "AND l.deleted_at IS NULL",
             (rs,row) -> new ListAccess((UUID) rs.getObject("owner_id"),
-                rs.getString("title")), member, list);
+                rs.getString("title"), rs.getString("role")), member, list);
         if (access.isEmpty()) throw missing();
         ListAccess shared = access.get(0);
         List<SharedTask> data = jdbc.query(
@@ -227,7 +228,8 @@ public class ListSharingService {
         boolean more = data.size() > PAGE_SIZE;
         var page = more ? List.copyOf(data.subList(0, PAGE_SIZE)) :
             List.copyOf(data);
-        return new Snapshot(list, shared.title(), true, page,
+        return new Snapshot(list, shared.title(),
+            !"EDITOR".equals(shared.role()), page,
             more ? offset + PAGE_SIZE : null);
     }
 
@@ -235,13 +237,47 @@ public class ListSharingService {
     public List<Member> members(UUID owner, UUID list) {
         ownerHasActiveList(owner,list);
         return jdbc.query(
-            "SELECT m.member_id,u.display_name,m.accepted_at " +
+            "SELECT m.member_id,u.display_name,m.accepted_at,m.role " +
             "FROM list_share_member m JOIN app_user u ON u.id=m.member_id " +
             "WHERE m.list_id=? AND m.owner_id=? " +
             "ORDER BY m.accepted_at DESC LIMIT 20",
             (rs,row) -> new Member((UUID) rs.getObject("member_id"),
-                rs.getString("display_name"),time(rs,"accepted_at")),
+                rs.getString("display_name"),time(rs,"accepted_at"),
+                rs.getString("role")),
             list,owner);
+    }
+
+    /** Only the owning account may promote an accepted member. */
+    @Transactional
+    public Member setMemberRole(UUID owner, UUID list, UUID member,
+            String role) {
+        if (!Set.of("VIEWER", "EDITOR").contains(role)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                "Invalid sharing role");
+        }
+        sync.lockAccount(owner);
+        ownerHasActiveList(owner, list);
+        List<Member> found = jdbc.query(
+            "SELECT m.member_id,u.display_name,m.accepted_at,m.role " +
+            "FROM list_share_member m JOIN app_user u ON u.id=m.member_id " +
+            "WHERE m.owner_id=? AND m.list_id=? AND m.member_id=?",
+            (rs, i) -> new Member((UUID) rs.getObject("member_id"),
+                rs.getString("display_name"),time(rs, "accepted_at"),
+                rs.getString("role")), owner, list, member);
+        if (found.size() != 1) throw missing();
+        Member current = found.get(0);
+        if (!role.equals(current.role())) {
+            jdbc.update(
+                "UPDATE list_share_member SET role=? " +
+                "WHERE owner_id=? AND list_id=? AND member_id=?",
+                role, owner, list, member);
+            jdbc.update("INSERT INTO list_share_audit " +
+                "(list_id,owner_id,actor_id,target_member_id,action,detail) " +
+                "VALUES (?,?,?,?,'ROLE_CHANGE',?)",
+                list, owner, owner, member, current.role() + "->" + role);
+        }
+        return new Member(member, current.displayName(), current.acceptedAt(),
+            role);
     }
 
     @Transactional
@@ -257,9 +293,16 @@ public class ListSharingService {
 
     @Transactional
     public void leave(UUID member, UUID list) {
+        List<UUID> owners = jdbc.query(
+            "SELECT owner_id FROM list_share_member " +
+            "WHERE list_id=? AND member_id=?",
+            (rs, i) -> (UUID) rs.getObject(1), list, member);
+        if (owners.size() != 1) throw missing();
+        sync.lockAccount(owners.get(0));
         int affected = jdbc.update(
-            "DELETE FROM list_share_member WHERE list_id=? AND member_id=?",
-            list,member);
+            "DELETE FROM list_share_member WHERE list_id=? AND member_id=? " +
+            "AND owner_id=?",
+            list, member, owners.get(0));
         if (affected != 1) throw missing();
     }
 }

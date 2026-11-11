@@ -540,3 +540,7 @@ Tutte le risposte HTTP del pannello Condivise ora devono essere ricontrollate ri
 ## 11/11/2026 — Flutter CI riproducibile
 
 La PR #71 imposta Flutter **3.47.9** in tutti e tre i job di `.github/workflows/flutter-ci.yml`. Il run Windows con `stable` **3.50.0** aveva fallito su `nativeapi 0.5.10`: riferimento `Isolate.create` mancante; il build precedente con **3.47.9** era superato. Questo è un pin temporaneo, non una correzione upstream. Quando si aggiorna Flutter, verificare prima nativeapi su Windows con build EXE/MSIX reale. Nessun deploy o aggiornamento del client installato.
+
+## 11/11/2026 — Backend EDITOR (Flyway V17 in revisione)
+
+Owner promuove/revoca su API ruoli, collaboratori EDITOR possono modificare soltanto quattro campi del task attraverso SyncService owner e version CAS. Nessun bypass della sync ledger; l'audit salva solo ID e nomi dei campi. Test Testcontainers e read-only gate V17; nessun deploy, nessun client EDITOR. [Specifica](P2-LIST-EDITOR.md).

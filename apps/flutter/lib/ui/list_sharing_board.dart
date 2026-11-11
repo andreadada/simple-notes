@@ -44,6 +44,7 @@ class _ListSharingBoardState extends State<ListSharingBoard> {
   List<PendingListInvitation> _pending = const [];
   bool _loading = false;
   bool _busy = false;
+  int _ownerEpoch = 0;
   String? _error;
 
   @override
@@ -59,6 +60,10 @@ class _ListSharingBoardState extends State<ListSharingBoard> {
   void didUpdateWidget(covariant ListSharingBoard oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.ownerId == widget.ownerId) return;
+    // Invalidate all pending HTTP responses from the previous Google account.
+    _ownerEpoch++;
+    _busy = false;
+    _loading = false;
     _code.clear();
     _received = const [];
     _snapshot = null;
@@ -78,10 +83,13 @@ class _ListSharingBoardState extends State<ListSharingBoard> {
     super.dispose();
   }
 
-  Future<bool> _accountValid() async {
-    final owner = widget.ownerId;
-    return mounted && owner != null &&
-        await widget.ownerMatches(owner) && mounted &&
+  Future<bool> _accountValid(String? owner, int epoch) async {
+    if (!mounted || owner == null ||
+        epoch != _ownerEpoch || widget.ownerId != owner) {
+      return false;
+    }
+    final approved = await widget.ownerMatches(owner);
+    return approved && mounted && epoch == _ownerEpoch &&
         widget.ownerId == owner;
   }
 
@@ -112,22 +120,34 @@ class _ListSharingBoardState extends State<ListSharingBoard> {
       SnackBar(content: Text(message)));
   }
 
-  Future<void> _run(Future<void> Function() task) async {
+  Future<void> _run(
+      Future<void> Function(String owner, int epoch) task) async {
     if (_busy || _loading || !mounted) return;
+    // Capture the authenticated identity once. Checking widget.ownerId
+    // after a network await alone would allow a delayed previous-account
+    // response to be mistaken for the new session.
+    final owner = widget.ownerId;
+    final epoch = _ownerEpoch;
+    if (!await _accountValid(owner, epoch)) return;
     setState(() { _busy = true; _error = null; });
     try {
-      if (!await _accountValid()) throw StateError('Account non coerente');
-      await task();
+      await task(owner!, epoch);
     } catch (error) {
-      if (mounted) setState(() => _error = _explain(error));
+      if (mounted && epoch == _ownerEpoch && widget.ownerId == owner) {
+        setState(() => _error = _explain(error));
+      }
     } finally {
-      if (mounted) setState(() => _busy = false);
+      if (mounted && epoch == _ownerEpoch && widget.ownerId == owner) {
+        setState(() => _busy = false);
+      }
     }
   }
 
   Future<void> _refresh() async {
     if (!mounted) return;
-    if (widget.ownerId == null) {
+    final owner = widget.ownerId;
+    final epoch = _ownerEpoch;
+    if (owner == null) {
       setState(() {
         _loading = false;
         _received = const [];
@@ -139,37 +159,41 @@ class _ListSharingBoardState extends State<ListSharingBoard> {
     }
     setState(() { _loading = true; _error = null; });
     try {
-      if (!await _accountValid()) return;
+      if (!await _accountValid(owner, epoch)) return;
       final lists = await _api.sharedLists();
-      if (!await _accountValid()) return;
+      if (!await _accountValid(owner, epoch)) return;
       setState(() => _received = lists);
     } catch (error) {
-      if (mounted) setState(() => _error = _explain(error));
+      if (mounted && epoch == _ownerEpoch && widget.ownerId == owner) {
+        setState(() => _error = _explain(error));
+      }
     } finally {
-      if (mounted) setState(() => _loading = false);
+      if (mounted && epoch == _ownerEpoch && widget.ownerId == owner) {
+        setState(() => _loading = false);
+      }
     }
   }
 
-  Future<void> _accept() => _run(() async {
+  Future<void> _accept() => _run((owner, epoch) async {
     final token = _code.text.trim();
     if (token.isEmpty) {
       throw const FormatException('Incolla il codice ricevuto.');
     }
     await _api.accept(token);
-    if (!await _accountValid()) return;
+    if (!await _accountValid(owner, epoch)) return;
     _code.clear();
     _issued = null;
     _issuedList = null;
     setState(() => _snapshot = null);
     final lists = await _api.sharedLists();
-    if (!await _accountValid()) return;
+    if (!await _accountValid(owner, epoch)) return;
     setState(() => _received = lists);
     _message('Lista collegata in sola lettura.');
   });
 
-  Future<void> _invite(LocalTaskList list) => _run(() async {
+  Future<void> _invite(LocalTaskList list) => _run((owner, epoch) async {
     final ticket = await _api.invite(list.id);
-    if (!await _accountValid()) return;
+    if (!await _accountValid(owner, epoch)) return;
     setState(() {
       _issued = ticket;
       _issuedList = list.id;
@@ -177,26 +201,26 @@ class _ListSharingBoardState extends State<ListSharingBoard> {
     _message('Invito monouso creato: condividi il codice solo con il destinatario.');
   });
 
-  Future<void> _copyInvite() => _run(() async {
+  Future<void> _copyInvite() => _run((owner, epoch) async {
     final invite = _issued;
     if (invite == null) return;
     await Clipboard.setData(ClipboardData(text: invite.token));
-    if (!await _accountValid()) return;
+    if (!await _accountValid(owner, epoch)) return;
     _message('Codice copiato. Scade dopo 7 giorni e può essere usato una sola volta.');
   });
 
-  Future<void> _open(SharedTaskList list) => _run(() async {
+  Future<void> _open(SharedTaskList list) => _run((owner, epoch) async {
     final snapshot = await _api.snapshot(list.id);
-    if (!await _accountValid()) return;
+    if (!await _accountValid(owner, epoch)) return;
     setState(() => _snapshot = snapshot);
   });
 
-  Future<void> _more() => _run(() async {
+  Future<void> _more() => _run((owner, epoch) async {
     final previous = _snapshot;
     if (previous == null || previous.nextOffset == null) return;
     final page = await _api.snapshot(previous.listId,
         offset: previous.nextOffset!);
-    if (!await _accountValid() || _snapshot != previous) return;
+    if (!await _accountValid(owner, epoch) || _snapshot != previous) return;
     setState(() => _snapshot = SharedSnapshot(
       listId: previous.listId, title: page.title,
       tasks: [...previous.tasks, ...page.tasks],
@@ -204,10 +228,10 @@ class _ListSharingBoardState extends State<ListSharingBoard> {
     ));
   });
 
-  Future<void> _manage(LocalTaskList list) => _run(() async {
+  Future<void> _manage(LocalTaskList list) => _run((owner, epoch) async {
     final members = await _api.members(list.id);
     final pending = await _api.pending(list.id);
-    if (!await _accountValid()) return;
+    if (!await _accountValid(owner, epoch)) return;
     setState(() {
       _managedList = list.id;
       _members = members;
@@ -236,16 +260,20 @@ class _ListSharingBoardState extends State<ListSharingBoard> {
   }
 
   Future<void> _leave(SharedTaskList list) async {
+    final actor = widget.ownerId;
+    final generation = _ownerEpoch;
+    if (!await _accountValid(actor, generation)) return;
     if (!await _confirm('Abbandona lista',
         'Non vedrai più le attività di "${list.title}". '
         'Le attività del proprietario non saranno modificate.')) {
       return;
     }
-    await _run(() async {
+    if (!await _accountValid(actor, generation)) return;
+    await _run((owner, epoch) async {
       await _api.leave(list.id);
-      if (!await _accountValid()) return;
+      if (!await _accountValid(owner, epoch)) return;
       final lists = await _api.sharedLists();
-      if (!await _accountValid()) return;
+      if (!await _accountValid(owner, epoch)) return;
       setState(() {
         _received = lists;
         if (_snapshot?.listId == list.id) _snapshot = null;
@@ -254,25 +282,29 @@ class _ListSharingBoardState extends State<ListSharingBoard> {
   }
 
   Future<void> _removeMember(String listId, ListShareMember member) async {
+    final actor = widget.ownerId;
+    final generation = _ownerEpoch;
+    if (!await _accountValid(actor, generation)) return;
     if (!await _confirm('Revoca accesso',
         'Rimuovere il collaboratore dalla lista?')) {
       return;
     }
-    await _run(() async {
+    if (!await _accountValid(actor, generation)) return;
+    await _run((owner, epoch) async {
       await _api.revokeMember(listId, member.id);
-      if (!await _accountValid()) return;
+      if (!await _accountValid(owner, epoch)) return;
       final refreshed = await _api.members(listId);
-      if (!await _accountValid()) return;
+      if (!await _accountValid(owner, epoch)) return;
       setState(() => _members = refreshed);
     });
   }
 
   Future<void> _revokeInvite(String listId, PendingListInvitation invite) async {
-    await _run(() async {
+    await _run((owner, epoch) async {
       await _api.revokeInvitation(listId, invite.id);
-      if (!await _accountValid()) return;
+      if (!await _accountValid(owner, epoch)) return;
       final refreshed = await _api.pending(listId);
-      if (!await _accountValid()) return;
+      if (!await _accountValid(owner, epoch)) return;
       setState(() => _pending = refreshed);
     });
   }

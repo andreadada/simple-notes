@@ -1,6 +1,8 @@
 # Simple Notes — Design & Product Specification
 
-> **P2 EDITOR · 11/11/2026:** backend [PR #74](https://github.com/andreadada/simple-notes/pull/74) integrato su `main` (Flyway V17, ruoli, CAS e audit), CI Backend/Compose/Markdown verdi; **UI Flutter EDITOR in revisione** (titolo/descrizione inline, completamento e priorità). VPS attestata V10 al 03/11, **nessun deploy**. [Contratto](docs/P2-LIST-EDITOR.md).
+> **P2 11/11/2026:** [PR #74](https://github.com/andreadada/simple-notes/pull/74) backend `EDITOR` con Flyway **V17** e [PR #75](https://github.com/andreadada/simple-notes/pull/75) client Forui inline **integrate in `main`**. Backend/Compose/Markdown CI e analisi/test widget Flutter verdi; build native e CI post-merge in verifica. **Nessun deploy**: VPS ultima attestazione Flyway **V10 (03/11)**. Collaboration online-only, non sync offline multi-owner. [Contratto](docs/P2-LIST-EDITOR.md).
+
+> **Cronologia P2 EDITOR (11/11, prima del merge #75):** backend V17 integrato, UI in revisione; vedere il riepilogo attuale sopra.
 
 > **Stato P2 · 11/11/2026:** [PR #69](https://github.com/andreadada/simple-notes/pull/69) (sharing VIEWER, Flyway V16) e [PR #70](https://github.com/andreadada/simple-notes/pull/70) (Flutter Condivise) sono integrate in `main` con CI di branch verdi. [PR #71](https://github.com/andreadada/simple-notes/pull/71) aggiunge protezione cambio account (integrata). **VPS attestata V10 al 03/11, nessun deploy né test reali.** CI Flutter fissata a **3.47.9**: il nuovo stable 3.50.0 rompe `nativeapi 0.5.10` su Windows. [Stato canonico](docs/CURRENT-STATUS.md).
 

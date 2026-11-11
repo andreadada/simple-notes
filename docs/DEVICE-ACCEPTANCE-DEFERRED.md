@@ -136,3 +136,7 @@ Su due account fittizi e dispositivi di prova dopo deploy autorizzato: VIEWER se
 ## P2 EDITOR — client inline Windows/Android (rinviato)
 
 Dopo deploy V17 autorizzato: testare owner che promuove VIEWER, membro che modifica titolo/descrizione inline, priorità/completamento, cambio account durante PATCH, 409 con due dispositivi e refresh manuale, declassamento mentre l'editor è aperto, nessun task del collaboratore copiato nel database locale. Su qualsiasi errore di rete/concorrenza l'editor non deve generare una seconda write automatica. [Contratto](P2-LIST-EDITOR.md).
+
+## P2 V17 — stato codice e prove reali (11/11)
+
+PR #74/#75 implementano EDITOR backend e UI, ma **non costituiscono test fisici**. Resta differita la verifica con almeno due account Google e dispositivi Windows/Android, incluse revoca durante PATCH, conflitto simultaneo, autoripristino account e consistenza ledger nel proprietario, dopo deploy separatamente autorizzato. [Contratto](P2-LIST-EDITOR.md).

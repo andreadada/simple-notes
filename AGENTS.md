@@ -1,5 +1,7 @@
 # AGENTS.md — Istruzioni operative per agenti AI
 
+> **P2 11/11/2026:** [PR #74](https://github.com/andreadada/simple-notes/pull/74) backend `EDITOR` con Flyway **V17** e [PR #75](https://github.com/andreadada/simple-notes/pull/75) client Forui inline **integrate in `main`**. Backend/Compose/Markdown CI e analisi/test widget Flutter verdi; build native e CI post-merge in verifica. **Nessun deploy**: VPS ultima attestazione Flyway **V10 (03/11)**. Collaboration online-only, non sync offline multi-owner. [Contratto](docs/P2-LIST-EDITOR.md).
+
 > **Stato P2 · 11/11/2026:** [PR #69](https://github.com/andreadada/simple-notes/pull/69) (sharing VIEWER, Flyway V16) e [PR #70](https://github.com/andreadada/simple-notes/pull/70) (Flutter Condivise) sono integrate in `main` con CI di branch verdi. [PR #71](https://github.com/andreadada/simple-notes/pull/71) aggiunge protezione cambio account (integrata). **VPS attestata V10 al 03/11, nessun deploy né test reali.** CI Flutter fissata a **3.47.9**: il nuovo stable 3.50.0 rompe `nativeapi 0.5.10` su Windows. [Stato canonico](docs/CURRENT-STATUS.md).
 
 
@@ -263,3 +265,7 @@ Gli allegati sono separati da note/SQLite/outbox: GET/list, begin, PUT firmato 5
 ## P2 — Autoreconciliazione modelli (PR #65 integrata)
 
 Il catalogo V13 dei modelli personali si sincronizza in foreground solo dopo sync cloud task riuscita, con tre-way checkpoint account-scoped (catalogo + versione). Mai indovinare una risoluzione di conflitto: due modifiche offline divergenti richiedono Pubblica/Scarica con consenso; Cloud PUT CAS, no reset silenziosi dei dati locali/checkpoint. Schermata Modelli visibile = editor lock; sospendere trasferimenti e riprendere quando esce. Nessuna modifica task/outbox né nuova migrazione. [Contratto](docs/P2-AUTO-TEMPLATE-CATALOG.md).
+
+## P2 sharing EDITOR — contratti correnti (11/11)
+
+Flyway V17 è in `main`: owner-only role promotion, PATCH EDITOR online con `expectedVersion` obbligatorio, ledger canonico owner e audit dei soli campi. La UI Forui modifica titolo/descrizione inline senza ridenominazioni via modali; non aggiungere i task ricevuti nel database Drift o nella outbox del guest. Il conflitto HTTP 409 richiede refresh manuale, nessun retry che sovrascriva. [Specifica](docs/P2-LIST-EDITOR.md). La VPS resta attestata a V10: non deployare o migrare senza autorizzazione.

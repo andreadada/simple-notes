@@ -1,7 +1,7 @@
 # Simple Notes — Architettura applicativa
 
 <!-- CURRENT-STATUS-REF -->
-> **Stato corrente 11/11/2026:** [PR #69](https://github.com/andreadada/simple-notes/pull/69) backend sharing VIEWER Flyway V16 e [#70](https://github.com/andreadada/simple-notes/pull/70) UI Forui integrate in `main`; CI branch verde. PR #71 verifica risposta ritardata su cambio account. VPS Flyway V10 attestata 03/11, nessun deploy/E2E. [Stato canonico](CURRENT-STATUS.md).
+> **Stato 11/11/2026:** backend sharing **Flyway V17** [PR #74](https://github.com/andreadada/simple-notes/pull/74) e UI Forui EDITOR [PR #75](https://github.com/andreadada/simple-notes/pull/75) integrate; CI backend e Flutter analyze/widget superate. Native/post-merge in verifica; VPS ultima attestazione V10 al 03/11, nessun deploy. [Stato](CURRENT-STATUS.md).
 
 > **Cronologia (stato del 02/11 o 31/10/2026):** R1 gate server-first integrato su `main` ([PR #26](https://github.com/andreadada/simple-notes/pull/26), commit [`f19ee8b0`](https://github.com/andreadada/simple-notes/commit/f19ee8b0a5bea2cb2c2231d85b3e8ad10a5233a7); [Compose CI](https://github.com/andreadada/simple-notes/actions/runs/41523319857) **success** con PostgreSQL 17 sintetico, [Markdown](https://github.com/andreadada/simple-notes/actions/runs/41523319860) **success**). Flutter resta `0.29.0+31` e 191 test già attestati. **VPS reale V10, health/capability live, backup recente e collaudo hardware non verificati**; ultimo stato VPS attestato V8. Nessun deploy o intervento su dati. [Stato](CURRENT-STATUS.md) · [R1](RELEASE-V10-READINESS.md).
 
@@ -143,6 +143,10 @@ Il backend aggiunge `NoteAttachmentController/Service` e tabella `note_attachmen
 
 Il client Flutter aggiunge `UserTemplateCatalogMirror` / `UserTemplateMirrorAnchor`: checkpoint owner-scoped in SharedPreferences, sincronizzazione foreground tramite `AutoSyncHost` e GET/PUT V13 già esistenti; il backend non cambia e Flyway rimane **V14 nel codice**. Si verifica account boundOwnerId, restore gate e stato cloud task prima di riconciliare. Nessun nuovo server scheduler, OAuth, allegato, Drift schema o outbox. [Contratto](P2-AUTO-TEMPLATE-CATALOG.md).
 
-## P2 — ACL per liste, Flyway V16 (in revisione)
+## P2 — ACL per liste, Flyway V16 (PR #69 integrata)
 
 La nuova componente `sharing/ListSharingService` usa due tabelle PostgreSQL per inviti e membership delle sole liste task: token casuali e hash, accettazione con lock transazionali, ruolo `VIEWER` e lettura paginata. Non modifica gli owner dei record, non scrive su `sync_change` e non fa usare `/sync/apply` al collaboratore. La snapshot SELECT filtra per `task.owner_id`, `task.list_id` e membership accettata, proteggendo le liste private. Future modalità EDITOR richiederanno nuovi permessi, sincronizzazione e gestione conflitti cross-account separati. [Specifica](P2-LIST-SHARING.md).
+
+## P2 — EDITOR V17: interoperabilità con il ledger owner (PR #74/#75)
+
+`ListSharingEditService` non autorizza mai il guest a chiamare `/sync/apply` sull'account del proprietario. Le PATCH EDITOR online prendono l'advisory lock owner, verificano membership, lista attiva e versioni fra task/ledger e compilano il payload completo dall'ultima `sync_change`; passano poi da `SyncService.apply(owner,...)` con CAS. Audit `list_share_audit` nello stesso commit registra actor/list/task/changeId e soli nomi dei campi; nessun contenuto privato duplicato. Flutter `Condivise` aggiorna online titolo/descrizione (inline), completamento e priorità; nessun record guest viene copiato in Drift. [Contratto](P2-LIST-EDITOR.md).

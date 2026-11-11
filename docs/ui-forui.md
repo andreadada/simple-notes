@@ -1,5 +1,7 @@
 # Simple Notes — UI e design system Forui
 
+> **Stato 11/11/2026:** backend sharing **Flyway V17** [PR #74](https://github.com/andreadada/simple-notes/pull/74) e UI Forui EDITOR [PR #75](https://github.com/andreadada/simple-notes/pull/75) integrate; CI backend e Flutter analyze/widget superate. Native/post-merge in verifica; VPS ultima attestazione V10 al 03/11, nessun deploy. [Stato](CURRENT-STATUS.md).
+
 <!-- CURRENT-STATUS-REF -->
 > **Stato 11/11/2026:** [PR #69](https://github.com/andreadada/simple-notes/pull/69) backend V16 e [PR #70](https://github.com/andreadada/simple-notes/pull/70) schermata Condivise Forui integrate, CI branch verde. Hardening PR #71 integrata (protezione cambio account). VPS V10 attestata, nessun deploy o test hardware. [Stato](CURRENT-STATUS.md).
 
@@ -227,6 +229,6 @@ La schermata Strumenti → Modelli conserva pulsanti Pubblica/Scarica con dialog
 
 Nella sezione **STRUMENTI → Condivise** i controlli Forui gestiscono inviti privati (campo incolla, pulsanti Crea/Copia/Gestisci), liste ricevute e anteprima task in sola lettura. Conferma tramite NotesDialog per rimuovere membri o abbandonare liste, niente nuova modale per editare attributi già visibili. Token visualizzato una sola volta, non in analytics o storage persistente. L'account Google e boundOwnerId vengono confrontati intorno a ogni richiesta; nessun task condiviso viene copiato nell'archivio offline personale. [Specifica](P2-LIST-SHARING.md).
 
-## P2 — Condivise EDITOR (incremento in revisione 11/11)
+## P2 — Condivise EDITOR (PR #75 integrata, 11/11)
 
 La lista ricevuta mostra **Sola lettura** o **Puoi modificare** secondo la membership. Per EDITOR il titolo/descrizione sono campi modificabili **inline sulla card task**, senza menù Rinomina né dialog ridondante. Completamento e priorità dispongono di azioni rapide. I pulsanti Salva e Aggiorna eseguono update CAS e refresh senza importare task in SQLite; conflitto 409 è visibile e richiede scelta manuale. L'owner cambia ruolo con dialog di conferma Forui. Nessun accesso a note, scadenze e altre liste via collaborazione. [Contratto](P2-LIST-EDITOR.md).

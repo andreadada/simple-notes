@@ -348,10 +348,14 @@ class _ListSharingBoardState extends State<ListSharingBoard> {
 
   Future<void> _reloadSnapshot() => _run((owner, epoch) async {
     final current = _snapshot;
-    if (current == null) return;
+    if (current == null) {
+      return;
+    }
     final remote = await _api.snapshot(current.listId);
     if (!await _accountValid(owner, epoch) ||
-        _snapshot?.listId != current.listId) return;
+        _snapshot?.listId != current.listId) {
+      return;
+    }
     setState(() {
       _snapshot = remote;
       _editingTaskId = null;
@@ -379,12 +383,16 @@ class _ListSharingBoardState extends State<ListSharingBoard> {
       }
       rethrow;
     }
-    if (!await _accountValid(owner, epoch)) return;
+    if (!await _accountValid(owner, epoch)) {
+      return;
+    }
     // Read back the server snapshot. Never optimistically stage a remote
     // task in Drift or mutate an owner's local /sync cursor.
     final latest = await _api.snapshot(current.listId);
     if (!await _accountValid(owner, epoch) ||
-        _snapshot?.listId != current.listId) return;
+        _snapshot?.listId != current.listId) {
+      return;
+    }
     setState(() {
       _snapshot = latest;
       _editingTaskId = null;

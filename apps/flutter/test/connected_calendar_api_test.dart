@@ -16,7 +16,7 @@ void main() {
         expect(request.headers['Authorization'],'Bearer APP-JWT');
         expect(request.followRedirects,isFalse);
         expect(request.url.path,startsWith('/api/v1/calendars'));
-        calls.add(request.method+' '+request.url.path);
+        calls.add('${request.method} ${request.url.path}');
         if(request.url.path.endsWith('/authorize')) {
           return http.Response(jsonEncode({'authorizationUrl':
             'https://accounts.google.com/o/oauth2/v2/auth?state=abc'}),200);

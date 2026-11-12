@@ -346,3 +346,8 @@ Non abilitare upload cloud in produzione finché non esistono un bucket privato 
 ## P2 — Riconciliazione modelli cloud foreground (PR #65 integrata)
 
 Il backend V13 integra il catalogo modelli autenticato. Il client della PR #65 tenta la riconciliazione automatica **solo con app attiva** e dopo una sync task senza conflitti; il controllo è sospeso mentre la schermata Modelli è visibile. Verificare due installazioni con lo stesso account: creazione offline su A → upload CAS, prima apertura su B → download; modifiche conflittuali A/B → **nessun auto overwrite**, scelta Pubblica/Scarica con conferma e checkpoint aggiornato. Provare backend V10/404, account switch, checkpoint JSON corrotto, riavvio, restore gate e backup .snb invariato. Non effettuare deploy Flyway V13 o V14 senza runbook separato. [Specifica](P2-AUTO-TEMPLATE-CATALOG.md).
+
+
+## V18 calendar OAuth — operazioni future (12/11/2026)
+
+Dopo il redeploy di novembre, l'utente ha verificato Flyway V17 (17/17 riuscite). La PR #77 contiene V18 ma non è stata distribuita: **non** eseguire automaticamente migrazioni, redeploy, creazione OAuth o riconnessioni. Prima di un futuro deploy: backup SHA256 e restore isolato, approvazione commit, gate [RELEASE-V18-READINESS.md](RELEASE-V18-READINESS.md). Solo successivamente configurare i provider dalla guida [P2-CALENDAR-OAUTH.md](P2-CALENDAR-OAUTH.md). Lasciare APP_CALENDAR_* non impostate finché non si vuole attivare il consenso.

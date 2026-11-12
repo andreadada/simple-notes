@@ -1,5 +1,7 @@
 # Simple Notes API v1
 
+> **P2 · 12/11/2026:** VPS dell'utente attestata **Flyway V17**, nuova [PR #77](https://github.com/andreadada/simple-notes/pull/77) in revisione: OAuth dedicato Google Calendar/Outlook read-only, Flyway **V18 non deployata**, grant OFF per default e nessuna mutazione task/sync. [Specifiche](P2-CALENDAR-OAUTH.md) · [Readiness](RELEASE-V18-READINESS.md).
+
 <!-- CURRENT-STATUS-REF -->
 > **Stato 11/11/2026:** backend sharing **Flyway V17** [PR #74](https://github.com/andreadada/simple-notes/pull/74) e UI Forui EDITOR [PR #75](https://github.com/andreadada/simple-notes/pull/75) integrate; CI backend e Flutter analyze/widget superate. Native/post-merge in verifica; VPS ultima attestazione V10 al 03/11, nessun deploy. [Stato](CURRENT-STATUS.md).
 
@@ -207,3 +209,8 @@ API JWT sotto `/api/v1/sharing`: POST `/lists/{id}/invitations` (proprietario, t
 ## P2 — collaborazione EDITOR (Flyway V17, in revisione)
 
 `PUT /api/v1/sharing/lists/{listId}/members/{memberId}/role`: JWT **proprietario** e JSON `{"role":"VIEWER"|"EDITOR"}` per membro già accettato; 404 per membership non autorizzata. `PATCH /api/v1/sharing/lists/{listId}/tasks/{taskId}`: JWT **EDITOR**, body `{"expectedVersion":N,"title":"...","description":"...","completed":true,"priority":2}` con uno o più campi validi. Accetta soltanto i quattro campi consentiti, version CAS obbligatoria, 409 se cambiato, 404 se fuori lista. Risposta `{version,changeId}` e audit attore. `GET /snapshot` restituisce `readOnly:false` per EDITOR e `version` per task; `GET /members` ora include ruolo. Non esiste editing offline cross-owner. [Contratto](P2-LIST-EDITOR.md).
+
+
+## API Calendar OAuth V18 — in revisione PR #77
+
+GET /api/v1/calendars (stato JWT), POST /api/v1/calendars/{provider}/authorize (URL consenso JWT), GET /api/v1/calendars/oauth/{provider}/callback (state PKCE monouso senza JWT), GET /api/v1/calendars/{provider}/events?start=ISO&end=ISO (eventi JWT in sola lettura, max31 giorni), DELETE /api/v1/calendars/{provider} (cancella grant owner JWT). Provider solo google e microsoft; nessun token restituito, nessuna scrittura nella sync. [Contratto](P2-CALENDAR-OAUTH.md).

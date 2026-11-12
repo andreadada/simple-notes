@@ -1,5 +1,7 @@
 # Simple Notes — Passaggio di consegne (handoff)
 
+> **P2 12/11/2026:** la VPS Simple Notes è stata aggiornata dall'utente al backend `3c904a0`, con Flyway **V17 (17/17 migrazioni riuscite)**. La [PR #77](https://github.com/andreadada/simple-notes/pull/77) introduce Google Calendar / Outlook OAuth read-only e Flyway **V18**, in revisione e **non deployata**. Nessun provider live configurato; restano collaudi con account reali e backup/offsite da attestare. [Specifiche](P2-CALENDAR-OAUTH.md) · [Gate](RELEASE-V18-READINESS.md).
+
 > **11/11/2026, stato principale:** backend VIEWER [#69](https://github.com/andreadada/simple-notes/pull/69) e Forui [#70](https://github.com/andreadada/simple-notes/pull/70) integrati. PR #71 hardening sessione integrata. VPS Flyway V10 attestata 03/11, repo V16, nessun deploy o collaudo. [Stato](CURRENT-STATUS.md).
 
 > **Stato codice 10/11/2026:** [PR #63](https://github.com/andreadada/simple-notes/pull/63) merged `b9dd67a` (catalogo modelli manuale V13) e [PR #62](https://github.com/andreadada/simple-notes/pull/62) merged `766860c` (auto-sync foreground regole task). Migrazioni Flyway **V13 nel repository**, VPS **V10 attestata il 03/11**: nessun deploy, restore live o E2E hardware. Backend/Compose/Markdown CI della PR #63 verdi; Flutter CI dell'ultimo codice ancora da completare. [Stato canonico](CURRENT-STATUS.md).

@@ -1,5 +1,7 @@
 # Delta Sync v1 — protocollo e storia degli incrementi
 
+> **P2 · 12/11/2026:** VPS dell'utente attestata **Flyway V17**, nuova [PR #77](https://github.com/andreadada/simple-notes/pull/77) in revisione: OAuth dedicato Google Calendar/Outlook read-only, Flyway **V18 non deployata**, grant OFF per default e nessuna mutazione task/sync. [Specifiche](P2-CALENDAR-OAUTH.md) · [Readiness](RELEASE-V18-READINESS.md).
+
 <!-- CURRENT-STATUS-REF -->
 > **Stato 11/11/2026:** backend sharing **Flyway V17** [PR #74](https://github.com/andreadada/simple-notes/pull/74) e UI Forui EDITOR [PR #75](https://github.com/andreadada/simple-notes/pull/75) integrate; CI backend e Flutter analyze/widget superate. Native/post-merge in verifica; VPS ultima attestazione V10 al 03/11, nessun deploy. [Stato](CURRENT-STATUS.md).
 
@@ -193,3 +195,8 @@ La nuova API degli allegati S3 è distinta dal sync outbox: gli allegati non div
 ## P2 — EDITOR V17 online, nessuna nuova outbox guest (PR #74/#75)
 
 Il collaboratore EDITOR autenticato usa solo `PATCH /api/v1/sharing/lists/{listId}/tasks/{taskId}`, con `expectedVersion`: il servizio controlla la membership, il task del proprietario e il ledger canonico, poi usa `SyncService.apply(owner,...)` con versione CAS e audit attore. Il cursor guest, le note e gli altri task del proprietario non diventano visibili. Dopo salvataggio il client ricarica la snapshot; se il server risponde 409, richiede aggiornamento e risoluzione manuale. La collaborazione non è una sync offline bidirezionale cross-owner. [Specifica](P2-LIST-EDITOR.md).
+
+
+## Calendari provider V18 separati dalla sincronizzazione personale
+
+La PR #77 usa autorizzazioni provider separate dal login Google per leggere eventi nel calendario Flutter, ma **non** salva eventi remoti nel database Drift, non crea task o note e non modifica sync_change, sync_operation, cursori o outbox. I token OAuth non raggiungono i dispositivi; nessuna collaborazione offline o sync bidirezionale. [Specifiche](P2-CALENDAR-OAUTH.md).

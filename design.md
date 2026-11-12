@@ -357,3 +357,8 @@ L'azione allegati usa una graffetta discreta per ogni nota, non richiede menu ri
 ## P2 — Sincronizzazione dei modelli, UX (PR #65 integrata)
 
 I modelli editabili non devono essere sostituiti dal cloud mentre l'editor è aperto. Mostrare lo stato di sincronizzazione come testo discreto nella stessa schermata e conservare i pulsanti Pubblica/Scarica con consenso in caso di conflitto. Nessun modale automatico invasivo o campo aggiuntivo per rinominare. Le due copie offline devono sopravvivere al conflitto fino a scelta manuale. [Specifica](docs/P2-AUTO-TEMPLATE-CATALOG.md).
+
+
+## P2 Calendar OAuth — interazione minima
+
+La PR #77 introduce una sezione Forui leggera nella vista Calendario, con titolo e azioni Collega/Aggiorna/Scollega. La connessione richiede sempre un consenso browser separato dal normale login Google; gli eventi remoti sono read-only e volatili. La conferma di scollegamento usa Forui; nessun nuovo modal di rinomina, input ridondante o salvataggio di token nel client. [Contratto](docs/P2-CALENDAR-OAUTH.md).

@@ -1,6 +1,6 @@
 # P2 — Matrice di consegna e criteri di chiusura
 
-> **P2 12/11/2026:** la VPS Simple Notes è stata aggiornata dall'utente al backend `3c904a0`, con Flyway **V17 (17/17 migrazioni riuscite)**. La [PR #77](https://github.com/andreadada/simple-notes/pull/77) introduce Google Calendar / Outlook OAuth read-only e Flyway **V18**, in revisione e **non deployata**. Nessun provider live configurato; restano collaudi con account reali e backup/offsite da attestare. [Specifiche](P2-CALENDAR-OAUTH.md) · [Gate](RELEASE-V18-READINESS.md).
+> **P2 12/11/2026:** la VPS Simple Notes è stata aggiornata dall'utente al backend `3c904a0`, con Flyway **V17 (17/17 migrazioni riuscite)**. La [PR #77](https://github.com/andreadada/simple-notes/pull/77) introduce Google Calendar / Outlook OAuth read-only e Flyway **V18**, integrata in `main` (`968068b`) ma **non distribuita su Coolify**. Nessun provider live configurato; restano collaudi con account reali e backup/offsite da attestare. [Specifiche](P2-CALENDAR-OAUTH.md) · [Gate](RELEASE-V18-READINESS.md).
 
 Aggiornato 11 novembre 2026. **PR #74 (backend EDITOR V17) e #75 (Flutter Forui EDITOR) integrate in `main`. CI Backend/Compose/Markdown #74 verdi e Flutter analyze/widget #75 superati; native/post-merge in verifica. CI verde non equivale a deploy Coolify o collaudo fisico.**
 
@@ -53,7 +53,7 @@ Le statistiche sono calcolate sui dati locali senza telemetria. I modelli produc
 | Area | Che cosa manca realmente |
 |---|---|
 | Restore live .snb | Coordinamento SQLite/preferenze installate, lock nativo, recupero dopo power loss, consenso, quarantena e riconciliazione outbox |
-| Google Calendar/Outlook | PR #77: OAuth, PKCE, token cifrati, eventi read-only e UI in branch; restano provider/consenso reale, multi-calendario, sync bidirezionale ed E2E |
+| Google Calendar/Outlook | PR #77: OAuth, PKCE, token cifrati, eventi read-only e UI integrate in `main`; restano provider/consenso reale, multi-calendario, sync bidirezionale ed E2E |
 | Liste condivise | ACL multiowner, ruoli, assegnazioni, audit server, migrazioni, protezioni accesso e UI |
 | Allegati S3 | **Parziale in PR #64**: API owner-scoped V14, signed URL PUT/GET, quote, verifica HEAD/COPY, picker/CRUD Forui | Restano bucket/lifecycle reali, file scan, cancellazione oggetti di note eliminate, coda offline, E2E fisiche |
 | Widget Android | Widget nativo Oggi/Inbox/Nuova attività compilato (Java 17/21); launcher/cold-start/logout su dispositivo fisico non verificati |
@@ -99,4 +99,4 @@ Nuova vista di lista ricevuta con indicazione EDITOR, campi titolo/descrizione m
 
 ## OAuth provider V18 — PR #77 (12/11/2026)
 
-Code review in corso: prima integrazione Google Calendar/Outlook read-only con state monouso, grant separato, token AES-GCM, Flutter Forui e lettura manuale in memoria. Backend V18 non ancora deployato né configurato; non chiude la P2. [Contratto](P2-CALENDAR-OAUTH.md) · [Readiness](RELEASE-V18-READINESS.md).
+Integrata in `main`: prima integrazione Google Calendar/Outlook read-only con state monouso, grant separato, token AES-GCM, Flutter Forui e lettura manuale in memoria. Backend V18 non ancora deployato né configurato; non chiude la P2. [Contratto](P2-CALENDAR-OAUTH.md) · [Readiness](RELEASE-V18-READINESS.md).

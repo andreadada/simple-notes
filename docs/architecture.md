@@ -1,6 +1,6 @@
 # Simple Notes — Architettura applicativa
 
-> **P2 · 12/11/2026:** VPS dell'utente attestata **Flyway V17**, nuova [PR #77](https://github.com/andreadada/simple-notes/pull/77) in revisione: OAuth dedicato Google Calendar/Outlook read-only, Flyway **V18 non deployata**, grant OFF per default e nessuna mutazione task/sync. [Specifiche](P2-CALENDAR-OAUTH.md) · [Readiness](RELEASE-V18-READINESS.md).
+> **P2 · 12/11/2026:** VPS dell'utente attestata **Flyway V17**, nuova [PR #77](https://github.com/andreadada/simple-notes/pull/77) integrata in `main`: OAuth dedicato Google Calendar/Outlook read-only, Flyway **V18 non deployata**, grant OFF per default e nessuna mutazione task/sync. [Specifiche](P2-CALENDAR-OAUTH.md) · [Readiness](RELEASE-V18-READINESS.md).
 
 <!-- CURRENT-STATUS-REF -->
 > **Stato 11/11/2026:** backend sharing **Flyway V17** [PR #74](https://github.com/andreadada/simple-notes/pull/74) e UI Forui EDITOR [PR #75](https://github.com/andreadada/simple-notes/pull/75) integrate; CI backend e Flutter analyze/widget superate. Native/post-merge in verifica; VPS ultima attestazione V10 al 03/11, nessun deploy. [Stato](CURRENT-STATUS.md).

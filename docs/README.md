@@ -1,8 +1,8 @@
 # Indice documentazione — Simple Notes
 
-**Aggiornato: 11 novembre 2026.** Punto di accesso ai documenti Markdown del progetto. Copertura: 66 documenti in `docs/` (escluso questo indice), oltre ai Markdown dei package e della radice.
+**Aggiornato: 12 novembre 2026.** Punto di accesso ai documenti Markdown del progetto. Copertura: 68 documenti in `docs/` (escluso questo indice), oltre ai Markdown dei package e della radice.
 
-Lo **stato canonico** è [CURRENT-STATUS.md](CURRENT-STATUS.md): verificare sempre separatamente **codice integrato**, **CI**, **migrazione/deploy VPS** e **test fisici**. Le righe storiche dei vecchi runbook non costituiscono autorizzazione a un deploy. L'ultima attestazione della VPS riguarda **Flyway V10 al 3 novembre 2026**, mentre il repository contiene **Flyway V17 integrata (PR #74)** e la UI EDITOR è integrata (PR #75). La PR #62 (integrata in `main`) introduce riconciliazione delle definizioni delle automazioni *solo foreground*, non un job backend.
+Lo **stato canonico** è [CURRENT-STATUS.md](CURRENT-STATUS.md): verificare sempre separatamente **codice integrato**, **CI**, **migrazione/deploy VPS** e **test fisici**. Le righe storiche dei vecchi runbook non costituiscono autorizzazione a un deploy. La VPS è ora attestata a **Flyway V17 al 12 novembre 2026**, mentre la PR #77 propone **Flyway V18, non deployata** e la UI EDITOR è integrata (PR #75). La PR #62 (integrata in `main`) introduce riconciliazione delle definizioni delle automazioni *solo foreground*, non un job backend.
 
 ## Accessi principali
 
@@ -89,6 +89,7 @@ Lo **stato canonico** è [CURRENT-STATUS.md](CURRENT-STATUS.md): verificare semp
 - [RELEASE-V15-READINESS](./RELEASE-V15-READINESS.md)
 - [RELEASE-V16-READINESS](./RELEASE-V16-READINESS.md)
 - [RELEASE-V17-READINESS](./RELEASE-V17-READINESS.md)
+- [RELEASE-V18-READINESS](./RELEASE-V18-READINESS.md)
 - [RESET-TEST-DATA](./RESET-TEST-DATA.md)
 - [android-troubleshooting](./android-troubleshooting.md)
 

@@ -8,6 +8,7 @@ import '../data/task_due_view.dart';
 import 'calendar_logic.dart';
 import 'ics_calendar.dart';
 import 'ics_calendar_controls.dart';
+import 'connected_calendar_controls.dart';
 import 'calendar_plan_summary.dart';
 import 'calendar_quick_planner.dart';
 import 'inline_editable_title.dart';
@@ -39,11 +40,15 @@ class _CalendarBoardState extends ConsumerState<CalendarBoard> {
   final searchController = TextEditingController();
   bool quickPlanning = false;
   IcsLibrary _ics = const IcsLibrary();
+  List<IcsEvent> _cloudEvents = const [];
 
   @override
   void didUpdateWidget(covariant CalendarBoard old) {
     super.didUpdateWidget(old);
-    if (old.ownerId != widget.ownerId) _ics = const IcsLibrary();
+    if (old.ownerId != widget.ownerId) {
+      _ics = const IcsLibrary();
+      _cloudEvents = const [];
+    }
   }
 
 
@@ -307,6 +312,11 @@ class _CalendarBoardState extends ConsumerState<CalendarBoard> {
     ])),
   );
 
+  List<IcsEvent> _externalOnDay(DateTime day) => [
+    ..._ics.onDay(day),
+    for (final e in _cloudEvents) if (e.onDay(day)) e,
+  ];
+
   Widget _icsCard(IcsEvent e, {bool compact = false}) => Padding(
     padding: EdgeInsets.only(bottom: compact ? 6 : 9),
     child: FCard(child: Row(children: [
@@ -318,7 +328,7 @@ class _CalendarBoardState extends ConsumerState<CalendarBoard> {
           Text(e.title, maxLines: compact ? 1 : 2,
             overflow: TextOverflow.ellipsis,
             style: TextStyle(fontSize: compact ? 12 : 14)),
-          Text('${e.clock} · ICS: ${e.source} · sola lettura',
+          Text('${e.clock} · ${e.source} · sola lettura',
             maxLines: 2, overflow: TextOverflow.ellipsis,
             style: TextStyle(fontSize: 10,
               color: NotesPalette.of(context).secondaryText)),
@@ -330,7 +340,7 @@ class _CalendarBoardState extends ConsumerState<CalendarBoard> {
   Widget _agenda(DateTime day, List<LocalTask> tasks,
       {bool includeHeading = true}) {
     final items = calendarTasksForDay(tasks, day);
-    final external = _ics.onDay(day);
+    final external = _externalOnDay(day);
     final blocks = calendarTimeSlotsForDay(tasks, day);
     final allDay = items.where((t) => t.due.kind == 'date').toList();
     final scheduled = items.where((t) => t.due.kind != 'date').toList();
@@ -426,7 +436,7 @@ class _CalendarBoardState extends ConsumerState<CalendarBoard> {
           final day = days[index];
           final items = calendarTasksForDay(tasks, day);
           final blocks = calendarTimeSlotsForDay(tasks, day);
-          final external = _ics.onDay(day);
+          final external = _externalOnDay(day);
           final focused = calendarDateKey(day) == calendarDateKey(selected);
           final today = calendarDateKey(day) ==
               calendarDateKey(DateTime.now());
@@ -510,11 +520,11 @@ class _CalendarBoardState extends ConsumerState<CalendarBoard> {
               const SizedBox(height: 10),
               for (final task in calendarTasksForDay(tasks, day))
                 _taskCard(task, compact: true),
-              for (final event in _ics.onDay(day))
+              for (final event in _externalOnDay(day))
                 _icsCard(event, compact: true),
               if (calendarTasksForDay(tasks, day).isEmpty &&
                   calendarTimeSlotsForDay(tasks, day).isEmpty &&
-                  _ics.onDay(day).isEmpty)
+                  _externalOnDay(day).isEmpty)
                 Padding(
                   padding: EdgeInsets.symmetric(vertical: 13),
                   child: Text('—', style: TextStyle(
@@ -572,6 +582,13 @@ class _CalendarBoardState extends ConsumerState<CalendarBoard> {
           IcsCalendarControls(ownerId: widget.ownerId,
             onChanged: (lib) {
               if (mounted) setState(() => _ics = lib);
+            },
+          ),
+          const SizedBox(height: 8),
+          ConnectedCalendarControls(ownerId: widget.ownerId,
+            day: selected,
+            onChanged: (events) {
+              if (mounted) setState(() => _cloudEvents = events);
             },
           ),
           const SizedBox(height: 10),

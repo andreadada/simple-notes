@@ -56,6 +56,11 @@ def run() -> None:
             or not has_version_one("sharingEditorSchema")
         ):
             refuse()
+        calendars = os.environ.get("REQUIRE_CALENDAR_READ_SCHEMA", "0")
+        if calendars not in ("0", "1"):
+            refuse()
+        if calendars == "1" and not has_version_one("calendarReadSchema"):
+            refuse()
         strict = os.environ.get("REQUIRE_FULL_SCHEMA", "0")
         time_block = os.environ.get("REQUIRE_TIME_BLOCK_SCHEMA", "0")
         if strict not in ("0", "1") or time_block not in ("0", "1"):

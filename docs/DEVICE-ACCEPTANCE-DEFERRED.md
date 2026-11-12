@@ -140,3 +140,8 @@ Dopo deploy V17 autorizzato: testare owner che promuove VIEWER, membro che modif
 ## P2 V17 — stato codice e prove reali (11/11)
 
 PR #74/#75 implementano EDITOR backend e UI, ma **non costituiscono test fisici**. Resta differita la verifica con almeno due account Google e dispositivi Windows/Android, incluse revoca durante PATCH, conflitto simultaneo, autoripristino account e consistenza ledger nel proprietario, dopo deploy separatamente autorizzato. [Contratto](P2-LIST-EDITOR.md).
+
+
+## Calendar OAuth V18 — test provider e dispositivi rinviati (12/11/2026)
+
+La PR #77 aggiunge consenso separato Google Calendar/Microsoft Outlook e lettura on-demand in memoria. Restano non eseguiti i test reali con provider, tenant, refresh token e callback HTTPS su Windows/Android; nessuna credenziale è ancora attiva. Eseguire con soli calendari/account di prova dopo esplicita abilitazione. [Contratto](P2-CALENDAR-OAUTH.md) · [Readiness](RELEASE-V18-READINESS.md).

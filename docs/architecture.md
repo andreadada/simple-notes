@@ -1,5 +1,7 @@
 # Simple Notes — Architettura applicativa
 
+> **P2 · 12/11/2026:** VPS dell'utente attestata **Flyway V17**, nuova [PR #77](https://github.com/andreadada/simple-notes/pull/77) in revisione: OAuth dedicato Google Calendar/Outlook read-only, Flyway **V18 non deployata**, grant OFF per default e nessuna mutazione task/sync. [Specifiche](P2-CALENDAR-OAUTH.md) · [Readiness](RELEASE-V18-READINESS.md).
+
 <!-- CURRENT-STATUS-REF -->
 > **Stato 11/11/2026:** backend sharing **Flyway V17** [PR #74](https://github.com/andreadada/simple-notes/pull/74) e UI Forui EDITOR [PR #75](https://github.com/andreadada/simple-notes/pull/75) integrate; CI backend e Flutter analyze/widget superate. Native/post-merge in verifica; VPS ultima attestazione V10 al 03/11, nessun deploy. [Stato](CURRENT-STATUS.md).
 
@@ -150,3 +152,8 @@ La nuova componente `sharing/ListSharingService` usa due tabelle PostgreSQL per 
 ## P2 — EDITOR V17: interoperabilità con il ledger owner (PR #74/#75)
 
 `ListSharingEditService` non autorizza mai il guest a chiamare `/sync/apply` sull'account del proprietario. Le PATCH EDITOR online prendono l'advisory lock owner, verificano membership, lista attiva e versioni fra task/ledger e compilano il payload completo dall'ultima `sync_change`; passano poi da `SyncService.apply(owner,...)` con CAS. Audit `list_share_audit` nello stesso commit registra actor/list/task/changeId e soli nomi dei campi; nessun contenuto privato duplicato. Flutter `Condivise` aggiorna online titolo/descrizione (inline), completamento e priorità; nessun record guest viene copiato in Drift. [Contratto](P2-LIST-EDITOR.md).
+
+
+## Modulo Calendar V18 (PR #77)
+
+Modulo Spring dedicato calendar OAuth: tabelle additive OAuth PKCE attempt e connection, cifratura token AES-GCM con AAD owner/provider/purpose, HTTP senza redirect verso Google e Microsoft Graph, API GET eventi normalizzati e UI Flutter solo in memoria; niente dati ICS persistiti né operazioni su sync/outbox. Attivazione provider manuale futura. [Specifica](P2-CALENDAR-OAUTH.md).

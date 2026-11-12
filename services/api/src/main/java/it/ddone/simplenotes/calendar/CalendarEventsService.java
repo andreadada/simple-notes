@@ -110,7 +110,7 @@ public class CalendarEventsService {
                 : OffsetDateTime.parse(finish.path("dateTime").asText("")).toInstant();
             if (!b.isAfter(a)) return null;
             return new Event(id, title, source, null, null, a, b);
-        } catch (IllegalArgumentException | IndexOutOfBoundsException ex) {
+        } catch (java.time.DateTimeException | IndexOutOfBoundsException ex) {
             return null;
         }
     }

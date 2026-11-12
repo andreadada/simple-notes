@@ -111,7 +111,7 @@ public class CalendarOAuthService {
         query.put("code_challenge", challenge(verifier));
         query.put("code_challenge_method", "S256");
         if ("google".equals(provider)) {
-            query.put("scope", "https://www.googleapis.com/auth/calendar.readonly");
+            query.put("scope", "https://www.googleapis.com/auth/calendar.events.readonly");
             query.put("access_type", "offline");
             query.put("prompt", "consent");
         } else {
@@ -185,7 +185,10 @@ public class CalendarOAuthService {
 
     @Transactional
     public void disconnect(UUID owner, String provider) {
-        require(provider);
+        // Disconnect must work even after an administrator disables credentials.
+        if (!PROVIDERS.contains(provider)) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Unknown calendar provider");
+        }
         jdbc.update("DELETE FROM calendar_oauth_attempt WHERE owner_id=? AND provider=?",
             owner, provider);
         jdbc.update("DELETE FROM calendar_oauth_connection WHERE owner_id=? AND provider=?",

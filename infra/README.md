@@ -1,6 +1,6 @@
 # Backend — Coolify
 
-> **P2 · 12/11/2026:** VPS dell'utente attestata **Flyway V17**, nuova [PR #77](https://github.com/andreadada/simple-notes/pull/77) in revisione: OAuth dedicato Google Calendar/Outlook read-only, Flyway **V18 non deployata**, grant OFF per default e nessuna mutazione task/sync. [Specifiche](../docs/P2-CALENDAR-OAUTH.md) · [Readiness](../docs/RELEASE-V18-READINESS.md).
+> **P2 · 12/11/2026:** VPS dell'utente attestata **Flyway V17**, nuova [PR #77](https://github.com/andreadada/simple-notes/pull/77) integrata in `main`: OAuth dedicato Google Calendar/Outlook read-only, Flyway **V18 non deployata**, grant OFF per default e nessuna mutazione task/sync. [Specifiche](../docs/P2-CALENDAR-OAUTH.md) · [Readiness](../docs/RELEASE-V18-READINESS.md).
 
 > **P2 11/11/2026:** backend collaborazione VIEWER Flyway V16 [#69](https://github.com/andreadada/simple-notes/pull/69) e UI Forui [#70](https://github.com/andreadada/simple-notes/pull/70) integrate, VPS ultima attestazione V10 il 03/11. **Non è stato eseguito il deploy.** [Readiness V16](../docs/RELEASE-V16-READINESS.md).
 

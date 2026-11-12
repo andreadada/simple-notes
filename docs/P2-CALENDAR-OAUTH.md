@@ -1,6 +1,6 @@
 # P2 — Google Calendar e Outlook con OAuth separato (Flyway V18)
 
-**12 novembre 2026 · [PR #77](https://github.com/andreadada/simple-notes/pull/77) in revisione.** Collegamento autonomo dal normale Google login di Simple Notes, con eventi **in sola lettura**. Non è stato effettuato alcun nuovo deploy né un consenso reale; i provider sono disabilitati per impostazione predefinita.
+**12 novembre 2026 · [PR #77](https://github.com/andreadada/simple-notes/pull/77) integrata in `main`.** Collegamento autonomo dal normale Google login di Simple Notes, con eventi **in sola lettura**. Non è stato effettuato alcun nuovo deploy né un consenso reale; i provider sono disabilitati per impostazione predefinita.
 
 ## Esperienza nell'app
 

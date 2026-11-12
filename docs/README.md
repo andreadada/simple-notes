@@ -2,7 +2,7 @@
 
 **Aggiornato: 12 novembre 2026.** Punto di accesso ai documenti Markdown del progetto. Copertura: 68 documenti in `docs/` (escluso questo indice), oltre ai Markdown dei package e della radice.
 
-Lo **stato canonico** è [CURRENT-STATUS.md](CURRENT-STATUS.md): verificare sempre separatamente **codice integrato**, **CI**, **migrazione/deploy VPS** e **test fisici**. Le righe storiche dei vecchi runbook non costituiscono autorizzazione a un deploy. La VPS è ora attestata a **Flyway V17 al 12 novembre 2026**, mentre la PR #77 propone **Flyway V18, non deployata** e la UI EDITOR è integrata (PR #75). La PR #62 (integrata in `main`) introduce riconciliazione delle definizioni delle automazioni *solo foreground*, non un job backend.
+Lo **stato canonico** è [CURRENT-STATUS.md](CURRENT-STATUS.md): verificare sempre separatamente **codice integrato**, **CI**, **migrazione/deploy VPS** e **test fisici**. Le righe storiche dei vecchi runbook non costituiscono autorizzazione a un deploy. La VPS è ora attestata a **Flyway V17 al 12 novembre 2026**, mentre `main` contiene **Flyway V18** grazie alla PR #77, **non ancora deployata** e la UI EDITOR è integrata (PR #75). La PR #62 (integrata in `main`) introduce riconciliazione delle definizioni delle automazioni *solo foreground*, non un job backend.
 
 ## Accessi principali
 

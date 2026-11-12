@@ -85,7 +85,7 @@ class _ConnectedCalendarControlsState
         .subtract(const Duration(days:14));
       final end=start.add(const Duration(days:30));
       final events=<IcsEvent>[];
-      for(final p in providers.where((p)=>p.connected)) {
+      for(final p in providers.where((p)=>p.connected && p.available)) {
         if(!_same(owner,epoch))return;
         final page=await _api.events(p.provider,start,end);
         for(final e in page.events) {

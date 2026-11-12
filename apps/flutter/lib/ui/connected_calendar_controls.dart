@@ -75,7 +75,7 @@ class _ConnectedCalendarControlsState
     final owner=widget.ownerId;
     if(owner==null || !CloudConfig.enabled ||
       !ref.read(cloudAuthProvider).authenticated ||
-      ref.read(cloudAuthProvider).userId!=owner || _busy)return;
+      ref.read(cloudAuthProvider).userId!=owner || _busy) { return; }
     final epoch=_epoch;
     setState((){_busy=true;_error=null;});
     try {
@@ -98,12 +98,14 @@ class _ConnectedCalendarControlsState
       setState((){_providers=providers;_loaded=true;});
       widget.onChanged(List.unmodifiable(events));
     } catch(e) {
-      if(_same(owner,epoch))setState(() {
+      if(_same(owner,epoch)) {
+        setState(() {
         _loaded=true;
         _error=e is CalendarCloudException && e.status==404
           ? 'Aggiorna il backend per i calendari cloud.'
           : 'Aggiornamento calendario fallito; eventi precedenti conservati.';
-      });
+        });
+      }
     } finally {
       if(_same(owner,epoch))setState(()=>_busy=false);
     }
@@ -120,13 +122,14 @@ class _ConnectedCalendarControlsState
       if(!await launchUrl(uri,mode:LaunchMode.externalApplication)) {
         throw StateError('Browser non disponibile');
       }
-      if(_same(owner,epoch)) {
+      if(mounted && _same(owner,epoch)) {
         ScaffoldMessenger.maybeOf(context)?.showSnackBar(const SnackBar(
           content:Text('Completa il consenso nel browser, poi premi Aggiorna.')));
       }
     } catch(_) {
-      if(_same(owner,epoch))setState(
-        ()=>_error='Consenso provider non avviato.');
+      if(_same(owner,epoch)) {
+        setState(()=>_error='Consenso provider non avviato.');
+      }
     } finally {
       if(_same(owner,epoch))setState(()=>_busy=false);
     }
@@ -187,7 +190,7 @@ class _ConnectedCalendarControlsState
             child:Text(_busy?'Aggiornamento...':'Aggiorna')),
           if(_loaded)
             for(final p in _providers)
-              FButton(key:Key('calendar-cloud-' + p.provider),
+              FButton(key:Key('calendar-cloud-${p.provider}'),
                 mainAxisSize:MainAxisSize.min,
                 variant:FButtonVariant.outline,
                 onPress:_busy || (!p.available && !p.connected)

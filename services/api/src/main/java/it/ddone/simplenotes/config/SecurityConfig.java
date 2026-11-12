@@ -27,7 +27,9 @@ public class SecurityConfig {
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/actuator/health", "/actuator/health/**", "/api/v1/auth/google",
                     "/api/v1/auth/refresh", "/api/v1/auth/logout",
-                    "/api/v1/auth/desktop/exchange").permitAll()
+                    "/api/v1/auth/desktop/exchange",
+                    "/api/v1/calendars/oauth/google/callback",
+                    "/api/v1/calendars/oauth/microsoft/callback").permitAll()
                 .anyRequest().authenticated())
             .oauth2ResourceServer(oauth -> oauth.jwt(jwt -> {}))
             .build();

@@ -104,7 +104,18 @@ class T4MigrationRehearsalTest {
                 postgres.getPassword()).load();
             migrated.migrate();
             migrated.validate();
-            assertEquals("17", migrated.info().current().getVersion().toString());
+            assertEquals("18", migrated.info().current().getVersion().toString());
+            // Calendar links are additive and empty after migrating existing accounts.
+            try (Connection db = DriverManager.getConnection(
+                    postgres.getJdbcUrl(), postgres.getUsername(), postgres.getPassword())) {
+                for (String name : java.util.List.of("calendar_oauth_attempt", "calendar_oauth_connection")) {
+                    try (PreparedStatement ps = db.prepareStatement("SELECT COUNT(*) FROM " + name);
+                         ResultSet rs = ps.executeQuery()) {
+                        assertTrue(rs.next());
+                        assertEquals(0, rs.getLong(1));
+                    }
+                }
+            }
 
             try (Connection db = DriverManager.getConnection(
                     postgres.getJdbcUrl(), postgres.getUsername(),

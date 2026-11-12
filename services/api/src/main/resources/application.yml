@@ -35,3 +35,11 @@ app:
     bucket: ${APP_ATTACHMENTS_BUCKET:}
     region: ${APP_ATTACHMENTS_REGION:eu-central-1}
     endpoint: ${APP_ATTACHMENTS_ENDPOINT:}
+
+  calendar:
+    public-origin: ${APP_CALENDAR_PUBLIC_ORIGIN:}
+    token-key-base64: ${APP_CALENDAR_TOKEN_KEY_BASE64:}
+    google-client-id: ${APP_CALENDAR_GOOGLE_CLIENT_ID:}
+    google-client-secret: ${APP_CALENDAR_GOOGLE_CLIENT_SECRET:}
+    microsoft-client-id: ${APP_CALENDAR_MICROSOFT_CLIENT_ID:}
+    microsoft-client-secret: ${APP_CALENDAR_MICROSOFT_CLIENT_SECRET:}

@@ -22,15 +22,18 @@ public class NoteAttachmentService {
     private final AttachmentObjectStore objects;
     private final SyncService sync;
     private final AttachmentDeletionQueue deletionQueue;
+    private final AttachmentMalwareScanner malwareScanner;
 
     public NoteAttachmentService(NoteAttachmentRepository attachments,
             NoteRepository notes, AttachmentObjectStore objects, SyncService sync,
-            AttachmentDeletionQueue deletionQueue) {
+            AttachmentDeletionQueue deletionQueue,
+            AttachmentMalwareScanner malwareScanner) {
         this.attachments = attachments;
         this.notes = notes;
         this.objects = objects;
         this.sync = sync;
         this.deletionQueue = deletionQueue;
+        this.malwareScanner = malwareScanner;
     }
 
     private void ownedNote(UUID owner, UUID note) {
@@ -61,6 +64,7 @@ public class NoteAttachmentService {
             throw new ResponseStatusException(
                 HttpStatus.BAD_REQUEST, "Unsupported attachment");
         }
+        malwareScanner.requireConfigured();
         Instant now = Instant.now();
         if (attachments.activeCount(owner, now) >= 100 ||
             attachments.activeBytes(owner, now) > MAX_OWNER_BYTES - input.sizeBytes()) {
@@ -97,6 +101,15 @@ public class NoteAttachmentService {
         // header. Verify a conditional range GET before the ETag-guarded COPY.
         AttachmentContentSafety.requireSupported(attachment.contentType,
             objects.readPrefix(attachment.objectKey, actual.etag(), 512));
+        // Scan all bytes, not only the MIME/header prefix, before promoting
+        // to a permanent S3 key or changing READY metadata.
+        byte[] full = objects.readForScan(attachment.objectKey, actual.etag(),
+            Math.toIntExact(attachment.sizeBytes));
+        if (full == null || full.length != attachment.sizeBytes) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT,
+                "Attachment changed during full malware inspection");
+        }
+        malwareScanner.scan(full);
         String readyKey = "files/" + owner + "/" + attachment.id;
         objects.promote(attachment.objectKey, readyKey,
             attachment.contentType, actual.etag());

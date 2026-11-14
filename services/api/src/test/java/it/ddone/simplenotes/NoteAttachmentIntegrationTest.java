@@ -1,6 +1,7 @@
 package it.ddone.simplenotes;
 
 import it.ddone.simplenotes.attachment.AttachmentObjectStore;
+import it.ddone.simplenotes.attachment.AttachmentMalwareScanner;
 import it.ddone.simplenotes.attachment.NoteAttachmentRepository;
 import it.ddone.simplenotes.attachment.AttachmentDeletionQueue;
 import it.ddone.simplenotes.note.NoteEntity;
@@ -58,6 +59,7 @@ class NoteAttachmentIntegrationTest {
     @Autowired JwtEncoder encoder;
     @Autowired ObjectMapper json;
     @MockitoBean AttachmentObjectStore objects;
+    @MockitoBean AttachmentMalwareScanner scanner;
 
     private String auth(UUID owner) {
         var now = Instant.now();
@@ -95,6 +97,11 @@ class NoteAttachmentIntegrationTest {
             new AttachmentObjectStore.Metadata(1024L, "application/pdf", "\"etag-1\""));
         when(objects.readPrefix(anyString(), eq("\"etag-1\""), eq(512)))
             .thenReturn("%PDF-1.7".getBytes(java.nio.charset.StandardCharsets.US_ASCII));
+        byte[] cleanPdf = new byte[1024];
+        System.arraycopy("%PDF-1.7".getBytes(java.nio.charset.StandardCharsets.US_ASCII),
+            0, cleanPdf, 0, 8);
+        when(objects.readForScan(anyString(), eq("\"etag-1\""), eq(1024)))
+            .thenReturn(cleanPdf);
         when(objects.presignGet(anyString())).thenReturn(
             "https://s3.example/files/read");
 
@@ -216,6 +223,40 @@ class NoteAttachmentIntegrationTest {
             .andExpect(jsonPath("$.length()").value(0));
         verify(objects, never()).promote(anyString(), anyString(),
             anyString(), anyString());
+    }
+
+
+    @Test
+    void infectedFullFileIsNeverPublishedAndStaysPending() throws Exception {
+        var alice = user();
+        var note = note(alice);
+        var path = route(note.id);
+        var token = auth(alice.id);
+        when(objects.presignPut(anyString(), eq("application/pdf"), eq(1024L)))
+            .thenReturn(new AttachmentObjectStore.Ticket(
+                "https://s3.example/staging/upload", java.util.Map.of()));
+        when(objects.inspect(anyString())).thenReturn(
+            new AttachmentObjectStore.Metadata(1024L, "application/pdf", "\"clean-etag\""));
+        when(objects.readPrefix(anyString(), eq("\"clean-etag\""), eq(512)))
+            .thenReturn("%PDF-1.7".getBytes(java.nio.charset.StandardCharsets.US_ASCII));
+        when(objects.readForScan(anyString(), eq("\"clean-etag\""), eq(1024)))
+            .thenReturn(new byte[1024]);
+        doThrow(new org.springframework.web.server.ResponseStatusException(
+            org.springframework.http.HttpStatus.CONFLICT, "Attachment rejected"))
+            .when(scanner).scan(any(byte[].class));
+        var response = mvc.perform(post(path).header("Authorization", token)
+            .contentType(MediaType.APPLICATION_JSON).content(REQUEST))
+            .andExpect(status().isCreated()).andReturn().getResponse()
+            .getContentAsString();
+        UUID id = UUID.fromString(json.readTree(response).path("id").asText());
+        mvc.perform(post(path + "/" + id + "/complete")
+            .header("Authorization", token)).andExpect(status().isConflict());
+        mvc.perform(get(path).header("Authorization", token))
+            .andExpect(jsonPath("$.length()").value(0));
+        verify(objects, never()).promote(anyString(), anyString(),
+            anyString(), anyString());
+        org.assertj.core.api.Assertions.assertThat(
+            attachments.findById(id).orElseThrow().state).isEqualTo("PENDING");
     }
 
     @Test

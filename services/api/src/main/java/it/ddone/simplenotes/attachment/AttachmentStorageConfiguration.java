@@ -56,6 +56,9 @@ public class AttachmentStorageConfiguration {
         public byte[] readPrefix(String key, String expectedEtag, int maxBytes) {
             throw unavailable();
         }
+        public byte[] readForScan(String key, String expectedEtag, int expectedBytes) {
+            throw unavailable();
+        }
         public void promote(String source, String destination,
                 String type, String expectedEtag) {
             throw unavailable();
@@ -137,6 +140,34 @@ public class AttachmentStorageConfiguration {
                         "Attachment changed or disappeared during inspection");
                 }
                 throw error;
+            }
+        }
+
+        @Override public byte[] readForScan(String key, String expectedEtag,
+                int expectedBytes) {
+            if (expectedBytes < 1 || expectedBytes > 10 * 1024 * 1024
+                    || expectedEtag == null || expectedEtag.isBlank()) {
+                throw new IllegalArgumentException("Invalid attachment full scan");
+            }
+            try {
+                // Request at most expected + 1 bytes to detect an oversized
+                // object. ETag precondition prevents HEAD/GET races.
+                try (var stream = client.getObject(GetObjectRequest.builder()
+                        .bucket(bucket).key(key).ifMatch(expectedEtag)
+                        .range("bytes=0-" + expectedBytes).build())) {
+                    // Never allocate beyond the declared size + 1 even if
+                    // a nonconforming S3-compatible server ignores Range.
+                    return stream.readNBytes(expectedBytes + 1);
+                }
+            } catch (S3Exception error) {
+                if (error.statusCode() == 412 || error.statusCode() == 404) {
+                    throw new ResponseStatusException(HttpStatus.CONFLICT,
+                        "Attachment changed or disappeared during full scan");
+                }
+                throw error;
+            } catch (java.io.IOException error) {
+                throw new ResponseStatusException(HttpStatus.BAD_GATEWAY,
+                    "Attachment could not be read for full scan");
             }
         }
 

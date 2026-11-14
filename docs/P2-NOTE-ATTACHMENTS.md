@@ -1,5 +1,7 @@
 # P2 — Allegati privati per le note con storage S3 (PR #64)
 
+> **Incremento successivo (14/11/2026):** PR di hardening ClamAV: il backend richiede ora uno scanner **privato** configurato e scansiona l'intero oggetto S3 (max 10 MiB) prima di renderlo READY. Qualsiasi risposta non CLEAN, indisponibilità, cambio ETag o lunghezza inattesa impedisce la pubblicazione. **Non equivale a test su un vero bucket né autorizza l'attivazione S3.** [Specifiche e configurazione](P2-S3-SCANNER.md).
+
 **10 novembre 2026. [PR #64](https://github.com/andreadada/simple-notes/pull/64) merged `5ae2bd3` su `main`**, non distribuita in produzione. [Stato canonico](CURRENT-STATUS.md) · [Matrice P2](P2-DELIVERY-MATRIX.md).
 
 ## Obiettivo e limiti

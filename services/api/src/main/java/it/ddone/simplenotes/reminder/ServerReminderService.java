@@ -60,6 +60,13 @@ public class ServerReminderService {
                 + " lead_minutes=?,version=version+1,updated_at=now()"
                 + " WHERE owner_id=?",enabled,leadMinutes,owner);
         }
+        if (current.enabled() && (!enabled || current.leadMinutes() != leadMinutes)) {
+            // An opt-out must not resurrect old unread alerts on re-enable.
+            // Changing lead supersedes old alerts without affecting history.
+            jdbc.update("UPDATE server_reminder_occurrence"
+                + " SET acknowledged_at=now()"
+                + " WHERE owner_id=? AND acknowledged_at IS NULL", owner);
+        }
         return new Preferences(enabled,leadMinutes,current.version()+1);
     }
 
@@ -113,6 +120,7 @@ public class ServerReminderService {
             WHERE o.owner_id=? AND o.acknowledged_at IS NULL
               AND t.deleted_at IS NULL AND t.completed_at IS NULL
               AND t.due_kind='datetime' AND t.due_at=o.due_at
+              AND o.lead_minutes=p.lead_minutes
               AND o.fire_at>=now()-INTERVAL '24 hours'
               AND o.fire_at<=now()
             ORDER BY o.fire_at DESC, o.id

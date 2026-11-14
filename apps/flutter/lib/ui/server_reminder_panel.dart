@@ -59,7 +59,7 @@ class _ServerReminderPanelState extends State<ServerReminderPanel> {
   Future<void> _refresh() async {
     final owner=widget.ownerId;
     if(owner==null || widget.baseUrl.isEmpty ||
-       (widget.tokenProvider==null && widget.api==null) || _busy)return;
+       (widget.tokenProvider==null && widget.api==null) || _busy) { return; }
     final epoch=_epoch;
     if(!await _valid(owner,epoch))return;
     setState((){_busy=true;_error=null;});
@@ -114,8 +114,9 @@ class _ServerReminderPanelState extends State<ServerReminderPanel> {
       if(!await _valid(owner,epoch))return;
       setState(()=>_unread=_unread.where((e)=>e.id!=id).toList());
     }catch(_){
-      if(await _valid(owner,epoch))setState(
-        ()=>_error='Conferma non salvata; aggiorna la inbox.');
+      if(await _valid(owner,epoch)) {
+        setState(()=>_error='Conferma non salvata; aggiorna la inbox.');
+      }
     }finally{
       if(await _valid(owner,epoch))setState(()=>_busy=false);
     }
@@ -169,7 +170,7 @@ class _ServerReminderPanelState extends State<ServerReminderPanel> {
             child:FCard(child:Row(children:[
               Expanded(child:Text(item.title,maxLines:2,
                 overflow:TextOverflow.ellipsis)),
-              FButton(key:Key('server-reminder-ack-'+item.id),
+              FButton(key:Key('server-reminder-ack-${item.id}'),
                 mainAxisSize:MainAxisSize.min,variant:FButtonVariant.ghost,
                 onPress:_busy?null:()=>unawaited(_ack(item.id)),
                 child:const Text('Conferma')),

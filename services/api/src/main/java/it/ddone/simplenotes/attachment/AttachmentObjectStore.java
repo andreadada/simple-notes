@@ -10,6 +10,8 @@ public interface AttachmentObjectStore extends AutoCloseable {
     Metadata inspect(String key);
     /** Range GET conditional on the HEAD ETag: reject a changed staging object. */
     byte[] readPrefix(String key, String expectedEtag, int maxBytes);
+    /** Conditional, bounded full-file read for malware scanning before COPY. */
+    byte[] readForScan(String key, String expectedEtag, int expectedBytes);
     void promote(String stagingKey, String permanentKey, String contentType,
         String expectedEtag);
     String presignGet(String permanentKey);

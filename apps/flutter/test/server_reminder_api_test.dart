@@ -21,7 +21,7 @@ void main() {
         expect(req.headers['Authorization'],'Bearer APP-JWT');
         expect(req.followRedirects,isFalse);
         expect(req.url.path,startsWith('/api/v1/reminders/server'));
-        requests.add(req.method+' '+req.url.path);
+        requests.add('${req.method} ${req.url.path}');
         if(req.method=='PUT'){
           expect(jsonDecode(req.body),{
             'enabled':true,'leadMinutes':15,'expectedVersion':1});

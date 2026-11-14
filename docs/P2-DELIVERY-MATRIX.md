@@ -1,5 +1,7 @@
 # P2 — Matrice di consegna e criteri di chiusura
 
+> **P2 · 14/11/2026:** Coolify verificato a Flyway **V17 (17/17 migrazioni riuscite)**. V18 OAuth Google/Outlook read-only è in main ma **non deployata**; [PR #79](https://github.com/andreadada/simple-notes/pull/79) aggiunge inbox reminder V19 opt-in con ack multi-device (non push), in verifica e non deployata. Restano collaborazione offline, push, S3 production, restore live e E2E. [Manuale P2](CHECKLIST-MANUALE-P2.md) · [V19](P2-SERVER-REMINDER-INBOX.md).
+
 > **P2 12/11/2026:** la VPS Simple Notes è stata aggiornata dall'utente al backend `3c904a0`, con Flyway **V17 (17/17 migrazioni riuscite)**. La [PR #77](https://github.com/andreadada/simple-notes/pull/77) introduce Google Calendar / Outlook OAuth read-only e Flyway **V18**, integrata in `main` (`968068b`) ma **non distribuita su Coolify**. Nessun provider live configurato; restano collaudi con account reali e backup/offsite da attestare. [Specifiche](P2-CALENDAR-OAUTH.md) · [Gate](RELEASE-V18-READINESS.md).
 
 Aggiornato 11 novembre 2026. **PR #74 (backend EDITOR V17) e #75 (Flutter Forui EDITOR) integrate in `main`. CI Backend/Compose/Markdown #74 verdi e Flutter analyze/widget #75 superati; native/post-merge in verifica. CI verde non equivale a deploy Coolify o collaudo fisico.**
@@ -57,8 +59,8 @@ Le statistiche sono calcolate sui dati locali senza telemetria. I modelli produc
 | Liste condivise | ACL multiowner, ruoli, assegnazioni, audit server, migrazioni, protezioni accesso e UI |
 | Allegati S3 | **Parziale in PR #64**: API owner-scoped V14, signed URL PUT/GET, quote, verifica HEAD/COPY, picker/CRUD Forui | Restano bucket/lifecycle reali, file scan, cancellazione oggetti di note eliminate, coda offline, E2E fisiche |
 | Widget Android | Widget nativo Oggi/Inbox/Nuova attività compilato (Java 17/21); launcher/cold-start/logout su dispositivo fisico non verificati |
-| Automazioni configurabili | **Parziale:** notifiche PR #59, azioni locali PR #60, catalogo cloud PR #61 integrati; sync conservativa foreground PR #62 integrata. Restano scheduler server, dedup multi-device, gestione manuale dei conflitti, delivery affidabile. |
-| Release | VPS V11–V15 (V15 solo nel codice), OAuth Android, upgrade Windows, firma, backup/offsite, E2E Windows↔Android e controlli reali |
+| Automazioni configurabili | Notifiche locali e cataloghi cloud già presenti; PR #79 aggiunge scheduler server e inbox V19 con ack condiviso. Restano registrazione device, **push affidabili**, retry e altri trigger server. |
+| Release | VPS V17 verificata dall'utente, V18/V19 non deployate; OAuth provider, backup/offsite, firme, E2E Windows↔Android e controlli reali restano aperti |
 
 ## Criteri per dichiarare P2 completata
 
@@ -100,3 +102,8 @@ Nuova vista di lista ricevuta con indicazione EDITOR, campi titolo/descrizione m
 ## OAuth provider V18 — PR #77 (12/11/2026)
 
 Integrata in `main`: prima integrazione Google Calendar/Outlook read-only con state monouso, grant separato, token AES-GCM, Flutter Forui e lettura manuale in memoria. Backend V18 non ancora deployato né configurato; non chiude la P2. [Contratto](P2-CALENDAR-OAUTH.md) · [Readiness](RELEASE-V18-READINESS.md).
+
+
+## V19 inbox server (PR #79)
+
+Scheduler opt-in per scadenze datetime con dedup owner/task/due/lead, conferma condivisa e UI Forui foreground. Non sostituisce push remota. [Contratto](P2-SERVER-REMINDER-INBOX.md) · [Gate](RELEASE-V19-READINESS.md) · [Manuale](CHECKLIST-MANUALE-P2.md).

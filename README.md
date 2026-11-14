@@ -1,5 +1,7 @@
 # Simple Notes
 
+> **P2 · 14/11/2026:** backend VPS confermato V17; Flyway V18 (Calendar OAuth read-only) integrata in main, non deployata. PR #79 sviluppa V19 inbox opt-in con dedup e ack condiviso, **non push**, non deployata. Restano push, collaborazione offline, S3, restore live e prove hardware. [Checklist operatore](docs/CHECKLIST-MANUALE-P2.md) · [V19](docs/P2-SERVER-REMINDER-INBOX.md).
+
 > **P2 12/11/2026:** VPS backend 3c904a0, Flyway **V17** con 17 migrazioni riuscite dopo redeploy dell'utente. [PR #77](https://github.com/andreadada/simple-notes/pull/77): Google Calendar / Outlook OAuth con PKCE, token cifrati, eventi read-only e Flyway **V18**, **integrata in `main` (`968068b`) ma non distribuita su Coolify**. Nessun provider configurato o consenso reale; non sono previste scritture in Drift/outbox. [Contratto](docs/P2-CALENDAR-OAUTH.md) · [Readiness](docs/RELEASE-V18-READINESS.md) · [Stato](docs/CURRENT-STATUS.md).
 
 > **P2 11/11/2026:** [PR #74](https://github.com/andreadada/simple-notes/pull/74) backend `EDITOR` con Flyway **V17** e [PR #75](https://github.com/andreadada/simple-notes/pull/75) client Forui inline **integrate in `main`**. Backend/Compose/Markdown CI e analisi/test widget Flutter verdi; build native e CI post-merge in verifica. **Nessun deploy**: VPS ultima attestazione Flyway **V10 (03/11)**. Collaboration online-only, non sync offline multi-owner. [Contratto](docs/P2-LIST-EDITOR.md).

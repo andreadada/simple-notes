@@ -1,5 +1,7 @@
 # Simple Notes API v1
 
+> **P2 · 14/11/2026:** Coolify verificato a Flyway **V17 (17/17 migrazioni riuscite)**. V18 OAuth Google/Outlook read-only è in main ma **non deployata**; [PR #79](https://github.com/andreadada/simple-notes/pull/79) aggiunge inbox reminder V19 opt-in con ack multi-device (non push), in verifica e non deployata. Restano collaborazione offline, push, S3 production, restore live e E2E. [Manuale P2](CHECKLIST-MANUALE-P2.md) · [V19](P2-SERVER-REMINDER-INBOX.md).
+
 > **P2 · 12/11/2026:** VPS dell'utente attestata **Flyway V17**, nuova [PR #77](https://github.com/andreadada/simple-notes/pull/77) integrata in `main`: OAuth dedicato Google Calendar/Outlook read-only, Flyway **V18 non deployata**, grant OFF per default e nessuna mutazione task/sync. [Specifiche](P2-CALENDAR-OAUTH.md) · [Readiness](RELEASE-V18-READINESS.md).
 
 <!-- CURRENT-STATUS-REF -->
@@ -214,3 +216,8 @@ API JWT sotto `/api/v1/sharing`: POST `/lists/{id}/invitations` (proprietario, t
 ## API Calendar OAuth V18 — integrata PR #77
 
 GET /api/v1/calendars (stato JWT), POST /api/v1/calendars/{provider}/authorize (URL consenso JWT), GET /api/v1/calendars/oauth/{provider}/callback (state PKCE monouso senza JWT), GET /api/v1/calendars/{provider}/events?start=ISO&end=ISO (eventi JWT in sola lettura, max31 giorni), DELETE /api/v1/calendars/{provider} (cancella grant owner JWT). Provider solo google e microsoft; nessun token restituito, nessuna scrittura nella sync. [Contratto](P2-CALENDAR-OAUTH.md).
+
+
+## Inbox promemoria server V19 (PR #79)
+
+JWT richiesto: GET e PUT /api/v1/reminders/server/preferences (enabled, leadMinutes, expectedVersion CAS), GET /api/v1/reminders/server/occurrences (owner, max 50), POST /api/v1/reminders/server/occurrences/{id}/ack (idempotente). Solo task datetime, opt-in, nessun push. [Contratto](P2-SERVER-REMINDER-INBOX.md).

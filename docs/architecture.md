@@ -1,5 +1,7 @@
 # Simple Notes — Architettura applicativa
 
+> **P2 · 14/11/2026:** backend VPS confermato V17; Flyway V18 (Calendar OAuth read-only) integrata in main, non deployata. PR #79 sviluppa V19 inbox opt-in con dedup e ack condiviso, **non push**, non deployata. Restano push, collaborazione offline, S3, restore live e prove hardware. [Checklist operatore](CHECKLIST-MANUALE-P2.md) · [V19](P2-SERVER-REMINDER-INBOX.md).
+
 > **P2 · 12/11/2026:** VPS dell'utente attestata **Flyway V17**, nuova [PR #77](https://github.com/andreadada/simple-notes/pull/77) integrata in `main`: OAuth dedicato Google Calendar/Outlook read-only, Flyway **V18 non deployata**, grant OFF per default e nessuna mutazione task/sync. [Specifiche](P2-CALENDAR-OAUTH.md) · [Readiness](RELEASE-V18-READINESS.md).
 
 <!-- CURRENT-STATUS-REF -->
@@ -157,3 +159,8 @@ La nuova componente `sharing/ListSharingService` usa due tabelle PostgreSQL per 
 ## Modulo Calendar V18 (PR #77)
 
 Modulo Spring dedicato calendar OAuth: tabelle additive OAuth PKCE attempt e connection, cifratura token AES-GCM con AAD owner/provider/purpose, HTTP senza redirect verso Google e Microsoft Graph, API GET eventi normalizzati e UI Flutter solo in memoria; niente dati ICS persistiti né operazioni su sync/outbox. Attivazione provider manuale futura. [Specifica](P2-CALENDAR-OAUTH.md).
+
+
+## V19 reminder inbox
+
+Preferenze CAS owner in PostgreSQL, scheduler ogni minuto per task datetime, occorrenza unica per task/due/lead e ack globale via JWT. Senza modifica di task, outbox o native notifications. [Contratto](P2-SERVER-REMINDER-INBOX.md).

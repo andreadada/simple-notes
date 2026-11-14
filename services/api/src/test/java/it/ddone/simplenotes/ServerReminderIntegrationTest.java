@@ -167,4 +167,51 @@ class ServerReminderIntegrationTest {
             .andExpect(status().isOk());
         assertEquals(0,reminders.scan());
     }
+    @Test
+    void disablingAndChangingLeadNeverReplaysStaleUnreadAcrossDevices()
+            throws Exception {
+        var alice = user();
+        String auth = bearer(alice.id), route = "/api/v1/reminders/server";
+        UUID future = task(alice.id, "One reminder",
+            Instant.now().plusSeconds(840), "datetime");
+
+        mvc.perform(put(route + "/preferences").header("Authorization", auth)
+            .contentType(MediaType.APPLICATION_JSON).content(json(true, 15, 0)))
+            .andExpect(status().isOk());
+        assertEquals(1, reminders.scan());
+        assertEquals(1, reminders.unread(alice.id).size());
+
+        // Another device edits lead: current due alert must disappear
+        // immediately, rather than lingering until the next scanner tick.
+        mvc.perform(put(route + "/preferences").header("Authorization", auth)
+            .contentType(MediaType.APPLICATION_JSON).content(json(true, 5, 1)))
+            .andExpect(status().isOk());
+        assertTrue(reminders.unread(alice.id).isEmpty());
+        assertEquals(1, jdbc.queryForObject(
+            "SELECT count(*) FROM server_reminder_occurrence "
+                + "WHERE owner_id=? AND acknowledged_at IS NOT NULL",
+            Integer.class, alice.id));
+
+        // Going back to the original lead must not resurrect that event.
+        mvc.perform(put(route + "/preferences").header("Authorization", auth)
+            .contentType(MediaType.APPLICATION_JSON).content(json(true, 15, 2)))
+            .andExpect(status().isOk());
+        assertEquals(0, reminders.scan());
+        assertTrue(reminders.unread(alice.id).isEmpty());
+
+        // An opt-out also permanently clears the unseen occurrence.
+        jdbc.update("UPDATE task SET due_at=due_at-INTERVAL '1 minute', "
+            + "due_time=due_time-INTERVAL '1 minute' WHERE id=?", future);
+        assertEquals(1, reminders.scan());
+        assertEquals(1, reminders.unread(alice.id).size());
+        mvc.perform(put(route + "/preferences").header("Authorization", auth)
+            .contentType(MediaType.APPLICATION_JSON).content(json(false, 15, 3)))
+            .andExpect(status().isOk());
+        mvc.perform(put(route + "/preferences").header("Authorization", auth)
+            .contentType(MediaType.APPLICATION_JSON).content(json(true, 15, 4)))
+            .andExpect(status().isOk());
+        assertEquals(0, reminders.scan());
+        assertTrue(reminders.unread(alice.id).isEmpty());
+    }
+
 }

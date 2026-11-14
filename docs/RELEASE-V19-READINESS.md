@@ -1,6 +1,6 @@
 # Simple Notes — readiness Flyway V19 (inbox server)
 
-**14 novembre 2026.** PR #79 introduce V19 additiva; la VPS dell'utente resta all'ultima versione verificata Flyway V17. V18 (OAuth calendari) e V19 (inbox promemoria) sono indipendenti dagli account esistenti e disabilitate senza opt-in/credenziali.
+**14 novembre 2026.** PR #79 integrata in `main` introduce V19 additiva; la VPS dell'utente resta all'ultima versione verificata Flyway V17. V18 (OAuth calendari) e V19 (inbox promemoria) sono indipendenti dagli account esistenti e disabilitate senza opt-in/credenziali.
 
 ## Prima del deploy (operatore)
 

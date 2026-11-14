@@ -1,6 +1,6 @@
 # P2 — Inbox promemoria cloud opt-in (Flyway V19)
 
-**14 novembre 2026, PR #79.** Implementazione di uno scheduler server e di una inbox di promemoria condivisi tra dispositivi. Non è una soluzione push remota e non invia email, SMS o notifiche OS.
+**14 novembre 2026, [PR #79](https://github.com/andreadada/simple-notes/pull/79) integrata in `main`.** Implementazione di uno scheduler server e di una inbox di promemoria condivisi tra dispositivi. Non è una soluzione push remota e non invia email, SMS o notifiche OS.
 
 ## Come funziona
 
@@ -8,7 +8,7 @@ Nella schermata **Automazioni promemoria**, una sezione Forui **Inbox promemoria
 
 Ogni minuto il backend individua solo task datetime non completati e non eliminati di proprietari che hanno attivato la funzione; inserisce una sola occorrenza per owner/task/dueAt/anticipo grazie alla chiave UNIQUE PostgreSQL e a ON CONFLICT DO NOTHING. Recupera al massimo 24 ore di ritardo e conserva le occorrenze fino a 30 giorni. I task date-only non hanno un orario fittizio.
 
-La GET espone un massimo di 50 eventi non confermati, correnti e di proprietà dell'utente. La conferma memorizza acknowledged_at sul server, condivisa fra dispositivi. L'inbox è aggiornata manualmente e non genera eventi nella sync personale né interferisce con le notifiche locali già attive.
+La GET espone un massimo di 50 eventi non confermati, correnti e di proprietà dell'utente. La conferma memorizza acknowledged_at sul server, condivisa fra dispositivi. Disattivazione e cambio anticipo archiviano atomicamente le occorrenze non confermate: non ricompaiono riattivando la stessa impostazione. L'inbox è aggiornata manualmente e non genera eventi nella sync personale né interferisce con le notifiche locali già attive.
 
 ## API autenticata (JWT Simple Notes)
 

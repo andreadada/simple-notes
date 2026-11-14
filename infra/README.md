@@ -1,6 +1,6 @@
 # Backend — Coolify
 
-> **P2 · 14/11/2026:** backend VPS confermato V17; Flyway V18 (Calendar OAuth read-only) integrata in main, non deployata. PR #79 sviluppa V19 inbox opt-in con dedup e ack condiviso, **non push**, non deployata. Restano push, collaborazione offline, S3, restore live e prove hardware. [Checklist operatore](../docs/CHECKLIST-MANUALE-P2.md) · [V19](../docs/P2-SERVER-REMINDER-INBOX.md).
+> **P2 · 14/11/2026 — stato aggiornato:** La VPS è stata verificata con Flyway **V17** (17/17 migrazioni riuscite). Le migrazioni **V18 OAuth Google/Outlook read-only** e **V19 inbox promemoria opt-in** sono integrate in `main` ([PR #77](https://github.com/andreadada/simple-notes/pull/77), [PR #79](https://github.com/andreadada/simple-notes/pull/79)) ma **non risultano distribuite sulla VPS**. La inbox V19 non invia notifiche push. Restano push, collaborazione offline, calendario bidirezionale, S3 hardened, restore live e test fisici. [Operazioni manuali](../docs/CHECKLIST-MANUALE-P2.md) · [Gate V19](../docs/RELEASE-V19-READINESS.md).
 
 > **P2 · 12/11/2026:** VPS dell'utente attestata **Flyway V17**, nuova [PR #77](https://github.com/andreadada/simple-notes/pull/77) integrata in `main`: OAuth dedicato Google Calendar/Outlook read-only, Flyway **V18 non deployata**, grant OFF per default e nessuna mutazione task/sync. [Specifiche](../docs/P2-CALENDAR-OAUTH.md) · [Readiness](../docs/RELEASE-V18-READINESS.md).
 

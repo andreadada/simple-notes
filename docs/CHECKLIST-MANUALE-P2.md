@@ -1,6 +1,6 @@
 # Simple Notes — checklist delle operazioni manuali P2
 
-**14 novembre 2026.** Questa guida distingue quello che devi configurare TU da quello che deve ancora essere implementato nel software. L'ultimo deploy verificato sulla VPS è Flyway **V17**; il repository contiene V18 (OAuth calendari) e la PR #79 sviluppa V19 (inbox promemoria). Nessuna migrazione successiva a V17 è stata eseguita da ChatGPT.
+**14 novembre 2026.** Questa guida distingue quello che devi configurare TU da quello che deve ancora essere implementato nel software. L'ultimo deploy verificato sulla VPS è Flyway **V17**; il repository contiene V18 (OAuth calendari) e la PR #79 ha integrato V19 (inbox promemoria) in `main`. Nessuna migrazione successiva a V17 è stata eseguita da ChatGPT.
 
 ## 1. Backup obbligatorio prima di ogni nuovo deploy
 

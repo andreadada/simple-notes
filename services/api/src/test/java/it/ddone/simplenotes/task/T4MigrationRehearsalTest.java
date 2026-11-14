@@ -104,7 +104,19 @@ class T4MigrationRehearsalTest {
                 postgres.getPassword()).load();
             migrated.migrate();
             migrated.validate();
-            assertEquals("18", migrated.info().current().getVersion().toString());
+            assertEquals("19", migrated.info().current().getVersion().toString());
+            try (Connection db = DriverManager.getConnection(
+                    postgres.getJdbcUrl(), postgres.getUsername(), postgres.getPassword())) {
+                for (String table : java.util.List.of(
+                        "server_reminder_preference", "server_reminder_occurrence")) {
+                    try (PreparedStatement ps = db.prepareStatement(
+                            "SELECT COUNT(*) FROM " + table);
+                            ResultSet rows = ps.executeQuery()) {
+                        assertTrue(rows.next());
+                        assertEquals(0, rows.getInt(1));
+                    }
+                }
+            }
             // Calendar links are additive and empty after migrating existing accounts.
             try (Connection db = DriverManager.getConnection(
                     postgres.getJdbcUrl(), postgres.getUsername(), postgres.getPassword())) {

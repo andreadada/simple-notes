@@ -5,12 +5,12 @@ set -euo pipefail
 # Run ON the VPS using the explicitly inspected Simple Notes container.
 : "${DB_CONTAINER:?Set DB_CONTAINER to the Simple Notes PostgreSQL container}"
 EXPECTED_POSTGRES_DB="${EXPECTED_POSTGRES_DB:-simplenotes}"
-# Optional exact-version gate for cumulative V10–V18 releases.
+# Optional exact-version gate for cumulative V10–V19 releases.
 # Empty keeps historical T4 inspections backward-compatible/read-only.
 REQUIRE_FLYWAY_VERSION="${REQUIRE_FLYWAY_VERSION:-}"
 if [[ -n "$REQUIRE_FLYWAY_VERSION" &&
-      ! "$REQUIRE_FLYWAY_VERSION" =~ ^([1-9]|1[0-8])$ ]]; then
-  echo "REFUSED: REQUIRE_FLYWAY_VERSION must be an integer from 1 to 18" >&2
+      ! "$REQUIRE_FLYWAY_VERSION" =~ ^([1-9]|1[0-9])$ ]]; then
+  echo "REFUSED: REQUIRE_FLYWAY_VERSION must be an integer from 1 to 19" >&2
   exit 2
 fi
 command -v docker >/dev/null || { echo "docker is required" >&2; exit 2; }
@@ -39,7 +39,7 @@ names="$(query "SELECT COUNT(*) FROM pg_catalog.pg_class c JOIN pg_catalog.pg_na
 failed="$(query "SELECT COUNT(*) FROM public.flyway_schema_history WHERE NOT success")"
 [[ "$failed" == "0" ]] || { echo "REFUSED: Flyway history has failed migrations" >&2; exit 2; }
 latest="$(query "SELECT COALESCE((SELECT version FROM public.flyway_schema_history WHERE success AND version IS NOT NULL ORDER BY installed_rank DESC LIMIT 1),'unknown')")"
-[[ "$latest" =~ ^[0-9]+$ && "$latest" -ge 1 && "$latest" -le 18 ]] || {
+[[ "$latest" =~ ^[0-9]+$ && "$latest" -ge 1 && "$latest" -le 19 ]] || {
   echo "REFUSED: unknown, unsupported or unexpected Flyway version" >&2; exit 2
 }
 due_columns="$(query "SELECT COUNT(*) FROM information_schema.columns WHERE table_schema='public' AND table_name='task' AND column_name IN ('due_kind','due_date','due_time','due_timezone','due_offset_seconds')")"
@@ -193,6 +193,23 @@ else
   [[ "$calendar_attempt_table" == 0 && "$calendar_attempt_columns" == 0 &&
      "$calendar_connection_table" == 0 && "$calendar_connection_columns" == 0 ]] || {
     echo "REFUSED: calendar OAuth schema exists before V18 migration" >&2; exit 2
+  }
+fi
+
+# V19 opt-in, server-side durable reminder inbox. No third-party push.
+server_prefs="$(query "SELECT COUNT(*) FROM information_schema.tables WHERE table_schema='public' AND table_name='server_reminder_preference' AND table_type='BASE TABLE'")"
+server_occurrences="$(query "SELECT COUNT(*) FROM information_schema.tables WHERE table_schema='public' AND table_name='server_reminder_occurrence' AND table_type='BASE TABLE'")"
+server_prefs_cols="$(query "SELECT COUNT(*) FROM information_schema.columns WHERE table_schema='public' AND table_name='server_reminder_preference' AND column_name IN ('owner_id','enabled','lead_minutes','version','updated_at')")"
+server_occ_cols="$(query "SELECT COUNT(*) FROM information_schema.columns WHERE table_schema='public' AND table_name='server_reminder_occurrence' AND column_name IN ('id','owner_id','task_id','due_at','fire_at','lead_minutes','acknowledged_at','created_at')")"
+if [[ "$latest" -ge 19 ]]; then
+  [[ "$server_prefs" == 1 && "$server_prefs_cols" == 5 &&
+     "$server_occurrences" == 1 && "$server_occ_cols" == 8 ]] || {
+    echo "REFUSED: V19 reminder inbox schema incomplete" >&2; exit 2
+  }
+else
+  [[ "$server_prefs" == 0 && "$server_prefs_cols" == 0 &&
+     "$server_occurrences" == 0 && "$server_occ_cols" == 0 ]] || {
+    echo "REFUSED: V19 reminder tables exist before migration" >&2; exit 2
   }
 fi
 

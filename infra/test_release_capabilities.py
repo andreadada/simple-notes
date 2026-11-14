@@ -20,7 +20,7 @@ FULL = {
 }
 
 
-def run(value, *, strict=False, blocks=False, intent=False, attachments=False, sharing=False, editor=False, calendars=False):
+def run(value, *, strict=False, blocks=False, intent=False, attachments=False, sharing=False, editor=False, calendars=False, reminder=False):
     env = os.environ.copy()
     env["REQUIRE_FULL_SCHEMA"] = "1" if strict else "0"
     env["REQUIRE_TIME_BLOCK_SCHEMA"] = "1" if blocks else "0"
@@ -29,6 +29,7 @@ def run(value, *, strict=False, blocks=False, intent=False, attachments=False, s
     env["REQUIRE_SHARING_READ_SCHEMA"] = "1" if sharing else "0"
     env["REQUIRE_SHARING_EDITOR_SCHEMA"] = "1" if editor else "0"
     env["REQUIRE_CALENDAR_READ_SCHEMA"] = "1" if calendars else "0"
+    env["REQUIRE_SERVER_REMINDER_SCHEMA"] = "1" if reminder else "0"
     return subprocess.run(
         [sys.executable, str(SCRIPT)],
         input=json.dumps(value), text=True, capture_output=True, env=env,
@@ -129,6 +130,15 @@ class ReleaseCapabilityContract(unittest.TestCase):
         for invalid in (True, None, "1", 0, 2, []):
             self.assertNotEqual(run({**FULL, "calendarReadSchema": invalid},
                                     strict=True, calendars=True).returncode, 0)
+
+    def test_v19_server_reminder_capability_opt_in(self):
+        enabled = {**FULL, "serverReminderSchema": 1}
+        self.assertEqual(run(enabled, strict=True, reminder=True).returncode, 0)
+        self.assertEqual(run(FULL, strict=True).returncode, 0)
+        self.assertNotEqual(run(FULL, strict=True, reminder=True).returncode, 0)
+        for invalid in (True, None, "1", 0, 2, []):
+            self.assertNotEqual(run({**FULL, "serverReminderSchema": invalid},
+                                    strict=True, reminder=True).returncode, 0)
 
     def test_unexpected_types_and_missing_due_kinds_fail_closed(self):
         for input_value in (

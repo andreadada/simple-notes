@@ -1,5 +1,7 @@
 # Guida operativa — Simple Notes
 
+> **P2 S3 · 14/11/2026:** La [PR #81](https://github.com/andreadada/simple-notes/pull/81) è integrata in `main`: scansione full-file S3 tramite ClamAV privato, fail-closed prima che l'allegato diventi READY. **APP_ATTACHMENTS_ENABLED resta false**, mancano scanner/bucket reali e relativi test, cleanup oggetti di note eliminate e upload offline. Non modifica Flyway V19 né il deploy V17 attestato della VPS. [Scanner](P2-S3-SCANNER.md) · [Checklist](CHECKLIST-MANUALE-P2.md).
+
 > **P2 · 14/11/2026 — stato aggiornato:** La VPS è stata verificata con Flyway **V17** (17/17 migrazioni riuscite). Le migrazioni **V18 OAuth Google/Outlook read-only** e **V19 inbox promemoria opt-in** sono integrate in `main` ([PR #77](https://github.com/andreadada/simple-notes/pull/77), [PR #79](https://github.com/andreadada/simple-notes/pull/79)) ma **non risultano distribuite sulla VPS**. La inbox V19 non invia notifiche push. Restano push, collaborazione offline, calendario bidirezionale, S3 hardened, restore live e test fisici. [Operazioni manuali](CHECKLIST-MANUALE-P2.md) · [Gate V19](RELEASE-V19-READINESS.md).
 
 > **11/11/2026:** per l'incremento V15 della coda oggetti S3, dopo eventuale autorizzazione usare [gate read-only V15](RELEASE-V15-READINESS.md), non il gate storico V14. Nessun deploy autorizzato da questo documento.

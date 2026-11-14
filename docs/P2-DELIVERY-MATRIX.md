@@ -57,7 +57,7 @@ Le statistiche sono calcolate sui dati locali senza telemetria. I modelli produc
 | Restore live .snb | Coordinamento SQLite/preferenze installate, lock nativo, recupero dopo power loss, consenso, quarantena e riconciliazione outbox |
 | Google Calendar/Outlook | PR #77: OAuth, PKCE, token cifrati, eventi read-only e UI integrate in `main`; restano provider/consenso reale, multi-calendario, sync bidirezionale ed E2E |
 | Liste condivise | ACL multiowner, ruoli, assegnazioni, audit server, migrazioni, protezioni accesso e UI |
-| Allegati S3 | **Parziale in PR #64**: API owner-scoped V14, signed URL PUT/GET, quote, verifica HEAD/COPY, picker/CRUD Forui | Restano bucket/lifecycle reali, file scan, cancellazione oggetti di note eliminate, coda offline, E2E fisiche |
+| Allegati S3 | **Parziale in PR #64**: API owner-scoped V14, signed URL PUT/GET, quote, verifica HEAD/COPY, picker/CRUD Forui | Scansione full-file ClamAV fail-closed integrata PR #81, ma richiede servizio privato, bucket/lifecycle reali, cleanup delle note eliminate, coda offline ed E2E fisiche |
 | Widget Android | Widget nativo Oggi/Inbox/Nuova attività compilato (Java 17/21); launcher/cold-start/logout su dispositivo fisico non verificati |
 | Automazioni configurabili | Notifiche locali e cataloghi cloud già presenti; PR #79 aggiunge scheduler server e inbox V19 con ack condiviso. Restano registrazione device, **push affidabili**, retry e altri trigger server. |
 | Release | VPS V17 verificata dall'utente, V18/V19 non deployate; OAuth provider, backup/offsite, firme, E2E Windows↔Android e controlli reali restano aperti |

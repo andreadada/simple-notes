@@ -83,8 +83,8 @@ Non confondere JWT access token con token Google o segreto di firma APP_JWT_SECR
 
 - [ ] Prepara un bucket privato S3 compatibile con blocco accesso pubblico, TLS, permessi minimi e lifecycle per staging/.
 - [ ] Verifica CORS ristretto, costi, versioning, retention, backup e delete su files/.
-- [ ] Quando la scansione malware sarà completa, saranno richiesti APP_ATTACHMENTS_ENABLED, APP_ATTACHMENTS_BUCKET, APP_ATTACHMENTS_REGION, APP_ATTACHMENTS_ENDPOINT, AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, eventuale AWS_SESSION_TOKEN.
-- [ ] Mantieni adesso **APP_ATTACHMENTS_ENABLED=false**. Il controllo MIME/prime centinaia di byte non è una scansione antivirus.
+- [ ] La scansione antivirus completa e fail-closed è integrata nel backend con [PR #81](https://github.com/andreadada/simple-notes/pull/81), **non ancora collaudata su un bucket reale**. Configura un server **ClamAV clamd privato** nella rete interna Coolify, con firme aggiornate e porta TCP non esposta pubblicamente. In Coolify imposta APP_ATTACHMENTS_SCANNER_HOST (nome DNS interno) e APP_ATTACHMENTS_SCANNER_PORT (3310), oltre a APP_ATTACHMENTS_BUCKET, APP_ATTACHMENTS_REGION, APP_ATTACHMENTS_ENDPOINT, AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY ed eventuale AWS_SESSION_TOKEN.
+- [ ] Mantieni **APP_ATTACHMENTS_ENABLED=false** fino a verifica reale di scanner, policy, ciclo di vita, backup, cleanup e test E2E. Il codice rifiuta file non scansionati, ma un daemon ClamAV e bucket validati devono essere forniti da te.
 - [ ] Test finali con oggetti fittizi, file fino a 10 MiB, upload interrotto, quota, URL scaduto, ETag, eliminazione, accessi cross-account e lifecycle.
 
 ## 6. Collaudi Windows e Android
@@ -107,7 +107,7 @@ Non confondere JWT access token con token Google o segreto di firma APP_JWT_SECR
 - [ ] Consegna **push remota vera** (registrazione device, FCM/APNs/Windows, dedup e retry). V19 aggiunge soltanto inbox online e ack condiviso.
 - [ ] Collaborazione offline multi-owner: modifiche in coda, revoche, merge/assegnazioni e conflitti sicuri.
 - [ ] Calendario bidirezionale e selezione multi-calendario con risoluzione dei conflitti.
-- [ ] Allegati S3: scanner malware intero file fail-closed, gestione oggetti legati a note eliminate, upload offline e collaudi reali.
+- [ ] Allegati S3: scansione completa integrata nel codice ma da validare con infrastruttura reale; mancano gestione definitiva oggetti di note eliminate, coda upload offline e collaudi reali.
 - [ ] Restore live dei profili installati con lease, backup rollback, recupero power-loss e consenso.
 - [ ] Collaudo finale, firme, pubblicazione e release di produzione.
 

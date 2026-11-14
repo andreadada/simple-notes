@@ -102,7 +102,7 @@ class ServerReminderApi {
       required bool enabled,required int leadMinutes,
       required int expectedVersion}) async {
     if(!const {0,5,15,30,60,1440}.contains(leadMinutes) ||
-       expectedVersion<0)throw const FormatException('Anticipo non valido.');
+       expectedVersion<0) { throw const FormatException('Anticipo non valido.'); }
     return ServerReminderPreferences.parse(await _call('PUT','/preferences',
       body:{'enabled':enabled,'leadMinutes':leadMinutes,
             'expectedVersion':expectedVersion}));

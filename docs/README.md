@@ -1,8 +1,8 @@
 # Indice documentazione — Simple Notes
 
-> **P2 · 14/11/2026 — stato aggiornato:** La VPS è stata verificata con Flyway **V17** (17/17 migrazioni riuscite). Le migrazioni **V18 OAuth Google/Outlook read-only** e **V19 inbox promemoria opt-in** sono integrate in `main` ([PR #77](https://github.com/andreadada/simple-notes/pull/77), [PR #79](https://github.com/andreadada/simple-notes/pull/79)) ma **non risultano distribuite sulla VPS**. La inbox V19 non invia notifiche push. Restano push, collaborazione offline, calendario bidirezionale, S3 hardened, restore live e test fisici. [Operazioni manuali](CHECKLIST-MANUALE-P2.md) · [Gate V19](RELEASE-V19-READINESS.md).
+> **P2 · 14/11/2026 — stato aggiornato:** La VPS è stata verificata con Flyway **V17** (17/17 migrazioni riuscite). Le migrazioni **V18 OAuth Google/Outlook read-only** e **V19 inbox promemoria opt-in** sono integrate in `main` ([PR #77](https://github.com/andreadada/simple-notes/pull/77), [PR #79](https://github.com/andreadada/simple-notes/pull/79)) ma **non risultano distribuite sulla VPS**. La inbox V19 non invia notifiche push. Lo scanner ClamAV S3 è stato integrato in main (PR #81), ma rimane OFF e non testato su bucket reali. Restano push, collaborazione offline, calendario bidirezionale, S3 lifecycle/cleanup, restore live e test fisici. [Operazioni manuali](CHECKLIST-MANUALE-P2.md) · [Gate V19](RELEASE-V19-READINESS.md).
 
-**Aggiornato: 14 novembre 2026.** Punto di accesso ai documenti Markdown del progetto. Copertura: 71 documenti in `docs/` (escluso questo indice), oltre ai Markdown dei package e della radice.
+**Aggiornato: 14 novembre 2026.** Punto di accesso ai documenti Markdown del progetto. Copertura: 72 documenti in `docs/` (escluso questo indice), oltre ai Markdown dei package e della radice.
 
 Lo **stato canonico** è [CURRENT-STATUS.md](CURRENT-STATUS.md): verificare sempre separatamente **codice integrato**, **CI**, **migrazione/deploy VPS** e **test fisici**. Le righe storiche dei vecchi runbook non costituiscono autorizzazione a un deploy. La VPS è ora attestata a **Flyway V17 al 12 novembre 2026**, mentre `main` contiene **Flyway V18 e V19** (PR #77/#79), **non ancora deployate** e la UI EDITOR è integrata (PR #75). La PR #62 (integrata in `main`) introduce riconciliazione delle definizioni delle automazioni *solo foreground*, non un job backend.
 
@@ -65,6 +65,7 @@ Lo **stato canonico** è [CURRENT-STATUS.md](CURRENT-STATUS.md): verificare semp
 - [P2-CLOUD-ACTION-CATALOG](./P2-CLOUD-ACTION-CATALOG.md)
 - [P2-CLOUD-TEMPLATES](./P2-CLOUD-TEMPLATES.md)
 - [P2-NOTE-ATTACHMENTS](./P2-NOTE-ATTACHMENTS.md)
+- [P2-S3-SCANNER](./P2-S3-SCANNER.md)
 - [P2-LIST-SHARING](./P2-LIST-SHARING.md)
 - [P2-LIST-EDITOR](./P2-LIST-EDITOR.md)
 - [P2-AUTO-TEMPLATE-CATALOG](./P2-AUTO-TEMPLATE-CATALOG.md)

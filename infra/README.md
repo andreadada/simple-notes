@@ -217,6 +217,8 @@ La migrazione additiva `V13__user_template_catalog.sql` crea il catalogo persona
 
 ## P2 — S3 e Flyway V14 per allegati note (PR #64 integrata)
 
+Con PR #81 gli allegati richiedono anche un daemon ClamAV **privato** configurato tramite APP_ATTACHMENTS_SCANNER_HOST e APP_ATTACHMENTS_SCANNER_PORT (default 3310). La verifica dell'intero oggetto è fail-closed; APP_ATTACHMENTS_ENABLED rimane false finché scanner, bucket e lifecycle non sono testati. [Contratto](../docs/P2-S3-SCANNER.md).
+
 Il codice introduce la tabella additiva `note_attachment` e l'object store solo quando `APP_ATTACHMENTS_ENABLED=true`; con default false nessuna credenziale AWS viene caricata. Richiede `APP_ATTACHMENTS_BUCKET`, `APP_ATTACHMENTS_REGION`, eventuale `APP_ATTACHMENTS_ENDPOINT=https://...`, e credenziali dell'SDK gestite in **segreti Coolify** (mai in file o chat). Imporre bucket privato, policy ristretta `staging/*`/`files/*`, lifecycle di eliminazione su staging, backup e cleanup degli orfani. Il futuro `bash infra/release-v14-readiness.sh` con DB_CONTAINER e JWT short-lived verifica **solo in lettura** Flyway V14, capabilities e storage enabled. Non crea bucket, non prova PUT/GET reali e non certifica permessi S3. [Specifica](../docs/P2-NOTE-ATTACHMENTS.md).
 
 ## P2 V16 — condivisione VIEWER, gate separato

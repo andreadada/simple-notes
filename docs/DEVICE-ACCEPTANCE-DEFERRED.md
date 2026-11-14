@@ -1,6 +1,6 @@
 # Collaudo cumulativo rinviato — evidenze reali al 3 novembre 2026
 
-> **P2 · 14/11/2026:** backend VPS confermato V17; Flyway V18 (Calendar OAuth read-only) integrata in main, non deployata. PR #79 sviluppa V19 inbox opt-in con dedup e ack condiviso, **non push**, non deployata. Restano push, collaborazione offline, S3, restore live e prove hardware. [Checklist operatore](CHECKLIST-MANUALE-P2.md) · [V19](P2-SERVER-REMINDER-INBOX.md).
+> **P2 · 14/11/2026 — stato aggiornato:** La VPS è stata verificata con Flyway **V17** (17/17 migrazioni riuscite). Le migrazioni **V18 OAuth Google/Outlook read-only** e **V19 inbox promemoria opt-in** sono integrate in `main` ([PR #77](https://github.com/andreadada/simple-notes/pull/77), [PR #79](https://github.com/andreadada/simple-notes/pull/79)) ma **non risultano distribuite sulla VPS**. La inbox V19 non invia notifiche push. Restano push, collaborazione offline, calendario bidirezionale, S3 hardened, restore live e test fisici. [Operazioni manuali](CHECKLIST-MANUALE-P2.md) · [Gate V19](RELEASE-V19-READINESS.md).
 
 **Decisione dell'utente (03/11/2026):** rimandare i test manuali Windows ↔ Android e continuare gli incrementi della roadmap. I test unitari, l'analisi statica e le build di GitHub Actions **continuano a essere gate tecnici per ogni PR**; le prove fisiche e la release pubblica non sono completate. Nessun reset, reinstallazione, import di prova o deploy eseguito da ChatGPT per questa decisione.
 

@@ -1,10 +1,10 @@
 # Indice documentazione — Simple Notes
 
-> **P2 · 14/11/2026:** Coolify verificato a Flyway **V17 (17/17 migrazioni riuscite)**. V18 OAuth Google/Outlook read-only è in main ma **non deployata**; [PR #79](https://github.com/andreadada/simple-notes/pull/79) aggiunge inbox reminder V19 opt-in con ack multi-device (non push), in verifica e non deployata. Restano collaborazione offline, push, S3 production, restore live e E2E. [Manuale P2](CHECKLIST-MANUALE-P2.md) · [V19](P2-SERVER-REMINDER-INBOX.md).
+> **P2 · 14/11/2026 — stato aggiornato:** La VPS è stata verificata con Flyway **V17** (17/17 migrazioni riuscite). Le migrazioni **V18 OAuth Google/Outlook read-only** e **V19 inbox promemoria opt-in** sono integrate in `main` ([PR #77](https://github.com/andreadada/simple-notes/pull/77), [PR #79](https://github.com/andreadada/simple-notes/pull/79)) ma **non risultano distribuite sulla VPS**. La inbox V19 non invia notifiche push. Restano push, collaborazione offline, calendario bidirezionale, S3 hardened, restore live e test fisici. [Operazioni manuali](CHECKLIST-MANUALE-P2.md) · [Gate V19](RELEASE-V19-READINESS.md).
 
 **Aggiornato: 14 novembre 2026.** Punto di accesso ai documenti Markdown del progetto. Copertura: 71 documenti in `docs/` (escluso questo indice), oltre ai Markdown dei package e della radice.
 
-Lo **stato canonico** è [CURRENT-STATUS.md](CURRENT-STATUS.md): verificare sempre separatamente **codice integrato**, **CI**, **migrazione/deploy VPS** e **test fisici**. Le righe storiche dei vecchi runbook non costituiscono autorizzazione a un deploy. La VPS è ora attestata a **Flyway V17 al 12 novembre 2026**, mentre `main` contiene **Flyway V18** grazie alla PR #77, **non ancora deployata** e la UI EDITOR è integrata (PR #75). La PR #62 (integrata in `main`) introduce riconciliazione delle definizioni delle automazioni *solo foreground*, non un job backend.
+Lo **stato canonico** è [CURRENT-STATUS.md](CURRENT-STATUS.md): verificare sempre separatamente **codice integrato**, **CI**, **migrazione/deploy VPS** e **test fisici**. Le righe storiche dei vecchi runbook non costituiscono autorizzazione a un deploy. La VPS è ora attestata a **Flyway V17 al 12 novembre 2026**, mentre `main` contiene **Flyway V18 e V19** (PR #77/#79), **non ancora deployate** e la UI EDITOR è integrata (PR #75). La PR #62 (integrata in `main`) introduce riconciliazione delle definizioni delle automazioni *solo foreground*, non un job backend.
 
 ## Accessi principali
 

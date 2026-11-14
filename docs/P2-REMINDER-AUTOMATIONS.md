@@ -1,5 +1,7 @@
 # P2 — Regole locali configurabili per i promemoria
 
+> **P2 · 14/11/2026:** backend VPS confermato V17; Flyway V18 (Calendar OAuth read-only) integrata in main, non deployata. PR #79 sviluppa V19 inbox opt-in con dedup e ack condiviso, **non push**, non deployata. Restano push, collaborazione offline, S3, restore live e prove hardware. [Checklist operatore](CHECKLIST-MANUALE-P2.md) · [V19](P2-SERVER-REMINDER-INBOX.md).
+
 **9 novembre 2026 — [PR #59](https://github.com/andreadada/simple-notes/pull/59) integrata su `main` (`aa17094`).** [Flutter CI #42701809601](https://github.com/andreadada/simple-notes/actions/runs/42701809601) **success** (377 test, analyze, Android JDK17/21 e Windows EXE/MSIX/recovery); [Markdown #42701809467](https://github.com/andreadada/simple-notes/actions/runs/42701809467) **success**. Nessun deploy o test hardware. Prima tranche delle automazioni P2: **regole di notifica native locali**, non automazioni server generali. CI, merge, Windows/Android reali e deploy rimangono stati separati.
 
 ## Flusso e confini
@@ -22,3 +24,8 @@ La voce **Strumenti → Automazioni** consente di aggiungere, modificare, sospen
 ## Estensione P2 successiva — automazioni che modificano task
 
 Le notifiche OS di questa specifica restano indipendenti dalle nuove azioni task locali su creazione/completamento, integrate nello stesso menu Strumenti → Automazioni. [Contratto separato della PR #60 integrata](P2-TASK-ACTIONS.md). Le azioni task non richiedono il permesso notifiche.
+
+
+## Incremento server V19 (PR #79)
+
+Nuova inbox condivisa opt-in, scheduler e ack; non sostituisce notifiche native e non invia push. I trigger locali e le regole locali restano indipendenti. [Contratto](P2-SERVER-REMINDER-INBOX.md) · [Manuale](CHECKLIST-MANUALE-P2.md).

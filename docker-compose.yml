@@ -45,6 +45,10 @@ services:
       APP_ATTACHMENTS_BUCKET: ${APP_ATTACHMENTS_BUCKET:-}
       APP_ATTACHMENTS_REGION: ${APP_ATTACHMENTS_REGION:-eu-central-1}
       APP_ATTACHMENTS_ENDPOINT: ${APP_ATTACHMENTS_ENDPOINT:-}
+      # AWS SDK default credentials; keep secrets in the Coolify secret store.
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID:-}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY:-}
+      AWS_SESSION_TOKEN: ${AWS_SESSION_TOKEN:-}
     depends_on:
       db:
         condition: service_healthy

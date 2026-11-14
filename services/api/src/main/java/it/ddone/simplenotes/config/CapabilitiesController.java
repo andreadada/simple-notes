@@ -25,6 +25,7 @@ public class CapabilitiesController {
             Map.entry("attachmentStorageEnabled", attachmentsEnabled),
             Map.entry("sharingReadSchema", 1),
             Map.entry("sharingEditorSchema", 1),
-            Map.entry("calendarReadSchema", 1));
+            Map.entry("calendarReadSchema", 1),
+            Map.entry("serverReminderSchema", 1));
     }
 }

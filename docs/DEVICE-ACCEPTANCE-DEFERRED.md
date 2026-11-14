@@ -1,5 +1,7 @@
 # Collaudo cumulativo rinviato — evidenze reali al 3 novembre 2026
 
+> **P2 · 14/11/2026:** backend VPS confermato V17; Flyway V18 (Calendar OAuth read-only) integrata in main, non deployata. PR #79 sviluppa V19 inbox opt-in con dedup e ack condiviso, **non push**, non deployata. Restano push, collaborazione offline, S3, restore live e prove hardware. [Checklist operatore](CHECKLIST-MANUALE-P2.md) · [V19](P2-SERVER-REMINDER-INBOX.md).
+
 **Decisione dell'utente (03/11/2026):** rimandare i test manuali Windows ↔ Android e continuare gli incrementi della roadmap. I test unitari, l'analisi statica e le build di GitHub Actions **continuano a essere gate tecnici per ogni PR**; le prove fisiche e la release pubblica non sono completate. Nessun reset, reinstallazione, import di prova o deploy eseguito da ChatGPT per questa decisione.
 
 ## Evidenze già raccolte (senza deduzioni)
@@ -145,3 +147,8 @@ PR #74/#75 implementano EDITOR backend e UI, ma **non costituiscono test fisici*
 ## Calendar OAuth V18 — test provider e dispositivi rinviati (12/11/2026)
 
 La PR #77 aggiunge consenso separato Google Calendar/Microsoft Outlook e lettura on-demand in memoria. Restano non eseguiti i test reali con provider, tenant, refresh token e callback HTTPS su Windows/Android; nessuna credenziale è ancora attiva. Eseguire con soli calendari/account di prova dopo esplicita abilitazione. [Contratto](P2-CALENDAR-OAUTH.md) · [Readiness](RELEASE-V18-READINESS.md).
+
+
+## V19 non testata su dispositivi
+
+Servono due dispositivi con stesso account: attivazione, task datetime, refresh, ack condiviso e disconnessione; niente push OS. [Checklist](CHECKLIST-MANUALE-P2.md).

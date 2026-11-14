@@ -1,5 +1,7 @@
 # Delta Sync v1 — protocollo e storia degli incrementi
 
+> **P2 · 14/11/2026:** Coolify verificato a Flyway **V17 (17/17 migrazioni riuscite)**. V18 OAuth Google/Outlook read-only è in main ma **non deployata**; [PR #79](https://github.com/andreadada/simple-notes/pull/79) aggiunge inbox reminder V19 opt-in con ack multi-device (non push), in verifica e non deployata. Restano collaborazione offline, push, S3 production, restore live e E2E. [Manuale P2](CHECKLIST-MANUALE-P2.md) · [V19](P2-SERVER-REMINDER-INBOX.md).
+
 > **P2 · 12/11/2026:** VPS dell'utente attestata **Flyway V17**, nuova [PR #77](https://github.com/andreadada/simple-notes/pull/77) integrata in `main`: OAuth dedicato Google Calendar/Outlook read-only, Flyway **V18 non deployata**, grant OFF per default e nessuna mutazione task/sync. [Specifiche](P2-CALENDAR-OAUTH.md) · [Readiness](RELEASE-V18-READINESS.md).
 
 <!-- CURRENT-STATUS-REF -->
@@ -200,3 +202,8 @@ Il collaboratore EDITOR autenticato usa solo `PATCH /api/v1/sharing/lists/{listI
 ## Calendari provider V18 separati dalla sincronizzazione personale
 
 La PR #77 usa autorizzazioni provider separate dal login Google per leggere eventi nel calendario Flutter, ma **non** salva eventi remoti nel database Drift, non crea task o note e non modifica sync_change, sync_operation, cursori o outbox. I token OAuth non raggiungono i dispositivi; nessuna collaborazione offline o sync bidirezionale. [Specifiche](P2-CALENDAR-OAUTH.md).
+
+
+## Inbox V19 fuori dalla sync personale
+
+Il nuovo ledger server dei reminder non muta task, note, cursori, sync_change o outbox; opt-in e ack passano da API JWT separate. La lettura è foreground, non push. [Contratto](P2-SERVER-REMINDER-INBOX.md).

@@ -6,6 +6,7 @@ import '../data/reminder_automations.dart';
 import '../data/models.dart';
 import '../data/task_action_cloud_api.dart';
 import 'task_action_automations_panel.dart';
+import 'server_reminder_panel.dart';
 import 'notes_dialogs.dart';
 import 'notes_theme.dart';
 
@@ -331,6 +332,16 @@ class _ReminderAutomationsBoardState extends State<ReminderAutomationsBoard> {
             'può ritardare la consegna.',
           style: TextStyle(color: colors.secondaryText, fontSize: 12)),
         const SizedBox(height: 28),
+        const Divider(height: 1),
+        const SizedBox(height: 22),
+        ServerReminderPanel(
+          key: ValueKey('server-reminder-owner-${widget.ownerId ?? 'guest'}'),
+          ownerId: widget.ownerId,
+          baseUrl: widget.cloudApiBaseUrl,
+          tokenProvider: widget.cloudTokenProvider,
+          ownerGuard: widget.cloudOwnerGuard,
+        ),
+        const SizedBox(height: 24),
         const Divider(height: 1),
         const SizedBox(height: 22),
         TaskActionAutomationsPanel(

@@ -1,5 +1,7 @@
 # Backend — Coolify
 
+> **P2 · 14/11/2026:** backend VPS confermato V17; Flyway V18 (Calendar OAuth read-only) integrata in main, non deployata. PR #79 sviluppa V19 inbox opt-in con dedup e ack condiviso, **non push**, non deployata. Restano push, collaborazione offline, S3, restore live e prove hardware. [Checklist operatore](../docs/CHECKLIST-MANUALE-P2.md) · [V19](../docs/P2-SERVER-REMINDER-INBOX.md).
+
 > **P2 · 12/11/2026:** VPS dell'utente attestata **Flyway V17**, nuova [PR #77](https://github.com/andreadada/simple-notes/pull/77) integrata in `main`: OAuth dedicato Google Calendar/Outlook read-only, Flyway **V18 non deployata**, grant OFF per default e nessuna mutazione task/sync. [Specifiche](../docs/P2-CALENDAR-OAUTH.md) · [Readiness](../docs/RELEASE-V18-READINESS.md).
 
 > **P2 11/11/2026:** backend collaborazione VIEWER Flyway V16 [#69](https://github.com/andreadada/simple-notes/pull/69) e UI Forui [#70](https://github.com/andreadada/simple-notes/pull/70) integrate, VPS ultima attestazione V10 il 03/11. **Non è stato eseguito il deploy.** [Readiness V16](../docs/RELEASE-V16-READINESS.md).
@@ -224,3 +226,8 @@ La migrazione Flyway V16 aggiunge tabelle di inviti e membership senza cambiare 
 ## P2 V17 — gate collaboratori EDITOR (solo lettura, PR #74 integrata)
 
 Il codice backend integrato su `main` aggiunge ruolo EDITOR e audit senza alterare il proprietario delle attività. Dopo un **eventuale rollout autorizzato** usare [RELEASE-V17-READINESS](../docs/RELEASE-V17-READINESS.md) per verificare la struttura e le capability, non per creare account o permessi reali. La VPS è attestata Flyway V10 al 03/11.
+
+
+## Gate P2 V19
+
+infra/release-v19-readiness.sh richiede DB_CONTAINER corrente, T4_BEARER_TOKEN temporaneo e verifica V19 + capability serverReminderSchema:1 + health in sola lettura. Non effettua migrazioni o delivery. [Manuale](../docs/CHECKLIST-MANUALE-P2.md).

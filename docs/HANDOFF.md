@@ -1,5 +1,7 @@
 # Simple Notes — Passaggio di consegne (handoff)
 
+> **P2 · 14/11/2026:** Coolify verificato a Flyway **V17 (17/17 migrazioni riuscite)**. V18 OAuth Google/Outlook read-only è in main ma **non deployata**; [PR #79](https://github.com/andreadada/simple-notes/pull/79) aggiunge inbox reminder V19 opt-in con ack multi-device (non push), in verifica e non deployata. Restano collaborazione offline, push, S3 production, restore live e E2E. [Manuale P2](CHECKLIST-MANUALE-P2.md) · [V19](P2-SERVER-REMINDER-INBOX.md).
+
 > **P2 12/11/2026:** la VPS Simple Notes è stata aggiornata dall'utente al backend `3c904a0`, con Flyway **V17 (17/17 migrazioni riuscite)**. La [PR #77](https://github.com/andreadada/simple-notes/pull/77) introduce Google Calendar / Outlook OAuth read-only e Flyway **V18**, integrata in `main` (`968068b`) ma **non distribuita su Coolify**. Nessun provider live configurato; restano collaudi con account reali e backup/offsite da attestare. [Specifiche](P2-CALENDAR-OAUTH.md) · [Gate](RELEASE-V18-READINESS.md).
 
 > **11/11/2026, stato principale:** backend VIEWER [#69](https://github.com/andreadada/simple-notes/pull/69) e Forui [#70](https://github.com/andreadada/simple-notes/pull/70) integrati. PR #71 hardening sessione integrata. VPS Flyway V10 attestata 03/11, repo V16, nessun deploy o collaudo. [Stato](CURRENT-STATUS.md).

@@ -98,3 +98,18 @@ export function portableRecords(rows,now=new Date().toISOString(),allowBlankNote
   if(!allowBlankNotes&&data.notes.some(n=>!n.title.trim()))throw Error("Il vecchio formato portabile richiede titoli non vuoti: rinomina le note senza titolo o usa lo snapshot JSON.");
   return {format:"simple-notes-portable",schemaVersion:1,exportedAt:now,data};
 }
+
+export function moveBlock(block,date,time){
+ const original=wallParts(block.start,block.timeZone);
+ const previousOffset=(Date.parse(original.date+"T"+original.time+":00Z")-Date.parse(block.start))/1000;
+ const target=resolveWall(date,time,block.timeZone,previousOffset);
+ if(!target)throw Error("Ora inesistente per il cambio di ora legale");
+ const duration=Date.parse(block.end)-Date.parse(block.start);
+ if(duration<=0||duration>86400000)throw Error("Durata blocco non valida");
+ return {...block,start:target.instant,end:new Date(Date.parse(target.instant)+duration).toISOString()};
+}
+export function resizeBlock(block,minutes){
+ const duration=Date.parse(block.end)-Date.parse(block.start)+minutes*60000;
+ if(duration<60000||duration>86400000)throw Error("Durata blocco da 1 minuto a 24 ore");
+ return {...block,end:new Date(Date.parse(block.start)+duration).toISOString()};
+}

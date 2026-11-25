@@ -1,39 +1,29 @@
-# Simple Notes — migrazione web (25/11/2026)
+# Simple Notes — migrazione web e cutover (25/11/2026)
 
-Primo incremento del porting da Flutter a webapp browser-only, design ispirato a Console DDone/Lark (senza codice privato o dati di Console nel repository pubblico). Non è ancora una sostituzione completa del client nativo.
+## Target e architettura
+Il prodotto primario è la webapp browser-only in `apps/web`, ispirata al design Console DDone/Lark: HTML/CSS/JS, Nginx, Spring Boot, PostgreSQL 17. Nessun manifest, service worker, install prompt, APK/MSIX richiesto. Flutter è un client legacy conservato per recupero dati; CI nativa solo manuale. Il Compose esistente espone `web:80` e `api:8080`, con DB privato e volume esistente. Nessun segreto nel frontend. Migrazione additiva Flyway V20 (preferenze web), ultima VPS attestata V17: non è stato eseguito alcun deploy in questa sessione.
 
-## Architettura
-- `apps/web`: HTML, CSS, moduli JS, Nginx. Nessun manifest, service worker, install prompt o PWA.
-- Compose aggiunge il servizio web porta 80, proxy same-origin /api/v1/ verso api:8080. API e DB esistenti non modificati. Flyway nel codice resta V19; ultima VPS attestata V17.
-- Google Identity Services usa WEB_GOOGLE_CLIENT_ID pubblico; deve essere un Web client ID incluso in GOOGLE_CLIENT_IDS. Token bearer in memoria, refresh durante sessione, accesso nuovamente richiesto dopo reload. Nessun secret nel frontend.
-- Lettura delta paginata, versioni attese, UUID, tombstone e retry esplicito in sessionStorage per account/tab con operationId immutabile e confronto conflitto. Non usa CRUD legacy. Nessuna outbox offline duratura: sincronizzare tutti i client nativi prima di passare al web. Non cancellare vecchie installazioni/dati.
-- Preferenze tema, viste multiple rinominabili e filtri per vista per account/browser; nessuna sync cloud delle preferenze web.
+## Funzioni e limiti
+- Attività, note, liste, cestino note e restore, griglia con inline titolo, selezione, filtri/ordinamenti/raggruppamenti, galleria, Kanban, matrice Eisenhower, dashboard riordinabili/ridimensionabili, tema, ricerca, Wiki, mobile, modelli e regole task manuali opt-in.
+- Scadenze IANA date-only/timed/legacy, ricorrenze con gap/fold, tag/sottotask, fino a 12 blocchi, calendario giorno/settimana/mese e timeline con drag/resize (15 minuti, conserva identità e CAS). Eventi a cavallo di mezzanotte nella timeline sono visualizzati nel giorno iniziale; non equivale a piena parità di tutti gli editor.
+- ICS read-only file/feed HTTPS (CORS richiesto, 1 MiB/5 sorgenti, subset RFC5545), Google/Outlook read-only con provider configurati, promemoria server opt-in, allegati S3 se abilitati con scanner. Nessun push OS/PWA.
+- Sharing VIEWER/EDITOR e inviti, aggiornamento manuale snapshot, presenza effimera per lista e attività (single replica, heartbeat 10s/TTL35s, verifica ACL, nessun testo non salvato). Non è editing simultaneo a livello cella.
+- Pomodoro avvio/pausa e storico locale, abitudini con target/streak, countdown timed/archivio. V20 sincronizza tema, viste, filtri, dashboard, abitudini e countdown per dominio e account con CAS e riconciliazione conservativa. ICS/feed URL e timer restano locali.
+- Delta sync paginata, retry durevole localStorage per intenti individuali, versioni e tombstone. Conflitto confrontabile, nuova CAS per scelta keep-local. Non è una outbox offline-first multi-record né un'app apribile offline. Login Google richiesto dopo reload (bearer in memoria).
+- CSV e JSON portabile, import atomico additivo massimo 500 record (nuove UUID), AES-GCM/PBKDF2 web backup, apertura .snb Flutter v1/Drift8 e conversione record attivi con conferma; migrazione tema/abitudini/countdown/focus storico. Nessun replay di outbox native, nessun ripristino distruttivo. Non importa automaticamente ICS, cataloghi locali o regole native; esportarli/migrarli separatamente. Backup web non contiene binari allegati né backup SQL completo. Il file Flutter va conservato anche dopo conversione.
+- Resta da collaudare con dati/account reali e completare la parità di funzioni avanzate (configurazioni colonne, automazioni/cataloghi locali, calendario bidirezionale, backup/restore server, presenza per cella). Il vecchio client non deve essere cancellato dai dispositivi prima della migrazione verificata.
 
-## Copertura iniziale
-Dashboard, attività/liste, note e cestino con restore, griglia con titolo inline, filtri, ordinamento, raggruppamento, selezione e cancellazione confermata, galleria, Kanban per liste, calendario giorno/settimana/mese con ore pianificate e overlay ICS, matrice Eisenhower, ricerca task, CSV e snapshot JSON (non .snb), tema chiaro/scuro, menu contestuale, wiki con focus, layout mobile con navigazione schermata e overlay intercettante. Dashboard widget drag/resize desktop, reset e controllo tastiera, layout per browser. Editor di scadenze date-only e datetime IANA, priorità/tag/sottotask con checkbox e blocchi visuali; preserva campi moderni già presenti; ricorrenza civile e datetime con gap/fold DST. Ricerca globale, gestione ruoli e modifica online condivisa EDITOR. Pomodoro/abitudini/countdown locali. UI iniziale per inviti/snapshot condivisi, allegati opt-in, calendari esterni read-only, inbox server, editor strutturati dei cataloghi versionati, cinque modelli predefiniti/applicazione modelli personali, automazioni task opt-in su browser per creazione/completamento manuale e export JSON portabile.
+## Procedura Coolify (manuale)
+1. Su ogni dispositivo Flutter: accedi allo stesso account, sincronizza fino a pending 0, verifica note/task/liste/cestino e crea backup .snb e export portabile. Non disinstallare, non resettare. Dati già sincronizzati sono nel DB; non importarli nuovamente come copie.
+2. Backup PostgreSQL e prova restore isolata secondo [OPERATIONS](OPERATIONS.md). Conserva anche backup offsite e annota conteggi. Nessun `down -v`, reset o Flyway repair.
+3. Nella **stessa** risorsa Compose Coolify: branch main, base directory /, compose /docker-compose.yml. Conserva postgres_data, credenziali e variabili API esistenti. Configura `WEB_GOOGLE_CLIENT_ID` e aggiungi lo stesso Web OAuth client ID a `GOOGLE_CLIENT_IDS` senza eliminare quelli nativi durante transizione.
+4. Google Cloud OAuth Web: origine JavaScript autorizzata `https://notes.ddone.it` (o dominio effettivo), niente secret frontend. DNS e dominio HTTPS del servizio `web:80`; conserva `https://api.notes.ddone.it` su `api:8080`. Provider calendar opzionali mantengono le callback esistenti e richiedono configurazione distinta.
+5. Solo con CI verdi sullo SHA effettivo: Redeploy della risorsa. Flyway V18/V19/V20 si applicano in ordine. Verifica `https://notes.ddone.it/healthz`, `https://api.notes.ddone.it/actuator/health`, `infra/release-v20-readiness.sh` con token temporaneo, senza stamparlo.
+6. Login con account reale, confronta inventario e conteggi, crea una nota/task di test, prova restore, condivisione, conflitti due browser e sincronizzazione delle preferenze. Verifica desktop/mobile, provider/allegati se configurati.
+7. Solo se mancano dati non sincronizzabili: Impostazioni → Migrazione e backup → Analizza archivio. Apri .snb con password e account originario; importa copie **solo dopo aver verificato cosa manca**. Import ripetuto crea duplicati, max 500 record per batch. Preferenze native compatibili aggiunte per ID senza sovrascrivere quelle presenti. Conserva il file originale.
+8. Dopo collaudo positivo, usa esclusivamente il dominio web. Puoi mantenere i client nativi come archivio di recupero senza eseguirli. In caso di problemi ripristina routing/revisione applicativa compatibile senza downgrade distruttivo del DB. Non cancellare volumi.
 
-## Mancanze / gate
-Non dichiarare parità: timeline drag/resize e configurazioni avanzate, risoluzione conflitti con keep-local CAS e outbox duratura, scheduling server delle azioni e riconciliazione avanzata cataloghi, import/restore/backup cifrato, piena equivalenza ICS e provider senza CORS, presenza collaborativa, dashboard/viste personalizzate persistite lato server, funzioni native (tray/widget/sticky, notifiche OS) non portate. Il vecchio Flutter rimane per recupero dati e funzioni non portate. Il browser non è stato collaudato con account reali. CI web introdotta; esito da verificare sul commit effettivo. I nuovi test coprono anche ricorrenza DST e giorno IANA dei blocchi.
-
-## Coolify
-1. Prima del redeploy, backup e verifica secondo [OPERATIONS](OPERATIONS.md) e [RELEASE-V19-READINESS](RELEASE-V19-READINESS.md). Attenzione: V18/V19 verranno applicate se backend V17.
-2. Conservare risorsa Compose esistente, base directory /, compose /docker-compose.yml, volume postgres_data, variabili API/DB. Non creare un secondo database e non usare down -v.
-3. In Google Cloud creare/selezionare OAuth Web client; impostare origine JavaScript autorizzata https://notes.ddone.it (o dominio effettivo). Inserire WEB_GOOGLE_CLIENT_ID e aggiungerlo a GOOGLE_CLIENT_IDS mantenendo tutti i client già validi. Non serve un secret web per Google ID token.
-4. Configurare dominio HTTPS del servizio web porta 80, mantenere api.notes.ddone.it su api:8080 durante transizione. DNS e domini da verificare nel pannello. Nessun cambio produzione eseguito qui.
-5. Redeploy main, verificare web /healthz, API /actuator/health, gate V19, login reale, task/lista/nota e cestino, conflitto con due browser, visibilità cross-device, allegati/provider se configurati.
-6. Se necessario ripristinare il routing/revision precedente senza downgrade DB distruttivo. Non eliminare Flutter o il volume DB.
-
-## Test
-`node --check apps/web/public/app.mjs`; `node --test apps/web/tests/*.test.mjs`; `docker compose config --quiet`; `docker compose build web`. CI include smoke container e smoke Chromium con OAuth/API sintetici. Non equivale al collaudo browser o VPS.
-
-### Calendari ICS web
-Import file e feed HTTPS diretto (richiede CORS, nessun redirect, 1 MiB, max 5 sorgenti). Sorgenti per browser/account, eventi read-only, ricorrenze DAILY/WEEKLY/MONTHLY/YEARLY con COUNT/UNTIL/BYDAY settimanale, RDATE/EXDATE e override. Rifiuto sintassi avanzata e limiti difensivi. Feed non sincronizzati; nessun proxy SSRF. Test unitari dedicati; non dichiarare parità completa con parser Flutter.
-
-## Secondo incremento: import e recupero
-Import atomico di massimo 500 record per file, nuove UUID, validazione client e server, rollback transazionale, replay idempotente. Backup web cifrato AES-GCM/PBKDF2 600000, ispezione backup Flutter .snb v1 owner-bound in sola lettura. Non riproduce outbox native o sostituisce un profilo live. Retry di intenti in localStorage per account; confronto e scelta esplicita keep-local con nuova CAS. Dati del browser persistono sul dispositivo: non usare profili condivisi. La CI Chromium del commit 00cf673 è passata; nuove verifiche richieste.
-
-## V20 — Preferenze cloud
-Flyway V20 aggiunge solo web_preference, versione CAS per dominio e account; tema, viste, filtri, layout, abitudini e countdown. Riconciliazione a tre vie in primo piano: divergenze esplicite in Impostazioni, nessuna sovrascrittura automatica concorrente. ICS e timer restano locali. Il gate corrente è `infra/release-v20-readiness.sh`; V19 resta storico. V20 non attestata su VPS.
-
-### Recupero Flutter e produttività
-Il backup .snb nativo V1/Drift8 ora consente conversione dei record attivi in formato portabile e import additivo atomico, previa conferma; le righe tombstone e le vecchie operazioni non sono riprodotte. Preferenze compatibili: tema se assente, abitudini con obiettivo e storico, countdown e sessioni focus aggiunti per ID. Non migra automaticamente ICS, cataloghi locali o automazioni native. Flutter CI è solo manuale per recupero; niente rilasci nativi automatici. Pomodoro web con pausa/avvio e sessioni deduplicate, abitudini con target/streak, countdown timed e archiviazione.
+## Verifiche e fonti
+- [GitHub Actions](https://github.com/andreadada/simple-notes/actions) è la fonte per esito effettivo per SHA; CI web include test unitari, build Docker, smoke container e Chromium con OAuth/API simulate. Backend CI usa PostgreSQL Testcontainers; Compose e Markdown CI separati.
+- Il gate V19 è storico: [readiness V19](RELEASE-V19-READINESS.md). Gate V20: `bash infra/release-v20-readiness.sh`. Nessuna prova live dichiarata.
+- Dettagli storici in [CURRENT-STATUS](CURRENT-STATUS.md); questa pagina prevale per il nuovo frontend e cutover.

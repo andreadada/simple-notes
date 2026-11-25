@@ -47,8 +47,9 @@ try{
  await page.getByRole("textbox",{name:"Scrivi nuova nota",exact:true}).press("Enter");
  await page.getByRole("textbox",{name:"Testo nota · Nota CI",exact:true}).fill("Corpo");
  await page.getByRole("textbox",{name:"Testo nota · Nota CI",exact:true}).press("Control+Enter");
- await page.waitForFunction(()=>!document.querySelector("#toast")?.textContent.includes("Completa il salvataggio precedente"));
- await page.waitForTimeout(300);
+ await page.waitForFunction(()=>document.querySelector("#sync-status")?.textContent.includes("Sincronizzato"));
+ await page.getByRole("textbox",{name:"Testo nota · Nota CI",exact:true}).waitFor();
+ await page.waitForFunction(()=>document.querySelector("textarea[aria-label=\"Testo nota · Nota CI\"]")?.value==="Corpo");
  await page.getByRole("textbox",{name:"Titolo nota"}).waitFor();
  page.once("dialog",d=>d.accept());
  await page.locator("#content").getByRole("button",{name:"Cestino",exact:true}).click();

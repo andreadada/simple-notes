@@ -66,6 +66,10 @@ def run() -> None:
             refuse()
         if inbox == "1" and not has_version_one("serverReminderSchema"):
             refuse()
+        for env_key, schema_key in (("REQUIRE_WEB_PREFERENCES_SCHEMA", "webPreferencesSchema"), ("REQUIRE_PORTABLE_IMPORT_SCHEMA", "portableImportSchema")):
+            flag = os.environ.get(env_key, "0")
+            if flag not in ("0", "1") or flag == "1" and not has_version_one(schema_key):
+                refuse()
         strict = os.environ.get("REQUIRE_FULL_SCHEMA", "0")
         time_block = os.environ.get("REQUIRE_TIME_BLOCK_SCHEMA", "0")
         if strict not in ("0", "1") or time_block not in ("0", "1"):

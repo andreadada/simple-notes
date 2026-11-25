@@ -31,3 +31,6 @@ Import file e feed HTTPS diretto (richiede CORS, nessun redirect, 1 MiB, max 5 s
 
 ## Secondo incremento: import e recupero
 Import atomico di massimo 500 record per file, nuove UUID, validazione client e server, rollback transazionale, replay idempotente. Backup web cifrato AES-GCM/PBKDF2 600000, ispezione backup Flutter .snb v1 owner-bound in sola lettura. Non riproduce outbox native o sostituisce un profilo live. Retry di intenti in localStorage per account; confronto e scelta esplicita keep-local con nuova CAS. Dati del browser persistono sul dispositivo: non usare profili condivisi. La CI Chromium del commit 00cf673 è passata; nuove verifiche richieste.
+
+## V20 — Preferenze cloud
+Flyway V20 aggiunge solo web_preference, versione CAS per dominio e account; tema, viste, filtri, layout, abitudini e countdown. Riconciliazione a tre vie in primo piano: divergenze esplicite in Impostazioni, nessuna sovrascrittura automatica concorrente. ICS e timer restano locali. Il gate corrente è `infra/release-v20-readiness.sh`; V19 resta storico. V20 non attestata su VPS.

@@ -1,6 +1,6 @@
 # Simple Notes — Design & Product Specification
 
-> **25/11/2026 — transizione web:** nuovo client browser-only in `apps/web`, stile Console DDone/Lark, con servizio Compose `web:80`. Flutter rimane come client legacy finché la parità funzionale e la migrazione dei dati locali non sono collaudate. Backend e volume invariati; ultimo deploy V17 attestato, nessun nuovo deploy verificato. Copertura, limiti e configurazione: [migrazione web](docs/WEB-MIGRATION.md).
+ > **25/11/2026 — transizione web:** client browser-only in `apps/web` target primario, import atomico, backup web cifrato e preferenze cloud V20. Flutter legacy conservato per migrazione e recupero. Schema repository V20, VPS ultima attestazione V17; nessun deploy verificato. [Migrazione web](docs/WEB-MIGRATION.md).
 
 
 > **P2 11/11/2026:** [PR #74](https://github.com/andreadada/simple-notes/pull/74) backend `EDITOR` con Flyway **V17** e [PR #75](https://github.com/andreadada/simple-notes/pull/75) client Forui inline **integrate in `main`**. Backend/Compose/Markdown CI e analisi/test widget Flutter verdi; build native e CI post-merge in verifica. **Nessun deploy**: VPS ultima attestazione Flyway **V10 (03/11)**. Collaboration online-only, non sync offline multi-owner. [Contratto](docs/P2-LIST-EDITOR.md).

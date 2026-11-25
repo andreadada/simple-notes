@@ -1,6 +1,6 @@
 # Stato corrente — Simple Notes
 
-> **25/11/2026 — transizione web:** nuovo client browser-only in `apps/web`, stile Console DDone/Lark, con servizio Compose `web:80`. Flutter rimane come client legacy finché la parità funzionale e la migrazione dei dati locali non sono collaudate. Backend e volume invariati; ultimo deploy V17 attestato, nessun nuovo deploy verificato. Copertura, limiti e configurazione: [migrazione web](WEB-MIGRATION.md).
+ > **25/11/2026 — transizione web:** client browser-only in `apps/web` target primario, import atomico, backup web cifrato e preferenze cloud V20. Flutter legacy conservato per migrazione e recupero. Schema repository V20, VPS ultima attestazione V17; nessun deploy verificato. [Migrazione web](WEB-MIGRATION.md).
 
 
 > **P2 S3 · 14/11/2026:** La [PR #81](https://github.com/andreadada/simple-notes/pull/81) è integrata in `main`: scansione full-file S3 tramite ClamAV privato, fail-closed prima che l'allegato diventi READY. **APP_ATTACHMENTS_ENABLED resta false**, mancano scanner/bucket reali e relativi test, cleanup oggetti di note eliminate e upload offline. Non modifica Flyway V19 né il deploy V17 attestato della VPS. [Scanner](P2-S3-SCANNER.md) · [Checklist](CHECKLIST-MANUALE-P2.md).

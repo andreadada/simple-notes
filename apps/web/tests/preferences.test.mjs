@@ -1,0 +1,5 @@
+
+import test from "node:test";import assert from "node:assert/strict";import {planPreference,validPreference,same} from "../public/preferences.mjs";
+test("first sync never replaces divergent existing preferences",()=>{assert.equal(planPreference("dark",null,{version:1,value:"light"}),"conflict");assert.equal(planPreference(undefined,null,{version:1,value:"light"}),"pull");assert.equal(planPreference("dark",null,null),"push")});
+test("three-way reconcile preserves concurrent edits",()=>{const b={version:1,value:"light"};assert.equal(planPreference("dark",b,{version:2,value:"system"}),"conflict");assert.equal(planPreference("dark",b,{version:1,value:"light"}),"push");assert.equal(planPreference("light",b,{version:2,value:"dark"}),"pull");assert.equal(planPreference("dark",b,{version:2,value:"dark"}),"agree")});
+test("shape guard and canonical ordering",()=>{assert.equal(validPreference("dashboards",{a:[{id:"total",width:4}]}),true);assert.equal(validPreference("dashboards",{a:[{id:"total",width:99}]}),false);assert.equal(same({b:1,a:2},{a:2,b:1}),true)});

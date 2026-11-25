@@ -1,6 +1,6 @@
 # Simple Notes
 
-> **25/11/2026 — transizione web:** nuovo client browser-only in `apps/web`, stile Console DDone/Lark, con servizio Compose `web:80`. Flutter rimane come client legacy finché la parità funzionale e la migrazione dei dati locali non sono collaudate. Backend e volume invariati; ultimo deploy V17 attestato, nessun nuovo deploy verificato. Copertura, limiti e configurazione: [migrazione web](docs/WEB-MIGRATION.md).
+ > **25/11/2026 — transizione web:** client browser-only in `apps/web` target primario, import atomico, backup web cifrato e preferenze cloud V20. Flutter legacy conservato per migrazione e recupero. Schema repository V20, VPS ultima attestazione V17; nessun deploy verificato. [Migrazione web](docs/WEB-MIGRATION.md).
 
 
 > **P2 · 14/11/2026 — stato aggiornato:** La VPS è stata verificata con Flyway **V17** (17/17 migrazioni riuscite). Le migrazioni **V18 OAuth Google/Outlook read-only** e **V19 inbox promemoria opt-in** sono integrate in `main` ([PR #77](https://github.com/andreadada/simple-notes/pull/77), [PR #79](https://github.com/andreadada/simple-notes/pull/79)) ma **non risultano distribuite sulla VPS**. La inbox V19 non invia notifiche push. ClamAV full-file fail-closed integrato (PR #81), ma S3 resta disabilitato fino a test reali. Restano push, collaborazione offline, calendario bidirezionale, S3 cleanup/offline, restore live e test fisici. [Operazioni manuali](docs/CHECKLIST-MANUALE-P2.md) · [Gate V19](docs/RELEASE-V19-READINESS.md).

@@ -5,12 +5,12 @@ set -euo pipefail
 # Run ON the VPS using the explicitly inspected Simple Notes container.
 : "${DB_CONTAINER:?Set DB_CONTAINER to the Simple Notes PostgreSQL container}"
 EXPECTED_POSTGRES_DB="${EXPECTED_POSTGRES_DB:-simplenotes}"
-# Optional exact-version gate for cumulative V10–V19 releases.
+# Optional exact-version gate for cumulative V10–V20 releases.
 # Empty keeps historical T4 inspections backward-compatible/read-only.
 REQUIRE_FLYWAY_VERSION="${REQUIRE_FLYWAY_VERSION:-}"
 if [[ -n "$REQUIRE_FLYWAY_VERSION" &&
-      ! "$REQUIRE_FLYWAY_VERSION" =~ ^([1-9]|1[0-9])$ ]]; then
-  echo "REFUSED: REQUIRE_FLYWAY_VERSION must be an integer from 1 to 19" >&2
+      ! "$REQUIRE_FLYWAY_VERSION" =~ ^([1-9]|1[0-9]|20)$ ]]; then
+  echo "REFUSED: REQUIRE_FLYWAY_VERSION must be an integer from 1 to 20" >&2
   exit 2
 fi
 command -v docker >/dev/null || { echo "docker is required" >&2; exit 2; }
@@ -39,7 +39,7 @@ names="$(query "SELECT COUNT(*) FROM pg_catalog.pg_class c JOIN pg_catalog.pg_na
 failed="$(query "SELECT COUNT(*) FROM public.flyway_schema_history WHERE NOT success")"
 [[ "$failed" == "0" ]] || { echo "REFUSED: Flyway history has failed migrations" >&2; exit 2; }
 latest="$(query "SELECT COALESCE((SELECT version FROM public.flyway_schema_history WHERE success AND version IS NOT NULL ORDER BY installed_rank DESC LIMIT 1),'unknown')")"
-[[ "$latest" =~ ^[0-9]+$ && "$latest" -ge 1 && "$latest" -le 19 ]] || {
+[[ "$latest" =~ ^[0-9]+$ && "$latest" -ge 1 && "$latest" -le 20 ]] || {
   echo "REFUSED: unknown, unsupported or unexpected Flyway version" >&2; exit 2
 }
 due_columns="$(query "SELECT COUNT(*) FROM information_schema.columns WHERE table_schema='public' AND table_name='task' AND column_name IN ('due_kind','due_date','due_time','due_timezone','due_offset_seconds')")"
@@ -211,6 +211,14 @@ else
      "$server_occurrences" == 0 && "$server_occ_cols" == 0 ]] || {
     echo "REFUSED: V19 reminder tables exist before migration" >&2; exit 2
   }
+fi
+
+web_prefs="$(query "SELECT COUNT(*) FROM information_schema.tables WHERE table_schema='public' AND table_name='web_preference' AND table_type='BASE TABLE'")"
+web_cols="$(query "SELECT COUNT(*) FROM information_schema.columns WHERE table_schema='public' AND table_name='web_preference' AND column_name IN ('owner_id','domain','payload_json','version','updated_at')")"
+if [[ "$latest" -ge 20 ]]; then
+  [[ "$web_prefs" == 1 && "$web_cols" == 5 ]] || { echo "REFUSED: V20 web preference schema incomplete" >&2; exit 2; }
+else
+  [[ "$web_prefs" == 0 && "$web_cols" == 0 ]] || { echo "REFUSED: V20 schema exists before migration" >&2; exit 2; }
 fi
 
 if [[ -n "$REQUIRE_FLYWAY_VERSION" &&

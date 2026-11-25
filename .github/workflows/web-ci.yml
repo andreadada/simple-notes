@@ -1,0 +1,27 @@
+name: Web client
+on:
+  push:
+    branches: [main]
+    paths: ['apps/web/**', 'docker-compose.yml', '.github/workflows/web-ci.yml']
+  pull_request:
+    paths: ['apps/web/**', 'docker-compose.yml', '.github/workflows/web-ci.yml']
+jobs:
+  web:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: node --check apps/web/public/app.mjs && node --check apps/web/public/model.mjs
+      - run: node --test apps/web/tests/*.test.mjs
+      - run: docker compose config --quiet && docker compose build web
+      - name: Container smoke
+        run: |
+          docker run -d --name sn-web -p 127.0.0.1:8099:80 -e WEB_GOOGLE_CLIENT_ID=ci.apps.googleusercontent.com simple-notes-web
+          trap 'docker rm -f sn-web' EXIT
+          for i in $(seq 1 20); do curl -fsS http://127.0.0.1:8099/healthz && break; sleep 1; done
+          curl -fsS http://127.0.0.1:8099/config.json | grep -F ci.apps.googleusercontent.com
+          curl -fsS http://127.0.0.1:8099/ | grep -F Simple\ Notes

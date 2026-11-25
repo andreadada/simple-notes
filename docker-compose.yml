@@ -1,5 +1,5 @@
 # Coolify: Base Directory / ; Docker Compose Location /docker-compose.yml
-# Only "api" is routed publicly via Coolify HTTPS; PostgreSQL is private.
+# Route web:80 and retain api:8080 during migration; PostgreSQL stays private.
 # Credentials are runtime-only. docker compose build must not require them,
 # because Coolify interpolates this file with build-time.env before containers start.
 # No fallback credentials: empty values deliberately fail at service startup.
@@ -57,6 +57,23 @@ services:
         condition: service_healthy
     expose:
       - "8080"
+
+  web:
+    image: simple-notes-web
+    build:
+      context: ./apps/web
+    restart: unless-stopped
+    environment:
+      WEB_GOOGLE_CLIENT_ID: ${WEB_GOOGLE_CLIENT_ID:-}
+    depends_on:
+      - api
+    expose:
+      - "80"
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1/healthz"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
 
 volumes:
   postgres_data:

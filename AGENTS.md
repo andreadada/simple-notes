@@ -1,5 +1,8 @@
 # AGENTS.md — Istruzioni operative per agenti AI
 
+> **25/11/2026 — transizione web:** nuovo client browser-only in `apps/web`, stile Console DDone/Lark, con servizio Compose `web:80`. Flutter rimane come client legacy finché la parità funzionale e la migrazione dei dati locali non sono collaudate. Backend e volume invariati; ultimo deploy V17 attestato, nessun nuovo deploy verificato. Copertura, limiti e configurazione: [migrazione web](docs/WEB-MIGRATION.md).
+
+
 > **P2 · 14/11/2026 — stato aggiornato:** La VPS è stata verificata con Flyway **V17** (17/17 migrazioni riuscite). Le migrazioni **V18 OAuth Google/Outlook read-only** e **V19 inbox promemoria opt-in** sono integrate in `main` ([PR #77](https://github.com/andreadada/simple-notes/pull/77), [PR #79](https://github.com/andreadada/simple-notes/pull/79)) ma **non risultano distribuite sulla VPS**. La inbox V19 non invia notifiche push. Restano push, collaborazione offline, calendario bidirezionale, S3 hardened, restore live e test fisici. [Operazioni manuali](docs/CHECKLIST-MANUALE-P2.md) · [Gate V19](docs/RELEASE-V19-READINESS.md).
 
 > **P2 12/11/2026:** VPS backend 3c904a0, Flyway **V17** con 17 migrazioni riuscite dopo redeploy dell'utente. [PR #77](https://github.com/andreadada/simple-notes/pull/77): Google Calendar / Outlook OAuth con PKCE, token cifrati, eventi read-only e Flyway **V18**, **integrata in `main` (`968068b`) ma non distribuita su Coolify**. Nessun provider configurato o consenso reale; non sono previste scritture in Drift/outbox. [Contratto](docs/P2-CALENDAR-OAUTH.md) · [Readiness](docs/RELEASE-V18-READINESS.md) · [Stato](docs/CURRENT-STATUS.md).

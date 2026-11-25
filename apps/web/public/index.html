@@ -1,0 +1,11 @@
+<!doctype html>
+<html lang="it"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Simple Notes</title><link rel="stylesheet" href="/style.css"><script src="https://accounts.google.com/gsi/client" async defer></script><script type="module" src="/app.mjs"></script></head>
+<body>
+<section id="login" class="login"><div class="login-card"><div class="brand-mark">S.</div><h1>Simple Notes</h1><p>Il tuo spazio di lavoro personale.</p><div id="google"></div><p id="login-error" role="alert"></p></div></section>
+<div id="workspace" hidden>
+<header class="topbar"><button id="toggle" class="icon" aria-label="Menu">☰</button><span class="brand-mark">S.</span><strong>Simple Notes</strong><span class="crumb" id="crumb"></span><div class="spacer"></div><button id="search-button" title="Ctrl+K">Cerca <kbd>Ctrl K</kbd></button><button id="refresh" aria-label="Aggiorna">↻</button><span id="account"></span><button id="logout">Esci</button></header>
+<div class="layout"><aside id="sidebar"><nav id="nav" aria-label="Navigazione"></nav><div class="section-label">LISTE <button id="add-list" aria-label="Nuova lista">+</button></div><nav id="lists"></nav><div class="spacer"></div><small id="sync-status" aria-live="polite"></small></aside><main><div id="heading"></div><div id="views" class="tabs"></div><div id="toolbar" class="toolbar"></div><section id="content" aria-live="polite"></section></main></div>
+</div>
+<dialog id="dialog"><div class="dialog-head"><h2 id="dialog-title"></h2><button id="close-dialog" aria-label="Chiudi">×</button></div><div id="dialog-content"></div></dialog>
+<div id="menu" class="context-menu" hidden></div><div id="toast" role="status" hidden></div>
+</body></html>

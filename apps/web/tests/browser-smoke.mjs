@@ -4,7 +4,7 @@ import assert from "node:assert/strict";
 const browser=await chromium.launch({headless:true});
 try{
  const page=await browser.newPage({viewport:{width:1280,height:900}});
- const errors=[];page.on("pageerror",e=>errors.push(e.message));
+ const errors=[];page.on("pageerror",e=>{errors.push(e.message);console.error("page error:",e.message)});page.on("console",m=>{if(m.type()==="error")console.error("browser:",m.text())});
  const changes=[];let changeId=0;
  const capabilities=Object.fromEntries(["taskDueSchema","timeBlockSchema","timeBlocksSchema","recurrenceSchema","noteRestoreSchema","syncOperationFingerprintSchema","sharingReadSchema","sharingEditorSchema","calendarReadSchema","serverReminderSchema"].map(k=>[k,1]));
  await page.route("https://accounts.google.com/gsi/client",r=>r.fulfill({contentType:"application/javascript",body:'window.google={accounts:{id:{initialize(o){this.cb=o.callback},renderButton(el){const b=document.createElement("button");b.textContent="Test login";b.onclick=()=>this.cb({credential:"synthetic"});el.append(b)}}}};'}));
@@ -19,6 +19,7 @@ try{
   return json({},404);
  });
  await page.goto(process.env.WEB_URL||"http://127.0.0.1:8099/");
+ const moduleResponse=await page.request.get(new URL("/app.mjs",process.env.WEB_URL||"http://127.0.0.1:8099/").href);assert.match(moduleResponse.headers()["content-type"]||"",/javascript/);
  await page.getByRole("button",{name:"Test login"}).click();
  await page.getByRole("button",{name:"Attività",exact:true}).click();
  await page.getByRole("button",{name:"+ Attività",exact:true}).click();

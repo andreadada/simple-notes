@@ -26,6 +26,6 @@ public class CapabilitiesController {
             Map.entry("sharingReadSchema", 1),
             Map.entry("sharingEditorSchema", 1),
             Map.entry("calendarReadSchema", 1),
-            Map.entry("serverReminderSchema", 1), Map.entry("portableImportSchema", 1), Map.entry("webPreferencesSchema", 1), Map.entry("sharingPresenceSchema", 1), Map.entry("webGridSchema", 1), Map.entry("serverTaskActionsSchema", 1));
+            Map.entry("serverReminderSchema", 1), Map.entry("portableImportSchema", 1), Map.entry("webPreferencesSchema", 1), Map.entry("sharingPresenceSchema", 1), Map.entry("webGridSchema", 1), Map.entry("serverTaskActionsSchema", 1), Map.entry("calendarLinkSchema", 1));
     }
 }

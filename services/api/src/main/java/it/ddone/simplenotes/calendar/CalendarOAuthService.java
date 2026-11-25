@@ -111,7 +111,7 @@ public class CalendarOAuthService {
         query.put("code_challenge", challenge(verifier));
         query.put("code_challenge_method", "S256");
         if ("google".equals(provider)) {
-            query.put("scope", "https://www.googleapis.com/auth/calendar.events.readonly");
+            query.put("scope", config.googleWriteEnabled() ? "https://www.googleapis.com/auth/calendar.events" : "https://www.googleapis.com/auth/calendar.events.readonly");
             query.put("access_type", "offline");
             query.put("prompt", "consent");
         } else {

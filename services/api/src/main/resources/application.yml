@@ -39,6 +39,7 @@ app:
     scanner-port: ${APP_ATTACHMENTS_SCANNER_PORT:3310}
 
   calendar:
+    google-write-enabled: ${APP_CALENDAR_GOOGLE_WRITE_ENABLED:false}
     public-origin: ${APP_CALENDAR_PUBLIC_ORIGIN:}
     token-key-base64: ${APP_CALENDAR_TOKEN_KEY_BASE64:}
     google-client-id: ${APP_CALENDAR_GOOGLE_CLIENT_ID:}

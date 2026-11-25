@@ -11,6 +11,7 @@ import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
@@ -50,12 +51,23 @@ public class CalendarHttpGateway {
         return send(builder.build());
     }
 
-    private JsonNode send(HttpRequest request) {
+    /** Fixed provider endpoints only, conditional writes preserve conflicts. */
+    public JsonNode event(URI endpoint,String accessToken,boolean microsoft,String method,JsonNode payload,String etag) {
+        HttpRequest.Builder b=HttpRequest.newBuilder(endpoint).timeout(Duration.ofSeconds(12)).header("Accept","application/json").header("Authorization","Bearer "+accessToken);
+        if(microsoft)b.header("Prefer","outlook.timezone=\"UTC\"");
+        if(etag!=null)b.header("If-Match",etag);
+        if(payload!=null)b.header("Content-Type","application/json");
+        b.method(method,payload==null?HttpRequest.BodyPublishers.noBody():HttpRequest.BodyPublishers.ofString(payload.toString()));
+        return send(b.build(),true);
+    }
+    private JsonNode send(HttpRequest request) { return send(request,false); }
+    private JsonNode send(HttpRequest request, boolean conditional) {
         try {
             HttpResponse<InputStream> response =
                 client.send(request, HttpResponse.BodyHandlers.ofInputStream());
             try (InputStream body = response.body()) {
                 byte[] bytes = body.readNBytes(256 * 1024 + 1);
+                if(conditional && Set.of(404,409,412,403).contains(response.statusCode())) throw new ResponseStatusException(response.statusCode()==412?HttpStatus.CONFLICT:HttpStatus.valueOf(response.statusCode()),"Calendar event unavailable or changed");
                 if (bytes.length > 256 * 1024 || response.statusCode() < 200
                         || response.statusCode() >= 300) {
                     throw new ResponseStatusException(HttpStatus.BAD_GATEWAY,

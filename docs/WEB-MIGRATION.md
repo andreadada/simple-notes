@@ -36,3 +36,6 @@ Coda persistente fino a 100 intenti indipendenti (un intento per record), replay
 
 ### Cataloghi e collaborazione per cella
 Backup web include inventario e cataloghi cloud; recupero modelli e taskActions nativi/web per ID con CAS e conservazione dei conflitti. Regole promemoria native esportabili separatamente. Liste condivise: modifica inline di titolo, descrizione, priorità e completamento, aggiornamento foreground e presenza per cella. Non sono CRDT: le revisioni rimangono per record; modifiche contemporanee richiedono confronto. Le azioni del collaboratore non attivano regole owner che potrebbero spostare il record fuori lista. Gate corrente: `infra/release-v21-readiness.sh`.
+
+### V22 — collegamenti calendario
+Import Google/Outlook come attività collegate, aggiornamento esplicito titolo e scadenza dal provider con CAS task e revisione evento. Google: pubblicazione idempotente per task e aggiornamento condizionale If-Match di eventi personali senza invitati/ricorrenze; `APP_CALENDAR_GOOGLE_WRITE_ENABLED=false` di default, riconnessione OAuth necessaria per scope scrittura. Nessun push automatico, cancellazione remota o aggiornamento Outlook non verificato. Il gate corrente è `infra/release-v22-readiness.sh`.

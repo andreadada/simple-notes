@@ -5,12 +5,12 @@ set -euo pipefail
 # Run ON the VPS using the explicitly inspected Simple Notes container.
 : "${DB_CONTAINER:?Set DB_CONTAINER to the Simple Notes PostgreSQL container}"
 EXPECTED_POSTGRES_DB="${EXPECTED_POSTGRES_DB:-simplenotes}"
-# Optional exact-version gate for cumulative V10–V21 releases.
+# Optional exact-version gate for cumulative V10–V22 releases.
 # Empty keeps historical T4 inspections backward-compatible/read-only.
 REQUIRE_FLYWAY_VERSION="${REQUIRE_FLYWAY_VERSION:-}"
 if [[ -n "$REQUIRE_FLYWAY_VERSION" &&
-      ! "$REQUIRE_FLYWAY_VERSION" =~ ^([1-9]|1[0-9]|2[01])$ ]]; then
-  echo "REFUSED: REQUIRE_FLYWAY_VERSION must be an integer from 1 to 21" >&2
+      ! "$REQUIRE_FLYWAY_VERSION" =~ ^([1-9]|1[0-9]|2[0-2])$ ]]; then
+  echo "REFUSED: REQUIRE_FLYWAY_VERSION must be an integer from 1 to 22" >&2
   exit 2
 fi
 command -v docker >/dev/null || { echo "docker is required" >&2; exit 2; }
@@ -39,7 +39,7 @@ names="$(query "SELECT COUNT(*) FROM pg_catalog.pg_class c JOIN pg_catalog.pg_na
 failed="$(query "SELECT COUNT(*) FROM public.flyway_schema_history WHERE NOT success")"
 [[ "$failed" == "0" ]] || { echo "REFUSED: Flyway history has failed migrations" >&2; exit 2; }
 latest="$(query "SELECT COALESCE((SELECT version FROM public.flyway_schema_history WHERE success AND version IS NOT NULL ORDER BY installed_rank DESC LIMIT 1),'unknown')")"
-[[ "$latest" =~ ^[0-9]+$ && "$latest" -ge 1 && "$latest" -le 21 ]] || {
+[[ "$latest" =~ ^[0-9]+$ && "$latest" -ge 1 && "$latest" -le 22 ]] || {
   echo "REFUSED: unknown, unsupported or unexpected Flyway version" >&2; exit 2
 }
 due_columns="$(query "SELECT COUNT(*) FROM information_schema.columns WHERE table_schema='public' AND table_name='task' AND column_name IN ('due_kind','due_date','due_time','due_timezone','due_offset_seconds')")"
@@ -226,6 +226,12 @@ if [[ "$latest" -ge 21 ]]; then
   [[ "$custom_fields_cols" == 1 ]] || { echo "REFUSED: V21 custom fields missing" >&2; exit 2; }
 else
   [[ "$custom_fields_cols" == 0 ]] || { echo "REFUSED: V21 column exists before migration" >&2; exit 2; }
+fi
+calendar_links="$(query "SELECT COUNT(*) FROM information_schema.columns WHERE table_schema='public' AND table_name='calendar_task_link' AND column_name IN ('owner_id','task_id','provider','event_id','created_at')")"
+if [[ "$latest" -ge 22 ]]; then
+  [[ "$calendar_links" == 5 ]] || { echo "REFUSED: V22 calendar link schema incomplete" >&2; exit 2; }
+else
+  [[ "$calendar_links" == 0 ]] || { echo "REFUSED: V22 table exists before migration" >&2; exit 2; }
 fi
 if [[ -n "$REQUIRE_FLYWAY_VERSION" &&
       "$latest" != "$REQUIRE_FLYWAY_VERSION" ]]; then

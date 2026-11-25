@@ -13,6 +13,8 @@ public final class CalendarOAuthConfig {
         boolean complete() { return !id.isBlank() && !secret.isBlank(); }
     }
 
+    @Value("${app.calendar.google-write-enabled:false}") private boolean googleWriteEnabled;
+    public boolean googleWriteEnabled() { return googleWriteEnabled && available("google"); }
     private final URI publicOrigin;
     private final Map<String, Credentials> credentials;
     private final byte[] encryptionKey;

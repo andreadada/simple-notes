@@ -241,6 +241,27 @@ public class SyncService {
             .setParameter("owner", owner.toString()).getSingleResult();
     }
 
+    /** Atomic, additive import; no existing row or imported outbox may be overwritten. */
+    @Transactional
+    public List<SyncController.ApplyResponse> importCopies(UUID owner, List<SyncController.ApplyRequest> batch) {
+        lockAccount(owner);
+        if (batch == null || batch.isEmpty() || batch.size() > 500)
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid import size");
+        Set<UUID> ids = new HashSet<>(), intents = new HashSet<>();
+        int previous = -1;
+        for (var op : batch) {
+            if (op == null || !"upsert".equals(op.action()) || op.expectedVersion() != null || op.expectedAccountCursor() != null || op.entityId() == null || op.operationId() == null || !ids.add(op.entityId()) || !intents.add(op.operationId()))
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Import must contain new unique copies");
+            int order = List.of("list","task","note").indexOf(op.entityType());
+            if (order < 0 || order < previous || op.payload() == null || !op.payload().isObject())
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid import order");
+            previous = order;
+        }
+        List<SyncController.ApplyResponse> result = new ArrayList<>();
+        for (var op : batch) result.add(apply(owner, op));
+        return List.copyOf(result);
+    }
+
     @Transactional
     public SyncController.ApplyResponse apply(UUID owner, SyncController.ApplyRequest req) {
         // All writes (including legacy REST) lock before reading or mutating.

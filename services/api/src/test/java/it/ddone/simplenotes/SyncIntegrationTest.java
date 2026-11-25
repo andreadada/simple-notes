@@ -55,6 +55,24 @@ class SyncIntegrationTest {
     }
 
     @Test
+    void portableImportIsAtomicAndIdempotent() throws Exception {
+        var user = users.save(new AppUser("import-" + UUID.randomUUID(), "import@example.com", "Import"));
+        String bearer = "Bearer " + jwt(user.id);
+        var listId = UUID.randomUUID();
+        var a = mapper.createObjectNode().put("operationId", UUID.randomUUID().toString()).put("entityId", listId.toString()).put("entityType","list").put("action","upsert");
+        a.putObject("payload").put("title","Imported list");
+        var b = mapper.createObjectNode().put("operationId", UUID.randomUUID().toString()).put("entityId", UUID.randomUUID().toString()).put("entityType","task").put("action","upsert");
+        b.putObject("payload").put("title","").put("listId",listId.toString());
+        var req = mapper.createObjectNode(); req.putArray("operations").add(a).add(b);
+        String path="/api/v1/sync/import-copies";
+        mvc.perform(post(path).header("Authorization",bearer).contentType(MediaType.APPLICATION_JSON).content(req.toString())).andExpect(status().isBadRequest());
+        mvc.perform(get("/api/v1/sync/changes").header("Authorization",bearer)).andExpect(jsonPath("$.changes.length()").value(0));
+        ((com.fasterxml.jackson.databind.node.ObjectNode)b.get("payload")).put("title","Imported task");
+        for(int i=0;i<2;i++) mvc.perform(post(path).header("Authorization",bearer).contentType(MediaType.APPLICATION_JSON).content(req.toString())).andExpect(status().isOk()).andExpect(jsonPath("$.length()").value(2));
+        mvc.perform(get("/api/v1/sync/changes").header("Authorization",bearer)).andExpect(jsonPath("$.changes.length()").value(2));
+    }
+
+    @Test
     void applyIsIdempotentAndDeltaIsPrivate() throws Exception {
         var a = users.save(new AppUser("sync-a-" + UUID.randomUUID(), "a@example.com", "A"));
         var b = users.save(new AppUser("sync-b-" + UUID.randomUUID(), "b@example.com", "B"));

@@ -87,7 +87,7 @@ export function urgent(p,now=new Date()){
   }
   return Date.parse(due.instant)<=now.getTime()+48*3600000;
 }
-export function portableRecords(rows,now=new Date().toISOString()){
+export function portableRecords(rows,now=new Date().toISOString(),allowBlankNotes=false){
   const data={lists:[],tasks:[],notes:[]};
   for(const r of rows.filter(x=>!x.deleted)){
     const p=r.payload,id=r.entityId;
@@ -95,6 +95,6 @@ export function portableRecords(rows,now=new Date().toISOString()){
     if(r.entityType==="note")data.notes.push({id,title:p.title,body:p.body,createdAt:p.createdAt});
     if(r.entityType==="task"){const t=normalizeTask(p);data.tasks.push({...t,id,dueAt:t.due.instant??null,timeBlock:t.timeBlocks.length?{kind:"range",start:t.timeBlocks[0].start,end:t.timeBlocks[0].end,timeZone:t.timeBlocks[0].timeZone}:none()})}
   }
-  if(data.notes.some(n=>!n.title.trim()))throw Error("Il vecchio formato portabile richiede titoli non vuoti: rinomina le note senza titolo o usa lo snapshot JSON.");
+  if(!allowBlankNotes&&data.notes.some(n=>!n.title.trim()))throw Error("Il vecchio formato portabile richiede titoli non vuoti: rinomina le note senza titolo o usa lo snapshot JSON.");
   return {format:"simple-notes-portable",schemaVersion:1,exportedAt:now,data};
 }

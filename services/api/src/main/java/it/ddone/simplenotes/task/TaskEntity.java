@@ -17,6 +17,7 @@ public class TaskEntity {
     public String tagsJson = "[]";
     @Column(name = "subtasks_json", nullable = false, columnDefinition = "text")
     public String subtasksJson = "[]";
+    @Column(name = "custom_fields_json", nullable = false, columnDefinition = "text") public String customFieldsJson = "{}";
     @Column(nullable = false) public String title;
     @Column(columnDefinition = "text") public String description;
     @Column(name = "due_at") public Instant dueAt;

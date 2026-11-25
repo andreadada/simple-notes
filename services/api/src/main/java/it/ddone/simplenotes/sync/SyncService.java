@@ -258,12 +258,16 @@ public class SyncService {
             previous = order;
         }
         List<SyncController.ApplyResponse> result = new ArrayList<>();
-        for (var op : batch) result.add(apply(owner, op));
+        for (var op : batch) result.add(applyInternal(owner, op, false));
         return List.copyOf(result);
     }
 
     @Transactional
     public SyncController.ApplyResponse apply(UUID owner, SyncController.ApplyRequest req) {
+        return applyInternal(owner, req, true);
+    }
+
+    private SyncController.ApplyResponse applyInternal(UUID owner, SyncController.ApplyRequest req, boolean executeActions) {
         // All writes (including legacy REST) lock before reading or mutating.
         lockAccount(owner);
 
@@ -315,7 +319,7 @@ public class SyncService {
         }
 
         Mutation applied = switch (req.entityType()) {
-            case "task" -> applyTask(owner, req);
+            case "task" -> applyTask(owner, req, executeActions);
             case "list" -> applyList(owner, req);
             default -> applyNote(owner, req);
         };
@@ -373,7 +377,7 @@ public class SyncService {
 
     private record Mutation(long version, boolean deleted, String payload) {}
 
-    private Mutation applyTask(UUID owner, SyncController.ApplyRequest req) {
+    private Mutation applyTask(UUID owner, SyncController.ApplyRequest req, boolean executeActions) {
         TaskEntity existing = tasks.findByIdAndOwnerIdAndDeletedAtIsNull(req.entityId(), owner)
             .orElse(null);
         if ("delete".equals(req.action())) {
@@ -456,6 +460,11 @@ public class SyncService {
         if (priority < 0 || priority > 3 || (value.has("priority") && !value.get("priority").isInt())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid priority");
         }
+        if (executeActions && (existing == null || existing.completedAt == null && completed)) {
+            value = serverActions(owner, value, existing == null ? "created" : "completed");
+            listId = optionalUuid(value, "listId");
+            priority = value.path("priority").asInt(0);
+        }
         String tagsJson = encode(readTags(value.path("tags")));
         String subtasksJson = encode(readSubtasks(value.path("subtasks")));
         TaskEntity entity;
@@ -478,6 +487,7 @@ public class SyncService {
         entity.priority = priority;
         entity.tagsJson = tagsJson;
         entity.subtasksJson = subtasksJson;
+        if (value.has("customFields")) entity.customFieldsJson = customFields(value.get("customFields"));
         entity.completedAt = completed ?
             (entity.completedAt == null ? Instant.now() : entity.completedAt) : null;
         tasks.saveAndFlush(entity);
@@ -495,6 +505,7 @@ public class SyncService {
         result.put("priority", entity.priority);
         result.put("tags", readStoredJson(entity.tagsJson));
         result.put("subtasks", readStoredJson(entity.subtasksJson));
+        if (!"{}".equals(entity.customFieldsJson)) result.put("customFields", readStoredJson(entity.customFieldsJson));
         return new Mutation(entity.version, false, encode(result));
     }
 
@@ -528,6 +539,49 @@ public class SyncService {
         lists.saveAndFlush(entity);
         return new Mutation(entity.version, false, encode(Map.of(
             "title", entity.title, "createdAt", entity.createdAt.toString())));
+    }
+
+    private String customFields(JsonNode value) {
+        if (!value.isObject() || value.size() > 40)
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid custom fields");
+        var fields = value.fields();
+        while(fields.hasNext()) {
+            var e = fields.next();
+            JsonNode v = e.getValue();
+            if (!e.getKey().matches("field-[a-f0-9-]{36}") ||
+                    !(v.isNull() || v.isBoolean() || v.isNumber() && Double.isFinite(v.asDouble()) ||
+                        v.isTextual() && v.textValue().length() <= 1024))
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid custom field");
+        }
+        String encoded = encode(value);
+        if(encoded.getBytes(StandardCharsets.UTF_8).length > 32768)
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Custom fields too large");
+        return encoded;
+    }
+
+    /** Explicit account opt-in; deterministic effects inside the same transaction
+     * and immutable operation. Imports never execute rules. No scheduler required
+     * for created/completed event triggers. */
+    private JsonNode serverActions(UUID owner, JsonNode value, String trigger) {
+        var enabled = em.createNativeQuery("SELECT payload_json FROM web_preference WHERE owner_id=:owner AND domain='automationEnabled'")
+            .setParameter("owner",owner).getResultList();
+        if(enabled.isEmpty() || !"true".equals(enabled.get(0))) return value;
+        var rows = em.createNativeQuery("SELECT payload_json FROM task_action_catalog WHERE owner_id=:owner")
+            .setParameter("owner",owner).getResultList();
+        if(rows.isEmpty()) return value;
+        ObjectNode updated = ((ObjectNode)value).deepCopy();
+        String title = value.path("title").asText("").toLowerCase(Locale.ROOT);
+        for(JsonNode rule:readStoredJson((String)rows.get(0)).path("rules")){
+            if(!rule.path("enabled").asBoolean() || !trigger.equals(rule.path("trigger").asText()) ||
+                !title.contains(rule.path("titleContains").asText().toLowerCase(Locale.ROOT))) continue;
+            String v=rule.path("value").asText();
+            switch(rule.path("action").asText()){
+                case "priority" -> { if(Set.of("0","1","2","3").contains(v)) updated.put("priority",Integer.parseInt(v)); }
+                case "list" -> { try { UUID id=UUID.fromString(v); if(lists.existsByIdAndOwnerIdAndDeletedAtIsNull(id,owner)) updated.put("listId",v); } catch(IllegalArgumentException ignored) {} }
+                case "tag" -> { var tags=new ArrayList<>(readTags(updated.path("tags"))); if(tags.size()<16 && !v.isBlank() && v.length()<=40 && tags.stream().noneMatch(x->x.equalsIgnoreCase(v))){ tags.add(v); updated.set("tags",json.valueToTree(tags)); } }
+            }
+        }
+        return updated;
     }
 
     private static UUID optionalUuid(JsonNode payload, String field) {

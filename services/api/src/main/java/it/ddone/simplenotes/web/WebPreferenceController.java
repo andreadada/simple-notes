@@ -18,8 +18,8 @@ import org.springframework.web.server.ResponseStatusException;
 @RestController
 @RequestMapping("/api/v1/web/preferences")
 public class WebPreferenceController {
-    private static final Set<String> MAPS = Set.of("views","customViews","viewOptions","dashboards");
-    private static final Set<String> ARRAYS = Set.of("habits","countdowns");
+    private static final Set<String> MAPS = Set.of("views","customViews","viewOptions","dashboards","gridColumns");
+    private static final Set<String> ARRAYS = Set.of("habits","countdowns","customFields");
     private final JdbcTemplate jdbc;
     private final ObjectMapper json;
     public WebPreferenceController(JdbcTemplate jdbc, ObjectMapper json) { this.jdbc=jdbc; this.json=json; }
@@ -34,7 +34,7 @@ public class WebPreferenceController {
         else if(n.isArray()) for(JsonNode child:n) validateTree(child,depth+1);
     }
     private static String validate(String domain,JsonNode n) {
-        if(n==null || n.isNull() || !(domain.equals("theme") && n.isTextual() && Set.of("light","dark","system").contains(n.textValue()) || MAPS.contains(domain) && n.isObject() || ARRAYS.contains(domain) && n.isArray())) throw invalid();
+        if(n==null || n.isNull() || !(domain.equals("theme") && n.isTextual() && Set.of("light","dark","system").contains(n.textValue()) || MAPS.contains(domain) && n.isObject() || ARRAYS.contains(domain) && n.isArray() || domain.equals("automationEnabled") && n.isBoolean())) throw invalid();
         validateTree(n,0);
         String result=n.toString();
         if(result.getBytes(StandardCharsets.UTF_8).length>262144) throw invalid();

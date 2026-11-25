@@ -27,3 +27,6 @@ Il prodotto primario è la webapp browser-only in `apps/web`, ispirata al design
 - [GitHub Actions](https://github.com/andreadada/simple-notes/actions) è la fonte per esito effettivo per SHA; CI web include test unitari, build Docker, smoke container e Chromium con OAuth/API simulate. Backend CI usa PostgreSQL Testcontainers; Compose e Markdown CI separati.
 - Il gate V19 è storico: [readiness V19](RELEASE-V19-READINESS.md). Gate V20: `bash infra/release-v20-readiness.sh`. Nessuna prova live dichiarata.
 - Dettagli storici in [CURRENT-STATUS](CURRENT-STATUS.md); questa pagina prevale per il nuovo frontend e cutover.
+
+### V21 — griglia e automazioni
+Colonne per vista (ordine, larghezza, visibilità), campi custom tipizzati e valori persistiti sul task, modifiche inline e bulk. Client legacy che omettono customFields mantengono il dato. Definizioni e layout sincronizzati per account. Regole created/completed server-side opt-in nella stessa transazione e replay immutabile; import esclusi. Flyway V21 additiva, VPS non modificata.

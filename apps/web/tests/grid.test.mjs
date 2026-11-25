@@ -1,0 +1,3 @@
+import test from "node:test";import assert from "node:assert/strict";import {columnsFor,fieldValue} from "../public/grid.mjs";
+test("saved order and width, title always visible",()=>{let c=columnsFor([{id:"field-x",name:"Custom",type:"text"}],[{id:"title",width:900,hidden:true},{id:"field-x",width:120,hidden:false}]);assert.equal(c[0].width,600);assert.equal(c[0].hidden,false);assert.equal(c[1].id,"field-x")});
+test("typed values reject invalid numbers and choices",()=>{assert.equal(fieldValue({type:"number"},"3.5"),3.5);assert.throws(()=>fieldValue({type:"number"},"NaN"));assert.throws(()=>fieldValue({type:"select",options:["A"]},"B"));assert.equal(fieldValue({type:"checkbox"},false),false)});

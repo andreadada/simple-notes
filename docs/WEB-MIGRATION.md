@@ -2,7 +2,7 @@
 
 ## Stato e architettura
 
-Webapp browser-only in `apps/web`, ispirata a Console DDone/Lark. HTML/CSS/JS, Nginx, Spring Boot, PostgreSQL 17. Nessun manifest PWA, service worker, APK o MSIX richiesto. Flutter rimane nel repository come client legacy per recupero. Il Compose esistente espone web:80 e api:8080, conservando il volume DB. Schema sorgente Flyway V23; ultima VPS attestata V17. Nessun deploy effettuato in questa sessione.
+Webapp browser-only in `apps/web`, ispirata a Console DDone/Lark. HTML/CSS/JS, Nginx, Spring Boot, PostgreSQL 17. Nessun manifest PWA, service worker, APK o MSIX richiesto. Flutter rimane nel repository come client legacy per recupero. Il Compose esistente espone web:80 e api:8080, conservando il volume DB. Schema sorgente Flyway V24; ultima VPS attestata V17. Nessun deploy effettuato in questa sessione.
 
 ## Funzioni disponibili
 
@@ -25,14 +25,14 @@ Non è prevista installazione PWA né push a browser chiuso. Il calendario Googl
 2. Eseguire backup PostgreSQL, copia offsite e restore isolato secondo [OPERATIONS](OPERATIONS.md). Conservare conteggi e backup S3 se usato. Mai down -v, reset o Flyway repair.
 3. Usare la stessa risorsa Compose Coolify, branch main, base directory /, compose /docker-compose.yml. Conservare postgres_data e variabili esistenti. Configurare `WEB_GOOGLE_CLIENT_ID` e includerlo in `GOOGLE_CLIENT_IDS` mantenendo i client nativi durante la transizione.
 4. Google Cloud OAuth Web: origine JavaScript autorizzata https://notes.ddone.it (o dominio effettivo). DNS/HTTPS del servizio web:80; mantenere api.notes.ddone.it su api:8080. Provider calendario opzionali con proprie callback e credenziali.
-5. Dopo CI verdi sullo SHA da rilasciare, redeploy. Flyway applica V18–V23 in ordine. Verificare /healthz del web, /actuator/health API e `bash infra/release-v23-readiness.sh` con DB_CONTAINER corretto e JWT temporaneo senza stamparlo.
+5. Dopo CI verdi sullo SHA da rilasciare, redeploy. Flyway applica V18–V24 in ordine. Verificare /healthz del web, /actuator/health API e `bash infra/release-v24-readiness.sh` con DB_CONTAINER corretto e JWT temporaneo senza stamparlo.
 6. Login reale, confronto inventario/conteggi, creazione nota/task di test, recupero cestino, griglia/viste, coda e conflitti con due browser, collaborazione e mobile. Verificare promemoria, provider e allegati se abilitati.
 7. Impostazioni → Migrazione e backup → Analizza archivio: per dati non presenti usare recupero ID originali con anteprima, oppure copie solo se volute. Non importare indiscriminatamente dati già sincronizzati.
 8. Solo dopo collaudo positivo usare esclusivamente il web. Conservare archivi nativi. In caso di problemi ripristinare routing/revisione compatibile senza downgrade distruttivo del DB.
 
 ## Verifiche
 
-[GitHub Actions](https://github.com/andreadada/simple-notes/actions) è la fonte per esito per SHA: web unitari, build Docker, smoke container e Chromium simulato; backend con PostgreSQL Testcontainers; Compose e Markdown CI. Il gate corrente è V23; gate V19/V20/V21/V22 storici. [CURRENT-STATUS](CURRENT-STATUS.md) contiene la cronologia; questa pagina prevale per il cutover.
+[GitHub Actions](https://github.com/andreadada/simple-notes/actions) è la fonte per esito per SHA: web unitari, build Docker, smoke container e Chromium simulato; backend con PostgreSQL Testcontainers; Compose e Markdown CI. Il gate corrente è V24; gate V19/V20/V21/V22 storici. [CURRENT-STATUS](CURRENT-STATUS.md) contiene la cronologia; questa pagina prevale per il cutover.
 
 ## Creazione inline e configurazione delle viste
 Riga/carta vuota sempre disponibile, salvataggio su Invio o uscita dal campo; bozza locale per account e contesto, nessun dialog obbligatorio. Note modificabili nel corpo direttamente; Kanban e calendario creano record nel contesto della corsia/giorno. Tutte le viste, comprese predefinite, possono essere rinominate, duplicate, riordinate e nascoste; configurazione immediata di densità, campi, dimensioni schede, raggruppamento Kanban, periodo e visibilità calendario, widget dashboard e soglia Eisenhower. Preferenze salvate nel dominio esistente viewOptions, senza migrazioni DB. I pulsanti + restano come scorciatoie per l'editor completo.
@@ -41,3 +41,5 @@ Anche Home e la sezione Calendario dispongono di controlli di visualizzazione. L
 
 ## Workspace V24
 Le note possono essere aperte direttamente nella sidebar come documenti a pagina intera, con editor formattato, elenchi, tabelle semplici e bozza locale/autosalvataggio. Il backend mantiene la proiezione plain text per Flutter e il contenuto formattato separato. La formattazione viene ricostruita da una whitelist DOM, senza script o attributi arbitrari. Il client Flutter resta legacy. CSS e sprite SVG selezionati provengono direttamente da Console DDone, adattati al nuovo workspace.
+
+Tabelle indipendenti con campi testo/numero/checkbox/data/scelta/link, griglia, galleria, Kanban, calendario e dashboard; configurazione per vista, filtri, raggruppamento, ordinamento, densità, colonne ridimensionabili, righe inline, bozze locali e pulsante Salva (CAS tabella), archiviazione reversibile. Limiti iniziali: 100 tabelle/account, 500 righe/tabella, 40 campi, 20 viste e 1 MiB JSON/tabella. Tabelle private per account; condivisione attuale resta dedicata alle liste attività. Export JSON per tabella, dump DB include tutte le tabelle. Gate V24: `infra/release-v24-readiness.sh`.

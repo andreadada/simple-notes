@@ -66,3 +66,35 @@ export function advanceTimed(due,rule) {
 export function blockDay(block) {
   try{return wallParts(block.start,block.timeZone).date}catch{return block.start?.slice(0,10)??""}
 }
+
+export function applyTaskActions(p,rules,trigger,listIds) {
+  let result=normalizeTask(p);
+  for(const rule of rules??[]){
+    if(!rule.enabled||rule.trigger!==trigger||!result.title.toLowerCase().includes(rule.titleContains.toLowerCase()))continue;
+    if(rule.action==="priority"&&["0","1","2","3"].includes(rule.value))result={...result,priority:Number(rule.value)};
+    if(rule.action==="tag"&&rule.value.length<=40&&result.tags.length<16&&!result.tags.some(t=>t.toLowerCase()===rule.value.toLowerCase()))result={...result,tags:[...result.tags,rule.value]};
+    if(rule.action==="list"&&listIds.includes(rule.value))result={...result,listId:rule.value};
+  }
+  return result;
+}
+export function urgent(p,now=new Date()){
+  const due=normalizeTask(p).due;
+  if(due.kind==="none")return false;
+  if(due.kind==="date"){
+    const tomorrow=new Date(now.getFullYear(),now.getMonth(),now.getDate()+1);
+    const day=[tomorrow.getFullYear(),String(tomorrow.getMonth()+1).padStart(2,"0"),String(tomorrow.getDate()).padStart(2,"0")].join("-");
+    return due.date<=day;
+  }
+  return Date.parse(due.instant)<=now.getTime()+48*3600000;
+}
+export function portableRecords(rows,now=new Date().toISOString()){
+  const data={lists:[],tasks:[],notes:[]};
+  for(const r of rows.filter(x=>!x.deleted)){
+    const p=r.payload,id=r.entityId;
+    if(r.entityType==="list")data.lists.push({id,title:p.title,createdAt:p.createdAt});
+    if(r.entityType==="note")data.notes.push({id,title:p.title,body:p.body,createdAt:p.createdAt});
+    if(r.entityType==="task"){const t=normalizeTask(p);data.tasks.push({...t,id,dueAt:t.due.instant??null,timeBlock:t.timeBlocks.length?{kind:"range",start:t.timeBlocks[0].start,end:t.timeBlocks[0].end,timeZone:t.timeBlocks[0].timeZone}:none()})}
+  }
+  if(data.notes.some(n=>!n.title.trim()))throw Error("Il vecchio formato portabile richiede titoli non vuoti: rinomina le note senza titolo o usa lo snapshot JSON.");
+  return {format:"simple-notes-portable",schemaVersion:1,exportedAt:now,data};
+}

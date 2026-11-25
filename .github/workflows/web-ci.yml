@@ -7,7 +7,7 @@ on:
     paths: ['apps/web/**', 'docker-compose.yml', '.github/workflows/web-ci.yml']
 jobs:
   web:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     permissions:
       contents: read
     steps:
@@ -25,3 +25,14 @@ jobs:
           for i in $(seq 1 20); do curl -fsS http://127.0.0.1:8099/healthz && break; sleep 1; done
           curl -fsS http://127.0.0.1:8099/config.json | grep -F ci.apps.googleusercontent.com
           curl -fsS http://127.0.0.1:8099/ | grep -F Simple\ Notes
+
+      - name: Install browser for synthetic UI smoke
+        run: |
+          npm install --no-save --package-lock=false playwright@1.56.1
+          npx playwright install --with-deps chromium
+      - name: Browser smoke (mock OAuth and API)
+        run: |
+          docker run -d --name sn-browser -p 127.0.0.1:8099:80 -e WEB_GOOGLE_CLIENT_ID=ci.apps.googleusercontent.com simple-notes-web
+          trap 'docker rm -f sn-browser' EXIT
+          for i in $(seq 1 20); do curl -fsS http://127.0.0.1:8099/healthz && break; sleep 1; done
+          node apps/web/tests/browser-smoke.mjs

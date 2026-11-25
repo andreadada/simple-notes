@@ -1,5 +1,8 @@
 # AGENTS.md — Istruzioni operative per agenti AI
 
+> **Migrazione web (25/11/2026):** stato corrente e cutover in [WEB-MIGRATION.md](docs/WEB-MIGRATION.md). Schema sorgente V23; deploy reale non attestato. Le indicazioni storiche sottostanti non sostituiscono il runbook web.
+
+
  > **25/11/2026 — transizione web:** client browser-only in `apps/web` target primario, import atomico, backup web cifrato e preferenze cloud V20. Flutter legacy conservato per migrazione e recupero. Schema repository V20, VPS ultima attestazione V17; nessun deploy verificato. [Migrazione web](docs/WEB-MIGRATION.md).
 
 

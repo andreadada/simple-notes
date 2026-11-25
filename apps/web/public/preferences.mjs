@@ -1,3 +1,4 @@
+import {validAdvanced} from "./grid.mjs";
 
 export const domains=["theme","views","customViews","viewOptions","dashboards","habits","countdowns","gridColumns","customFields","automationEnabled"];
 export const defaults={theme:"light",views:{},customViews:{},viewOptions:{},dashboards:{},habits:[],countdowns:[],gridColumns:{},customFields:[],automationEnabled:false};
@@ -11,7 +12,7 @@ export function validPreference(k,x){
  if(k==="theme")return ["light","dark","system"].includes(x);
  if(k==="views")return plain(x)&&Object.values(x).every(str);
  if(k==="customViews")return plain(x)&&Object.values(x).every(a=>Array.isArray(a)&&a.every(t=>plain(t)&&str(t.id)&&str(t.name)&&types.includes(t.type)&&t.custom===true));
- if(k==="viewOptions")return plain(x)&&Object.values(x).every(t=>plain(t)&&["all","open","done","today"].includes(t.filter)&&["title","due","priority"].includes(t.sort)&&["none","list","priority"].includes(t.group));
+ if(k==="viewOptions")return plain(x)&&Object.values(x).every(t=>plain(t)&&["all","open","done","today"].includes(t.filter)&&["title","due","priority"].includes(t.sort)&&["none","list","priority"].includes(t.group)&&(t.advanced===undefined||validAdvanced(t.advanced)));
  if(k==="dashboards")return plain(x)&&Object.values(x).every(a=>Array.isArray(a)&&a.every(t=>plain(t)&&str(t.id)&&Number.isInteger(t.width)&&t.width>=3&&t.width<=12));
  if(k==="habits")return Array.isArray(x)&&x.every(h=>plain(h)&&str(h.id)&&str(h.name)&&Array.isArray(h.days)&&h.days.every(str));
  if(k==="countdowns")return Array.isArray(x)&&x.every(h=>plain(h)&&str(h.id)&&str(h.title)&&/^\d{4}-\d{2}-\d{2}$/.test(h.date));

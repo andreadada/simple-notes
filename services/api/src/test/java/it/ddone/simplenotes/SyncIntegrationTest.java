@@ -73,6 +73,19 @@ class SyncIntegrationTest {
     }
 
     @Test
+    void recoveryUsesOriginalIdsAndRejectsHistoryOrStaleCursor() throws Exception {
+        var user=users.save(new AppUser("recovery-"+UUID.randomUUID(),"recover@example.com","Recovery"));
+        String bearer="Bearer "+jwt(user.id),path="/api/v1/sync/recover-missing",id=UUID.randomUUID().toString();
+        var op=mapper.createObjectNode().put("operationId",UUID.randomUUID().toString()).put("entityId",id).put("entityType","note").put("action","upsert");
+        op.putObject("payload").put("title","Recovered").put("body","Content").put("createdAt","2020-01-01T00:00:00Z");
+        var req=mapper.createObjectNode().put("expectedCursor",0);req.putArray("operations").add(op);
+        for(int i=0;i<2;i++)mvc.perform(post(path).header("Authorization",bearer).contentType(MediaType.APPLICATION_JSON).content(req.toString())).andExpect(status().isOk());
+        mvc.perform(get("/api/v1/sync/latest").param("entityType","note").param("entityId",id).header("Authorization",bearer)).andExpect(jsonPath("$.payload.createdAt").value("2020-01-01T00:00:00Z"));
+        op.put("operationId",UUID.randomUUID().toString());
+        mvc.perform(post(path).header("Authorization",bearer).contentType(MediaType.APPLICATION_JSON).content(req.toString())).andExpect(status().isConflict());
+    }
+
+    @Test
     void webGridPreservesFieldsAndServerRulesAreOptIn() throws Exception {
         var user=users.save(new AppUser("grid-"+UUID.randomUUID(),"grid@example.com","Grid"));
         String bearer="Bearer "+jwt(user.id), path="/api/v1/sync/apply", id=UUID.randomUUID().toString(), field="field-"+UUID.randomUUID();

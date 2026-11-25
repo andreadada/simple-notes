@@ -42,3 +42,6 @@ Import Google/Outlook come attività collegate, aggiornamento esplicito titolo e
 
 ### V23 — promemoria nativi sul server
 Regole opt-in due/block, priorità minima e anticipo, CAS sul catalogo, scan server deduplicato e inbox persistente. La modalità custom sostituisce la regola unica V19 quando abilitata; import catalogo senza attivazione implicita. Il gate corrente è `infra/release-v23-readiness.sh`.
+
+### Recupero ID originali
+Per un backup cifrato dello stesso account, anteprima e recupero additivo solo di record con ID assente e nessuno storico; inventario consistente e CAS del cursor sotto lock, batch atomico idempotente. Mantiene timestamp originali nei nuovi record. I tombstone e i record già presenti sono esclusi. La coda web visualizza proiezioni locali non confermate; il DB è la fonte definitiva. Nessun ripristino distruttivo di profilo o storage S3.

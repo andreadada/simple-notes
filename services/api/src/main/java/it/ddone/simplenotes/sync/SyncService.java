@@ -241,6 +241,21 @@ public class SyncService {
             .setParameter("owner", owner.toString()).getSingleResult();
     }
 
+    /** Recover only previously absent identities from an authenticated archive.
+     * An account cursor is a batch CAS, not a destructive restore permission. */
+    @Transactional
+    public List<SyncController.ApplyResponse> recoverMissing(UUID owner,long expectedCursor,List<SyncController.ApplyRequest> batch) {
+        lockAccount(owner);
+        if(batch==null||batch.isEmpty()||batch.size()>500)throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"Invalid recovery batch");
+        long replays=batch.stream().filter(op->operations.existsById(op.operationId())).count();
+        if(replays==batch.size())return importCopies(owner,batch);
+        if(replays!=0||!ownerMaterializedHistoryCoherent(owner))throw new ResponseStatusException(HttpStatus.CONFLICT,"Recovery requires a fresh consistent inventory");
+        long observed=((Number)em.createNativeQuery("SELECT COALESCE(MAX(id),0) FROM sync_change WHERE owner_id=:owner").setParameter("owner",owner).getSingleResult()).longValue();
+        if(observed!=expectedCursor)throw new ResponseStatusException(HttpStatus.CONFLICT,"Account cursor changed");
+        for(var op:batch){if(!Set.of("list","task","note").contains(op.entityType())||changes.latest(owner,op.entityType(),op.entityId()).isPresent())throw new ResponseStatusException(HttpStatus.CONFLICT,"Entity already has history");}
+        return importCopies(owner,batch);
+    }
+
     /** Atomic, additive import; no existing row or imported outbox may be overwritten. */
     @Transactional
     public List<SyncController.ApplyResponse> importCopies(UUID owner, List<SyncController.ApplyRequest> batch) {
@@ -258,20 +273,20 @@ public class SyncService {
             previous = order;
         }
         List<SyncController.ApplyResponse> result = new ArrayList<>();
-        for (var op : batch) result.add(applyInternal(owner, op, false));
+        for (var op : batch) result.add(applyInternal(owner, op, false, true));
         return List.copyOf(result);
     }
 
     @Transactional
     public SyncController.ApplyResponse apply(UUID owner, SyncController.ApplyRequest req) {
-        return applyInternal(owner, req, true);
+        return applyInternal(owner, req, true, false);
     }
 
     /** Shared-editor writes must not trigger owner rules that move data outside the shared list. */
     @Transactional
-    public SyncController.ApplyResponse applyCollaborator(UUID owner, SyncController.ApplyRequest req) { return applyInternal(owner, req, false); }
+    public SyncController.ApplyResponse applyCollaborator(UUID owner, SyncController.ApplyRequest req) { return applyInternal(owner, req, false, false); }
 
-    private SyncController.ApplyResponse applyInternal(UUID owner, SyncController.ApplyRequest req, boolean executeActions) {
+    private SyncController.ApplyResponse applyInternal(UUID owner, SyncController.ApplyRequest req, boolean executeActions, boolean importing) {
         // All writes (including legacy REST) lock before reading or mutating.
         lockAccount(owner);
 
@@ -323,9 +338,9 @@ public class SyncService {
         }
 
         Mutation applied = switch (req.entityType()) {
-            case "task" -> applyTask(owner, req, executeActions);
-            case "list" -> applyList(owner, req);
-            default -> applyNote(owner, req);
+            case "task" -> applyTask(owner, req, executeActions, importing);
+            case "list" -> applyList(owner, req, importing);
+            default -> applyNote(owner, req, importing);
         };
         SyncChange change = changes.saveAndFlush(new SyncChange(owner, req.entityType(),
             req.entityId(), applied.payload(), applied.deleted(), applied.version()));
@@ -381,7 +396,7 @@ public class SyncService {
 
     private record Mutation(long version, boolean deleted, String payload) {}
 
-    private Mutation applyTask(UUID owner, SyncController.ApplyRequest req, boolean executeActions) {
+    private Mutation applyTask(UUID owner, SyncController.ApplyRequest req, boolean executeActions, boolean importing) {
         TaskEntity existing = tasks.findByIdAndOwnerIdAndDeletedAtIsNull(req.entityId(), owner)
             .orElse(null);
         if ("delete".equals(req.action())) {
@@ -477,6 +492,7 @@ public class SyncService {
             if (req.expectedVersion() != null)
                 throw new ResponseStatusException(HttpStatus.CONFLICT, "Task deleted or missing on server");
             entity = new TaskEntity(owner, title, description, due.instant());
+            if(importing && req.payload().hasNonNull("createdAt")) entity.createdAt=importTimestamp(req.payload());
             entity.id = req.entityId();
         } else {
             requireVersion(req.expectedVersion(), existing.version);
@@ -514,7 +530,7 @@ public class SyncService {
         return new Mutation(entity.version, false, encode(result));
     }
 
-    private Mutation applyList(UUID owner, SyncController.ApplyRequest req) {
+    private Mutation applyList(UUID owner, SyncController.ApplyRequest req, boolean importing) {
         TaskListEntity existing = lists.findByIdAndOwnerIdAndDeletedAtIsNull(req.entityId(), owner)
             .orElse(null);
         if ("delete".equals(req.action())) {
@@ -535,6 +551,7 @@ public class SyncService {
             if (req.expectedVersion() != null)
                 throw new ResponseStatusException(HttpStatus.CONFLICT, "List deleted or missing");
             entity = new TaskListEntity(owner, title);
+            if(importing && req.payload().hasNonNull("createdAt")) entity.createdAt=importTimestamp(req.payload());
             entity.id = req.entityId();
         } else {
             requireVersion(req.expectedVersion(), existing.version);
@@ -638,7 +655,7 @@ public class SyncService {
         catch (JsonProcessingException exception) { throw new IllegalStateException(exception); }
     }
 
-    private Mutation applyNote(UUID owner, SyncController.ApplyRequest req) {
+    private Mutation applyNote(UUID owner, SyncController.ApplyRequest req, boolean importing) {
         // Keep tombstones addressable by the owning user for explicit restoration.
         // A regular upsert must NEVER silently resurrect a deleted note.
         NoteEntity stored = notes.findById(req.entityId())
@@ -678,6 +695,7 @@ public class SyncService {
             if (stored != null || req.expectedVersion() != null)
                 throw new ResponseStatusException(HttpStatus.CONFLICT, "Note deleted or missing on server");
             entity = new NoteEntity(owner, title, body);
+            if(importing && req.payload().hasNonNull("createdAt")) entity.createdAt=importTimestamp(req.payload());
             entity.id = req.entityId();
         } else {
             requireVersion(req.expectedVersion(), existing.version);
@@ -690,6 +708,12 @@ public class SyncService {
         return new Mutation(entity.version, false, encode(Map.of(
             "title", entity.title, "body", entity.body,
             "createdAt", entity.createdAt.toString())));
+    }
+
+    private static Instant importTimestamp(JsonNode payload) {
+        Instant date=optionalInstant(payload,"createdAt");
+        if(date==null||date.isBefore(Instant.parse("1900-01-01T00:00:00Z"))||date.isAfter(Instant.now().plusSeconds(86400)))throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"Invalid archived creation timestamp");
+        return date;
     }
 
     private static void requireVersion(Long expected, long current) {

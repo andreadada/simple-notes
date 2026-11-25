@@ -16,6 +16,7 @@ public class SyncController {
     public record ApplyRequest(@NotNull UUID operationId, @NotNull UUID entityId,
         @NotBlank String entityType, @NotBlank String action, Long expectedVersion,
         JsonNode payload, @Min(0) Long expectedAccountCursor) {}
+    public record RecoveryRequest(@NotNull @Min(0) Long expectedCursor,@NotNull @Size(min=1,max=500) List<@NotNull @Valid ApplyRequest> operations) {}
     public record ImportRequest(@NotNull @Size(min=1,max=500) List<@NotNull @Valid ApplyRequest> operations) {}
     public record ApplyResponse(UUID operationId, long version, long changeId) {}
     public record Change(long changeId, String entityType, UUID entityId,
@@ -56,6 +57,11 @@ public class SyncController {
     @PostMapping("/import-copies")
     public List<ApplyResponse> importCopies(@AuthenticationPrincipal Jwt jwt, @Valid @RequestBody ImportRequest body) {
         return service.importCopies(owner(jwt), body.operations());
+    }
+
+    @PostMapping("/recover-missing")
+    public List<ApplyResponse> recoverMissing(@AuthenticationPrincipal Jwt jwt,@Valid @RequestBody RecoveryRequest body) {
+        return service.recoverMissing(owner(jwt),body.expectedCursor(),body.operations());
     }
 
     // Explicit machine-readable conflict for one immutable operation intent.

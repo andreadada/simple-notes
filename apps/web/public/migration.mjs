@@ -104,3 +104,19 @@ export function mergeCatalog(current,incoming,field,max){
  if(ids.size>max)fail("Catalogo oltre il limite: seleziona manualmente");
  return {catalog:{schema:1,[field]:[...ids.values()]},added:ids.size-existing.length,conflicts};
 }
+
+const uuid=x=>typeof x==="string"&&/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i.test(x);
+export function recoveryPlan(doc,rows,id=()=>crypto.randomUUID()){
+ const data=validatePortable(doc,10000),known=new Map(rows.map(r=>[r.entityType+":"+r.entityId,r])),availableLists=new Set(rows.filter(r=>r.entityType==="list"&&!r.deleted).map(r=>r.entityId)),operations=[],skipped={present:0,tombstone:0,invalid:0,missingList:0};
+ for(const [type,items] of [["list",data.lists],["task",data.tasks],["note",data.notes]])for(const x of items){
+  if(!uuid(x.id)){skipped.invalid++;continue}
+  const current=known.get(type+":"+x.id);if(current){skipped[current.deleted?"tombstone":"present"]++;continue}
+  if(type==="task"&&x.listId&&!availableLists.has(x.listId)){skipped.missingList++;continue}
+  let payload=type==="task"?normalizeTask(x):type==="list"?{title:x.title,createdAt:x.createdAt}:{title:x.title,body:x.body,createdAt:x.createdAt};
+  if(type==="task"&&payload.subtasks.some(s=>!uuid(s.id))){skipped.invalid++;continue}
+  if(type==="task"&&payload.timeBlocks.some(s=>s.id!=="legacy"&&!uuid(s.id))){skipped.invalid++;continue}
+  delete payload.id;
+  operations.push(operation(type,x.id,null,payload,"upsert",id()));if(type==="list")availableLists.add(x.id);
+ }
+ return {operations,skipped};
+}

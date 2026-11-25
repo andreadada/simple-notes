@@ -3,3 +3,14 @@ export function readIntents(storage,prefix){const q=[];for(let i=0;i<storage.len
 export function targets(op){return (op.batch??[op]).map(x=>x.entityType+":"+x.entityId)}
 export function canQueue(queue,op){const keys=new Set(queue.flatMap(targets));return queue.length<100&&!targets(op).some(x=>keys.has(x))}
 export function wireIntent(op){const {queuedAt,rejected,...wire}=op;return wire}
+
+export function projectIntents(store,queue){
+ const view=new Map(store);
+ for(const op of queue.filter(x=>!x.rejected))for(const x of op.batch??[op]){
+  const key=x.entityType+":"+x.entityId,old=view.get(key);
+  if(x.action==="upsert")view.set(key,{...old,entityType:x.entityType,entityId:x.entityId,version:x.expectedVersion,payload:x.payload,deleted:false,pending:true});
+  if(x.action==="delete"&&old)view.set(key,{...old,deleted:true,previous:old.payload,pending:true});
+  if(x.action==="restore"&&old?.previous)view.set(key,{...old,payload:old.previous,deleted:false,pending:true});
+ }
+ return view;
+}

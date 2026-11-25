@@ -1,20 +1,7 @@
-name: Flutter CI
+name: Flutter legacy recovery CI
+# The product target is browser-only. Native builds are available manually
+# for recovery of unsynced device data, not part of the web release pipeline.
 on:
-  push:
-    branches: [main]
-    paths:
-      - 'apps/flutter/**'
-      - 'tools/t4-build-devices.ps1'
-      - 'tools/t4-device-build.example.json'
-      - 'tools/t4-reset-local-data.ps1'
-      - 'infra/reset-test-workspace.sh'
-      - '.github/workflows/flutter-ci.yml'
-  pull_request:
-    paths:
-      - 'apps/flutter/**'
-      - 'tools/t4-reset-local-data.ps1'
-      - 'infra/reset-test-workspace.sh'
-      - '.github/workflows/flutter-ci.yml'
   workflow_dispatch:
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}

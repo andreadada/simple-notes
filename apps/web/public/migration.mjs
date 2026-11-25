@@ -61,3 +61,35 @@ export async function inspectBackup(text,password,owner){
   return {native:false,value};
  }catch{fail("Password errata, backup non valido o account differente. Nessun dato modificato.")}
 }
+
+const sqlStamp=x=>{if(!Number.isSafeInteger(x)||Math.abs(x)>8640000000000)fail("Timestamp SQLite non valido");return new Date(x*1000).toISOString()};
+function rawDue(x){
+ if(x.due_kind==="none")return none();
+ if(x.due_kind==="date")return {kind:"date",date:x.due_date};
+ if(x.due_kind==="legacy")return {kind:"legacy",instant:sqlStamp(x.due_at)};
+ if(x.due_kind==="datetime")return {kind:"datetime",date:x.due_date,time:x.due_time,timeZone:x.due_timezone,offsetSeconds:x.due_offset_seconds,instant:sqlStamp(x.due_at)};
+ fail("Scadenza SQLite non valida");
+}
+export function nativePortable(snapshot){
+ const t=snapshot.tables;
+ const active=xs=>xs.filter(x=>x.deleted_at===null);
+ const lists=active(t.task_list_entries).map(x=>({id:x.id,title:x.title,createdAt:sqlStamp(x.created_at)}));
+ const notes=active(t.note_entries).map(x=>({id:x.id,title:x.title,body:x.body,createdAt:sqlStamp(x.created_at)}));
+ const tasks=active(t.task_entries).map(x=>{
+   const due=rawDue(x),slots=JSON.parse(x.blocks_json);
+   if(!Array.isArray(slots))fail("Blocchi SQLite non validi");
+   const timeBlocks=slots.length?slots:x.block_start_at===null?[]:[{id:"legacy",start:sqlStamp(x.block_start_at),end:sqlStamp(x.block_end_at),timeZone:x.block_timezone}];
+   if(![0,1,true,false].includes(x.completed))fail("Stato SQLite non valido");
+   return {id:x.id,title:x.title,description:x.description,createdAt:sqlStamp(x.created_at),completed:!!x.completed,listId:x.list_id,priority:x.priority,tags:JSON.parse(x.tags_json),subtasks:JSON.parse(x.subtasks_json),due,dueAt:due.instant??null,timeBlocks,recurrence:JSON.parse(x.recurrence_json)};
+ });
+ const doc={format:"simple-notes-portable",schemaVersion:1,exportedAt:snapshot.createdAtUtc,data:{lists,tasks,notes}};validatePortable(doc,10000);return doc;
+}
+export function nativePreferences(snapshot){
+ const p=snapshot.preferences,result={};
+ const read=k=>{if(p[k]==null)return null;const v=JSON.parse(p[k]);if(v.schema!==1)fail("Preferenza nativa non supportata: "+k);return v};
+ if(["light","dark","system"].includes(p.theme))result.theme=p.theme;
+ const habits=read("habits");if(habits){if(!Array.isArray(habits.habits)||habits.habits.length>200)fail();result.habits=habits.habits.map(h=>{if(!string(h.id,1,128)||!string(h.title,1,255)||!date(h.createdDay)||typeof h.archived!=="boolean"||!Array.isArray(h.checkIns)||!h.checkIns.every(date)||!unique(h.checkIns)||!Number.isInteger(h.weeklyTarget??7)||(h.weeklyTarget??7)<1||(h.weeklyTarget??7)>7)fail();return {id:h.id,name:h.title,createdDay:h.createdDay,archived:h.archived,weeklyTarget:h.weeklyTarget??7,days:h.checkIns}})}
+ const countdowns=read("countdowns");if(countdowns){if(!Array.isArray(countdowns.events)||countdowns.events.length>250)fail();result.countdowns=countdowns.events.map(c=>{if(!string(c.id,1,128)||!string(c.title,1,255)||typeof c.archived!=="boolean"||!obj(c.due))fail();const day=c.due.date??c.due.instant?.slice(0,10);if(!date(day))fail();return {id:c.id,title:c.title,date:day,due:c.due,archived:c.archived}})}
+ const pom=read("pomodoro");if(pom){if(!Array.isArray(pom.records)||pom.records.some(x=>!string(x.id,1,128)||!stamp(x.completedAtUtc)||!Number.isInteger(x.seconds)||x.seconds<1||x.seconds>86400))fail();result.focusRecords=pom.records;result.focusCompleted=pom.focusCompleted}
+ return result;
+}

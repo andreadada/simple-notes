@@ -34,3 +34,6 @@ Import atomico di massimo 500 record per file, nuove UUID, validazione client e 
 
 ## V20 — Preferenze cloud
 Flyway V20 aggiunge solo web_preference, versione CAS per dominio e account; tema, viste, filtri, layout, abitudini e countdown. Riconciliazione a tre vie in primo piano: divergenze esplicite in Impostazioni, nessuna sovrascrittura automatica concorrente. ICS e timer restano locali. Il gate corrente è `infra/release-v20-readiness.sh`; V19 resta storico. V20 non attestata su VPS.
+
+### Recupero Flutter e produttività
+Il backup .snb nativo V1/Drift8 ora consente conversione dei record attivi in formato portabile e import additivo atomico, previa conferma; le righe tombstone e le vecchie operazioni non sono riprodotte. Preferenze compatibili: tema se assente, abitudini con obiettivo e storico, countdown e sessioni focus aggiunti per ID. Non migra automaticamente ICS, cataloghi locali o automazioni native. Flutter CI è solo manuale per recupero; niente rilasci nativi automatici. Pomodoro web con pausa/avvio e sessioni deduplicate, abitudini con target/streak, countdown timed e archiviazione.

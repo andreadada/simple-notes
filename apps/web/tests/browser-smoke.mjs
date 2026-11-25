@@ -5,8 +5,8 @@ const browser=await chromium.launch({headless:true});
 try{
  const page=await browser.newPage({viewport:{width:1280,height:900}});
  const errors=[];page.on("pageerror",e=>{errors.push(e.message);console.error("page error:",e.message)});page.on("console",m=>{if(m.type()==="error")console.error("browser:",m.text())});
- const changes=[];let changeId=0;
- const capabilities=Object.fromEntries(["taskDueSchema","timeBlockSchema","timeBlocksSchema","recurrenceSchema","noteRestoreSchema","syncOperationFingerprintSchema","sharingReadSchema","sharingEditorSchema","calendarReadSchema","serverReminderSchema"].map(k=>[k,1]));
+ const changes=[];let changeId=0;const prefs=new Map();
+ const capabilities=Object.fromEntries(["taskDueSchema","timeBlockSchema","timeBlocksSchema","recurrenceSchema","noteRestoreSchema","syncOperationFingerprintSchema","sharingReadSchema","sharingEditorSchema","calendarReadSchema","serverReminderSchema","portableImportSchema","webPreferencesSchema"].map(k=>[k,1]));
  await page.route("https://accounts.google.com/gsi/client",r=>r.fulfill({contentType:"application/javascript",body:'window.google={accounts:{id:{initialize(o){this.cb=o.callback},renderButton(el){const b=document.createElement("button");b.textContent="Test login";b.onclick=()=>this.cb({credential:"synthetic"});el.append(b)}}}};'}));
  await page.route("**/api/v1/**",async route=>{
   const req=route.request(),url=new URL(req.url()),p=url.pathname.slice("/api/v1".length);
@@ -15,6 +15,8 @@ try{
   if(p==="/capabilities")return json(capabilities);
   if(p==="/sync/changes"){const cursor=Number(url.searchParams.get("cursor"));return json({changes:changes.filter(c=>c.changeId>cursor),nextCursor:changeId,hasMore:false})}
   if(p==="/sync/apply"){const op=req.postDataJSON();const old=changes.filter(c=>c.entityId===op.entityId).at(-1);assert.equal(op.expectedVersion,old?.version??null);const v=(old?.version??-1)+1;const payload=op.action==="delete"?{}:op.action==="restore"?changes.filter(c=>c.entityId===op.entityId&&!c.deleted).at(-1).payload:op.payload;changes.push({changeId:++changeId,entityId:op.entityId,entityType:op.entityType,version:v,deleted:op.action==="delete",payload});return json({operationId:op.operationId,version:v,changeId})}
+  if(p==="/web/preferences")return json([...prefs.values()]);
+  if(p.startsWith("/web/preferences/")){const domain=p.split("/").at(-1),body=req.postDataJSON(),old=prefs.get(domain);if(body.expectedVersion!==(old?.version??0))return json({},409);const row={domain,version:(old?.version??0)+1,value:body.value};prefs.set(domain,row);return json(row)}
   if(p==="/templates/catalog")return json({version:0,catalog:{schema:1,templates:[]}});
   return json({},404);
  });

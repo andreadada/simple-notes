@@ -39,3 +39,6 @@ Backup web include inventario e cataloghi cloud; recupero modelli e taskActions 
 
 ### V22 — collegamenti calendario
 Import Google/Outlook come attività collegate, aggiornamento esplicito titolo e scadenza dal provider con CAS task e revisione evento. Google: pubblicazione idempotente per task e aggiornamento condizionale If-Match di eventi personali senza invitati/ricorrenze; `APP_CALENDAR_GOOGLE_WRITE_ENABLED=false` di default, riconnessione OAuth necessaria per scope scrittura. Nessun push automatico, cancellazione remota o aggiornamento Outlook non verificato. Il gate corrente è `infra/release-v22-readiness.sh`.
+
+### V23 — promemoria nativi sul server
+Regole opt-in due/block, priorità minima e anticipo, CAS sul catalogo, scan server deduplicato e inbox persistente. La modalità custom sostituisce la regola unica V19 quando abilitata; import catalogo senza attivazione implicita. Il gate corrente è `infra/release-v23-readiness.sh`.

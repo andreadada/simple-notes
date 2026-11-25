@@ -104,7 +104,7 @@ class T4MigrationRehearsalTest {
                 postgres.getPassword()).load();
             migrated.migrate();
             migrated.validate();
-            assertEquals("22", migrated.info().current().getVersion().toString());
+            assertEquals("23", migrated.info().current().getVersion().toString());
             try (Connection db = DriverManager.getConnection(
                     postgres.getJdbcUrl(), postgres.getUsername(), postgres.getPassword())) {
                 for (String table : java.util.List.of(

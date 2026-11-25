@@ -87,6 +87,7 @@ public class ServerReminderService {
                 FROM task t
                 JOIN server_reminder_preference p ON p.owner_id=t.owner_id
                 WHERE p.enabled=TRUE
+                  AND NOT EXISTS (SELECT 1 FROM web_reminder_config c WHERE c.owner_id=t.owner_id AND c.enabled)
                   AND t.due_kind='datetime' AND t.due_at IS NOT NULL
                   AND t.completed_at IS NULL AND t.deleted_at IS NULL
                   AND t.due_at - (p.lead_minutes * INTERVAL '1 minute') <= now()
@@ -118,6 +119,7 @@ public class ServerReminderService {
             JOIN server_reminder_preference p
               ON p.owner_id=o.owner_id AND p.enabled=TRUE
             WHERE o.owner_id=? AND o.acknowledged_at IS NULL
+              AND NOT EXISTS (SELECT 1 FROM web_reminder_config c WHERE c.owner_id=o.owner_id AND c.enabled)
               AND t.deleted_at IS NULL AND t.completed_at IS NULL
               AND t.due_kind='datetime' AND t.due_at=o.due_at
               AND o.lead_minutes=p.lead_minutes

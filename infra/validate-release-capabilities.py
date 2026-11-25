@@ -66,7 +66,7 @@ def run() -> None:
             refuse()
         if inbox == "1" and not has_version_one("serverReminderSchema"):
             refuse()
-        for env_key, schema_key in (("REQUIRE_WEB_PREFERENCES_SCHEMA", "webPreferencesSchema"), ("REQUIRE_PORTABLE_IMPORT_SCHEMA", "portableImportSchema"), ("REQUIRE_WEB_GRID_SCHEMA", "webGridSchema"), ("REQUIRE_SERVER_TASK_ACTIONS_SCHEMA", "serverTaskActionsSchema"), ("REQUIRE_CALENDAR_LINK_SCHEMA", "calendarLinkSchema")):
+        for env_key, schema_key in (("REQUIRE_WEB_PREFERENCES_SCHEMA", "webPreferencesSchema"), ("REQUIRE_PORTABLE_IMPORT_SCHEMA", "portableImportSchema"), ("REQUIRE_WEB_GRID_SCHEMA", "webGridSchema"), ("REQUIRE_SERVER_TASK_ACTIONS_SCHEMA", "serverTaskActionsSchema"), ("REQUIRE_CALENDAR_LINK_SCHEMA", "calendarLinkSchema"), ("REQUIRE_WEB_REMINDER_RULES_SCHEMA", "webReminderRulesSchema")):
             flag = os.environ.get(env_key, "0")
             if flag not in ("0", "1") or flag == "1" and not has_version_one(schema_key):
                 refuse()

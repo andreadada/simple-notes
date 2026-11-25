@@ -49,7 +49,7 @@ public class CalendarLinkController {
     private static URI endpoint(String provider,String id){
         String base=provider(provider).equals("google")?"https://www.googleapis.com/calendar/v3/calendars/primary/events":"https://graph.microsoft.com/v1.0/me/events";
         if(id==null)return URI.create(base);
-        if(id.isBlank()||id.length()>512||id.indexOf('\u0000')>=0)throw err(HttpStatus.BAD_REQUEST,"Invalid event ID");
+        if(id.isBlank()||id.length()>512||id.indexOf(0)>=0||id.equals(".")||id.equals(".."))throw err(HttpStatus.BAD_REQUEST,"Invalid event ID");
         return URI.create(base+"/"+URLEncoder.encode(id,StandardCharsets.UTF_8).replace("+","%20"));
     }
     private static String revision(CalendarEventsService.Event event,JsonNode raw){

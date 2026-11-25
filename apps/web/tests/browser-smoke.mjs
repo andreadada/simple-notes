@@ -5,8 +5,8 @@ const browser=await chromium.launch({headless:true});
 try{
  const page=await browser.newPage({viewport:{width:1280,height:900}});
  const errors=[];page.on("pageerror",e=>{errors.push(e.message);console.error("page error:",e.message)});page.on("console",m=>{if(m.type()==="error")console.error("browser:",m.text())});
- const changes=[];let changeId=0;const prefs=new Map();
- const capabilities=Object.fromEntries(["taskDueSchema","timeBlockSchema","timeBlocksSchema","recurrenceSchema","noteRestoreSchema","syncOperationFingerprintSchema","sharingReadSchema","sharingEditorSchema","calendarReadSchema","serverReminderSchema","portableImportSchema","webPreferencesSchema","webGridSchema","serverTaskActionsSchema"].map(k=>[k,1]));
+ const changes=[];let changeId=0;const prefs=new Map(),tables=new Map();
+ const capabilities=Object.fromEntries(["taskDueSchema","timeBlockSchema","timeBlocksSchema","recurrenceSchema","noteRestoreSchema","syncOperationFingerprintSchema","sharingReadSchema","sharingEditorSchema","calendarReadSchema","serverReminderSchema","portableImportSchema","webPreferencesSchema","webGridSchema","serverTaskActionsSchema","workspaceTableSchema","richNoteSchema"].map(k=>[k,1]));
  await page.route("https://accounts.google.com/gsi/client",r=>r.fulfill({contentType:"application/javascript",body:'window.google={accounts:{id:{initialize(o){this.cb=o.callback},renderButton(el){const b=document.createElement("button");b.textContent="Test login";b.onclick=()=>this.cb({credential:"synthetic"});el.append(b)}}}};'}));
  await page.route("**/api/v1/**",async route=>{
   const req=route.request(),url=new URL(req.url()),p=url.pathname.slice("/api/v1".length);
@@ -17,6 +17,8 @@ try{
   if(p==="/sync/apply"){const op=req.postDataJSON();const old=changes.filter(c=>c.entityId===op.entityId).at(-1);assert.equal(op.expectedVersion,old?.version??null);const v=(old?.version??-1)+1;const payload=op.action==="delete"?{}:op.action==="restore"?changes.filter(c=>c.entityId===op.entityId&&!c.deleted).at(-1).payload:op.payload;changes.push({changeId:++changeId,entityId:op.entityId,entityType:op.entityType,version:v,deleted:op.action==="delete",payload});return json({operationId:op.operationId,version:v,changeId})}
   if(p==="/web/preferences")return json([...prefs.values()]);
   if(p.startsWith("/web/preferences/")){const domain=p.split("/").at(-1),body=req.postDataJSON(),old=prefs.get(domain);if(body.expectedVersion!==(old?.version??0))return json({},409);const row={domain,version:(old?.version??0)+1,value:body.value};prefs.set(domain,row);return json(row)}
+  if(p==="/workspace/tables")return json([...tables.values()].map(t=>({id:t.id,version:t.version,name:t.data.name,archived:t.archived})));
+  if(p.startsWith("/workspace/tables/")){const id=p.split("/")[3],old=tables.get(id);if(req.method()==="GET")return old?json(old):json({},404);if(req.method()==="PUT"){const body=req.postDataJSON();if(body.expectedVersion!==(old?.version??0))return json({},409);const row={id,version:(old?.version??0)+1,data:body.data,archived:false};tables.set(id,row);return json(row)}}
   if(p==="/templates/catalog")return json({version:0,catalog:{schema:1,templates:[]}});
   return json({},404);
  });
@@ -56,6 +58,30 @@ try{
  await page.locator("#nav").getByRole("button",{name:"Cestino",exact:true}).click();
  await page.getByRole("button",{name:"Ripristina",exact:true}).click();
  await page.getByText("Cestino vuoto",{exact:true}).waitFor();
+ await page.locator("#resources").getByRole("button",{name:"Nota CI",exact:true}).click();
+ await page.getByRole("textbox",{name:"Testo documento",exact:true}).fill("Documento formattato CI");
+ await page.getByRole("button",{name:"Salva",exact:true}).click();
+ await page.waitForFunction(()=>document.querySelector(".doc-status")?.textContent==="Salvato");
+ assert.ok(changes.some(c=>c.entityType==="note"&&c.payload.documentHtml?.includes("Documento formattato CI")));
+ await page.locator("#nav").getByRole("button",{name:"Attività",exact:true}).click();
+ await page.locator("#resources").getByRole("button",{name:"Nota CI",exact:true}).click();
+ await page.getByRole("textbox",{name:"Testo documento",exact:true}).waitFor();
+ assert.equal(await page.getByRole("textbox",{name:"Testo documento",exact:true}).innerText(),"Documento formattato CI");
+ const sanitized=await page.evaluate(async()=>{const {cleanDocument}=await import("/document.mjs");return cleanDocument('<p onclick="alert(1)">ok<img src=x onerror=alert(1)></p><script>alert(1)</script><a href="javascript:alert(1)">link</a>').innerHTML});
+ assert.equal(sanitized,"<p>ok</p><a>link</a>");
+ await page.getByRole("button",{name:"Nuovo",exact:true}).click();
+ await page.getByRole("button",{name:"Nuova tabella",exact:true}).click();
+ await page.getByLabel("Nome della tabella").fill("Studio CI");
+ await page.getByRole("button",{name:"Crea tabella",exact:true}).click();
+ await page.getByRole("textbox",{name:"Nuova riga · Nome",exact:true}).fill("Riga CI");
+ await page.getByRole("textbox",{name:"Nuova riga · Nome",exact:true}).press("Enter");
+ await page.locator(".workspace-table").getByRole("button",{name:"Salva",exact:true}).click();
+ await page.waitForFunction(()=>document.querySelector(".workspace-table-tools .muted")?.textContent==="Salvato");
+ assert.ok([...tables.values()].some(t=>t.data.rows.some(r=>Object.values(r.values).includes("Riga CI"))));
+ await page.locator("#nav").getByRole("button",{name:"Attività",exact:true}).click();
+ await page.locator("#resources").getByRole("button",{name:"Studio CI",exact:true}).click();
+ await page.locator(".ws-grid tbody tr:not(.ws-add-row) input[type=text]").waitFor();
+ assert.equal(await page.locator(".ws-grid tbody tr:not(.ws-add-row) input[type=text]").inputValue(),"Riga CI");
  await page.setViewportSize({width:390,height:844});
  await page.getByRole("button",{name:"Menu",exact:true}).click();
  await page.getByRole("button",{name:"Chiudi navigazione"}).waitFor({state:"visible"});

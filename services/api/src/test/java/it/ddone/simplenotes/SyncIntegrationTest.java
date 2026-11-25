@@ -55,6 +55,41 @@ class SyncIntegrationTest {
     }
 
     @Test
+    void workspaceTablesArePrivateAndCasProtected() throws Exception {
+        var a=users.save(new AppUser("table-"+UUID.randomUUID(),"table@example.com","Table"));
+        var b=users.save(new AppUser("table-"+UUID.randomUUID(),"other@example.com","Other"));
+        String auth="Bearer "+jwt(a.id),other="Bearer "+jwt(b.id),id=UUID.randomUUID().toString(),field=UUID.randomUUID().toString(),view=UUID.randomUUID().toString(),path="/api/v1/workspace/tables/"+id;
+        var request=mapper.createObjectNode().put("expectedVersion",0);
+        var data=request.putObject("data").put("name","Studio").put("activeView",view);
+        data.putArray("fields").addObject().put("id",field).put("name","Ore").put("type","number").putArray("options");
+        data.putArray("rows").addObject().put("id",UUID.randomUUID().toString()).putObject("values").put(field,3);
+        var v=data.putArray("views").addObject().put("id",view).put("name","Griglia").put("kind","grid").put("sort","").put("direction","asc").put("group","").put("logic","all").put("density","normal").put("cardSize","medium");
+        v.putArray("columns");v.putArray("filters");
+        mvc.perform(put(path).header("Authorization",auth).contentType(MediaType.APPLICATION_JSON).content(request.toString())).andExpect(status().isOk()).andExpect(jsonPath("$.version").value(1));
+        mvc.perform(get(path).header("Authorization",other)).andExpect(status().isNotFound());
+        mvc.perform(put(path).header("Authorization",auth).contentType(MediaType.APPLICATION_JSON).content(request.toString())).andExpect(status().isConflict());
+        request.put("expectedVersion",1);
+        mvc.perform(put(path).header("Authorization",other).contentType(MediaType.APPLICATION_JSON).content(request.toString())).andExpect(status().isConflict());
+        mvc.perform(put(path).header("Authorization",auth).contentType(MediaType.APPLICATION_JSON).content(request.toString())).andExpect(status().isOk()).andExpect(jsonPath("$.version").value(2));
+        mvc.perform(post(path+"/archive").header("Authorization",auth).contentType(MediaType.APPLICATION_JSON).content("{\"expectedVersion\":2,\"archived\":true}")).andExpect(status().isOk()).andExpect(jsonPath("$.archived").value(true));
+    }
+
+    @Test
+    void richNoteKeepsFormatOnLegacyRenameAndClearsOnLegacyBodyEdit() throws Exception {
+        var u=users.save(new AppUser("rich-"+UUID.randomUUID(),"rich@example.com","Rich"));
+        String auth="Bearer "+jwt(u.id),id=UUID.randomUUID().toString(),path="/api/v1/sync/apply";
+        var op=mapper.createObjectNode().put("entityType","note").put("entityId",id).put("action","upsert").put("operationId",UUID.randomUUID().toString());
+        op.putObject("payload").put("title","Doc").put("body","Hello").put("documentHtml","<b>Hello</b>");
+        mvc.perform(post(path).header("Authorization",auth).contentType(MediaType.APPLICATION_JSON).content(op.toString())).andExpect(status().isOk());
+        op.put("operationId",UUID.randomUUID().toString()).put("expectedVersion",0).putObject("payload").put("title","Renamed").put("body","Hello");
+        mvc.perform(post(path).header("Authorization",auth).contentType(MediaType.APPLICATION_JSON).content(op.toString())).andExpect(status().isOk());
+        mvc.perform(get("/api/v1/sync/latest").param("entityType","note").param("entityId",id).header("Authorization",auth)).andExpect(jsonPath("$.payload.documentHtml").value("<b>Hello</b>"));
+        op.put("operationId",UUID.randomUUID().toString()).put("expectedVersion",1).putObject("payload").put("title","Renamed").put("body","Legacy");
+        mvc.perform(post(path).header("Authorization",auth).contentType(MediaType.APPLICATION_JSON).content(op.toString())).andExpect(status().isOk());
+        mvc.perform(get("/api/v1/sync/latest").param("entityType","note").param("entityId",id).header("Authorization",auth)).andExpect(jsonPath("$.payload.documentHtml").doesNotExist());
+    }
+
+    @Test
     void portableImportIsAtomicAndIdempotent() throws Exception {
         var user = users.save(new AppUser("import-" + UUID.randomUUID(), "import@example.com", "Import"));
         String bearer = "Bearer " + jwt(user.id);

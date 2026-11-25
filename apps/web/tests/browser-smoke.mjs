@@ -6,7 +6,7 @@ try{
  const page=await browser.newPage({viewport:{width:1280,height:900}});
  const errors=[];page.on("pageerror",e=>{errors.push(e.message);console.error("page error:",e.message)});page.on("console",m=>{if(m.type()==="error")console.error("browser:",m.text())});
  const changes=[];let changeId=0;const prefs=new Map();
- const capabilities=Object.fromEntries(["taskDueSchema","timeBlockSchema","timeBlocksSchema","recurrenceSchema","noteRestoreSchema","syncOperationFingerprintSchema","sharingReadSchema","sharingEditorSchema","calendarReadSchema","serverReminderSchema","portableImportSchema","webPreferencesSchema"].map(k=>[k,1]));
+ const capabilities=Object.fromEntries(["taskDueSchema","timeBlockSchema","timeBlocksSchema","recurrenceSchema","noteRestoreSchema","syncOperationFingerprintSchema","sharingReadSchema","sharingEditorSchema","calendarReadSchema","serverReminderSchema","portableImportSchema","webPreferencesSchema","webGridSchema","serverTaskActionsSchema"].map(k=>[k,1]));
  await page.route("https://accounts.google.com/gsi/client",r=>r.fulfill({contentType:"application/javascript",body:'window.google={accounts:{id:{initialize(o){this.cb=o.callback},renderButton(el){const b=document.createElement("button");b.textContent="Test login";b.onclick=()=>this.cb({credential:"synthetic"});el.append(b)}}}};'}));
  await page.route("**/api/v1/**",async route=>{
   const req=route.request(),url=new URL(req.url()),p=url.pathname.slice("/api/v1".length);

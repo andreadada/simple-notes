@@ -387,6 +387,7 @@ public class SyncService {
             tasks.saveAndFlush(existing);
             return new Mutation(existing.version, true, "{}");
         }
+        if (existing == null && tasks.existsById(req.entityId())) throw new ResponseStatusException(HttpStatus.CONFLICT, "Task ID unavailable");
         JsonNode value = req.payload();
         String title = requiredText(value, "title", 1024);
         String description = value.path("description").isNull() ? null :
@@ -523,6 +524,7 @@ public class SyncService {
             lists.saveAndFlush(existing);
             return new Mutation(existing.version, true, "{}");
         }
+        if (existing == null && lists.existsById(req.entityId())) throw new ResponseStatusException(HttpStatus.CONFLICT, "List ID unavailable");
         String title = requiredText(req.payload(), "title", 255).trim();
         TaskListEntity entity;
         if (existing == null) {
@@ -657,6 +659,7 @@ public class SyncService {
             notes.saveAndFlush(existing);
             return new Mutation(existing.version, true, "{}");
         }
+        if (existing == null && notes.existsById(req.entityId())) throw new ResponseStatusException(HttpStatus.CONFLICT, "Note ID unavailable");
         JsonNode value = req.payload();
         // Local note editor permits empty titles ("Senza titolo" in the UI).
         // Rejecting them as 400 used to strand the oldest outbox operation,

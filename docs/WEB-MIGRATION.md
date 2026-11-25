@@ -30,3 +30,6 @@ Il prodotto primario è la webapp browser-only in `apps/web`, ispirata al design
 
 ### V21 — griglia e automazioni
 Colonne per vista (ordine, larghezza, visibilità), campi custom tipizzati e valori persistiti sul task, modifiche inline e bulk. Client legacy che omettono customFields mantengono il dato. Definizioni e layout sincronizzati per account. Regole created/completed server-side opt-in nella stessa transazione e replay immutabile; import esclusi. Flyway V21 additiva, VPS non modificata.
+
+### Coda e notifiche
+Coda persistente fino a 100 intenti indipendenti (un intento per record), replay ordinato, bozza rifiutata conservata e confronto CAS. Login e prima lettura richiedono rete, niente cache di avvio PWA. Notifiche opt-in mentre la pagina è aperta su browser compatibili, senza push o service worker.

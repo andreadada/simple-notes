@@ -14,7 +14,7 @@ export function validatePortable(doc,max=500){
  for(const rows of [lists,tasks,notes])if(rows.some(x=>!obj(x)||!string(x.id,1,128)||!stamp(x.createdAt))||!unique(rows.map(x=>x.id)))fail("ID o data record non validi");
  const lids=new Set(lists.map(x=>x.id));
  for(const x of lists)if(!string(x.title,1,255)||!x.title.trim())fail("Titolo lista non valido");
- for(const x of notes)if(!string(x.title,0,255)||typeof x.body!=="string")fail("Nota non valida");
+ for(const x of notes)if(!string(x.title,0,255)||typeof x.body!=="string"||x.documentHtml!==undefined&&(typeof x.documentHtml!=="string"||new TextEncoder().encode(x.documentHtml).length>524288))fail("Nota non valida");
  for(const x of tasks){
   if(!string(x.title,1,1024)||!x.title.trim()||typeof x.description!=="string"||typeof x.completed!=="boolean"||x.listId!=null&&!lids.has(x.listId)||!Number.isInteger(x.priority)||x.priority<0||x.priority>3||!Array.isArray(x.tags)||x.tags.length>16||x.tags.some(t=>!string(t,1,40)||!t.trim())||!Array.isArray(x.subtasks)||x.subtasks.length>50||x.subtasks.some(s=>!obj(s)||!string(s.id,1,128)||!string(s.title,1,255)||!s.title.trim()||typeof s.completed!=="boolean")||!unique(x.subtasks.map(s=>s.id)))fail("Attività o riferimenti non validi");
   const p=normalizeTask(x),d=p.due,q=p.recurrence;
@@ -30,7 +30,7 @@ export function copyOperations(doc,id=()=>crypto.randomUUID()){
  const data=validatePortable(doc),ids=new Map(),ops=[];
  for(const x of data.lists){const fresh=id();ids.set(x.id,fresh);ops.push(operation("list",fresh,null,{title:x.title,createdAt:x.createdAt},"upsert",id()))}
  for(const x of data.tasks){const {id:old,...p}=normalizeTask(x);ops.push(operation("task",id(),null,{...p,listId:x.listId==null?null:ids.get(x.listId),subtasks:p.subtasks.map(s=>({...s,id:id()})),timeBlocks:p.timeBlocks.map(s=>({...s,id:id()}))},"upsert",id()))}
- for(const x of data.notes)ops.push(operation("note",id(),null,{title:x.title,body:x.body,createdAt:x.createdAt},"upsert",id()));
+ for(const x of data.notes)ops.push(operation("note",id(),null,{title:x.title,body:x.body,createdAt:x.createdAt,...(x.documentHtml!==undefined?{documentHtml:x.documentHtml}:{})},"upsert",id()));
  return ops;
 }
 const b64=a=>{let s="";for(let i=0;i<a.length;i+=8192)s+=String.fromCharCode(...a.subarray(i,i+8192));return btoa(s)};
@@ -112,7 +112,7 @@ export function recoveryPlan(doc,rows,id=()=>crypto.randomUUID()){
   if(!uuid(x.id)){skipped.invalid++;continue}
   const current=known.get(type+":"+x.id);if(current){skipped[current.deleted?"tombstone":"present"]++;continue}
   if(type==="task"&&x.listId&&!availableLists.has(x.listId)){skipped.missingList++;continue}
-  let payload=type==="task"?normalizeTask(x):type==="list"?{title:x.title,createdAt:x.createdAt}:{title:x.title,body:x.body,createdAt:x.createdAt};
+  let payload=type==="task"?normalizeTask(x):type==="list"?{title:x.title,createdAt:x.createdAt}:{title:x.title,body:x.body,createdAt:x.createdAt,...(x.documentHtml!==undefined?{documentHtml:x.documentHtml}:{})};
   if(type==="task"&&payload.subtasks.some(s=>!uuid(s.id))){skipped.invalid++;continue}
   if(type==="task"&&payload.timeBlocks.some(s=>s.id!=="legacy"&&!uuid(s.id))){skipped.invalid++;continue}
   delete payload.id;

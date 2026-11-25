@@ -92,7 +92,7 @@ export function portableRecords(rows,now=new Date().toISOString(),allowBlankNote
   for(const r of rows.filter(x=>!x.deleted)){
     const p=r.payload,id=r.entityId;
     if(r.entityType==="list")data.lists.push({id,title:p.title,createdAt:p.createdAt});
-    if(r.entityType==="note")data.notes.push({id,title:p.title,body:p.body,createdAt:p.createdAt});
+    if(r.entityType==="note")data.notes.push({id,title:p.title,body:p.body,createdAt:p.createdAt,...(typeof p.documentHtml==="string"?{documentHtml:p.documentHtml}:{})});
     if(r.entityType==="task"){const t=normalizeTask(p);data.tasks.push({...t,id,dueAt:t.due.instant??null,timeBlock:t.timeBlocks.length?{kind:"range",start:t.timeBlocks[0].start,end:t.timeBlocks[0].end,timeZone:t.timeBlocks[0].timeZone}:none()})}
   }
   if(!allowBlankNotes&&data.notes.some(n=>!n.title.trim()))throw Error("Il vecchio formato portabile richiede titoli non vuoti: rinomina le note senza titolo o usa lo snapshot JSON.");

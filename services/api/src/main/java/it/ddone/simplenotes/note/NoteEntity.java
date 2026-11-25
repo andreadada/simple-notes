@@ -11,6 +11,7 @@ public class NoteEntity {
     @Column(name = "owner_id", nullable = false) public UUID ownerId;
     @Column(nullable = false) public String title;
     @Column(nullable = false, columnDefinition = "text") public String body;
+    @Column(name = "document_html", columnDefinition = "text") public String documentHtml;
     @Version public long version;
     @Column(name = "created_at", nullable = false) public Instant createdAt;
     @Column(name = "updated_at", nullable = false) public Instant updatedAt;

@@ -669,9 +669,7 @@ public class SyncService {
             stored.deletedAt = null;
             stored.updatedAt = Instant.now();
             notes.saveAndFlush(stored);
-            return new Mutation(stored.version, false, encode(Map.of(
-                "title", stored.title, "body", stored.body,
-                "createdAt", stored.createdAt.toString())));
+            return new Mutation(stored.version, false, notePayload(stored));
         }
         if ("delete".equals(req.action())) {
             if (existing == null) return new Mutation(0, true, "{}");
@@ -701,13 +699,24 @@ public class SyncService {
             requireVersion(req.expectedVersion(), existing.version);
             entity = existing;
             entity.title = title;
+            if (!Objects.equals(entity.body, body) && !value.has("documentHtml")) entity.documentHtml = null;
             entity.body = body;
             entity.updatedAt = Instant.now();
         }
+        if(value.has("documentHtml")) {
+            JsonNode doc=value.get("documentHtml");
+            if(!doc.isNull() && (!doc.isTextual() || doc.textValue().getBytes(StandardCharsets.UTF_8).length>524288))
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"Invalid document content");
+            entity.documentHtml=doc.isNull()?null:doc.textValue();
+        }
         notes.saveAndFlush(entity);
-        return new Mutation(entity.version, false, encode(Map.of(
-            "title", entity.title, "body", entity.body,
-            "createdAt", entity.createdAt.toString())));
+        return new Mutation(entity.version, false, notePayload(entity));
+    }
+
+    private String notePayload(NoteEntity n) {
+        ObjectNode p=json.createObjectNode().put("title",n.title).put("body",n.body).put("createdAt",n.createdAt.toString());
+        if(n.documentHtml!=null)p.put("documentHtml",n.documentHtml);
+        return encode(p);
     }
 
     private static Instant importTimestamp(JsonNode payload) {

@@ -33,3 +33,6 @@ Non è prevista installazione PWA né push a browser chiuso. Il calendario Googl
 ## Verifiche
 
 [GitHub Actions](https://github.com/andreadada/simple-notes/actions) è la fonte per esito per SHA: web unitari, build Docker, smoke container e Chromium simulato; backend con PostgreSQL Testcontainers; Compose e Markdown CI. Il gate corrente è V23; gate V19/V20/V21/V22 storici. [CURRENT-STATUS](CURRENT-STATUS.md) contiene la cronologia; questa pagina prevale per il cutover.
+
+## Creazione inline e configurazione delle viste
+Riga/carta vuota sempre disponibile, salvataggio su Invio o uscita dal campo; bozza locale per account e contesto, nessun dialog obbligatorio. Note modificabili nel corpo direttamente; Kanban e calendario creano record nel contesto della corsia/giorno. Tutte le viste, comprese predefinite, possono essere rinominate, duplicate, riordinate e nascoste; configurazione immediata di densità, campi, dimensioni schede, raggruppamento Kanban, periodo e visibilità calendario, widget dashboard e soglia Eisenhower. Preferenze salvate nel dominio esistente viewOptions, senza migrazioni DB. I pulsanti + restano come scorciatoie per l'editor completo.

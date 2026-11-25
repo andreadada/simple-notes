@@ -73,6 +73,24 @@ class SyncIntegrationTest {
     }
 
     @Test
+    void webGridPreservesFieldsAndServerRulesAreOptIn() throws Exception {
+        var user=users.save(new AppUser("grid-"+UUID.randomUUID(),"grid@example.com","Grid"));
+        String bearer="Bearer "+jwt(user.id), path="/api/v1/sync/apply", id=UUID.randomUUID().toString(), field="field-"+UUID.randomUUID();
+        var op=mapper.createObjectNode().put("operationId",UUID.randomUUID().toString()).put("entityId",id).put("entityType","task").put("action","upsert");
+        op.putObject("payload").put("title","Grid").putObject("customFields").put(field,42);
+        mvc.perform(post(path).header("Authorization",bearer).contentType(MediaType.APPLICATION_JSON).content(op.toString())).andExpect(status().isOk());
+        op.put("operationId",UUID.randomUUID().toString()).put("expectedVersion",0).putObject("payload").put("title","Legacy");
+        mvc.perform(post(path).header("Authorization",bearer).contentType(MediaType.APPLICATION_JSON).content(op.toString())).andExpect(status().isOk());
+        mvc.perform(get("/api/v1/sync/latest").param("entityType","task").param("entityId",id).header("Authorization",bearer)).andExpect(jsonPath("$.payload.customFields['"+field+"']").value(42));
+        mvc.perform(put("/api/v1/web/preferences/automationEnabled").header("Authorization",bearer).contentType(MediaType.APPLICATION_JSON).content("{\"expectedVersion\":0,\"value\":true}")).andExpect(status().isOk());
+        var catalog=mapper.createObjectNode().put("expectedVersion",0);catalog.putObject("catalog").put("schema",1).putArray("rules").addObject().put("id","action-"+UUID.randomUUID()).put("trigger","created").put("action","priority").put("value","3").put("titleContains","").put("enabled",true);
+        mvc.perform(put("/api/v1/automations/task-actions").header("Authorization",bearer).contentType(MediaType.APPLICATION_JSON).content(catalog.toString())).andExpect(status().isOk());
+        String second=UUID.randomUUID().toString();op.remove("expectedVersion");op.put("operationId",UUID.randomUUID().toString()).put("entityId",second).putObject("payload").put("title","Rule");
+        mvc.perform(post(path).header("Authorization",bearer).contentType(MediaType.APPLICATION_JSON).content(op.toString())).andExpect(status().isOk());
+        mvc.perform(get("/api/v1/sync/latest").param("entityType","task").param("entityId",second).header("Authorization",bearer)).andExpect(jsonPath("$.payload.priority").value(3));
+    }
+
+    @Test
     void applyIsIdempotentAndDeltaIsPrivate() throws Exception {
         var a = users.save(new AppUser("sync-a-" + UUID.randomUUID(), "a@example.com", "A"));
         var b = users.save(new AppUser("sync-b-" + UUID.randomUUID(), "b@example.com", "B"));

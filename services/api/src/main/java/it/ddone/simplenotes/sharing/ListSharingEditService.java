@@ -138,7 +138,7 @@ public class ListSharingEditService {
 
         // Reuses the same owner OCC, task serialization and sync_change ledger
         // as the desktop/mobile owner's writes; no dual write or fake cursor.
-        SyncController.ApplyResponse result = sync.apply(owner,
+        SyncController.ApplyResponse result = sync.applyCollaborator(owner,
             new SyncController.ApplyRequest(UUID.randomUUID(), taskId,
                 "task", "upsert", edit.expectedVersion(),
                 payload, null));

@@ -33,3 +33,6 @@ Colonne per vista (ordine, larghezza, visibilità), campi custom tipizzati e val
 
 ### Coda e notifiche
 Coda persistente fino a 100 intenti indipendenti (un intento per record), replay ordinato, bozza rifiutata conservata e confronto CAS. Login e prima lettura richiedono rete, niente cache di avvio PWA. Notifiche opt-in mentre la pagina è aperta su browser compatibili, senza push o service worker.
+
+### Cataloghi e collaborazione per cella
+Backup web include inventario e cataloghi cloud; recupero modelli e taskActions nativi/web per ID con CAS e conservazione dei conflitti. Regole promemoria native esportabili separatamente. Liste condivise: modifica inline di titolo, descrizione, priorità e completamento, aggiornamento foreground e presenza per cella. Non sono CRDT: le revisioni rimangono per record; modifiche contemporanee richiedono confronto. Le azioni del collaboratore non attivano regole owner che potrebbero spostare il record fuori lista. Gate corrente: `infra/release-v21-readiness.sh`.

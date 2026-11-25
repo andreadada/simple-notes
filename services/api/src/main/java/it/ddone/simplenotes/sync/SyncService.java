@@ -267,6 +267,10 @@ public class SyncService {
         return applyInternal(owner, req, true);
     }
 
+    /** Shared-editor writes must not trigger owner rules that move data outside the shared list. */
+    @Transactional
+    public SyncController.ApplyResponse applyCollaborator(UUID owner, SyncController.ApplyRequest req) { return applyInternal(owner, req, false); }
+
     private SyncController.ApplyResponse applyInternal(UUID owner, SyncController.ApplyRequest req, boolean executeActions) {
         // All writes (including legacy REST) lock before reading or mutating.
         lockAccount(owner);

@@ -15,9 +15,9 @@ import org.springframework.web.server.ResponseStatusException;
 public class ListPresenceController {
     private record Person(UUID id,String displayName,String role) {}
     private record Key(UUID listId,UUID actor) {}
-    private record Touch(UUID taskId,Instant until) {}
-    public record Heartbeat(UUID taskId) {}
-    public record Presence(String name,String role,UUID taskId,boolean self) {}
+    private record Touch(UUID taskId,String field,Instant until) {}
+    public record Heartbeat(UUID taskId,String field) {}
+    public record Presence(String name,String role,UUID taskId,String field,boolean self) {}
     private final Map<Key,Touch> active=new HashMap<>();
     private final JdbcTemplate jdbc;
     public ListPresenceController(JdbcTemplate jdbc){this.jdbc=jdbc;}
@@ -38,11 +38,13 @@ public class ListPresenceController {
             Integer count=jdbc.queryForObject("SELECT count(*) FROM task t JOIN task_list l ON l.id=t.list_id AND l.owner_id=t.owner_id WHERE l.id=? AND t.id=? AND t.deleted_at IS NULL AND l.deleted_at IS NULL",Integer.class,listId,task);
             if(count==null||count!=1)throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"Task not in list");
         }
+        String field=request.field();
+        if(field!=null&&(task==null||!Set.of("title","description","priority","completed").contains(field)))throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"Invalid cell");
         Instant now=Instant.now();active.entrySet().removeIf(e->!e.getValue().until().isAfter(now));
         Key key=new Key(listId,actor);
-        if(active.size()<10000||active.containsKey(key))active.put(key,new Touch(task,now.plusSeconds(35)));
+        if(active.size()<10000||active.containsKey(key))active.put(key,new Touch(task,field,now.plusSeconds(35)));
         List<Presence> result=new ArrayList<>();
-        for(Person p:people){Touch touch=active.get(new Key(listId,p.id()));if(touch!=null)result.add(new Presence(p.displayName(),p.role(),touch.taskId(),actor.equals(p.id())));}
+        for(Person p:people){Touch touch=active.get(new Key(listId,p.id()));if(touch!=null)result.add(new Presence(p.displayName(),p.role(),touch.taskId(),touch.field(),actor.equals(p.id())));}
         return List.copyOf(result);
     }
 }

@@ -93,3 +93,14 @@ export function nativePreferences(snapshot){
  const pom=read("pomodoro");if(pom){if(!Array.isArray(pom.records)||pom.records.some(x=>!string(x.id,1,128)||!stamp(x.completedAtUtc)||!Number.isInteger(x.seconds)||x.seconds<1||x.seconds>86400))fail();result.focusRecords=pom.records;result.focusCompleted=pom.focusCompleted}
  return result;
 }
+
+export function archiveCatalogs(snapshot,native){
+ const read=(key,field)=>{const raw=native?snapshot.preferences?.[key]:snapshot.catalogs?.[key];if(raw==null)return null;const data=typeof raw==="string"?JSON.parse(raw):raw;if(!obj(data)||data.schema!==1||!Array.isArray(data[field])||data[field].length>100||data[field].some(x=>!obj(x)||!string(x.id,1,128))||!unique(data[field].map(x=>x.id)))fail("Catalogo non valido: "+key);return data};
+ return {templates:read("templates","templates"),taskActions:read("taskActions","rules"),reminders:native?read("automations","rules"):read("reminders","rules")};
+}
+export function mergeCatalog(current,incoming,field,max){
+ const existing=current[field],newItems=incoming[field],ids=new Map(existing.map(x=>[x.id,x])),conflicts=[];
+ for(const x of newItems){const previous=ids.get(x.id);if(previous){if(JSON.stringify(previous)!==JSON.stringify(x))conflicts.push(x.id)}else ids.set(x.id,x)}
+ if(ids.size>max)fail("Catalogo oltre il limite: seleziona manualmente");
+ return {catalog:{schema:1,[field]:[...ids.values()]},added:ids.size-existing.length,conflicts};
+}
